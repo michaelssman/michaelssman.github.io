@@ -1,0 +1,440 @@
+# [Info]
+site_name: 个人网站 # 左上角标题
+site_url: https://michaelssman.github.io/
+site_author: michael
+site_description: michael的个人网站
+# [UI]
+## [top]
+theme:
+  name: material
+  palette: 
+    - scheme: default # 日间模式
+      primary: indigo # 上方的
+      accent: orange # 链接等可交互元件的高亮色
+      toggle:
+        icon: material/weather-night # 图标
+        name: 切换至夜间模式 # 鼠标悬浮提示
+    - scheme: slate # 夜间模式
+      primary: indigo
+      accent: orange
+      toggle:
+        icon: material/weather-sunny
+        name: 切换至日间模式
+  features:
+    - navigation.tabs # 使用Tab来进行分类
+    - navigation.top # 返回顶部的按钮 在上滑时出现
+    - navigation.indexes # Tab会有一个index.md 而不是在打开Tab时打开第一篇文章
+    - navigation.expand # 打开Tab时左侧目录全部展开
+    - search.suggest # 搜索输入一些字母时推荐补全整个单词
+    - search.highlight # 搜索出的文章关键词加入高亮
+  language: zh # 一些提示性的文字会变成中文
+  icon:
+    repo: fontawesome/brands/github
+edit_uri: "" # 编辑按钮跳转的链接
+## [top-right corner]
+repo_url: https://github.com/michaelssman/michaelssman.github.io # 右上角点击跳转的链接
+repo_name: michael.github.io # 右上角的名字
+## [bottom-left corner]
+copyright: Copyright &copy; 2022 Michael # 左下角的版权声明
+## [bottom-right corner]
+extra:
+  social: # icons
+    - icon: fontawesome/brands/bilibili
+      link: https://www.bilibili.com/
+      name: Bilibili | michael # 鼠标悬浮提示
+    - icon: fontawesome/brands/github
+      link: https://github.com/
+      name: GitHub | michael
+# [Navigtion]
+nav:
+  - static_const_define: 
+    - 宏: 常量_宏_静态变量/宏定义和常量.md
+    - 枚举: 常量_宏_静态变量/枚举.md
+    - 常量: 
+      - 01: 常量_宏_静态变量/01常量.md
+      - 02: 常量_宏_静态变量/02常量.md
+      - 03: 常量_宏_静态变量/03常量.md
+      - 04: 常量_宏_静态变量/04常量.md
+      - 05: 常量_宏_静态变量/05常量.md
+      - 06: 常量_宏_静态变量/06常量.md
+      - 07: 常量_宏_静态变量/07函数内部的静态变量.md
+      - 08: 常量_宏_静态变量/08静态对象.md
+      - 09: 常量_宏_静态变量/09静态成员.md
+  - 内存: 内存.md
+  - 待整理: 待整理.md
+  - 源码: 查看源码.md
+  - 递归: 递归.md
+  - C++: 
+    - README: C++/README.md
+    - Stash_指针的stash: C++/Stash_指针的stash.md
+    - delete_可能会出错: C++/delete_可能会出错.md
+    - for循环_迭代器: C++/for循环_迭代器.md
+    - vscode运行C: C++/vscode运行C++.md
+    - 作用域: C++/作用域.md
+    - 内存_释放: C++/内存_释放.md
+    - 内联函数: C++/内联函数.md
+    - 函数和函数库: C++/函数和函数库.md
+    - 函数重载: C++/函数重载.md
+    - 初始化与清除: C++/初始化与清除.md
+    - 动态创建对象: C++/动态创建对象.md
+    - 友元: C++/友元.md
+    - 句柄类: C++/句柄类.md
+    - 名称空间: C++/名称空间.md
+    - 多态: C++/多态.md
+    - 引用: C++/引用.md
+    - 打开和关闭所有权: C++/打开和关闭所有权.md
+    - 拷贝构造函数: C++/拷贝构造函数.md
+    - 指针地址: C++/指针地址.md
+    - 控制链接: C++/控制链接.md
+    - 改进的错误检查方法: C++/改进的错误检查方法.md
+    - 替代连接: C++/替代连接.md
+    - 模版: C++/模版.md
+    - 第一个C: C++/第一个C++程序.md
+    - 第二个C: C++/第二个C++程序.md
+    - 类和结构: C++/类和结构.md
+    - 联合: C++/联合.md
+    - 自动类型转换: C++/自动类型转换.md
+    - 访问函数: C++/访问函数.md
+    - 访问控制: C++/访问控制.md
+    - 默认参数: C++/默认参数.md
+    - 默认参数or函数重载: C++/默认参数or函数重载.md
+    - 内联函数: C++/内联函数/内联函数2.md
+    - 多态性和虚函数: C++/多态性和虚函数/01多态性和虚函数.md
+    - 多态性和虚函数: C++/多态性和虚函数/02多态性和虚函数.md
+    - 多态性和虚函数: C++/多态性和虚函数/03多态性和虚函数.md
+    - 多态性和虚函数: C++/多态性和虚函数/04多态性和虚函数.md
+    - 多态性和虚函数: C++/多态性和虚函数/05多态性和虚函数.md
+    - 模版: C++/模版/01模版语法.md
+    - 模版: C++/模版/02模版中的常量.md
+    - 模版: C++/模版/03简单的Stack模板.md
+    - 模版: C++/模版/04链表的Stack模版.md
+    - 模版: C++/模版/05模版化的指针Stash.md
+    - 模版: C++/模版/06函数模版.md
+    - 继承: C++/继承/00继承语法.md
+    - 继承: C++/继承/01继承和组合.md
+    - 继承: C++/继承/02继承中的构造和析构.md
+    - 继承: C++/继承/03继承的其它要点.md
+    - 继承: C++/继承/04继承中的向上类型转换.md
+    - 继承: C++/继承/05再论继承和组合.md
+    - 运算符重载: C++/运算符重载/01运算符重载.md
+    - 迭代器: C++/迭代器/01迭代器.md
+    - 迭代器: C++/迭代器/02迭代器.md
+    - 迭代器: C++/迭代器/03迭代器.md
+  - Cocos2d:
+    - Cocos2d-x认识: Cocos2d-x/Cocos2d-x认识.md
+    - 调度器(scheduler): Cocos2d-x/调度器(scheduler).md
+  - Html5:
+    - css: Html5/CSS/css.md
+    - framework7: Html5/Framework7/framework7.md
+    - html: Html5/Html/html.md
+    - table: Html5/Html/table.md
+    - JavaScript:
+      - 01JavaScript简介: Html5/JavaScript/01JavaScript简介.md
+      - 02变量: Html5/JavaScript/02变量.md
+      - 03数据类型: Html5/JavaScript/03数据类型.md
+      - 04数据类型转换: Html5/JavaScript/04数据类型转换.md
+      - df: Html5/JavaScript/df.md
+      - 简介: Html5/JavaScript/简介.md
+    - vue:
+      - Html5/Vue/Vue.md
+      - Html5/Vue/vue框架.md
+      - Html5/Vue/数据.md
+      - Html5/Vue/文件路径.md
+      - Html5/Vue/模版方法.md
+      - Html5/Vue/添加实例 property.md
+  - Mac:
+    - MAC/brew.md
+    - MAC/linux.md
+    - MAC/oh-my-zsh.md
+    - MAC/修改hosts.md
+    - MAC/快捷键.md
+    - MAC/搭建网站.md
+    - MAC/清理Xcode.md
+    - MAC/环境变量.md
+    - MAC/软件.md
+  - flutter:
+    - flutter/AS快捷键.md
+    - flutter/Key的原理.md
+    - flutter/Package.md
+    - flutter/Provider.md
+    - flutter/flutter安装.md
+    - flutter/flutter简介.md
+    - flutter/pubspec.yaml文件管理.md
+    - flutter/widget.md
+    - flutter/布局.md
+    - flutter/本地资源和工程配置.md
+    - flutter/混合开发与引擎.md
+    - flutter/渲染原理.md
+    - flutter/热重载.md
+    - flutter/状态管理.md
+    - flutter/生命周期.md
+    - flutter/网络.md
+    - flutter/Dart/dart.md
+    - flutter/异步和多线程/多线程.md
+    - flutter/异步和多线程/异步和多线程.md
+    - flutter/异步和多线程/异步编程.md
+  - iOS:
+    - iOS/PDF显示CGPDFDocumentRef.md
+    - iOS/UIScrollView.md
+    - iOS/UITextView.md
+    - iOS/Vendors.md
+    - iOS/universalLink.md
+    - iOS/坐标转换.md
+    - iOS/处理bug.md
+    - iOS/快捷键.md
+    - iOS/控制器生命周期.md
+    - iOS/版本更新.md
+    - iOS/表情.md
+    - iOS/00底层原理分析/00.md
+    - iOS/00底层原理分析/LLDB指令.md
+    - iOS/01对象原理/alloc.md
+    - iOS/01对象原理/isa.md
+    - iOS/01对象原理/对象原理.md
+    - iOS/01对象原理/结构体内存对齐.md
+    - iOS/01对象原理/联合体和位域.md
+    - iOS/02类的原理/cache.md
+    - iOS/02类的原理/isKind和isMember.md
+    - iOS/02类的原理/内存平移.md
+    - iOS/02类的原理/类的原理.md
+    - iOS/03Block/block.md
+    - iOS/03Block/block使用.md
+    - iOS/03Runtime/category.md
+    - iOS/03Runtime/runtime.md
+    - iOS/03Runtime/消息机制.md
+    - iOS/04应用程序加载/MachO.md
+    - iOS/04应用程序加载/clang插件.md
+    - iOS/04应用程序加载/dyld.md
+    - iOS/04应用程序加载/fishhook.md
+    - iOS/04应用程序加载/iOS应用加载流程.md
+    - iOS/04应用程序加载/llvm编译流程.md
+    - iOS/04应用程序加载/应用启动优化.md
+    - iOS/04应用程序加载/环境变量.md
+    - iOS/04应用程序加载/符号表.md
+    - iOS/04应用程序加载/动态库静态库/swift的module.md
+    - iOS/04应用程序加载/动态库静态库/动态库静态库.md
+    - iOS/05内存管理/copy.md
+    - iOS/05内存管理/iOS属性关键字.md
+    - iOS/05内存管理/weak原理.md
+    - iOS/05内存管理/内存管理.md
+    - iOS/06Runloop/00RunLoop.md
+    - iOS/06Runloop/01CFRunLoopRef.md
+    - iOS/06Runloop/02CFRunLoopModeRef.md
+    - iOS/06Runloop/03CFRunLoopSourceRef.md
+    - iOS/06Runloop/04CFRunLoopTimerRef.md
+    - iOS/06Runloop/05CFRunLoopObserverRef.md
+    - iOS/06Runloop/线程保活.md
+    - iOS/06Runloop/自动释放池.md
+    - iOS/08组件化/CocoaPods原理.md
+    - iOS/08组件化/Pod.md
+    - iOS/08组件化/pod更新.md
+    - iOS/08组件化/组件化.md
+    - iOS/08组件化/组件化02.md
+    - iOS/08组件化/组件化通讯.md
+    - iOS/08组件化/设置源.md
+    - iOS/09响应者链/响应者链.md
+    - iOS/10架构模式/MVVM.md
+    - iOS/10架构模式/MVX.md
+    - iOS/Animation/Animation.md
+    - iOS/NSArray/NSArray.md
+    - iOS/NSArray/数组随机10条数据.md
+    - iOS/NSArray/遍历数组.md
+    - iOS/OpenGL_ES/专业名词解释.md
+    - iOS/OpenGL_ES/加载图片.md
+    - iOS/OpenGL_ES/图像显示原理.md
+    - iOS/OpenGL_ES/离屏渲染.md
+    - iOS/SDWebImage/SDImageCache.md
+    - iOS/SDWebImage/SDWebImage.md
+    - iOS/SDWebImage/SDWebImageManager.md
+    - iOS/Swift/IR.md
+    - iOS/Swift/Mirror.md
+    - iOS/Swift/Moya.md
+    - iOS/Swift/Swift和OC.md
+    - iOS/Swift/协议.md
+    - iOS/Swift/属性.md
+    - iOS/Swift/指针和内存管理.md
+    - iOS/Swift/方法的调度.md
+    - iOS/Swift/枚举和optional.md
+    - iOS/Swift/类与结构体.md
+    - iOS/Swift/闭包.md
+    - iOS/TableView/cell的几种状态.md
+    - iOS/TableView/tableHeaderView.md
+    - iOS/TableView/刷新加载.md
+    - iOS/TableView/变化的tableView.md
+    - iOS/TableView/显示隐藏某个cell.md
+    - iOS/WKWebView/WKWebView聚焦.md
+    - iOS/WKWebView/解决webView白屏问题加载缓存问题.md
+    - iOS/性能优化/内存检测.md
+    - iOS/性能优化/界面优化.md
+    - iOS/推送/01极光推送.md
+    - iOS/推送/02角标问题.md
+    - iOS/推送/04推送开关功能.md
+    - iOS/数据持久化/CoreData.md
+    - iOS/编程思想/编程思想.md
+    - iOS/编程思想/函数式/函数式.md
+    - iOS/编程思想/响应式/响应式编程.md
+    - iOS/编程思想/响应式/RAC/01RACSignal.md
+    - iOS/编程思想/响应式/RAC/02RACSubject和RACReplaySubject.md
+    - iOS/编程思想/响应式/RAC/RACCommand.md
+    - iOS/编程思想/响应式/RAC/RACDisposable.md
+    - iOS/编程思想/响应式/RAC/RACMulticastConnection.md
+    - iOS/编程思想/响应式/RAC/RAC基本用法.md
+    - iOS/编程思想/响应式/RAC/RAC过滤.md
+    - iOS/网络/AFNetworking源码分析.md
+    - iOS/网络/AFNetworking缓存.md
+    - iOS/网络/https认证.md
+    - iOS/网络/后台数据返回错误.md
+    - iOS/网络/序列化.md
+    - iOS/网络/网络请求报错.md
+    - iOS/网络/设置网络请求.md
+    - iOS/网络/返回NSData数据.md
+    - iOS/读取文件类型转换/类型转换.md
+    - iOS/读取文件类型转换/解析本地json文件.md
+  - svn&git:
+    - svn&git/Git/git.md
+    - svn&git/Git/git_config.md
+    - svn&git/Git/git_ignore.md
+    - svn&git/Git/分支.md
+    - svn&git/SVN/01SVN.md
+    - svn&git/SVN/Mac批量删除.svn文件.md
+    - svn&git/SVN/SVN项目回滚.md
+    - svn&git/SVN/svn_ignores.md
+    - svn&git/SVN/svn打tag.md
+  - 多线程:
+    - 多线程/GCD.md
+    - 多线程/dispatch_queue_t.md
+    - 多线程/多线程.md
+    - 多线程/多线程代码执行情况.md
+    - 多线程/多线程锁.md
+    - 多线程/程序并发机制扩展阅读.md
+    - 多线程/读写锁.md
+    - 多线程/队列和函数.md
+  - 数据库:
+    - 数据库/00创建表.md
+    - 数据库/01INSERT.md
+    - 数据库/DELETE.md
+    - 数据库/SELECT.md
+    - 数据库/新增字段.md
+  - 数据结构:
+    - 数据结构/数据结构.md
+    - 数据结构/01链表/00线性表.md
+    - 数据结构/01链表/01链表的基本概念.md
+    - 数据结构/01链表/02模版类实现链表.md
+    - 数据结构/01链表/03链表迭代器.md
+    - 数据结构/01链表/04循环链表.md
+    - 数据结构/01链表/05双向链表.md
+    - 数据结构/01链表/06顺序容器.md
+    - 数据结构/02栈/000栈Stack.md
+    - 数据结构/02栈/001顺序栈.md
+    - 数据结构/02栈/002链式栈.md
+    - 数据结构/02栈/03栈Stack.md
+    - 数据结构/03队列/队列.md
+    - 数据结构/04树/01树.md
+    - 数据结构/04树/02二叉树.md
+    - 数据结构/04树/03二叉查找树BST.md
+    - 数据结构/04树/树.md
+    - 数据结构/04树/B树/00B树有什么用.md
+    - 数据结构/04树/B树/01B树的基本概念.md
+    - 数据结构/04树/红黑树/00红黑树.md
+    - 数据结构/04树/红黑树/01红黑树.md
+    - 数据结构/04树/红黑树/02红黑树.md
+    - 数据结构/05堆/01堆.md
+    - 数据结构/06图/01图_邻接矩阵.md
+    - 数据结构/06图/02图_邻接表.md
+    - 数据结构/07哈希和映射/哈希和映射.md
+    - 数据结构/Stash/01Stash.md
+    - 数据结构/Stash/02Stash.md
+    - 数据结构/Stash/03Stash.md
+  - 正则:
+    - 正则/正则表达式.md
+  - 算法:
+    - 算法/00排序.md
+    - 算法/交换swap.md
+    - 算法/冒泡排序.md
+    - 算法/加密.md
+    - 算法/基数排序.md
+    - 算法/归并排序merge.md
+    - 算法/快速排序quicksort.md
+    - 算法/排列组合Perm.md
+    - 算法/插入排序.md
+    - 算法/查找算法.md
+    - 算法/选择排序.md
+    - 算法/递归.md
+    - 算法/面试.md
+    - 算法/面试/删除倒数第n个节点.md
+    - 算法/面试/数组n个数组合最大的数.md
+    - 算法/面试/玻璃球.md
+    - 算法/面试/第几瓶水有毒.md
+    - 算法/面试/阿里.md
+  - 网络:
+    - 网络/Http.md
+    - 网络/Socket.md
+    - 网络/TCP_IP协议.md
+    - 网络/TCP和UDP.md
+    - 网络/XMPP.md
+    - 网络/七层模型.md
+    - 网络/概念.md
+  - 设计模式:
+    - 设计模式/为类增加一个方法.md
+    - 设计模式/总结.md
+    - 设计模式/持有X的引用_让X干活.md
+    - 设计模式/结构模式.md
+    - 设计模式/自我编程总结.md
+    - 设计模式/设计模式基本原则.md
+    - 设计模式/创建型模式/01单例模式.md
+    - 设计模式/创建型模式/02工厂模式.md
+    - 设计模式/创建型模式/03建造者模式.md
+    - 设计模式/创建型模式/04创建者模式和工厂模式的区别.md
+    - 设计模式/创建型模式/05原型模式Prototype.md
+    - 设计模式/结构型模式/06代理模式Proxy.md
+    - 设计模式/结构型模式/07装饰模式Decorator Pattern.md
+    - 设计模式/结构型模式/08适配器模式 Adapter.md
+    - 设计模式/结构型模式/09组合模式Composite.md
+    - 设计模式/结构型模式/10桥接模式Bridge.md
+    - 设计模式/结构型模式/11外观模式Facade.md
+    - 设计模式/结构型模式/12享元模式Flyweight.md
+    - 设计模式/行为型模式/13模版模式Template.md
+    - 设计模式/行为型模式/14命令模式Command.md
+    - 设计模式/行为型模式/15责任链模式.md
+    - 设计模式/行为型模式/16策略模式Strategy.md
+    - 设计模式/行为型模式/17中介者模式Mediator.md
+    - 设计模式/行为型模式/18观察者模式Observer.md
+    - 设计模式/行为型模式/19备忘录模式Memento.md
+    - 设计模式/行为型模式/20访问者模式Visitor.md
+    - 设计模式/行为型模式/21状态模式State.md
+    - 设计模式/行为型模式/22解释模式Interpreter.md
+    - 设计模式/行为型模式/23迭代器模式Iterator.md
+    - 设计模式/行为型模式/总结.md
+  - job:
+    - 面试/iOS-XXX-1XXXXXXXXXX.md
+    - 面试/工作学习.md
+    - 面试/面试.md
+
+# [Extensions]
+plugins:
+  - search: # 现在还不支持中文搜索 支持之后可以设置语言
+    # insider已经支持中文的分词搜索了 https://squidfunk.github.io/mkdocs-material/blog/2022/chinese-search-support/
+      lang:
+        - en
+        - ja
+  - tags # 给单篇文章添加标签 https://squidfunk.github.io/mkdocs-material/setup/setting-up-tags/?h=tags
+markdown_extensions:
+  - pymdownx.arithmatex: # latex支持
+      generic: true
+  - attr_list # 给图片后面添加{width="300"}设置大小
+  - toc:
+      permalink: true # 固定标题位置为当前位置
+  - pymdownx.highlight: # 代码块高亮
+      # linenums: true # 显示行号
+      # auto_title: true # 显示编程语言名称
+  - pymdownx.superfences # 代码块高亮插件
+  - meta # 支持Markdown文件上方自定义标题标签等
+extra_javascript:
+  # latex支持
+  # check https://squidfunk.github.io/mkdocs-material/reference/mathjax/?h=math for more information
+  # notice `curl https://polyfill.io/v3/polyfill.min.js?features=es6 > mkjavascripts/polyfill.min.js && curl https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js > mkjavascripts/tex-mml-chtml.js` not works... because there are other resources that need to load
+  - mkdocs/javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js # https://cdn.bytedance.com/?query=mathjax&version=3.2.0
+extra_css:
+  - mkdocs/css/no-footer.css # 不使用底部的翻页
+  - mkdocs/css/unordered-list-symbols.css # multiplt unordered list symbols

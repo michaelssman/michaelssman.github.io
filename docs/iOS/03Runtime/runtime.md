@@ -1,0 +1,60 @@
+# runtime
+
+**运行时** 就是代码跑起来了，被装载到内存中去了。
+
+(你的代码保存在磁盘上没装入内存之前是个死家伙，只有跑到内存中才变成活的)。而运行时类型检查就与前面讲的编译时类型检查(或者静态类型检查)不一样。不是简单的扫描代码.而是在内存中做些操作，做些判断。
+
+```objective-c
+Id person = [LGPerson alloc]
+[xxx performSelector:@selector(xxx)]
+```
+
+runtime三种方法调起
+
+1. OC 方法 
+
+   例：[person sayHello];
+
+2. NSObject 接口
+
+   例：isKindOfClass
+
+3. objc 下层api
+
+   例：Class_getInstanceSize
+
+
+
+分类在运行时期才加载的。为原有类扩展方法。
+
+
+
+调用方法 底层 objc_msgSend imp
+
+方法有方法缓存 第一次查找优先查找缓存 没有命中则方法列表遍历
+
+方法存在 cache_t	类对象
+
+对象通过isa指针查找到类
+
+
+
+runtime使用：
+
+- 方法交换
+- class_addMethod. 动态添加方法
+- KVO：观察属性   创建类的一个子类
+- runtime  成员变量、私有属性、方法列表
+  - fmdb 获取model属性列表。
+- 字典转模型
+  - YYModel 字典转模型。节省时间不用一个一个的去遍历。
+- 添加分类 
+  - button添加点击范围，分类中添加上下左右距离属性。
+  - 输入框防遮挡，controller中添加 视图的属性。
+  - 空白视图 view分类添加占位视图。
+- 归档反归档
+
+
+
+
+
