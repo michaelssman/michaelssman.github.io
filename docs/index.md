@@ -1,17 +1,19 @@
-# Welcome to MkDocs
+# 学习笔记
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+构建自己的知识体系，好记性不如烂笔头。
 
-## Commands
+## 介绍
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+学习和工作之中的记录总结，有笔记有源代码。在不断完善之中。
 
-## Project layout
+包括：数据结构，算法，设计模式，C++，iOS，版本控制。操作系统远离，计算机组成原理。
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+## 总结
+
+如果不停的敲代码，不断的看学习视频，但是不总结记录，学习的东西只看一遍，也不练习，很快就会忘记。之前学习的看过的都等于零，所以要把所学的记录下来，每天看一点，复习一遍又一遍，最后能完全掌握。
+
+多了解一些底层的东西，不仅要会使用并且还要了解一点原理。往深层的了解。写逻辑业务代码是写不完的，产品发展不断的在更新，写不出什么高级的，懂得了底层的知识，在遇到问题的时候才能很清楚的去解决问题。
+
+学好数据结构，操作系统，计算机网络，设计模式，算法。这些基础知识，有了基本功，就不限制哪种语言，哪方面的开发。
+
+只会写业务代码的人远不如那些做编译器，操作系统，参加竞赛的人。
