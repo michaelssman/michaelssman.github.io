@@ -1,4 +1,4 @@
-# Runloop -- 运行循环
+# Runloop
 
 runloop使用的时候结合多线程。
 

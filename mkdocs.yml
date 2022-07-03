@@ -182,7 +182,7 @@ nav:
     - flutter/异步和多线程/异步编程.md
   - iOS:
     - 00底层原理分析:
-      - iOS/00底层原理分析/00.md
+      - iOS/00底层原理分析/底层探索分析.md
       - iOS/00底层原理分析/LLDB指令.md
     - 01对象原理:
       - iOS/01对象原理/alloc.md
@@ -191,10 +191,10 @@ nav:
       - iOS/01对象原理/结构体内存对齐.md
       - iOS/01对象原理/联合体和位域.md
     - 02类的原理:
+      - iOS/02类的原理/类的原理.md
+      - iOS/02类的原理/内存平移.md
       - iOS/02类的原理/cache.md
       - iOS/02类的原理/isKind和isMember.md
-      - iOS/02类的原理/内存平移.md
-      - iOS/02类的原理/类的原理.md
     - 03Block:
       - iOS/03Block/block.md
       - iOS/03Block/block使用.md
@@ -212,8 +212,9 @@ nav:
       - 应用启动优化: iOS/04应用程序加载/应用启动优化.md
       - 环境变量: iOS/04应用程序加载/环境变量.md
       - 符号表: iOS/04应用程序加载/符号表.md
-      - 动态库静态库: iOS/04应用程序加载/动态库静态库/swift的module.md
-      - 动态库静态库: iOS/04应用程序加载/动态库静态库/动态库静态库.md
+      - 动态库静态库:
+        - iOS/04应用程序加载/动态库静态库/动态库静态库.md
+        - iOS/04应用程序加载/动态库静态库/swift的module.md
     - 05内存管理:
       - iOS/05内存管理/copy.md
       - iOS/05内存管理/iOS属性关键字.md

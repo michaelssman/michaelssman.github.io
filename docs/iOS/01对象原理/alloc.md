@@ -195,15 +195,17 @@ calloc只是申请一个内存，是一个指针，和person对象没有关系
 
 ## alloc⽅法的底层调⽤流程
 
-alloc-> objc_alloc —> callAlloc —> objc_msgSend —> alloc —> _objc_rootAlloc —> callAlloc —> _objc_rootAllocWithZone —> _class_createInstanceFromZone
-
-### cls->instanceSize()
-
-计算对象需要的内存的⼤⼩。
-
-### calloc()
-
-系统实际为对象分配内存的⼤⼩。
+1. alloc
+2. objc_alloc
+3. callAlloc
+4. objc_msgSend 
+5. alloc 
+6. _objc_rootAlloc
+7. callAlloc 
+8. _objc_rootAllocWithZone 
+9. _class_createInstanceFromZone
+   1. cls->instanceSize()	//计算对象需要的内存的⼤⼩。
+   2. calloc()    //系统实际为对象分配内存的⼤⼩。
 
 # 内存对齐
 

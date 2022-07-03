@@ -1,4 +1,6 @@
-# category特点
+# category
+
+## 特点
 
 - category只能给某个已有的类扩充方法，不能扩充成员变量。
 - category中也可以添加属性，只不过@property只声明里实例变量，没有setter和getter方法。需要关联对象。
