@@ -1,4 +1,6 @@
-# package包
+# package和plugin
+
+## package包
 
 package包地址：`pub.dev`
 
@@ -24,7 +26,7 @@ flutter工程使用的，类似iOS中的pod第三方库。
 
    `flutter packages pub publish --server=https://pub.dartlang.org`
 
-# plugin插件
+## plugin插件
 
 自带example，带有iOS和android
 
