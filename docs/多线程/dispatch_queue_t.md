@@ -134,7 +134,7 @@ _dispatch_lane_create_with_target(const char *label, dispatch_queue_attr_t dqa,
 }
 ```
 
-同步任务的执行
+串行队列
 
 **dq_width==1**
 
