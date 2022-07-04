@@ -117,9 +117,6 @@ nav:
       - C++/迭代器/01迭代器.md
       - C++/迭代器/02迭代器.md
       - C++/迭代器/03迭代器.md
-  - Cocos2d:
-    - Cocos2d-x认识: Cocos2d-x/Cocos2d-x认识.md
-    - 调度器(scheduler): Cocos2d-x/调度器(scheduler).md
   - Html5:
     - css: Html5/CSS/css.md
     - framework7: Html5/Framework7/framework7.md
@@ -140,12 +137,12 @@ nav:
       - Html5/Vue/模版方法.md
       - Html5/Vue/添加实例 property.md
   - flutter:
+    - flutter/flutter简介.md
+    - flutter/flutter安装.md
     - flutter/AS快捷键.md
     - flutter/Key的原理.md
-    - flutter/Package.md
+    - flutter/package和plugin.md
     - flutter/Provider.md
-    - flutter/flutter安装.md
-    - flutter/flutter简介.md
     - flutter/pubspec.yaml文件管理.md
     - flutter/widget.md
     - flutter/布局.md
@@ -156,10 +153,11 @@ nav:
     - flutter/状态管理.md
     - flutter/生命周期.md
     - flutter/网络.md
-    - flutter/Dart/dart.md
-    - flutter/异步和多线程/多线程.md
-    - flutter/异步和多线程/异步和多线程.md
-    - flutter/异步和多线程/异步编程.md
+    - dart:
+      - flutter/Dart/dart.md
+    - 异步和多线程:
+      - flutter/异步和多线程/异步Future.md
+      - flutter/异步和多线程/异步和多线程.md
   - iOS:
     - 00底层原理分析:
       - iOS/00底层原理分析/底层探索分析.md
@@ -381,30 +379,33 @@ nav:
     - 设计模式/结构模式.md
     - 设计模式/自我编程总结.md
     - 设计模式/设计模式基本原则.md
-    - 设计模式/创建型模式/01单例模式.md
-    - 设计模式/创建型模式/02工厂模式.md
-    - 设计模式/创建型模式/03建造者模式.md
-    - 设计模式/创建型模式/04创建者模式和工厂模式的区别.md
-    - 设计模式/创建型模式/05原型模式Prototype.md
-    - 设计模式/结构型模式/06代理模式Proxy.md
-    - 设计模式/结构型模式/07装饰模式Decorator Pattern.md
-    - 设计模式/结构型模式/08适配器模式 Adapter.md
-    - 设计模式/结构型模式/09组合模式Composite.md
-    - 设计模式/结构型模式/10桥接模式Bridge.md
-    - 设计模式/结构型模式/11外观模式Facade.md
-    - 设计模式/结构型模式/12享元模式Flyweight.md
-    - 设计模式/行为型模式/13模版模式Template.md
-    - 设计模式/行为型模式/14命令模式Command.md
-    - 设计模式/行为型模式/15责任链模式.md
-    - 设计模式/行为型模式/16策略模式Strategy.md
-    - 设计模式/行为型模式/17中介者模式Mediator.md
-    - 设计模式/行为型模式/18观察者模式Observer.md
-    - 设计模式/行为型模式/19备忘录模式Memento.md
-    - 设计模式/行为型模式/20访问者模式Visitor.md
-    - 设计模式/行为型模式/21状态模式State.md
-    - 设计模式/行为型模式/22解释模式Interpreter.md
-    - 设计模式/行为型模式/23迭代器模式Iterator.md
-    - 设计模式/行为型模式/总结.md
+    - 创建型模式:
+      - 设计模式/创建型模式/01单例模式.md
+      - 设计模式/创建型模式/02工厂模式.md
+      - 设计模式/创建型模式/03建造者模式.md
+      - 设计模式/创建型模式/04创建者模式和工厂模式的区别.md
+      - 设计模式/创建型模式/05原型模式Prototype.md
+    - 结构型模式:
+      - 设计模式/结构型模式/06代理模式Proxy.md
+      - 设计模式/结构型模式/07装饰模式Decorator Pattern.md
+      - 设计模式/结构型模式/08适配器模式 Adapter.md
+      - 设计模式/结构型模式/09组合模式Composite.md
+      - 设计模式/结构型模式/10桥接模式Bridge.md
+      - 设计模式/结构型模式/11外观模式Facade.md
+      - 设计模式/结构型模式/12享元模式Flyweight.md
+    - 行为型模式:
+      - 设计模式/行为型模式/13模版模式Template.md
+      - 设计模式/行为型模式/14命令模式Command.md
+      - 设计模式/行为型模式/15责任链模式.md
+      - 设计模式/行为型模式/16策略模式Strategy.md
+      - 设计模式/行为型模式/17中介者模式Mediator.md
+      - 设计模式/行为型模式/18观察者模式Observer.md
+      - 设计模式/行为型模式/19备忘录模式Memento.md
+      - 设计模式/行为型模式/20访问者模式Visitor.md
+      - 设计模式/行为型模式/21状态模式State.md
+      - 设计模式/行为型模式/22解释模式Interpreter.md
+      - 设计模式/行为型模式/23迭代器模式Iterator.md
+      - 设计模式/行为型模式/总结.md
   - static_const_define: 
     - 宏: 常量_宏_静态变量/宏定义和常量.md
     - 枚举: 常量_宏_静态变量/枚举.md
@@ -418,6 +419,9 @@ nav:
       - 07: 常量_宏_静态变量/07函数内部的静态变量.md
       - 08: 常量_宏_静态变量/08静态对象.md
       - 09: 常量_宏_静态变量/09静态成员.md
+  - Cocos2d:
+    - Cocos2d-x认识: Cocos2d-x/Cocos2d-x认识.md
+    - 调度器(scheduler): Cocos2d-x/调度器(scheduler).md
   - 数据库:
     - 数据库/00创建表.md
     - 数据库/01INSERT.md
