@@ -193,6 +193,8 @@ nav:
       - 动态库静态库:
         - iOS/04应用程序加载/动态库静态库/动态库静态库.md
         - iOS/04应用程序加载/动态库静态库/swift的module.md
+      - iOS/04应用程序加载/hmap.md
+      - iOS/04应用程序加载/xcconfig.md
     - 05内存管理:
       - iOS/05内存管理/copy.md
       - iOS/05内存管理/iOS属性关键字.md
@@ -444,10 +446,6 @@ nav:
     - MAC/环境变量.md
     - MAC/软件.md
   - 待整理: 待整理.md
-  - job:
-    - 面试/iOS-XXX-1XXXXXXXXXX.md
-    - 面试/工作学习.md
-    - 面试/面试.md
 
 # [Extensions]
 plugins:

@@ -56,3 +56,15 @@ Documents   Library     Music       Public      log.txt
 `sudo chmod 777 /etc/squid`
 
 `sudo chmod -R 777 /Library/Ruby/Gems/2.6.0/`其中`-R`会递归下面的所有文件和文件夹 并修改权限。
+
+## 终端标识符
+
+每个终端都有一个唯一的标识符，使用tty查看。
+
+```
+Last login: Wed Jul  6 21:07:59 on ttys001
+michael@MichaeldeMacBook-Pro ~ % tty
+/dev/ttys001
+michael@MichaeldeMacBook-Pro ~ % 
+```
+
