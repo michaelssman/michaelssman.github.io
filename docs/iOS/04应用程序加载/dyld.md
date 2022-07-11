@@ -50,7 +50,7 @@ void runtime_init(void)
 }
 ```
 
-# load
+## load_images
 
 ```c++
 void
@@ -158,7 +158,13 @@ void call_load_methods(void)
 }
 ```
 
-## 总结
+### +load方法执行顺序
+
+1. +load方法调用顺序是：`SuperClass -->SubClass --> SuperClassCategaryClass --> SubClassCategaryClass`。
+2. 不同的类按照编译先后顺序调用+load方法（后编译，先执行）；
+3. 分类顺序按照编译先后顺序调用+load（后编译，先执行）；
+
+### 总结
 
 1. load方法是在main函数执行前执行的。iOS应用启动的时候，就会加载所有的类，就会调用这个方法。
 2. +load方法是在加载类和分类时系统调用，一般不手动调用，如果想要在类或分类加载时做一些事情，可以重写类或分类的+load方法。
@@ -170,13 +176,7 @@ void call_load_methods(void)
 
 如果想在第一次加载类的时候调用，就用initialized方法，也是只会调用一次。
 
-## +load方法执行顺序
-
-1. +load方法调用顺序是：`SuperClass -->SubClass --> SuperClassCategaryClass --> SubClassCategaryClass`。
-2. 不同的类按照编译先后顺序调用+load方法（后编译，先执行）；
-3. 分类顺序按照编译先后顺序调用+load（后编译，先执行）；
-
-# map_images
+## map_images
 
 ```c++
 void
@@ -320,6 +320,8 @@ void arr_init(void)
         startWeakTableScan();
 }
 ```
+
+### _read_images
 
 _read_images里面有很多的fix up，因为虚拟内存（ASLR）。地址空间随机布局。app每次启动内存地址都不固定。需要dyld的rebase和binding，修改镜像指针地址。
 
