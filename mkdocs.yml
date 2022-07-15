@@ -186,7 +186,7 @@ nav:
       - iOS/读取文件类型转换/类型转换.md
       - iOS/读取文件类型转换/解析本地json文件.md
     - iOS/数据持久化/CoreData.md
-    - iOS/PDF显示CGPDFDocumentRef.md
+    - iOS/PDF文件查看.md
     - iOS/UIScrollView.md
     - iOS/UITextView.md
     - iOS/Vendors.md

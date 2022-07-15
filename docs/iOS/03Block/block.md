@@ -179,7 +179,7 @@ self.block = ^{
 
 ## Block对外部变量的存取管理
 
-## 1、局部变量
+### 1、局部变量
 
 1、基本数据类型
 
@@ -224,7 +224,7 @@ block内部修改外界变量i的值直接报错，如果想要修改，可以�
     block4(); //输出结果为 "adbdef"
 ```
 
-## 2、全局变量
+### 2、全局变量
 
 1、static修饰符的全局变量，静态变量，或者全局属性
 
@@ -272,11 +272,9 @@ block5();
 //输出结果为 staticStr = 123  staticStr = def
 ```
 
-## 3、__block修饰的变量
+### 3、__block修饰的变量
 
 对外界进行修改的时候需要加__block，拷贝到堆区
-
-#### block copy 从栈copy到堆
 
 ## block底层原理分析
 
@@ -493,6 +491,8 @@ struct __main1_block_impl_0 {
 ```
 
 ## block 底层copy处理
+
+block copy 从栈copy到堆
 
 通过汇编 查看 block走到了objc_retainBlock。
 
@@ -751,7 +751,7 @@ static struct Block_byref *_Block_byref_copy(const void *arg) {
 }
 ```
 
-block创建的时候在栈上，block拷贝到堆时会将变量一起拷贝到堆，__block修饰的变量，**forwording原来指向栈上的结构体，此时指向堆上的结构体。**
+block创建的时候在栈上，block拷贝到堆时会将变量一起拷贝到堆，__block修饰的变量，**Block_byref结构体中的forwording原来指向栈上的结构体，此时指向堆上的结构体。**
 
 block不能修改外部变量指针地址。
 
@@ -760,6 +760,8 @@ block不能修改外部变量指针地址。
 ## block本质
 
 block本质是Block_layout结构体
+
+block其实是一个对象，需要一个初始化过程。
 
 ```c++
 //block在底层 结构体
@@ -834,15 +836,6 @@ struct Block_descriptor_3 {
 ### dispose
 
 相反
-
----
-
-block其实是一个对象，需要一个初始化过程。
-
-- desc1
-- desc2
-  - copy 给相应的代码 函数实现
-  - dispose
 
 
 
