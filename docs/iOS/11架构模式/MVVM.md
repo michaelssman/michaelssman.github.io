@@ -83,6 +83,17 @@ loadData加载本地数据或者网络请求数据，都在ViewModel中加载。
 
 block写一次，可以多处调用。
 
-
-
 ### view和viewModel绑定
+
+MVVM通过RAC双向绑定。
+
+
+
+
+
+
+
+
+
+
+

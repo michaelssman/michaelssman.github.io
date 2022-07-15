@@ -118,9 +118,12 @@ nav:
       - iOS/08组件化/设置源.md
     - 09响应者链:
       - iOS/09响应者链/响应者链.md
-    - 10架构模式:
-      - iOS/10架构模式/MVVM.md
-      - iOS/10架构模式/MVX.md
+    - 10性能优化:
+      - iOS/10性能优化/内存检测.md
+      - iOS/10性能优化/界面优化.md
+    - 11架构模式:
+      - iOS/11架构模式/MVVM.md
+      - iOS/11架构模式/MVX.md
     - iOS/Animation/Animation.md
     - NSArray:
       - iOS/NSArray/NSArray.md
@@ -156,9 +159,6 @@ nav:
     - WKWebView:
       - iOS/WKWebView/WKWebView聚焦.md
       - iOS/WKWebView/解决webView白屏问题加载缓存问题.md
-    - 性能优化:
-      - iOS/性能优化/内存检测.md
-      - iOS/性能优化/界面优化.md
     - 推送:
       - iOS/推送/01极光推送.md
       - iOS/推送/02角标问题.md

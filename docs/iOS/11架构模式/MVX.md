@@ -1,29 +1,14 @@
-## 问题一：耦合性
+# 架构
+
+高内聚，低耦合。（谁的事情谁做）。
+
+类可以多次使用，依赖小。
+
+## 问题一：view和model高耦合
 
 cell的代理中为cell赋值，cell对model强依赖，耦合性高。
 
-## 问题二：VC加重
-
-1. 繁重的UI
-2. 啰嗦的业务逻辑
-3. 很长的网络层
-4. 难受的代理
-5. 内部方法
-6. 等等
-
-**VC的任务就只要建立依赖关系。**
-
-VC负责把model赋值UI
-
-建立依赖关系，把UI和model进行绑定
-
-### 架构
-
-高内聚，低耦合。
-
-类可以多次使用，依赖小。谁的事情谁做。
-
-view中setModel方法view和model的依赖。
+view中setModel方法view和model的依赖。UI不应该改变模型，难以维护，数据不安全。
 
 模型改变UI，UI改变模型。
 
@@ -34,10 +19,27 @@ view中setModel方法view和model的依赖。
 1. 代理
 2. 通知
 3. block
-4. 指针
+4. 指针 方法
 5. 等等
 
-#### 轻量级VC
+## 问题二：VC加重
+
+1. 繁重的UI
+2. 啰嗦的业务逻辑
+3. 很长的网络层
+4. 难受的代理
+5. 内部方法
+6. 等等
+
+### 轻量级VC
+
+**VC的任务就只要建立依赖关系。**
+
+定义一个view，在`loadView`方法中设置self.view = view;
+
+VC负责把model赋值UI
+
+建立依赖关系，把UI和model进行绑定
 
 vc过重： 封装 抽取 基类
 
@@ -102,9 +104,11 @@ MVP --- 需求 -- 写接口（暴露的接口） -- 代理三部曲
 
 多人开发。可读性强。
 
-### 适配器设计
+### 适配器模式设计
 
-只有一个cell比较简单，多个cell的时候，iPhone8 iPhone12等带刘海不带刘海等机型。
+多种cell的时候，iPhone8 iPhone12等带刘海不带刘海等机型。
+
+大部分一样，只有局部不同。
 
 去中心化，设置一个BaseAdaper，模块Home继承BaseAdaper单独自己的HomeAdaper。
 
@@ -114,15 +118,17 @@ present只适合简单的逻辑，复杂的需要一个adapter设置
 
 context通过字符串一个命名规范，生成XXPresenter，避免中间层的耦合。
 
-View和model需要有关系的时候，可以由一个中间者管理。降低model和view之间的依赖。
+View和model需要有关系的时候，可以由一个中间者管理context。降低model和view之间的依赖。
 
 self（ViewController）持有context，context持有present和UI。
 
 context只具备调用的权利，不需要做业务细节。
 
-controller，view等等几乎所有对象都有context，context在NSObject分类中。子view的context和superView使用共享同一个。
+controller，view等等几乎所有对象都有context，context在NSObject分类中。
 
-#### 臃肿的胶水代码
+页面可能有很多子view，父类有context，子view可以找到父视图（响应链），子view的context和superView使用共享同一个。
+
+### 臃肿的胶水代码（代理）
 
 绑定的
 
