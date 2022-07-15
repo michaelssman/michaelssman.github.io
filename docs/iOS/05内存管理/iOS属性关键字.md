@@ -79,19 +79,6 @@ NSLog(@"%@",self.name);
  name属性用strong修饰 打印asdfg
  */
 ```
-### block使用copy
-
-block只有引用了栈里的临时变量, 才会被创建在stack区. **没有引用临时变量的block是放在global区**, 是不会被释放的. **stack区的块只要赋值给strong类型的变量, 就会自动copy到堆里**. 所以要不要写copy都没关系
-
-在MRC模式下，创建block默认放在栈区
-
-使用copy的目的是将block创建默认放在栈区拷贝一份到堆区，**因为栈区中的变量管理是由它自己管理的，随时可能被销毁，一旦被销毁后续再次调用空对象就可能会造成程序崩溃问题**， block放在了堆中，block有个指针指向了栈中的block代码块，
-
-在ARC模式下，系统会默认使用copy进行修饰。
-
-1. 如果访问了外部处于栈区的变量（比如局部变量），或处于堆区的变量。都会存放在堆区，如果访问的是内部创建的变量还是存储在全局区
-2. 在ARC中做了特殊的处理，自动的做了copy操作，所以为__NSMallocBlock__在MRC中是__NSStackBlock__ 栈block
-
 ### 代理delegate使用weak
 
 一个类的 Delegate 对象通常还引用着类本身`self.tableView.delegate = self`，这样很容易造成引用循环的问题，所以类的 Delegate 属性要设置为弱引用。

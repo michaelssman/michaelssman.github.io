@@ -46,6 +46,8 @@ Block其实包含两部分：
 
 2. 栈 
 
+   捕获了外界变量，或者是OC的属性，并且**赋值给弱引用**
+
    位于栈内存，函数返回后Block将无效；对于定义的Block加入了对定义环境变量的引用，也就是说内部使用了外部变量，就是NSStackBlock。
 
    对于Stack的Block，如果不做任何操作，随栈自生自灭。
@@ -79,7 +81,7 @@ Block其实包含两部分：
 
 3. 堆
 
-   捕获了外界变量，或者是OC的属性，或者赋值给强引用
+   捕获了外界变量，或者是OC的属性，并且**赋值给强引用**
 
    只需要对NSStackBlock进行copy操作就可以获取，所以，当我们定义的Block要在外部回调使用的时候，在MRC下，我们需要copy的堆区，永远的持有，不让释放。
 
@@ -87,7 +89,18 @@ Block其实包含两部分：
 
    在ARC下，系统会给我们copy到堆区，避免了很多不必要的麻烦。
 
-# 循环引用
+## block使用copy
+
+block只有引用了栈里的临时变量, 才会被创建在stack区. **没有引用临时变量的block是放在global区**, 是不会被释放的. **stack区的块只要赋值给strong类型的变量, 就会自动copy到堆里**. 所以要不要写copy都没关系
+
+**block在创建的时候，内存是分配在栈上的（内存随时可能被销毁）。**MRC使用copy的目的是将block创建默认放在栈区拷贝一份到堆区，**因为栈区中的变量管理是由它自己管理的，随时可能被销毁，一旦被销毁后续再次调用空对象就可能会造成程序崩溃问题**， block放在了堆中，block有个指针指向了栈中的block代码块，
+
+在ARC模式下，系统会默认使用copy进行修饰。
+
+1. 如果访问了外部处于栈区的变量（比如局部变量），或处于堆区的变量。都会存放在堆区，如果访问的是内部创建的变量还是存储在全局区
+2. 在ARC中做了特殊的处理，自动的做了copy操作，所以为__NSMallocBlock__在MRC中是__NSStackBlock__ 栈block
+
+## 循环引用
 
 因为Block在拷贝到堆上的时候，会retain其引用的外部变量，那么如果Block中如果引用了他的宿主对象，（也就是定义Block的类）那很有可能引起循环引用，既在自身类的Block中用了self对象，例如：
 
@@ -98,7 +111,7 @@ self.block = ^{
 };
 ```
 
-分析：因为Block是当前self属性，self拥有了Block，在ARC下为强引用； 当在Block中使用了self的时候，Block便强引用了self，两者相互持有，无法释放。  
+分析：因为Block是当前self属性，self拥有了Block，在ARC下为强引用。当在Block内部捕获了self（使用_一样也是引用了self），Block便强引用了self，两者相互持有，无法释放。  
 
 解决方法是ARC 下`__weak`修饰self：__`weak Class *weakSelf =self;` MRC下`__weak`改为`__block`.
 
@@ -112,22 +125,59 @@ ClassA 中定义了Block闭包函数，ClassB中的Block指针去回调ClassA的
 
 只有ClassB为ClassA的属性的属性，既ClassA也持有ClassB才会造成循环引用问题。
 
-##### 强弱共舞
+### 1. 强弱共舞
 
 ```objective-c
 __weak typeof(self) weakSelf = self;
-        self.block = ^{
-            __strong typeof(weakSelf) strongSelf = weakSelf;
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                [NSThread sleepForTimeInterval:1];
-                NSLog(@"%@",strongSelf);
-            });
-        };}
+self.block = ^{
+  __strong typeof(weakSelf) strongSelf = weakSelf;
+  dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    [NSThread sleepForTimeInterval:1];
+    NSLog(@"%@",strongSelf);
+  });
+};}
 ```
 
 使用了`__strong`在`strongSelf`变量作用域结束之前，对`weakSelf`有一个引用，防止对象(self)提前被释放。而作用域一过，`strongSelf`不存在了，对象`(self)`也会被释放。
 
-# Block对外部变量的存取管理
+### 2. 局部变量
+
+手动释放
+
+```objective-c
+    //第二种解决方式：引用一个临时第三者中间变量objc。objc->nil手动释放
+    __block HHBlockViewController *vc = self;//临时变量vc持有
+    self.block = ^{
+        //        NSLog(@"%@",weakSelf);
+        //里面代码复杂的情况。里面有异步 耗时操作
+        //延长生命周期
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            
+            NSLog(@"%@",vc.name);
+            //因为捕获了vc，所以用完之后需要将vc置空
+            vc = nil;//self->block->vc->self
+        });
+    };
+```
+
+### 3. 传参
+
+```objective-c
+    //循环引用的原因：因为block里面要用self  作用域之间的通讯 self.name在外部，作用空间在block里面的空间。 作用域和作用域之间的传递可以用参数来传递。
+    self.block1 = ^(HHBlockViewController *vc){
+        //        NSLog(@"%@",weakSelf);
+        //里面代码复杂的情况。里面有异步 耗时操作
+        //延长生命周期
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            
+            NSLog(@"%@",vc.name);
+        });
+    };
+    //可以通过静态分析或者Product的Profile也可以分析
+    self.block1(self);
+```
+
+## Block对外部变量的存取管理
 
 ## 1、局部变量
 
@@ -228,7 +278,7 @@ block5();
 
 #### block copy 从栈copy到堆
 
-# block底层原理分析
+## block底层原理分析
 
 ```objective-c
 int main0(){
@@ -303,17 +353,13 @@ struct __block_impl {
 };
 ```
 
- - Flags 
-    - BLOCK_HAS_COPY_DISPOSE 捕获外界变量的时候 这个是有值的。
-    - BLOCK_HAS_SIGNATURE 签名
-    - 方法有签名v@: 普通签名
-        - v返回值
-        - @对象
-        - ：cmd方法编号
-
-#### 捕获变量  
+### 捕获变量  
 
 捕获对象 如何保存和释放 keep-dispose
+
+#### 1、不修改值，不加__block
+
+传的变量的值
 
 **block底层会生成相应的成员变量。**
 
@@ -336,23 +382,11 @@ int main1(){
  int main1(){
      int a = 10;
  //比之前多个一个参数a  3个参数
+   //参数1：block的实现函数
      void(*block)(void) = (__main1_block_impl_0(__main1_block_func_0, &__main1_block_desc_0_DATA, a));
      ((void (*)(__block_impl *))((__block_impl *)block)->FuncPtr)((__block_impl *)block);
      return 0;
  }
- //a就传到了__main1_block_impl_0里面
- struct __main1_block_impl_0 {
-   struct __block_impl impl;
-   struct __main1_block_desc_0* Desc;
-   int a; //成员变量a
-   //fp是一个函数
-   __main1_block_impl_0(void *fp, struct __main1_block_desc_0 *desc, int _a, int flags=0) : a(_a) {
-     impl.isa = &_NSConcreteStackBlock;//编译期block是一个StackBlock
-     impl.Flags = flags;
-     impl.FuncPtr = fp;
-     Desc = desc;
-   }
- };
  
  //block代码块 是一个函数
  static void __main1_block_func_0(struct __main1_block_impl_0 *__cself) {
@@ -380,9 +414,11 @@ block捕获外界变量，会根据外界变量编译的时候自动生成相应
 
 block把a的值传了进去，里面生成了一个新的变量a。
 
-#### __block原理
+#### 2、__block原理
 
-如果要修改a的值 要在前面加__block
+如果要修改a的值 要在前面加__block。
+
+静态变量和全局变量不需要加__block。block不会捕获静态变量和全局变量，因为存在全局区。
 
 加__block 生成`__Block_byref_a_0`结构体，传给block的是指针地址，和外面的变量是同一个内存空间，所以可以修改外面的变量。
 
@@ -411,23 +447,11 @@ block把a的值传了进去，里面生成了一个新的变量a。
  //__Block_byref_a_0是一个结构体
  struct __Block_byref_a_0 {
    void *__isa;
- __Block_byref_a_0 *__forwarding;//指向a的地址
+ __Block_byref_a_0 *__forwarding;//__forwarding指针指向结构体本身
   int __flags;
   int __size;
   int a;
  };
-
- struct __main1_block_impl_0 {
-  struct __block_impl impl;
-  struct __main1_block_desc_0* Desc;
-  __Block_byref_a_0 *a; // by ref
-  __main1_block_impl_0(void *fp, struct __main1_block_desc_0 *desc, __Block_byref_a_0 *_a, int flags=0) : a(_a->__forwarding) {
-    impl.isa = &_NSConcreteStackBlock;
-    impl.Flags = flags;
-    impl.FuncPtr = fp;
-    Desc = desc;
-  }
-};
 
  static void __main1_block_func_0(struct __main1_block_impl_0 *__cself) {
  __Block_byref_a_0 *a = __cself->a; // bound by ref  指针拷贝 指向同一个内存空间
@@ -436,9 +460,45 @@ block把a的值传了进去，里面生成了一个新的变量a。
    }
 ```
 
+### block本质就是一个结构体
+
+```c++
+ //没有用__block修饰。a就传到了__main1_block_impl_0里面
+ struct __main1_block_impl_0 {
+   struct __block_impl impl;
+   struct __main1_block_desc_0* Desc;
+   int a; //捕获的外部变量a，栈block可以捕获外部变量。
+   //fp是一个函数
+   __main1_block_impl_0(void *fp, struct __main1_block_desc_0 *desc, int _a, int flags=0) : a(_a) {
+     impl.isa = &_NSConcreteStackBlock;//block在创建的时候是一个StackBlock
+     impl.Flags = flags;
+     impl.FuncPtr = fp;
+     Desc = desc;
+   }
+ };
+
+//a用__block修饰
+struct __main1_block_impl_0 {
+  struct __block_impl impl;
+  struct __main1_block_desc_0* Desc;
+  __Block_byref_a_0 *a; // byref 用__block修饰
+   //结构体的构造函数
+  __main1_block_impl_0(void *fp, struct __main1_block_desc_0 *desc, __Block_byref_a_0 *_a, int flags=0) : a(_a->__forwarding) {
+    impl.isa = &_NSConcreteStackBlock;
+    impl.Flags = flags;
+    impl.FuncPtr = fp;//保存block函数实现
+    Desc = desc;
+  }
+};
+```
+
 ## block 底层copy处理
 
-通过汇编 查看 走到了objc_retainBlock
+通过汇编 查看 block走到了objc_retainBlock。
+
+注：使用`__weak`修饰的时候，不会调用`objc_retainBlock`。
+
+### objc_retainBlock
 
 ```c++
 id objc_retainBlock(id x) {
@@ -446,75 +506,291 @@ id objc_retainBlock(id x) {
 }
 ```
 
-_Block_copy在lib system_blocks.dylib库
+objc_retainBlock里面调用_Block_copy
+
+### _Block_copy
+
+_Block_copy在lib system_blocks.dylib库libclosure-master
 
 ```c++
 // 重点提示: 这里是核心重点 block的拷贝操作: 栈Block -> 堆Block
+// 拷贝 block，
+// 如果原来就在堆上，就将引用计数加 1;
+// 如果原来在栈上，会拷贝到堆上，引用计数初始化为 1，并且会调用 copy helper 方法（如果存在的话）；
+// 如果 block 在全局区，不用加引用计数，也不用拷贝，直接返回 block 本身
+// 参数 arg 就是 Block_layout 对象，
+// 返回值是拷贝后的 block 的地址
+// 运行？stack -》malloc
 void *_Block_copy(const void *arg) {
     struct Block_layout *aBlock;
 
+    // 如果 arg 为 NULL，直接返回 NULL
     if (!arg) return NULL;
     
     // The following would be better done as a switch statement
+    // 强转为 Block_layout 类型
     aBlock = (struct Block_layout *)arg;
+    const char *signature = _Block_descriptor_3(aBlock)->signature;
+    
+    // 如果现在已经在堆上
     if (aBlock->flags & BLOCK_NEEDS_FREE) {
         // latches on high
+        // 就只将引用计数加 1
         latching_incr_int(&aBlock->flags);
         return aBlock;
     }
+    // 如果 block 在全局区，不用加引用计数，也不用拷贝，直接返回 block 本身
     else if (aBlock->flags & BLOCK_IS_GLOBAL) {
         return aBlock;
     }
     else {//编译期：栈block
-        // Its a stack block.  Make a copy. -> heap
+        // Its a stack block.  Make a copy.
+        // block 现在在栈上，现在需要将其拷贝到堆上
+        // 在堆上重新开辟一块和 aBlock 相同大小的内存
         struct Block_layout *result =
             (struct Block_layout *)malloc(aBlock->descriptor->size);
+        // 开辟失败，返回 NULL
         if (!result) return NULL;
+        // 将 aBlock 内存上的数据全部复制新开辟的 result 上
         memmove(result, aBlock, aBlock->descriptor->size); // bitcopy first
 #if __has_feature(ptrauth_calls)
         // Resign the invoke pointer as it uses address authentication.
         result->invoke = aBlock->invoke;
 #endif
-        // reset refcount -- 对象 isa 联合体位于
+        // reset refcount
+        // 将 flags 中的 BLOCK_REFCOUNT_MASK 和 BLOCK_DEALLOCATING 部分的位全部清为 0
         result->flags &= ~(BLOCK_REFCOUNT_MASK|BLOCK_DEALLOCATING);    // XXX not needed
+        // 将 result 标记位在堆上，需要手动释放；并且引用计数初始化为 1
         result->flags |= BLOCK_NEEDS_FREE | 2;  // logical refcount 1
+      
+      	//操作成员变量
+        // copy 方法中会调用做拷贝成员变量的工作
         _Block_call_copy_helper(result, aBlock);
         // Set isa last so memory analysis tools see a fully-initialized object.
+        // isa 指向 _NSConcreteMallocBlock
         result->isa = _NSConcreteMallocBlock;//isa标记堆block
         return result;
     }
 }
 ```
 
-#### block底层结构 
+### _Block_call_copy_helper
 
-fp函数保存，block调用的时候执行。
+对成员变量拷贝，浅拷贝。
 
-Block 结构体包含：
+```c++
+// 调用 block 的 copy helper 方法，即 Block_descriptor_2 中的 copy 方法
+static void _Block_call_copy_helper(void *result, struct Block_layout *aBlock)
+{
+    // 取得 block 中的 Block_descriptor_2
+    struct Block_descriptor_2 *desc = _Block_descriptor_2(aBlock);
+    // 如果没有 Block_descriptor_2，就直接返回
+    if (!desc) return;
 
- - isa指针指向（栈block、堆block）
- - Flags 枚举类型
-   - BLOCK_HAS_COPY_DISPOSE 捕获外界变量的时候 这个是有值的。
-   - BLOCK_HAS_SIGNATURE 签名
-   - 方法有签名v@: 普通签名
-     - v返回值
-     - @对象
-     - ：cmd方法编号
-- invoke
-- 签名信息
-- Desc
+    // 调用 desc 中的 copy 方法，copy 方法中会调用 _Block_object_assign 函数
+    (*desc->copy)(result, aBlock); // do fixup
+}
+```
 
-block是Block_layout结构体
+### _Block_object_assign
+
+_Block_object_assign 里面有对捕获变量类型的处理：例 是否有加__block
+
+```c++
+// 注释: Block 捕获外界变量的操作
+// 当 block 和 byref 要持有对象时，它们的 copy helper 函数会调用这个函数来完成 assignment，
+// 参数 destAddr 其实是一个二级指针，指向真正的目标指针
+void _Block_object_assign(void *destArg, const void *object, const int flags) {
+    const void **dest = (const void **)destArg;
+    switch (os_assumes(flags & BLOCK_ALL_COPY_DISPOSE_FLAGS)) {
+      case BLOCK_FIELD_IS_OBJECT:
+        /*******
+        id object = ...;
+        [^{ object; } copy];
+        ********/
+        // 默认什么都不干，但在 _Block_use_RR() 中会被 Objc runtime 或者 CoreFoundation 设置 retain 函数，
+        // 其中，可能会与 runtime 建立联系，操作对象的引用计数什么的
+        _Block_retain_object(object);
+        // 使 dest 指向的目标指针指向 object，浅拷贝
+        *dest = object;
+        break;
+
+      case BLOCK_FIELD_IS_BLOCK:
+        /*******
+        void (^object)(void) = ...;
+        [^{ object; } copy];
+        ********/
+
+       // 使 dest 指向的拷贝到堆上object
+        *dest = _Block_copy(object);
+        break;
+    
+      case BLOCK_FIELD_IS_BYREF | BLOCK_FIELD_IS_WEAK:
+      case BLOCK_FIELD_IS_BYREF:
+        /*******
+         // copy the onstack __block container to the heap
+         // Note this __weak is old GC-weak/MRC-unretained.
+         // ARC-style __weak is handled by the copy helper directly.
+         __block ... x;
+         __weak __block ... x;
+         [^{ x; } copy];
+         ********/
+         // 使 dest 指向的拷贝到堆上的byref
+        *dest = _Block_byref_copy(object);
+        break;
+        
+      case BLOCK_BYREF_CALLER | BLOCK_FIELD_IS_OBJECT:
+      case BLOCK_BYREF_CALLER | BLOCK_FIELD_IS_BLOCK:
+        /*******
+         // copy the actual field held in the __block container
+         // Note this is MRC unretained __block only. 
+         // ARC retained __block is handled by the copy helper directly.
+         __block id object;
+         __block void (^object)(void);
+         [^{ object; } copy];
+         ********/
+
+        // 使 dest 指向的目标指针指向 object
+        *dest = object;
+        break;
+
+      case BLOCK_BYREF_CALLER | BLOCK_FIELD_IS_OBJECT | BLOCK_FIELD_IS_WEAK:
+      case BLOCK_BYREF_CALLER | BLOCK_FIELD_IS_BLOCK  | BLOCK_FIELD_IS_WEAK:
+        /*******
+         // copy the actual field held in the __block container
+         // Note this __weak is old GC-weak/MRC-unretained.
+         // ARC-style __weak is handled by the copy helper directly.
+         __weak __block id object;
+         __weak __block void (^object)(void);
+         [^{ object; } copy];
+         ********/
+
+        // 使 dest 指向的目标指针指向 object
+        *dest = object;
+        break;
+
+      default:
+        break;
+    }
+}
+```
+
+### _Block_byref_copy
+
+__block修饰的会走`_Block_byref_copy`
+
+```c++
+// Cooci注释: __Block 捕获外界变量的操作 内存拷贝 以及常规处理
+// 1. 如果 byref 原来在堆上，就将其拷贝到堆上，拷贝的包括 Block_byref、Block_byref_2、Block_byref_3，
+//    被 __weak 修饰的 byref 会被修改 isa 为 _NSConcreteWeakBlockVariable，
+//    原来 byref 的 forwarding 也会指向堆上的 byref;
+// 2. 如果 byref 已经在堆上，就只增加一个引用计数。
+// 参数 dest是一个二级指针，指向了目标指针，最终，目标指针会指向堆上的 byref
+static struct Block_byref *_Block_byref_copy(const void *arg) {
+    // arg 强转为 Block_byref * 类型
+    struct Block_byref *src = (struct Block_byref *)arg;
+
+    // 引用计数等于 0
+    if ((src->forwarding->flags & BLOCK_REFCOUNT_MASK) == 0) {
+        // src points to stack
+        // 为新的 byref 在堆中分配内存
+        struct Block_byref *copy = (struct Block_byref *)malloc(src->size);
+        copy->isa = NULL;
+        // byref value 4 is logical refcount of 2: one for caller, one for stack
+        // 新 byref 的 flags 中标记了它是在堆上，且引用计数为 2。
+        // 为什么是 2 呢？注释说的是 non-GC one for caller, one for stack
+        // one for caller 很好理解，那 one for stack 是为什么呢？
+        // 看下面的代码中有一行 src->forwarding = copy。src 的 forwarding 也指向了 copy，相当于引用了 copy
+        copy->flags = src->flags | BLOCK_BYREF_NEEDS_FREE | 4;
+        // 堆上 byref 的 forwarding 指向自己
+        copy->forwarding = copy; // patch heap copy to point to itself
+        // 原来栈上的 byref 的 forwarding 现在也指向堆上的 byref
+        src->forwarding = copy;  // patch stack to point to heap copy
+        // 拷贝 size
+        copy->size = src->size;
+
+        // 如果 src 有 copy/dispose helper
+        if (src->flags & BLOCK_BYREF_HAS_COPY_DISPOSE) {
+            // Trust copy helper to copy everything of interest
+            // If more than one field shows up in a byref block this is wrong XXX
+            // 取得 src 和 copy 的 Block_byref_2
+            struct Block_byref_2 *src2 = (struct Block_byref_2 *)(src+1);
+            struct Block_byref_2 *copy2 = (struct Block_byref_2 *)(copy+1);
+            // copy 的 copy/dispose helper 也与 src 保持一致
+            // 因为是函数指针，估计也不是在栈上，所以不用担心被销毁
+            copy2->byref_keep = src2->byref_keep;
+            copy2->byref_destroy = src2->byref_destroy;
+
+            // 如果 src 有扩展布局，也拷贝扩展布局
+            if (src->flags & BLOCK_BYREF_LAYOUT_EXTENDED) {
+                struct Block_byref_3 *src3 = (struct Block_byref_3 *)(src2+1);
+                struct Block_byref_3 *copy3 = (struct Block_byref_3*)(copy2+1);
+                // 没有将 layout 字符串拷贝到堆上，是因为它是 const 常量，不在栈上
+                copy3->layout = src3->layout;
+            }
+          
+            // 调用 copy helper，因为 src 和 copy 的 copy helper 是一样的，所以用谁的都行，调用的都是同一个函数
+        	  //捕获到了外界变量 进行相关内存处理 生命周期的保存
+            (*src2->byref_keep)(copy, src);
+        }
+        else {
+            // Bitwise copy.
+            // This copy includes Block_byref_3, if any.
+            // 如果 src 没有 copy/dispose helper
+            // 将 Block_byref 后面的数据都拷贝到 copy 中，一定包括 Block_byref_3
+            memmove(copy+1, src+1, src->size - sizeof(*src));
+        }
+    }
+    // already copied to heap
+    // src 已经在堆上，就只将引用计数加 1
+    else if ((src->forwarding->flags & BLOCK_BYREF_NEEDS_FREE) == BLOCK_BYREF_NEEDS_FREE) {
+        latching_incr_int(&src->forwarding->flags);
+    }
+    
+    return src->forwarding;
+}
+```
+
+block创建的时候在栈上，block拷贝到堆时会将变量一起拷贝到堆，__block修饰的变量，**forwording原来指向栈上的结构体，此时指向堆上的结构体。**
+
+block不能修改外部变量指针地址。
+
+`__block`不能修饰静态变量和全局变量。
+
+## block本质
+
+block本质是Block_layout结构体
 
 ```c++
 //block在底层 结构体
 // 注释:Block 结构体
 struct Block_layout {
-    void *isa; //isa指向 栈block 堆block
+  
+    void *isa; //isa指向（栈block、堆block、全局block），有isa说明block也是一个对象
+  
+    /**
+    Flags 枚举类型
+      BLOCK_HAS_COPY_DISPOSE 捕获外界变量的时候 这个是有值的。
+      BLOCK_HAS_SIGNATURE 签名
+      方法有签名v@: 普通签名
+        v返回值
+        @对象
+        cmd方法编号        
+    */
+  //存储block附加信息
     volatile int32_t flags; // contains ref count//标识符 存数据信息，是否正在析构，是否有keep函数，是否有析构函数 等等很多
-    int32_t reserved;
-    BlockInvokeFunction invoke;//调用函数（指针）
-    struct Block_descriptor_1 *descriptor;//其它相关描述（block描述信息 捕获外界信息 有方法签名）
+  
+    int32_t reserved;//保留的变量（暂时不用）
+  
+    BlockInvokeFunction invoke;//block实现的函数指针
+  
+  	/**
+  	签名
+		block签名是 @?
+		hook：invoke消息 消息机制 转发需要先获取签名 然后invocation处理
+  	*/
+    struct Block_descriptor_1 *descriptor;//其它相关描述（copy、dispose、block大小、block描述信息 捕获外界信息 block方法签名）
+  
     // imported variables  //还有可选变量
 };
 ```
@@ -523,11 +799,13 @@ struct Block_layout {
 
 ```c++
 #define BLOCK_DESCRIPTOR_1 1
-struct Block_descriptor_1 {
+struct Block_descriptor_1 {//连续的内存空间
     uintptr_t reserved;
     uintptr_t size;
 };
 
+//捕获int变量时，没有copy和dispose。捕获对象才有。
+//内存平移Block_descriptor_1大小就得到Block_descriptor_2
 #define BLOCK_DESCRIPTOR_2 1
 struct Block_descriptor_2 {
     // requires BLOCK_HAS_COPY_DISPOSE
@@ -545,188 +823,13 @@ struct Block_descriptor_3 {
 
 引用了外部变量 没经过_Block_copy操作 是栈block 经过block_copy是堆block
 
-### isa
-
-### invoke
-
-### 签名
-
-block签名是`@?`
-
-hook：invoke消息 消息机制 转发需要先获取签名 然后invocation处理
-
 ### 捕获变量
 
 三层拷贝：
 
-1. _Block_copy拷贝到堆
+1. _Block_copy栈block拷贝到堆block
 2. block捕获Block_byref_ 对Block_byref_进行copy
 3. Block_byref对object进行copy
-
-### 保存
-
-_Block_object_assign 里面有对捕获变量类型的处理：例 是否有加__block
-
-```c++
-// 注释: Block 捕获外界变量的操作
-void _Block_object_assign(void *destArg, const void *object, const int flags) {
-    const void **dest = (const void **)destArg;
-    switch (os_assumes(flags & BLOCK_ALL_COPY_DISPOSE_FLAGS)) {
-      case BLOCK_FIELD_IS_OBJECT://普通的类型
-        /*******
-        id object = ...;
-        [^{ object; } copy];
-        ********/
-            
-            //_Block_retain_object_default 默认空的实现 交给ARC系统的操作
-        _Block_retain_object(object);
-        *dest = object;
-        break;
-
-      case BLOCK_FIELD_IS_BLOCK:
-        /*******
-        void (^object)(void) = ...;
-        [^{ object; } copy];
-        ********/
-
-            //把变量 搞到堆里
-        *dest = _Block_copy(object);
-        break;
-    
-      case BLOCK_FIELD_IS_BYREF | BLOCK_FIELD_IS_WEAK:
-      case BLOCK_FIELD_IS_BYREF:
-        /*******
-         // copy the onstack __block container to the heap
-         // Note this __weak is old GC-weak/MRC-unretained.
-         // ARC-style __weak is handled by the copy helper directly.
-         __block ... x;
-         __weak __block ... x;
-         [^{ x; } copy];
-         ********/
-
-        *dest = _Block_byref_copy(object);
-        break;
-        
-      case BLOCK_BYREF_CALLER | BLOCK_FIELD_IS_OBJECT:
-      case BLOCK_BYREF_CALLER | BLOCK_FIELD_IS_BLOCK:
-        /*******
-         // copy the actual field held in the __block container
-         // Note this is MRC unretained __block only. 
-         // ARC retained __block is handled by the copy helper directly.
-         __block id object;
-         __block void (^object)(void);
-         [^{ object; } copy];
-         ********/
-
-        *dest = object;
-        break;
-
-      case BLOCK_BYREF_CALLER | BLOCK_FIELD_IS_OBJECT | BLOCK_FIELD_IS_WEAK:
-      case BLOCK_BYREF_CALLER | BLOCK_FIELD_IS_BLOCK  | BLOCK_FIELD_IS_WEAK:
-        /*******
-         // copy the actual field held in the __block container
-         // Note this __weak is old GC-weak/MRC-unretained.
-         // ARC-style __weak is handled by the copy helper directly.
-         __weak __block id object;
-         __weak __block void (^object)(void);
-         [^{ object; } copy];
-         ********/
-
-        *dest = object;
-        break;
-
-      default:
-        break;
-    }
-}
-```
-
-```c++
-// 重点提示: 这里是核心重点 block的拷贝操作: 栈Block -> 堆Block
-void *_Block_copy(const void *arg) {
-    struct Block_layout *aBlock;
-
-    if (!arg) return NULL;
-    
-    // The following would be better done as a switch statement
-    aBlock = (struct Block_layout *)arg;
-    if (aBlock->flags & BLOCK_NEEDS_FREE) {
-        // latches on high
-        latching_incr_int(&aBlock->flags);
-        return aBlock;
-    }
-    else if (aBlock->flags & BLOCK_IS_GLOBAL) {
-        return aBlock;
-    }
-    else {
-        // Its a stack block.  Make a copy. -> heap
-        struct Block_layout *result =
-            (struct Block_layout *)malloc(aBlock->descriptor->size);
-        if (!result) return NULL;
-        memmove(result, aBlock, aBlock->descriptor->size); // bitcopy first
-#if __has_feature(ptrauth_calls)
-        // Resign the invoke pointer as it uses address authentication.
-        result->invoke = aBlock->invoke;
-#endif
-        // reset refcount -- 对象 isa 联合体位于
-        result->flags &= ~(BLOCK_REFCOUNT_MASK|BLOCK_DEALLOCATING);    // XXX not needed
-        result->flags |= BLOCK_NEEDS_FREE | 2;  // logical refcount 1
-        _Block_call_copy_helper(result, aBlock);
-        // Set isa last so memory analysis tools see a fully-initialized object.
-        result->isa = _NSConcreteMallocBlock;
-        return result;
-    }
-}
-```
-
-__block修饰的会走`_Block_byref_copy`
-
-```c++
-// Cooci注释: __Block 捕获外界变量的操作 内存拷贝 以及常规处理
-
-static struct Block_byref *_Block_byref_copy(const void *arg) {
-    struct Block_byref *src = (struct Block_byref *)arg;
-//__block 内存是一样的 同一个
-    if ((src->forwarding->flags & BLOCK_REFCOUNT_MASK) == 0) {
-        // src points to stack
-        struct Block_byref *copy = (struct Block_byref *)malloc(src->size);
-        copy->isa = NULL;
-        // byref value 4 is logical refcount of 2: one for caller, one for stack
-        copy->flags = src->flags | BLOCK_BYREF_NEEDS_FREE | 4;
-        copy->forwarding = copy; // patch heap copy to point to itself
-        src->forwarding = copy;  // patch stack to point to heap copy
-        copy->size = src->size;
-
-        if (src->flags & BLOCK_BYREF_HAS_COPY_DISPOSE) {
-            // Trust copy helper to copy everything of interest
-            // If more than one field shows up in a byref block this is wrong XXX
-            struct Block_byref_2 *src2 = (struct Block_byref_2 *)(src+1);
-            struct Block_byref_2 *copy2 = (struct Block_byref_2 *)(copy+1);
-            copy2->byref_keep = src2->byref_keep;
-            copy2->byref_destroy = src2->byref_destroy;
-
-            if (src->flags & BLOCK_BYREF_LAYOUT_EXTENDED) {
-                struct Block_byref_3 *src3 = (struct Block_byref_3 *)(src2+1);
-                struct Block_byref_3 *copy3 = (struct Block_byref_3*)(copy2+1);
-                copy3->layout = src3->layout;
-            }
-//捕获到了外界变量 进行相关内存处理 生命周期的保存
-            (*src2->byref_keep)(copy, src);
-        }
-        else {
-            // Bitwise copy.
-            // This copy includes Block_byref_3, if any.
-            memmove(copy+1, src+1, src->size - sizeof(*src));
-        }
-    }
-    // already copied to heap
-    else if ((src->forwarding->flags & BLOCK_BYREF_NEEDS_FREE) == BLOCK_BYREF_NEEDS_FREE) {
-        latching_incr_int(&src->forwarding->flags);
-    }
-    
-    return src->forwarding;
-}
-```
 
 ### dispose
 

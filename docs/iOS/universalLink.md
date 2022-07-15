@@ -1,20 +1,20 @@
 # iOS 唤起APP之Universal Link(通用链接)
 
-# 什么是`Universal Link`（通用链接）
+## 什么是`Universal Link`（通用链接）
 
 `Universal Link`是`Apple`在`iOS 9`推出的一种能够方便的通过传统`HTTPS`链接来启动`APP`的功能。如果你的应用支持`Universal Link`，当用户点击一个链接时可以跳转到你的网站并获得无缝重定向到对应的`APP`，且不需要通过`Safari`浏览器。如果你的应用不支持的话，则会在`Safari`中打开该链接
 
-# 支持`Universal Link`（通用链接）
+## 支持`Universal Link`（通用链接）
 
 先决条件：必须有一个支持`HTTPS`的域名，并且拥有该域名下上传到根目录的权限（为了上传`Apple`指定文件）
 
-# 集成步骤
+## 集成步骤
 
-## 1、开发者中心配置
+### 1、开发者中心配置
 
 找到对应的`App ID`，在`Application Services`列表里有`Associated Domains`一条，把它变为`Enabled`就可以了 ![配置App ID支持Associated Domains](universalLink.assets/ec222da425b34d058b414302897a4909~tplv-k3u1fbpfcp-zoom-in-crop-mark:1304:0:0:0.awebp)
 
-## 2、工程配置
+### 2、工程配置
 
 `targets->Capabilites->Associated Domains`，在其中的`Domains`中填入你想支持的域名，必须以`applinks:`为前缀，如：`applinks:domain` ![配置项目中的Associated Domains](universalLink.assets/8092bea9cfbf4f528db5ef723e532567~tplv-k3u1fbpfcp-zoom-in-crop-mark:1304:0:0:0.awebp)
 
@@ -29,7 +29,7 @@
 1、微信开发者 Universal Link 填写：https://xxx.com/app/link/
 2、xcode 的` Associated Domains` 添加 applinks:xxx.com
 
-## 3、配置指定文件
+### 3、配置指定文件
 
 在你关联的域根目录下 创建 apple-app-site-association 文件，文件格式参照https://developer.apple.com/documentation/safariservices/supporting_associated_domains 。这里我们使用：{&quot;applinks&quot;:{&quot;apps&quot;:[],&quot;details&quot;:[{&quot;appID&quot;:&quot;teamID.bundleID&quot;,&quot;paths&quot;:[&quot;/app/link/*&quot;]}]}}
 
@@ -57,11 +57,11 @@
 
 - 注意：苹果是根据域名下的`paths`处理要打开的应用的，所以要避免相同的`paths`对应多个`appID`
 
-## 4、上传该文件
+### 4、上传该文件
 
 上传该文件到你的域名所对应的`根目录`或者`.well-known目录`下，这是为了苹果能获取到你上传的文件。上传完后，先访问一下，看看是否能够获取到，当你在浏览器中输入这个文件链接后，应该是直接下载`apple-app-site-association`文件
 
-## 5、代码中的相关支持
+### 5、代码中的相关支持
 
 当点击某个链接，可以直接进我们的`app`，但是我们的目的是要能够获取到用户进来的链接，根据链接来展示给用户相应的内容，我们需要在工程里实现`AppDelegate`对应的方法：
 
@@ -88,7 +88,7 @@
 
 - 注意如果挂了代理，SSL的设置一定不要监控苹果的这个`https://app-site-association.cdn-apple.com`域名，可能会导致访问通用链接无效
 
-# Universal Link（通用链接）注意点
+## Universal Link（通用链接）注意点
 
 #### `Universal Link`跨域
 
