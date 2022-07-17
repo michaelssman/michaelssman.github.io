@@ -8,13 +8,9 @@
 
 ![img](处理bug.assets/809477-20151027142732200-1834209553.jpg)
 
- 
-
 再对环境变量进行设置：菜单Product > Scheme > Edit Scheme
 
 ![img](处理bug.assets/809477-20151027143231716-1407979929.jpg)
-
- 
 
 设置好后调试程序，在输出界面发现了message sent to deallocated instance错误日志
 
@@ -35,8 +31,6 @@
 APP进程ID：1087
 
 崩溃地址：0x7f7f7523ff10
-
- 
 
 打开“终端”，输入以下命令：
 
