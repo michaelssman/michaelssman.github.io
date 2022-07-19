@@ -124,6 +124,9 @@ nav:
     - 11架构模式:
       - iOS/11架构模式/MVVM.md
       - iOS/11架构模式/MVX.md
+    - 12音视频:
+      - iOS/12音视频/AVFoundation.md
+      - iOS/12音视频/编解码.md
     - iOS/Animation/Animation.md
     - NSArray:
       - iOS/NSArray/NSArray.md
@@ -174,15 +177,15 @@ nav:
       - iOS/编程思想/响应式/RAC/RACMulticastConnection.md
       - iOS/编程思想/响应式/RAC/RAC基本用法.md
       - iOS/编程思想/响应式/RAC/RAC过滤.md
-    - 网络:
-      - iOS/网络/AFNetworking源码分析.md
-      - iOS/网络/AFNetworking缓存.md
-      - iOS/网络/https认证.md
-      - iOS/网络/后台数据返回错误.md
-      - iOS/网络/序列化.md
-      - iOS/网络/网络请求报错.md
-      - iOS/网络/设置网络请求.md
-      - iOS/网络/返回NSData数据.md
+    - AFNetworking:
+      - iOS/AFNetworking/AFNetworking源码分析.md
+      - iOS/AFNetworking/AFNetworking缓存.md
+      - iOS/AFNetworking/https认证.md
+      - iOS/AFNetworking/后台数据返回错误.md
+      - iOS/AFNetworking/序列化.md
+      - iOS/AFNetworking/网络请求报错.md
+      - iOS/AFNetworking/设置网络请求.md
+      - iOS/AFNetworking/返回NSData数据.md
       - iOS/读取文件类型转换/类型转换.md
       - iOS/读取文件类型转换/解析本地json文件.md
     - iOS/数据持久化/CoreData.md
@@ -373,7 +376,8 @@ nav:
     - 网络/TCP和UDP.md
     - 网络/XMPP.md
     - 网络/七层模型.md
-    - 网络/概念.md
+    - 网络/CDN.md
+    - 网络/基础概念.md
   - 设计模式:
     - 设计模式/为类增加一个方法.md
     - 设计模式/总结.md

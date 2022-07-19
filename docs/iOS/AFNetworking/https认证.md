@@ -14,12 +14,33 @@ https 既然已经是加密了，为什么还要认证验证服务器的证书�
 服务器是客户端想要的服务器，客户端是服务器想要的客户端。这是双向的。
 单向  验证服务器。
 
-AFSecurityPolicy证书验证。
+## AFSecurityPolicy证书验证
 
 - ca机构颁布的证书 （我们代码中不需要做修改，只需要http后面加个s）
+
 - 自签证书 需要手动验证合法性。
 
-![image.png](https://upload-images.jianshu.io/upload_images/1892989-96b42b46979a008d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+  ```objective-c
+  - (void)test{
+      NSString *urlStr = @"http://www.12306.cn/mormhweb/";
+      AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+      manager.securityPolicy = [self securityPolicy];
+      [manager GET:urlStr parameters:nil headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+          //
+      } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+          //
+      }];
+  }
+  - (AFSecurityPolicy *)securityPolicy {
+      NSString *cerPath = [[NSBundle mainBundle] pathForResource:@"scra" ofType:@"cer"];
+      NSData *cerData = [NSData dataWithContentsOfFile:cerPath];
+      NSSet *set = [NSSet setWithObject:cerData];
+      AFSecurityPolicy *securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate withPinnedCertificates:set];
+      securityPolicy.allowInvalidCertificates = YES;
+      securityPolicy.validatesDomainName = NO;
+      return securityPolicy;
+  }
+  ```
 
 `NSURLSessionTaskDelegate`的代理方法`- (void)URLSession:(NSURLSession *)session
               task:(NSURLSessionTask *)task
@@ -41,5 +62,3 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
 
 总结：
 校验证书或者公钥。
-
-暂时可通过info.plist pts设置

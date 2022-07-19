@@ -751,7 +751,9 @@ static struct Block_byref *_Block_byref_copy(const void *arg) {
 }
 ```
 
-block创建的时候在栈上，block拷贝到堆时会将变量一起拷贝到堆，__block修饰的变量，**Block_byref结构体中的forwording原来指向栈上的结构体，此时指向堆上的结构体。**
+block创建的时候在栈上，block拷贝到堆时会将变量一起拷贝到堆
+
+__block修饰的变量：**Block_byref结构体中的forwording原来指向栈上的结构体，此时指向堆上的结构体。**
 
 block不能修改外部变量指针地址。
 
