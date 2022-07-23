@@ -2,24 +2,6 @@
 
 作用：方法再次调用的时候，更快的响应。
 
-当类第一次从磁盘加载到内存时的结构：
-
-isa，superclass，cache，bits。
-
-class ro
-
-- flags
-- instanceStart
-- instanceSize
-- reserved
-- name
-- ivarLayout
-- weakIvarLayout
-- ivars
-- baseMethodList
-- baseProtocols
-- baseProperties
-
 ### 分析原理
 
 ```

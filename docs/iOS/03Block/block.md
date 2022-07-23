@@ -681,7 +681,7 @@ __block修饰的会走`_Block_byref_copy`
 
 ```c++
 // Cooci注释: __Block 捕获外界变量的操作 内存拷贝 以及常规处理
-// 1. 如果 byref 原来在堆上，就将其拷贝到堆上，拷贝的包括 Block_byref、Block_byref_2、Block_byref_3，
+// 1. 如果 byref 原来在栈上，就将其拷贝到堆上，拷贝的包括 Block_byref、Block_byref_2、Block_byref_3，
 //    被 __weak 修饰的 byref 会被修改 isa 为 _NSConcreteWeakBlockVariable，
 //    原来 byref 的 forwarding 也会指向堆上的 byref;
 // 2. 如果 byref 已经在堆上，就只增加一个引用计数。
