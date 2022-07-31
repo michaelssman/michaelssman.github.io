@@ -126,7 +126,10 @@ nav:
       - iOS/11架构模式/MVX.md
     - 12音视频:
       - iOS/12音视频/AVFoundation.md
-      - iOS/12音视频/编解码.md
+      - iOS/12音视频/H264基本概念.md
+      - iOS/12音视频/视频编码.md
+      - iOS/12音视频/视频解码.md
+      - iOS/12音视频/音频.md
     - iOS/Animation/Animation.md
     - NSArray:
       - iOS/NSArray/NSArray.md
@@ -365,7 +368,6 @@ nav:
     - svn&git/Git/git_ignore.md
     - svn&git/Git/分支.md
     - svn&git/SVN/01SVN.md
-    - svn&git/SVN/Mac批量删除.svn文件.md
     - svn&git/SVN/SVN项目回滚.md
     - svn&git/SVN/svn_ignores.md
     - svn&git/SVN/svn打tag.md
