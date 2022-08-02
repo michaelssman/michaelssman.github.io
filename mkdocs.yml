@@ -127,8 +127,7 @@ nav:
     - 12音视频:
       - iOS/12音视频/AVFoundation.md
       - iOS/12音视频/H264基本概念.md
-      - iOS/12音视频/视频编码.md
-      - iOS/12音视频/视频解码.md
+      - iOS/12音视频/视频编解码.md
       - iOS/12音视频/音频.md
     - iOS/Animation/Animation.md
     - NSArray:

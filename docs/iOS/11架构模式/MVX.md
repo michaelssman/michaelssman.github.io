@@ -10,11 +10,7 @@ cell的代理中为cell赋值，cell对model强依赖，耦合性高。
 
 view中setModel方法view和model的依赖。UI不应该改变模型，难以维护，数据不安全。
 
-模型改变UI，UI改变模型。
-
-解决UI和model不同步问题
-
-通讯
+模型改变UI，UI改变模型。解决UI和model不同步问题使用通讯：
 
 1. 代理
 2. 通知
