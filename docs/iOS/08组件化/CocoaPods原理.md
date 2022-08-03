@@ -277,7 +277,5 @@ git push --tags 提交到远程。
 
 3. pod trunk push HHGroupShadowTableView.podspec --allow-warnings 如果有警告的话 需要在后面添加--allow-warnings去ignore警告
 
-
-
 pod search HHTools 就可以搜索到了。
 然后就可以重新pod intall安装远程的库。
