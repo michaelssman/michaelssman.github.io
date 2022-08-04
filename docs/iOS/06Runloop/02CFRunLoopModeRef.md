@@ -6,11 +6,11 @@
 
 3. 每次runloop启动的时候，只能指定一个mode,这个mode被称为该RunLoop的当前mode
 
-4. 如果需要切换mode,只能先退出当前RunLoop,再重新指定一个mode进入
+4. 如果需要切换mode,只能先退出当前RunLoop,再重新指定一个mode进入。
 
-5. 这样做主要是为了分割不同组的定时器等，让他们相互之间不受影响
+   这样做主要是为了分割不同组的定时器等，让他们相互之间不受影响
 
-6. 系统默认注册了5个mode
+5. 系统默认注册了5个mode
 
    1. kCFRunLoopDefaultMode：App的默认Mode，通常主线程是在这个Mode下运行
 

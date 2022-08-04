@@ -109,7 +109,7 @@ CF_EXPORT CFRunLoopRef _CFRunLoopGet0(pthread_t t) {
 }
 ```
 
-整体的流程可以概括为以下几步：
+## 整体的流程可以概括为以下几步：
 
 - 通过_CFRunLoopGet0函数传入一条线程。
 - 判断线程是否为主线程并且判断是否已经存在__CFRunLoops（全局CFMutableDictionaryRef）。

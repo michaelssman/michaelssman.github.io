@@ -20,7 +20,7 @@ runloop死循环能够保住线程。
 
 - RunLoop的生命周期：在第一次获取时创建，在线程结束时销毁
 
-# 作用
+## 作用
 
 1. runloop是一个运行循环，保证程序持续运行不退出！
 
@@ -643,7 +643,7 @@ machPort是最基础的api，socket是基于它实现的
 3. 手动wake up
 4. 处于超时状态
 
-# runloop应用
+## runloop应用
 
 ### NSTimer
 
