@@ -39,15 +39,3 @@ iOS有UIKit，flutter中有`import 'package:flutter/material.dart';`库，素材
 显示app的话就执行runApp函数。
 
 flutter万物皆Widget组件，iOS在window上创建视图，flutter上runApp(里面创建控件)，创建了控件就会在屏幕上显示。
-
-## 渲染机制
-
-不变的就定义常量const。
-
-核心渲染：**增量渲染**。
-
-flutter修改UI，增量渲染，哪个widget变了就渲染谁。所以不变的定义const。
-
-flutter整个页面是一个树，不变的不用管，只会渲染（新建）树中改变的节点widget，并不是全部都渲染。没有图层，只有一层页面。想要改变某一个控件的值，直接新创建一个widget对象控件，把原来的替换掉。
-
-iOS有一层一层的控件。

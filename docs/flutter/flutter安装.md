@@ -4,7 +4,7 @@
 
 https://flutter.dev/
 
-# flutter安装目录
+## flutter安装目录
 
 可以放到家目录里：只能自己访问。
 
@@ -241,7 +241,7 @@ buildscript {
 
 有状态的widget，数据改变的时候就需要重新启动项目。树发生改变了时候就需要重新运行。
 
-### 网站
+## 网站
 
 flutter中文网
 

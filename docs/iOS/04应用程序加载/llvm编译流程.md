@@ -1,12 +1,4 @@
-dyld链接之后
-
-_read_images镜像文件
-
-​	SEL和IMP绑定修复
-
-llvm编译阶段SEL IMP绑定
-
-## App编译
+# App编译
 
 1. 解释型语言 python 
 
@@ -200,14 +192,4 @@ int main(int argc, const char * argv[]) {
 
 `clang mian.o -o main`
 
-#### 绑定
-
-执行的时候把函数地址和项目中符号绑定。
-
-dyld_stub_binder
-
-一旦执行就绑定，NSLog是懒绑定 用的时候才绑定。
-
-生成本地macho文件 代码和数据。里面有符号表，是一个指针。执行的时候发现外部符号会找符号。如果符号没绑定地址则在内存共享缓存空间找外部动态库，然后绑定。以后就可以直接找。
-
-**外部函数都会生成符号表。通过符号表就可以找到绑定的空间。**
+#### 绑定binding

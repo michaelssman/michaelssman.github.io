@@ -60,23 +60,17 @@ abstract class Widget extends DiagnosticableTree {
 
 Widget树：
 
-Widget111
-
-Widget222
-
-Widget333
+- Widget111
+- Widget222
+- Widget333
 
 Element树：
 
-Element111
-
-Element222
-
-Element333
+- Element111
+- Element222
+- Element333
 
 当删除Widget111的时候，会调Element111的canUpdate，canUpdate里面会判断，最后Element333会被删除。
-
-
 
 Key本身是一个抽象类，有一个工厂构造方法。创建ValueKey，值是任意类型。
 
