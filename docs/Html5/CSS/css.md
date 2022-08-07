@@ -1,6 +1,10 @@
+# css
+
+## !important
+
 !important优先级提高。
 
-设置宽度：
+## 设置宽度
 
 1. 使用百分比：`width: 100%;`
 
@@ -28,7 +32,7 @@ Safari 和 Chrome 需要前缀`-webkit-`
 	}
 ```
 
-#### 颜色
+## 颜色
 
 背景色
 
@@ -43,7 +47,7 @@ color: #FF2F1F;
 color: rgba(0, 0, 0, 0.45);  
 ```
 
-#### 字体
+## 字体
 
 ```css
 font-size: 18px;
@@ -58,7 +62,7 @@ text-align: left;
 		text-overflow: ellipsis;
 ```
 
-#### 尺寸
+## 尺寸
 
 ```css
 position: fixed;
@@ -68,14 +72,14 @@ width: 100%;
 height: 45px;
 ```
 
-#### 边框
+## 边框
 
 ```css
 border: none;
 border-radius: 12.5px;
 ```
 
-#### 显示不同的字体颜色
+## 显示不同的字体颜色
 
 ```html
 <div :style="billData.VendName?'color:#0D0D0D':'color:#D7D7D7'">哈哈哈哈哈</div>

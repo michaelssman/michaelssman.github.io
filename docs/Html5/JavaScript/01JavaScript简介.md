@@ -1,4 +1,4 @@
-## JavaScript简介
+# JavaScript简介
 
 JavaScript是NetScape公司为Navigator浏览器开发的，是现实HTML文件中的一种脚本语言，能实现网页内容的交互现实。当用户在客户端显示该网页时，浏览器就会执行JavaScript程序，用户通过交互的操作来改变网页的内容，来实现HTM L页岩无法实现的效果。
 
@@ -9,7 +9,7 @@ js是客户端语言，由浏览器执行的。
 3种方式：
 
 1. 通过<script></script>中直接编写
-2. 通过<script src ='目标文档的URL'></script>script>链接外部的js文件（公共的）
+2. 通过<script src ='目标文档的URL'></script>链接外部的js文件（公共的）
 3. 作为某个元素的事件属性值或者是超链接的href属性值
 
 ## 代码屏蔽
@@ -27,6 +27,8 @@ js是客户端语言，由浏览器执行的。
 2. 如果浏览器不支持js，可以使用<noscript></noscript>标签，显示noscript中的内容。
 
 ## JavaScript基础语法
+
+- 在 JavaScript 中，首字符必须是字母、下划线（-）或美元符号（$）
 
 - javaScript执行顺序
 

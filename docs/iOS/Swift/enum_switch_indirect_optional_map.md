@@ -183,7 +183,9 @@ No-payload enums 的布局比较简单，我们也比较好理解，接下来我
     print(MemoryLayout<LGEnum1>.size)//打印结果是9
 ```
 
-注意， Swift 中的 enum 中的 Single-payload enums 会使用负载类型中的额外空间来记录没有负载的 case 值。这句话该怎么理解？首先 Bool 类型是 1字节，也就是 UInt8 ，所以当前能表达 256 个 case的情况，对于布尔类型来说，只需要使用低位的 0, 1 这两种情况，其他剩余的空间就可以用来表示没有负载的 case 值。 
+注意， Swift 中的 enum 中的 Single-payload enums 会使用负载类型中的额外空间来记录没有负载的 case 值。
+
+首先 Bool 类型是 1字节，也就是 UInt8 ，所以当前能表达 256 个 case的情况，对于布尔类型来说，只需要使用低位的 0, 1 这两种情况，其他剩余的空间就可以用来表示没有负载的 case 值。 
 
 可以看到，不同的 case 值确实是按照我们在开始得出来的那个结论进行布局的。 
 
@@ -242,8 +244,6 @@ enum LGEnumTest {
 
 对于当前的 LGEnum 只有一个 case ,我们不需要用任何东西来去区分当前的 case ,所以当我们打印当前的 LGEnum 大小你会发现时 0。 
 
-
-
 **值类型在编译器大小已经确定**。
 
 ## indirect关键字
@@ -256,8 +256,8 @@ func test_indirect() {
         case node(left: BinaryTree, value: T, right: BinaryTree)
     }
     var node = BinaryTree<Int>.node(left: BinaryTree<Int>.empty, value: 10, right: BinaryTree<Int>.empty)
-    print(MemoryLayout<BinaryTree<Int>>.size)//测试大小
-    print(MemoryLayout<BinaryTree<Int>>.stride)//测试大小
+    print(MemoryLayout<BinaryTree<Int>>.size)//8
+    print(MemoryLayout<BinaryTree<Int>>.stride)//8
     
     //链表
     indirect enum List<Element>{
@@ -386,86 +386,6 @@ let upperStrTwo = strTwo?.uppercased() // nil
 
 - 表达式 a 必须是 Optional 类型 
 - 默认值 b 的类型必须要和 a 存储值的类型保持一致 
-
-## 运算符重载 
-
-在源码中我们可以看到除了重载了 ?? 运算符， Optional 类型还重载了 == , ?= 等等运算符，实际开发中我们可以通过重载运算符简化我们的表达式。 
-
-比如在开发中我们定义了一个二维向量，这个时候我们想对两个向量进行基本的操作，那么我们就可以通过重载运算符来达到我们的目的 
-
-```swift
-// MARK: 运算符重载 必须是static
-struct Vector {
-    let x: Int
-    let y: Int
-}
-extension Vector {
-    static func + (fistVector: Vector, secondVector: Vector) -> Vector {
-        return Vector(x: fistVector.x + secondVector.x, y: fistVector.y + secondVector.y)
-    }
-    static prefix func - (vector: Vector) -> Vector {//前缀 - 
-        return Vector(x: -vector.x, y: -vector.y)
-    }
-    static func - (fistVector: Vector, secondVector: Vector) -> Vector {
-        return fistVector + -secondVector
-        
-    }
-}
-
-func yunsuanfuchongzai_test() {
-    let x = Vector(x: 10, y: 20)
-    let y = Vector(x: 20, y: 30)
-    let z = x + y
-    print(z)
-}
-```
-
-## 自定义运算符 
-
-- infix中缀运算符
-- perfix前缀运算符
-- postfix后缀运算符
-
-```swift
-// MARK: 运算符重载 必须是static
-struct Vector {
-    let x: Int
-    let y: Int
-}
-// MARK: 自定义运算符 ---为乘法
-infix operator --- : AdditionPrecedence
-precedencegroup HHPrecedence {
-    //指定优先级
-//    higherThan: lower group names
-    lowerThan: AdditionPrecedence
-    associativity: left
-//    assignment: assignment
-}
-extension Vector {
-    //已有的运算符
-    static func + (fistVector: Vector, secondVector: Vector) -> Vector {
-        return Vector(x: fistVector.x + secondVector.x, y: fistVector.y + secondVector.y)
-    }
-    static prefix func - (vector: Vector) -> Vector {//前缀 -
-        return Vector(x: -vector.x, y: -vector.y)
-    }
-    static func - (fistVector: Vector, secondVector: Vector) -> Vector {
-        return fistVector + -secondVector
-    }
-    //没有的运算符
-    static func --- (fistVector: Vector, secondVector: Vector) -> Vector {
-        return Vector(x: fistVector.x * secondVector.x, y: fistVector.y * secondVector.y)
-    }
-}
-func yunsuanfuchongzai_test() {
-    let x = Vector(x: 10, y: 20)
-    let y = Vector(x: 20, y: 30)
-    let z = x + y
-    let s = x --- y
-    print(z)
-    print(s)
-}
-```
 
 ## 隐士解析可选类型
 

@@ -150,7 +150,7 @@ nav:
       - iOS/Swift/属性.md
       - iOS/Swift/指针和内存管理.md
       - iOS/Swift/方法的调度.md
-      - iOS/Swift/枚举和optional.md
+      - iOS/Swift/enum_switch_indirect_optional_map.md
       - iOS/Swift/类与结构体.md
       - iOS/Swift/闭包.md
     - TableView:
@@ -266,12 +266,11 @@ nav:
     - html: Html5/Html/html.md
     - table: Html5/Html/table.md
     - JavaScript:
+      - 简介: Html5/JavaScript/简介.md
       - 01JavaScript简介: Html5/JavaScript/01JavaScript简介.md
       - 02变量: Html5/JavaScript/02变量.md
       - 03数据类型: Html5/JavaScript/03数据类型.md
       - 04数据类型转换: Html5/JavaScript/04数据类型转换.md
-      - df: Html5/JavaScript/df.md
-      - 简介: Html5/JavaScript/简介.md
     - vue:
       - Html5/Vue/Vue.md
       - Html5/Vue/vue框架.md
@@ -428,11 +427,7 @@ nav:
     - Cocos2d-x认识: Cocos2d-x/Cocos2d-x认识.md
     - 调度器(scheduler): Cocos2d-x/调度器(scheduler).md
   - 数据库:
-    - 数据库/00创建表.md
-    - 数据库/01INSERT.md
-    - 数据库/DELETE.md
-    - 数据库/SELECT.md
-    - 数据库/新增字段.md
+    - 数据库/数据库.md
   - 正则:
     - 正则/正则表达式.md
   - 源码: 查看源码.md
