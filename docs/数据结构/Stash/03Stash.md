@@ -1,4 +1,4 @@
-# Stash
+# CPPStash
 
 之前是用C语言做的CStash，用C语言做的有缺点。
 
