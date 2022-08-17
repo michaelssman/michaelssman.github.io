@@ -134,7 +134,7 @@ nav:
       - iOS/NSArray/遍历数组.md
     - OpenGL_ES:
       - iOS/OpenGL_ES/专业名词解释.md
-      - iOS/OpenGL_ES/加载图片.md
+      - iOS/OpenGL_ES/图片加载解码渲染.md
       - iOS/OpenGL_ES/图像显示原理.md
       - iOS/OpenGL_ES/离屏渲染.md
     - SDWebImage:
