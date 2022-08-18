@@ -4,25 +4,27 @@
 
 小视频/直播
 
-- 捕捉会话: AVCaptureSession.
+## 捕捉会话AVCaptureSession
 
-- 捕捉设备（摄像头、麦克风）: AVCaptureDevice.
+## 捕捉设备（摄像头、麦克风）AVCaptureDevice
 
-- 捕捉设备输入（摄像头、麦克风） : AVCaptureDeviceInput
+device修改（前后摄像后、聚焦、曝光、手电筒），需要加锁解锁。
 
-- 捕捉设备输出（图片、视频）: AVCaptureOutput抽象类
+### 捕捉设备输入（摄像头、麦克风）AVCaptureDeviceInput
 
-  - AVCaptureStillImageOutput静态图片
+### 捕捉设备输出（图片、视频）: AVCaptureOutput抽象类
 
-  - AVCaptureMovieFileOutput视频文件
+- AVCaptureStillImageOutput静态图片
 
-  - AVCaptureAudioDataOutput
+- AVCaptureMovieFileOutput视频文件
 
-  - AVCaptureVideoDataOutput
+- AVCaptureAudioDataOutput
 
-- 捕捉连接: AVCaptureConnection
+- AVCaptureVideoDataOutput
 
-- 捕捉预览: AVCaptureVideoPreviewLayer
+## 捕捉连接: AVCaptureConnection
+
+## 捕捉预览: AVCaptureVideoPreviewLayer
 
 AVCaptureVideoPreviewLayer定义2个方法：摄像头/屏幕坐标系转换
 
@@ -37,12 +39,6 @@ pointForCaptureDevicePointOfInterest：获取摄像头的坐标系的CGPoint，�
 手机app有很多，修改设备需要先锁定设备。
 
 配置session
-
-## AVCaptureDevice
-
-device修改（前后摄像后、聚焦、曝光、手电筒），需要加锁解锁。
-
-
 
 ## 人脸识别
 

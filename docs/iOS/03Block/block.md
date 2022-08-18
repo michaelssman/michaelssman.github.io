@@ -8,7 +8,7 @@ Block可以作为函数参数或者函数的返回值，而其本身又可以带
 
 Block的使用很像函数指针，不过与函数最大的不同是：Block可以访问函数以外、词法作用域以内的外部变量的值。
 
-换句话说，Block不仅 实现函数的功能，还能携带函数的执行环境，更通俗的讲Block就是能够读取其它函数内部变量的函数。
+换句话说，Block不仅实现函数的功能，还能携带函数的执行环境，更通俗的讲Block就是能够读取其它函数内部变量的函数。
 
 ## block分类
 
@@ -16,7 +16,7 @@ Block的使用很像函数指针，不过与函数最大的不同是：Block可�
 
 没有捕获外界变量，或者只用到全局变量、静态(static)变量的block就是全局block
 
-NSGlobalBlock，类似函数，存储在程序的数据区域（text段），我们只要实现一个没有对周围变量没有引用的Block，就会显示为是它
+NSGlobalBlock，类似函数，存储在程序的数据区域（text段），我们只要实现一个对周围变量没有引用的Block，就会显示为是它
 
 对于Global的Block，我们无需多处理，不需retain和copy，即使copy，也不会copy到堆区，内存不会发生变化，操作都无效。
 
@@ -42,7 +42,7 @@ NSGlobalBlock，类似函数，存储在程序的数据区域（text段），我
 
 对于Stack的Block，如果不做任何操作，随栈自生自灭。
 
-而如果想让它获得比stack更久的生命，那就调用Block_copy()，或者copy修饰，让它搬家到堆内存上，这也是我们为什么一直用copy修饰Block的原因。
+而如果想让它获得比stack更久的生命，那就调用Block_copy()，或者copy修饰，让它搬家到堆内存上，这也是为什么一直用copy修饰Block的原因。
 
 ```objective-c
 		int a = 10;
@@ -57,7 +57,7 @@ MRC下
 
  `__NSStackBlock__ __NSMallocBlock__`
 
-结果分析：当Block中使用了外部变量，Block为NSStackBlock类型，存储在栈区，当函数执行结束后 该Block就会被释放，调用copy后，栈区Block被copy到了堆区NSMallocBlock
+结果分析：当Block中使用了外部变量，Block为NSStackBlock类型，存储在栈区，当函数执行结束后，该Block就会被释放，调用copy后，栈区Block被copy到了堆区NSMallocBlock。
 
 ARC下：
 
@@ -65,9 +65,7 @@ ARC下：
 
 分析结果：在ARC模式下，没有了__NSStackBlock__类型，不要认为ARC没有了栈区Block这种类型。
 
-其实在ARC下，生产的Block默认也是NSStackBlock类型，只是在变量赋值的时候，系统默认对其进行了copy。
-
-从NSStackBlock给copy到堆区的NSMallocBlock类型，而在非arc中，则需要手动copy.。
+其实在ARC下，生产的Block默认也是NSStackBlock类型，只是在变量赋值的时候，系统默认对其进行了copy，从NSStackBlock给copy到堆区的NSMallocBlock类型。而在非arc中，则需要手动copy。
 
 ### 3、堆block
 
@@ -515,9 +513,14 @@ _Block_copy在lib system_blocks.dylib库libclosure-master
 ```c++
 // 重点提示: 这里是核心重点 block的拷贝操作: 栈Block -> 堆Block
 // 拷贝 block，
-// 如果原来就在堆上，就将引用计数加 1;
-// 如果原来在栈上，会拷贝到堆上，引用计数初始化为 1，并且会调用 copy helper 方法（如果存在的话）；
+// 如果原来就在堆上，就将引用计数加 1，返回 block 本身;
 // 如果 block 在全局区，不用加引用计数，也不用拷贝，直接返回 block 本身
+// 如果原来在栈上：
+  // 1.malloc在堆上开辟内存
+  // 2.memmove会拷贝到堆上
+  // 3.引用计数初始化为 1
+  // 4.调用 copy helper 方法（如果存在的话）；
+	// 5.isa标记堆block
 // 参数 arg 就是 Block_layout 对象，
 // 返回值是拷贝后的 block 的地址
 // 运行？stack -》malloc
@@ -759,7 +762,9 @@ block不能修改外部变量指针地址。
 
 `__block`不能修饰静态变量和全局变量。
 
-## block本质
+## block结构
+
+### Block_layout
 
 block本质是Block_layout结构体
 
@@ -799,7 +804,7 @@ struct Block_layout {
 };
 ```
 
-结构体可选：**Block_descriptor_**
+### Block_descriptor_（结构体可选）
 
 ```c++
 #define BLOCK_DESCRIPTOR_1 1
@@ -834,10 +839,6 @@ struct Block_descriptor_3 {
 1. _Block_copy栈block拷贝到堆block
 2. block捕获Block_byref_ 对Block_byref_进行copy
 3. Block_byref对object进行copy
-
-### dispose
-
-相反
 
 
 
