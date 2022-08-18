@@ -10,84 +10,74 @@ Block的使用很像函数指针，不过与函数最大的不同是：Block可�
 
 换句话说，Block不仅 实现函数的功能，还能携带函数的执行环境，更通俗的讲Block就是能够读取其它函数内部变量的函数。
 
-## 内存管理
-
-Block的内存需要开发人员自己管理，错误的内存管理会造成循环引用内存泄露，或者内存因为提前释放造成崩溃。
-
-Block其实包含两部分：
-
-一部分是Block所执行的代码，这一部分在编译的时候已经生产好了。
-
-另一部分是Block执行时所需要的外部变量值的数据结构，注意的是Block会将使用到的变量的值拷贝到栈上。
-
 ## block分类
 
-1. 全局
+### 1、全局block
 
-   没有捕获外界变量，或者只用到全局变量、静态(static)变量的block就是全局block
+没有捕获外界变量，或者只用到全局变量、静态(static)变量的block就是全局block
 
-   NSGlobalBlock，类似函数，存储在程序的数据区域（text段），我们只要实现一个没有对周围变量没有引用的Block，就会显示为是它
+NSGlobalBlock，类似函数，存储在程序的数据区域（text段），我们只要实现一个没有对周围变量没有引用的Block，就会显示为是它
 
-   对于Global的Block，我们无需多处理，不需retain和copy，即使copy，也不会copy到堆区，内存不会发生变化，操作都无效。
+对于Global的Block，我们无需多处理，不需retain和copy，即使copy，也不会copy到堆区，内存不会发生变化，操作都无效。
 
-   ```objective-c
-       //1. __NSGlobalBlock__ 没有捕获任何的外界变量（除非是全局区的（静态变量））
-       void (^globalBlock)(int, int) = ^(int a, int b){
-           NSLog(@"%d",a+b);
-       };
-       NSLog(@"globalBlock:%@",globalBlock);//__NSGlobalBlock__
-   ```
+```objective-c
+    //1. __NSGlobalBlock__ 没有捕获任何的外界变量（除非是全局区的（静态变量））
+    void (^globalBlock)(int, int) = ^(int a, int b){
+        NSLog(@"%d",a+b);
+    };
+    NSLog(@"globalBlock:%@",globalBlock);//__NSGlobalBlock__
+```
 
-   特点：命长，应用程序在它就在。
+特点：命长，应用程序在它就在。
 
-   对于全局block，用weak，strong，还是copy修饰都是可以的。（但最好不用用weak）
+对于全局block，用weak，strong，还是copy修饰都是可以的。（但最好不用用weak）
 
-   注意：如果block中没有用到外界变量，不管他是用什么修饰符修饰，他都是全局block！
+注意：如果block中没有用到外界变量，不管他是用什么修饰符修饰，他都是全局block！
 
-2. 栈 
+### 2、栈block
 
-   捕获了外界变量，或者是OC的属性，并且**赋值给弱引用**
+捕获了外界变量，或者是OC的属性，并且**赋值给弱引用**
 
-   位于栈内存，函数返回后Block将无效；对于定义的Block加入了对定义环境变量的引用，也就是说内部使用了外部变量，就是NSStackBlock。
+位于栈内存，函数返回后Block将无效；对于定义的Block加入了对定义环境变量的引用，也就是说内部使用了外部变量，就是NSStackBlock。
 
-   对于Stack的Block，如果不做任何操作，随栈自生自灭。
+对于Stack的Block，如果不做任何操作，随栈自生自灭。
 
-   而如果想让它获得比stack更久的生命，那就调用Block_copy()，或者copy修饰，让它搬家到堆内存上，这也是我们为什么一直用copy修饰Block的原因。
+而如果想让它获得比stack更久的生命，那就调用Block_copy()，或者copy修饰，让它搬家到堆内存上，这也是我们为什么一直用copy修饰Block的原因。
 
-   ```objective-c
-   		int a = 10;
-       void (^block)(void) = ^{//copy
-           //保存一份代码块
-           NSLog(@"hello %d",a);
-       };
-       NSLog(@"block:%@--%@",block,[block copy]);
-   ```
+```objective-c
+		int a = 10;
+    void (^block)(void) = ^{//copy
+        //保存一份代码块
+        NSLog(@"hello %d",a);
+    };
+    NSLog(@"block:%@--%@",block,[block copy]);
+```
 
-   MRC下
+MRC下
 
-    `__NSStackBlock__ __NSMallocBlock__`
+ `__NSStackBlock__ __NSMallocBlock__`
 
-   结果分析：当Block中使用了外部变量，Block为NSStackBlock类型，存储在栈区，当函数执行结束后 该Block就会被释放，调用copy后，栈区Block被copy到了堆区NSMallocBlock
+结果分析：当Block中使用了外部变量，Block为NSStackBlock类型，存储在栈区，当函数执行结束后 该Block就会被释放，调用copy后，栈区Block被copy到了堆区NSMallocBlock
 
-   ARC下：
+ARC下：
 
-   `__NSMallocBlock__ __NSMallocBlock__`
+`__NSMallocBlock__ __NSMallocBlock__`
 
-   分析结果：在ARC模式下，没有了__NSStackBlock__类型，不要认为ARC没有了栈区Block这种类型。
+分析结果：在ARC模式下，没有了__NSStackBlock__类型，不要认为ARC没有了栈区Block这种类型。
 
-   其实在ARC下，生产的Block默认也是NSStackBlock类型，只是在变量赋值的时候，系统默认对其进行了copy。
+其实在ARC下，生产的Block默认也是NSStackBlock类型，只是在变量赋值的时候，系统默认对其进行了copy。
 
-   从NSStackBlock给copy到堆区的NSMallocBlock类型，而在非arc中，则需要手动copy.。
+从NSStackBlock给copy到堆区的NSMallocBlock类型，而在非arc中，则需要手动copy.。
 
-3. 堆
+### 3、堆block
 
-   捕获了外界变量，或者是OC的属性，并且**赋值给强引用**
+捕获了外界变量，或者是OC的属性，并且**赋值给强引用**
 
-   只需要对NSStackBlock进行copy操作就可以获取，所以，当我们定义的Block要在外部回调使用的时候，在MRC下，我们需要copy的堆区，永远的持有，不让释放。
+只需要对NSStackBlock进行copy操作就可以获取，所以，当我们定义的Block要在外部回调使用的时候，在MRC下，我们需要copy的堆区，永远的持有，不让释放。
 
-   在堆区的NSMallocBlock，我们可以对其retain，release，copy（等价于retain，引用计数的加一）。
+在堆区的NSMallocBlock，我们可以对其retain，release，copy（等价于retain，引用计数的加一）。
 
-   在ARC下，系统会给我们copy到堆区，避免了很多不必要的麻烦。
+在ARC下，系统会给我们copy到堆区，避免了很多不必要的麻烦。
 
 ## block使用copy
 
@@ -99,6 +89,16 @@ block只有引用了栈里的临时变量, 才会被创建在stack区. **没有�
 
 1. 如果访问了外部处于栈区的变量（比如局部变量），或处于堆区的变量。都会存放在堆区，如果访问的是内部创建的变量还是存储在全局区
 2. 在ARC中做了特殊的处理，自动的做了copy操作，所以为__NSMallocBlock__在MRC中是__NSStackBlock__ 栈block
+
+## 内存管理
+
+Block的内存需要开发人员自己管理，错误的内存管理会造成循环引用内存泄露，或者内存因为提前释放造成崩溃。
+
+Block其实包含两部分：
+
+一部分是Block所执行的代码，这一部分在编译的时候已经生产好了。
+
+另一部分是Block执行时所需要的外部变量值的数据结构，注意的是Block会将使用到的变量的值拷贝到栈上。
 
 ## 循环引用
 
