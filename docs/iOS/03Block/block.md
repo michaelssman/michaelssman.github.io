@@ -418,6 +418,12 @@ block把a的值传了进去，里面生成了一个新的变量a。
 
 加__block 生成`__Block_byref_a_0`结构体，传给block的是指针地址，和外面的变量是同一个内存空间，所以可以修改外面的变量。
 
+⽤`__block`修饰的变量在编译过后会变成` __Block_byref__XXX`类型的结构体，在结构体内部有⼀个__forwarding 的结构体指针，指向结构体本身。
+
+block创建的时候是在栈上的，在将栈block拷⻉到堆上的时候，同时也会将block中捕获的对象拷⻉到堆上，然后就会将栈上的`__block`修饰对象的__forwarding指针指向堆上的拷⻉之后的对象。
+
+这样我们在block内部修改的时候虽然是修改堆上的对象的值，但是因为栈上的对象的__forwarding指针将堆和栈的对象链接起来。因此就可以达到修改的⽬的。
+
 ```c++
  int main1(){
  //__block修饰的变量
@@ -798,7 +804,7 @@ struct Block_layout {
 		block签名是 @?
 		hook：invoke消息 消息机制 转发需要先获取签名 然后invocation处理
   	*/
-    struct Block_descriptor_1 *descriptor;//其它相关描述（copy、dispose、block大小、block描述信息 捕获外界信息 block方法签名）
+    struct Block_descriptor_1 *descriptor;//其它相关描述（存储copy、dispose函数、block大小、block描述信息 捕获外界信息 block方法签名）
   
     // imported variables  //还有可选变量
 };
@@ -814,6 +820,7 @@ struct Block_descriptor_1 {//连续的内存空间
 };
 
 //捕获int变量时，没有copy和dispose。捕获对象才有。
+//copy和dispose函数是⽤来对block内部的对象进⾏内存管理的，block拷⻉到堆上会调⽤copy函数，在block从堆上释放的时候会调⽤dispose函数。
 //内存平移Block_descriptor_1大小就得到Block_descriptor_2
 #define BLOCK_DESCRIPTOR_2 1
 struct Block_descriptor_2 {

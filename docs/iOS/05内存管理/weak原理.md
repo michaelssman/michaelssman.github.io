@@ -339,7 +339,7 @@ weak_entry_t是一个数组。
 
 当类对象引用计数变为0的时候，weak修饰的引用对象会置为nil。走对象的dealloc方法。
 
-#### dealloc
+### dealloc
 
 从NSObject.h的dealloc一直向下找：
 
@@ -360,32 +360,26 @@ _objc_rootDealloc(id obj)
 }
 ```
 
-#### rootDealloc()
-
-1. 首先判断 isTaggedPointer   是否是标记指针 是直接 return ;
-    注：Tagged Pointer技术，用于优化NSNumber、NSDate、NSString等小对象的存储
-2. 其次判断该对象是否可以被快速释放。一共有5个判断依据：
-   1. nonpointer              是否优化过isa指针（类似Tagger Pointer）
-   2. weakly_reference   是否存在弱引用指向
-   3. has_assoc                是否设置过关联对象
-   4. has_cxx_dtor          是否有c++的析构函数（.cxx_destruct）
-   5. has_sidetable_rc    引用计数器是否过大无法存储在isa中(使用 sidetable 来存储引用计数）
+### rootDealloc()
 
 ```c++
 inline void
 objc_object::rootDealloc()
 {
+  
+  	//首先判断 isTaggedPointer   是否是标记指针，Tagged Pointer 不需要维护引⽤计数，直接return 
     if (isTaggedPointer()) return;  // fixme necessary?
-
-    if (fastpath(isa.nonpointer                     &&//优化过isa指针
-                 !isa.weakly_referenced             &&//不存在弱引用指向
-                 !isa.has_assoc                     &&//没设置过关联对象
+		
+  	//其次判断该对象是否可以被快速释放。一共有5个判断依据：
+    if (fastpath(isa.nonpointer                     &&//1.优化过isa指针
+                 !isa.weakly_referenced             &&//2.不存在弱引用指向
+                 !isa.has_assoc                     &&//3.没设置过关联对象
 #if ISA_HAS_CXX_DTOR_BIT
-                 !isa.has_cxx_dtor                  &&// 没有c++的析构函数（.cxx_destruct）
+                 !isa.has_cxx_dtor                  &&//4.没有c++的析构函数（.cxx_destruct）
 #else
-                 !isa.getClass(false)->hasCxxDtor() &&// 不存在引用计数器是否过大无法存储在isa中(使用 sidetable 来存储引用计数）
+                 !isa.getClass(false)->hasCxxDtor() &&
 #endif
-                 !isa.has_sidetable_rc))
+                 !isa.has_sidetable_rc))							//5.不存在引用计数器是否过大无法存储在isa中(使用 sidetable 来存储引用计数），没有散列表引用计数。
     {
         assert(!sidetable_present());
         free(this);
