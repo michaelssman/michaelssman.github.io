@@ -1,4 +1,6 @@
-![image-20211217135455349](ignore.assets/image-20211217135455349.png)
+## .gitignore_global
+
+全局ignore，文件路径：`/Users/michael/.gitignore_global`。
 
 在.gitignore_global文件中编辑，添加忽略文件。
 
