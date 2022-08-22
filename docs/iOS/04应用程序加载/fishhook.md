@@ -1,4 +1,4 @@
-# fishhook是什么 有什么用
+# fishhook
 
 Hook意思是钩子，像钩子一样挂钩程序，来扩展程序的功能或者改变程序运行的流程。
 
@@ -8,7 +8,7 @@ Facebook 提供的一个动态修改链接 mach-O 文件的工具 fishhook。它
 
 ## fishhook简单使用
 
-#### 它所提供的接口
+### 它所提供的接口
 
 fishhook只有两个文件 “fishhook.h” 和 “fishhook.c”。它提供的接口仅有一个结构体和两个函数：
 
@@ -33,7 +33,7 @@ int rebind_symbols(struct rebinding rebindings[], size_t rebindings_nel);
 int rebind_symbols_image(void*header,intptr_t slide,struct rebinding rebindings[],size_t rebindings_nel);
 ```
 
-#### HOOK一下NSLog
+### HOOK一下NSLog
 
 我们新建一个 SingleView 的项目。在 ViewDidLoad 中对系统的 **NSLog** 函数进行 HOOK 。
 
@@ -96,20 +96,18 @@ void newFunc(const char *str){
 
 系统函数能 HOOK 成功，自定义的却 HOOK 不到呢？so~，往下看...
 
-### fishHook原理分析
-
-#### MachO
+## MachO
 
 首先我们要了解一个东西。我们写好的代码，生成的 iOS 程序其实是一个可执行文件。这个文件格式是 MachO 格式，所以一般我们称其为 **MachO** 文件。
 
 这个文件里面包含的就是数据和指令。比如你定义的类、方法、全局变量、方法实现等等。我们为什么要讨论 MachO？因为结合上面的疑问我们思考一个问题：**自定义函数和系统函数，在文件位置上有什么区别？**
 
-- **自定义函数**在本 MachO 文件中，在运行时刻进入内存，自定义函数在本镜像文件中。
+- **自定义函数**在本 MachO 文件中，自定义函数在本镜像文件中。
 - **系统函数**在系统框架中，在运行时刻进入内存，系统函数在系统的动态库中，比如 NSLog 在 Fundation 这个镜像文件中。
 
 那既然如此我们就可以得到这样的结论：自定义的函数，在编译时刻，编译器就可以确定函数的实现地址（在 MachO 文件中的偏移地址）。但是系统函数是没办法知道的。那么在 CPU 执行我们的代码的时候，我们是如何告诉 CPU ，我们需要调用系统函数。以及如何知道系统函数的地址的呢？这里就要提到 PIC 技术了。
 
-#### PIC（Position Independ code）技术
+## PIC（Position Independ code）技术
 
 PIC翻译过来就是位置独立代码。
 
@@ -119,21 +117,21 @@ PIC翻译过来就是位置独立代码。
 - 这里面的指针，我们称为**符号**。
 - 给里面的指针赋值的过程，我们称为**符号绑定**。
 
-那么说到这里，我想很多童鞋已经猜到了。fishhook 之所以 HOOK 不了自定义的函数，就是因为自定义的函数没有通过符号寻找地址这个过程。而**系统函数是通过符号去绑定实现地址的**。fishhook 就是利用这一点，去修改了系统函数的符号达到 HOOK 的目的。其实我们通过fishhook 的函数名称就不难看出来 **rebind_symbols** 符号重绑定。
+那么说到这里，我想很多童鞋已经猜到了。fishhook 之所以 HOOK 不了自定义的函数，就是因为**自定义的函数没有通过符号寻找地址这个过程，而系统函数是通过符号去绑定实现地址的**。fishhook 就是利用这一点，去修改了系统函数的符号达到 HOOK 的目的。其实我们通过fishhook 的函数名称就不难看出来 **rebind_symbols** 符号重绑定。
 
-### fishHook原理探索
+## fishHook原理探索
 
-#### 观察符号绑定和重绑定过程
+### 观察符号绑定和重绑定过程
 
 MachO 文件内部存有代码和数据，代码放在 _TEXT 段（代码段）中，数据放在 _DATA 段（数据段）中。数据段除了全局变量、常量、自定义类还有很多东西，比如我们刚才提到的**符号表**。接下来，我们要借助一个图形化工具，去分析我们的 MachO 文件。这个工具就是 MachOView。
 
-##### 分析MachO文件
+### 分析MachO文件
 
 我们将刚才的 MachO 文件放入到 MachOView 里面分析一下。可以看到下图。
 
 ![图片](fishhook.assets/640.jpeg)
 
-##### 找到符号偏移地址
+#### 找到符号偏移地址
 
 在这里面我们就可以清晰的看到符号表在文件中长啥样了。并且最重要的是能够看出符号在文件中的偏移位置。
 
@@ -141,7 +139,7 @@ MachO 文件内部存有代码和数据，代码放在 _TEXT 段（代码段）�
 
 有了这个偏移值，我们可以在项目运行的时候，通过LLDB，观察的符号的绑定和重绑定过程。
 
-##### 动态调试
+#### 动态调试
 
 1、来到我们原来的代码，在这几行打上断点并运行。
 
@@ -187,7 +185,7 @@ MachO 文件内部存有代码和数据，代码放在 _TEXT 段（代码段）�
 
 经过一系列动态调试，我们可以观察到符号绑定和重绑定的全部过程。但是，fishhook 是怎么通过我们传给它的一个字符就找到了我们 NSLog 的符号的呢？我们往下看...
 
-#### 通过符号找到字符串
+### 通过符号找到字符串
 
 我们还是来到 MachOView 里面，注意，我们数一下，NSLog 这个符号，在懒加载符号表里面是第几个？很明显第一个。
 
@@ -225,17 +223,15 @@ MachO 文件内部存有代码和数据，代码放在 _TEXT 段（代码段）�
 
 通过`NSLog`字符串如何找到符号并修改：
 
-1. 拿到NSLog字符串，去machO的`String Table`里面找`NSLog`，用`.`来分割。得到偏移值，得到`String Table Index`。
-2. 通过`String Table index`去`Symbol Table的Symbols`（总表：内部符号和外部符号都有），定位到NSLog，得到符号表的偏移值（`Symbols Index`）
+1. 拿到NSLog字符串，去machO的`String Table`里面找`NSLog`，用`.`来分割。得到`String Table Index`。
+2. 通过`String Table index`去`Symbol Table`的`Symbols`（总表：内部符号和外部符号都有），定位到NSLog，得到符号表的偏移值（`Symbols Index`）
 3. 通过`Symbols Index`去找`Indirect Symbols`得到该符号在`Indirect Symbols`中的顺序（偏移值）。
 4. 由于`Lazy Symbol Pointers`的Index和`Indirect Symbols`一一对应，所以很容易就找到了对应的符号。
-5. 最后修改`Lazy Symbol`里面的值。（因为外部符号的调用，都是找桩，桩去寻找`Lazy Symbol`里面的地址执行）
+5. 最后修改`Lazy Symbol Pointers`里面的值。（因为外部符号的调用，都是找桩，桩去寻找`Lazy Symbol`里面的地址执行）
 
-在`Lazy Symbol Pointers`懒加载符号表
+在`Lazy Symbol Pointers`懒加载符号表，修改了符号地址，把NSLog符号地址改为了自己应用程序image中自己定义方法MyNslog的地址。
 
-修改了符号地址，把NSLog符号地址改为了自己应用程序image中自己定义方法MyNslog的地址。
-
-### 后记
+## 后记
 
 刚才我们通过动态调试加 MachOView 的分析梳理了整个符号绑定以及重绑定的过程。这个过程也是 fishhook 能够 HOOK 系统函数的原理。
 
