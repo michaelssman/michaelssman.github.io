@@ -7,7 +7,7 @@
 - 如果category中的**方法**和类中原有方法同名，运行时会优先调用category中的方法。所以开发中尽量保证不要让分类中的方法和原有类中的方法名相同。避免出现这种情况的解决方案是给分类的方法名统一添加前缀。比如category_。
 - 如果多个category中存在同名的方法，运行时到底调用哪个方法由编译器决定，最后一个参与编译的方法插入到方法列表前面会被调用。
 
-# 关联对象
+## 关联对象
 
 HashMap存储，存储关联策略 关联值。两个哈希表：多个类，多个属性。
 
@@ -104,15 +104,14 @@ public:
 typedef DenseMap<DisguisedPtr<objc_object>, ObjectAssociationMap> AssociationsHashMap;
 ```
 
-**set**
+### set
 
-- hashmap
+- hashmap：AssociationsHashMap
 
-  - DisguisedPtr：关联的实例对象 key
-
-  - ObjectAssociationMap
-    - ObjcAssociation：关联策略和值
+  - key：DisguisedPtr（关联的实例对象）
+  - value：ObjectAssociationMap
     - key
+    - value：ObjcAssociation（关联策略和值）
 
 AssociationsHashMap：DisguisedPtr和ObjectAssociationMap
 
@@ -120,15 +119,13 @@ AssociationsHashMap：DisguisedPtr和ObjectAssociationMap
 typedef DenseMap<const void *, ObjcAssociation> ObjectAssociationMap;
 ```
 
-ObjectAssociationMap：ObjcAssociation
-
-**get**
+### get
 
 通过对象在hashmap找到关联策略和值
 
 关联对象不需要考虑内存管理，因为底层代码会自动的放到自动释放池中。
 
-# 分类的意义
+## 分类的意义
 
 1. 分类在架构设计上面：解耦，开发过程中比较繁重啰嗦的业务代码对项目的可读性造成了压力，为追求架构清晰，维护成本低，通过分类梳理。（AppDelegate分类 第三方分享 推送等等拆分）
 2. 可以为系统类添加分类进行拓展
@@ -143,7 +140,7 @@ ObjectAssociationMap：ObjcAssociation
 
 objc-runtime-new.h
 
-# category_t
+## category_t
 
 category_t没有ivars，所以没有成员变量的存储。
 
@@ -181,13 +178,13 @@ struct category_t {
 
 因为成员变量在编译时期 内存布局已经确定好了，所以不能添加。
 
-# 类扩展
+## 类扩展
 
 匿名分类
 
 可以添加方法、属性、成员变量
 
-# 分类的加载
+## 分类的加载
 
 类有懒加载和非懒加载，分类也有懒加载和非懒加载。
 
