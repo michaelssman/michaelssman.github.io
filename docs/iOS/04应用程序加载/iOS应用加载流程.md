@@ -140,7 +140,7 @@ image镜像文件通过dyld（动态链接器）加载。Fundation通过dyld加�
 
 执行的时候把函数地址和项目中符号绑定。
 
-一旦执行就绑定，NSLog是懒绑定 用的时候才绑定。
+一旦执行就绑定，NSLog是懒绑定，用的时候才绑定。
 
 生成本地macho文件 代码和数据。里面有符号表，是一个指针。执行的时候发现外部符号会找符号。如果符号没绑定地址则在内存共享缓存空间找外部动态库，然后绑定。以后就可以直接找。
 
@@ -153,46 +153,6 @@ image镜像文件通过dyld（动态链接器）加载。Fundation通过dyld加�
 **外部函数都会生成符号表。通过符号表就可以找到绑定的空间。**
 
 在编译过程，可执行文件对动态库的方法调用是只声明了符号。在调用dyld把这些动态库在加载到内存后，需要去相应的动态库中链接对应的方法，找到其指针，然后对可执行文件中的指针执行修复。Bind过程中就是把这些指向动态库的指针进行修复。
-
-#### 符号表
-
-iOS定义的方法，变量都有名称，名称会生成符号表保存。
-
-Xcode编译之后会product文件夹中生成一个.app文件，show in finder之后，会找到一个mach-o（一种格式）文件
-
-#### 符号表两个：
-
-1. 本地符号Symbol Table（符号表）自定定义的
-1. 外部间接符号Dynamic Symbol Table
-
-​		Indirect Symbols间接符号，外部动态库符号 系统的符号。和Lazy Symbol 有关联，一一对应。
-
-#### 符号绑定
-
-符号绑定，绑定的是外部符号，在dylb。dyld绑定NSLog符号。把NSLog的真实地址告诉应用。
-
-动态库里面的符号（Fundation）绑定在外部间接符号表里`Dynamic Symbol Table`。
-
-`Lazy Symbol Pointers`（用到了才加载）和`Non-Lazy Symbol Pointers`（应用程序一加载就应用）
-
-`Symlos Stubs`外部符号的桩，每一个`Lazy Symbol Pointers`外部符号都有一个对应的`Symlos Stubs`外部符号的桩。
-
-调用外部函数的时候首先调用桩代码，在`Lazy Symbol Pointers`里找地址代码执行。
-
-#### 每次调用外部符号：
-
-例如找NSLog
-
-1. 找桩（里面会根据符号表里面的值调用）。桩在machO的`Section64（_TEXT, _stubs）`的`Symbols Stubs`中。
-1. 根据桩的Data执行找`Lazy Symbol Pointers`，找`Lazy Symbol Pointers`表里面的Data去执行。
-2. 符号表里面的值（默认是执行dyld_binder）
-3. 首次调用：dyld_binder会改变符号表里面的值，指向真实地址。
-
-之后第二次调用，只会执行前三步。
-
-上面的流程就是修改符号表。
-
-程序第一次使用NSLog是去找NSLog的桩，通过桩在符号表找地址去执行绑定。第二次还是会去找桩，在懒加载符号表，不会再执行绑定操作，直接找到NSLog的实现。
 
 ### Objc
 
