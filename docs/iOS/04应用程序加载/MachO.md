@@ -18,14 +18,6 @@ Mach-O 其实是Mach Object文件格式的缩写，是 mac 以及 iOS 上可执�
 
 Mach-O总的来说可以说是苹果的一种文件标准的格式。
 
-预编译 #import插入到指定的位置，替换宏定义等等。
-
-编译阶段：词法分析 语法分析 语义分析
-
-汇编阶段：生成机器指令 .o
-
-链接：静态链接 动态链接
-
 以下以可执行文件为重点去讲述Mach-O
 
 ## 可执行文件
@@ -49,45 +41,31 @@ Mach-O总的来说可以说是苹果的一种文件标准的格式。
 
 以mac中的计算器App为例，用MachOView查看，可以看到这是一个Fat Binary类型的可执行文件，也就是我们平常说的胖二进制文件。里面包含了两个Executable二进制文件，每一个Excutable里面的格式可以参照单个架构的Mach-O的格式。当我们点击app的时候，就会从中选合适的Excutable加载到内存中。
 
-## 单个Excutable的格式总体如下：
+## 单架构的Excutable可执行文件Mach-O文件格式的内部结构
 
-1. ASLR
+Products文件夹下的`.app`文件显示包内容，可执行文件在MachOView中整体如下
 
-2. _pageZero
+1. mach-header 
 
-3. Header
+   ASLR
 
-4. Load Commands
+   _pageZero
 
-5. Text代码段
+2. Load Commands
 
-6. Data数据段
+3. Text代码段
+
+4. Data数据段
 
    里面会有符号表（间接符号表），访问NSLog。
 
-7. Symbol Table（符号表）自定定义的
+5. Symbol Table（符号表）自定定义的
 
-8. Dynamic Symbol Table
+   Symbols
 
-   Indirect Symbols间接符号，外部动态库符号 系统的符号
+6. Dynamic Symbol Table
 
-   符号绑定
-
-
-![image-20220417215338260](MachO.assets/image-20220417215338260.png)
-
-对于上面的图片，单架构的可执行文件Mach-O文件格式的内部结构总体如下：
-
-![image-20220128181147480](iOS编译运行过程.assets/image-20220128181147480.png)
-
-从图中可知，Mach-O大概分为三个部分
-
-- mach-header 
-- load commands 
-
-- Data 
-
-下面简单的说下各个部分的作用是什么。
+   Indirect Symbols间接符号，外部动态库符号 系统的符号。符号绑定。
 
 ### 1. mach_header
 
@@ -98,8 +76,6 @@ Mach-O总的来说可以说是苹果的一种文件标准的格式。
 - 标明load commands数量等
 - 其他的文件属性信息
 - 文件头信息影响后续的文件结构安排 
-
-Products文件夹下的`.app`文件显示包内容，可执行文件在MachOView中整体如下
 
 ### 2. load commands
 
@@ -125,13 +101,10 @@ load commands记录地址信息
     <tr><td>LC_VERSION_MIN_MACOSX</td> <td>支持最低的操作系统版本</td></tr>
     <tr><td>LC_SOURCE_VERSION</td> <td>源代码版本</td></tr>
     <tr><td>LC_MAIN</td> <td>设置程序主线程的入口地址和栈大小</td></tr>
-    <tr><td>LC_LOAD_DYLIB</td> <td>依赖库的路径，包含三方库</td></tr>
+    <tr><td>LC_LOAD_DYLIB(库名)</td> <td>依赖库的路径，包含三方库</td></tr>
     <tr><td>LC_FUNCTION_STARTS</td> <td>函数起始地址表</td></tr>
     <tr><td>LC_CODE_SIGNATURE</td> <td>代码签名</td></tr>
 </table>
-在MachOView中整体如下
-
-![image-20220129183156889](MachO.assets/image-20220129183156889.png)
 
 ### 3. Data数据段
 
@@ -143,10 +116,6 @@ load commands记录地址信息
 - 运行时的类数据
 - 符号表，动态符号表
 - 其他数据
-
-在MachOView中整体如下
-
-![image-20220129183026267](MachO.assets/image-20220129183026267.png)
 
 对于Data区域的文档，可以按照Segment和section划分。Segment和section的关系有点像操作系统中的段和页的概念。
 

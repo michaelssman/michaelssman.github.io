@@ -14,17 +14,11 @@ rm -rf "${SOURCE_ROOT}/Products"
 cp -Rv -- "${BUILT_PRODUCTS_DIR}/" "${SOURCE_ROOT}/Products"
 ```
 
-![image-20220520180130616](swift的module.assets/image-20220520180130616.png)
-
 不能在同一个文件定义同一个key，可以创建不同的文件，导入。
-
-
 
 ![image-20220520220255273](swift的module.assets/image-20220520220255273.png)
 
 swiftinterface兼容不同swift版本编译器，所以swiftinterface比swiftmodule要慢一点。
-
-
 
 ```swift
 import Foundation
@@ -45,8 +39,6 @@ public struct Teacher {
 加了@frozen就是静态（冻住），不加就是运行
 
 swift库版本从1.0更新到2.0的时候，把不需要更改的冻住，不用重新编译。
-
-
 
 module是用来管理一组头文件的。
 
