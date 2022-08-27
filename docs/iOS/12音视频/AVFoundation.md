@@ -14,12 +14,10 @@ device修改（前后摄像后、聚焦、曝光、手电筒），需要加锁�
 
 ### 捕捉设备输出（图片、视频）: AVCaptureOutput抽象类
 
-- AVCaptureStillImageOutput静态图片
-
-- AVCaptureMovieFileOutput视频文件
-
+- AVCaptureStillImageOutput：静态图片
+- AVCaptureMovieFileOutput：视频文件
+- AVCaptureMetadataOutput：元数据
 - AVCaptureAudioDataOutput
-
 - AVCaptureVideoDataOutput
 
 ## 捕捉连接: AVCaptureConnection
