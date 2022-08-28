@@ -16,7 +16,7 @@ Block的使用很像函数指针，不过与函数最大的不同是：Block可�
 
 没有捕获外界变量，或者只用到全局变量、静态(static)变量的block就是全局block
 
-NSGlobalBlock，类似函数，存储在程序的数据区域（text段），我们只要实现一个对周围变量没有引用的Block，就会显示为是它
+NSGlobalBlock，类似函数，存储在程序的数据区域（text段）。
 
 对于Global的Block，我们无需多处理，不需retain和copy，即使copy，也不会copy到堆区，内存不会发生变化，操作都无效。
 
@@ -32,7 +32,7 @@ NSGlobalBlock，类似函数，存储在程序的数据区域（text段），我
 
 对于全局block，用weak，strong，还是copy修饰都是可以的。（但最好不用用weak）
 
-注意：如果block中没有用到外界变量，不管他是用什么修饰符修饰，他都是全局block！
+注意：如果block中没有用到外界变量，不管他是用什么修饰符修饰，都是全局block！
 
 ### 2、栈block
 
@@ -73,7 +73,7 @@ ARC下：
 
 只需要对NSStackBlock进行copy操作就可以获取，所以，当我们定义的Block要在外部回调使用的时候，在MRC下，我们需要copy的堆区，永远的持有，不让释放。
 
-在堆区的NSMallocBlock，我们可以对其retain，release，copy（等价于retain，引用计数的加一）。
+在堆区的NSMallocBlock，我们可以对其retain，release，copy（等价于retain，引用计数的加1）。
 
 在ARC下，系统会给我们copy到堆区，避免了很多不必要的麻烦。
 
@@ -195,7 +195,7 @@ Block会copy该局部变量的值，在Block中作为常量使用，是不允许
     block();
 ```
 
-block内部修改外界变量i的值直接报错，如果想要修改，可以在int a = 0前面加上关键字__block，此时i等效于全局变量或静态变量
+block内部修改外界变量的值直接报错，如果想要修改，可以在int a = 0前面加上关键字__block，此时i等效于全局变量或静态变量
 
 ```objective-c
     __block int b = 0;   
@@ -414,13 +414,13 @@ block把a的值传了进去，里面生成了一个新的变量a。
 
 如果要修改a的值 要在前面加__block。
 
-静态变量和全局变量不需要加__block。block不会捕获静态变量和全局变量，因为存在全局区。
+**静态变量和全局变量不需要加__block。block不会捕获静态变量和全局变量，因为存在全局区。**
 
 加__block 生成`__Block_byref_a_0`结构体，传给block的是指针地址，和外面的变量是同一个内存空间，所以可以修改外面的变量。
 
 ⽤`__block`修饰的变量在编译过后会变成` __Block_byref__XXX`类型的结构体，在结构体内部有⼀个__forwarding 的结构体指针，指向结构体本身。
 
-block创建的时候是在栈上的，在将栈block拷⻉到堆上的时候，同时也会将block中捕获的对象拷⻉到堆上，然后就会将栈上的`__block`修饰对象的__forwarding指针指向堆上的拷⻉之后的对象。
+block创建的时候是在栈上的，在将栈block拷⻉到堆上的时候，同时也会将block中捕获的对象拷⻉到堆上，然后就会将栈上的`__block`修饰对象的`__forwarding`指针指向堆上的拷⻉之后的对象。
 
 这样我们在block内部修改的时候虽然是修改堆上的对象的值，但是因为栈上的对象的__forwarding指针将堆和栈的对象链接起来。因此就可以达到修改的⽬的。
 
@@ -527,9 +527,9 @@ _Block_copy在lib system_blocks.dylib库libclosure-master
   // 3.引用计数初始化为 1
   // 4.调用 copy helper 方法（如果存在的话）；
 	// 5.isa标记堆block
-// 参数 arg 就是 Block_layout 对象，
-// 返回值是拷贝后的 block 的地址
-// 运行？stack -》malloc
+	// 参数 arg 就是 Block_layout 对象，
+	// 返回值是拷贝后的 block 的地址
+	// 运行？stack -》malloc
 void *_Block_copy(const void *arg) {
     struct Block_layout *aBlock;
 
@@ -846,80 +846,3 @@ struct Block_descriptor_3 {
 1. _Block_copy栈block拷贝到堆block
 2. block捕获Block_byref_ 对Block_byref_进行copy
 3. Block_byref对object进行copy
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

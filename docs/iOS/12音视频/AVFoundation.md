@@ -44,7 +44,12 @@ pointForCaptureDevicePointOfInterest：获取摄像头的坐标系的CGPoint，�
 
 2. 为session添加一个元数据的输出AVCaptureMetadataOutput
 
-3. 设置元数据的范围（人脸识别、二维码数据、一维码...）
+3. 设置元数据的type范围
+
+   1. 人脸识别AVMetadataObjectTypeFace
+   2. 二维码数据
+   3. 一维码
+   4. 等等
 
 4. 开始捕捉（设置捕捉完成代理）
 
