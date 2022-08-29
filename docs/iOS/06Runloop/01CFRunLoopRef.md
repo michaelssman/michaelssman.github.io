@@ -2,7 +2,7 @@
 
 ## 获取当前runloop
 
-线程和runloop是一一绑定的关系。原因如下：
+线程和runloop是一一绑定的关系。
 
 1.获得当前RunLoop对象
 
@@ -158,38 +158,6 @@ static CFRunLoopRef __CFRunLoopCreate(pthread_t t) {
 ```
 
 打印[NSRunLoop currentRunLoop] 打印出来的是一个**CFRunLoop**结构体
-
-```
-<CFRunLoop 0x600001774a00 [0x7fff8062d750]>{wakeup port = 0x2403, stopped = false, ignoreWakeUps = false, 
-current mode = kCFRunLoopDefaultMode,
-common modes = <CFBasicHash 0x60000253ee50 [0x7fff8062d750]>{type = mutable set, count = 2,
-entries =>
-	0 : <CFString 0x7fff869c52a0 [0x7fff8062d750]>{contents = "UITrackingRunLoopMode"}
-	2 : <CFString 0x7fff80640a20 [0x7fff8062d750]>{contents = "kCFRunLoopDefaultMode"}
-}
-,
-common mode items = <CFBasicHash 0x60000254f900 [0x7fff8062d750]>{type = mutable set, count = 11,
-entries =>
-	0 : <CFRunLoopSource 0x600001e780c0 [0x7fff8062d750]>{signalled = No, valid = Yes, order = -1, context = <CFRunLoopSource context>{version = 0, info = 0x0, callout = PurpleEventSignalCallback (0x7fff38c3a9b2)}}
-	1 : <CFRunLoopSource 0x600001e7c6c0 [0x7fff8062d750]>{signalled = No, valid = Yes, order = -1, context = <CFRunLoopSource context>{version = 1, info = 0x2c07, callout = PurpleEventCallback (0x7fff38c3a9be)}}
-	2 : <CFRunLoopSource 0x600001e78300 [0x7fff8062d750]>{signalled = No, valid = Yes, order = 0, context = <CFRunLoopSource context>{version = 0, info = 0x600000f793e0, callout = FBSSerialQueueRunLoopSourceHandler (0x7fff36d82bd5)}}
-	//和AutoreleasePool相关的
-	3 : <CFRunLoopObserver 0x600001a74640 [0x7fff8062d750]>{valid = Yes, activities = 0x1, repeats = Yes, order = -2147483647, callout = _wrapRunLoopWithAutoreleasePoolHandler (0x7fff4931eaa4), context = <CFArray 0x60000252e850 [0x7fff8062d750]>{type = mutable-small, count = 1, values = (
-	0 : <0x7f802680a038>
-)}}
-	4 : <CFRunLoopSource 0x600001e70300 [0x7fff8062d750]>{signalled = No, valid = Yes, order = -2, context = <CFRunLoopSource context>{version = 0, info = 0x6000025764f0, callout = __handleHIDEventFetcherDrain (0x7fff493c2edd)}}
-	6 : <CFRunLoopObserver 0x600001a746e0 [0x7fff8062d750]>{valid = Yes, activities = 0xa0, repeats = Yes, order = 2147483647, callout = _wrapRunLoopWithAutoreleasePoolHandler (0x7fff4931eaa4), context = <CFArray 0x60000252e850 [0x7fff8062d750]>{type = mutable-small, count = 1, values = (
-	0 : <0x7f802680a038>
-)}}
-	7 : <CFRunLoopObserver 0x600001a74500 [0x7fff8062d750]>{valid = Yes, activities = 0xa0, repeats = Yes, order = 1999000, callout = _beforeCACommitHandler (0x7fff4934fa4f), context = <CFRunLoopObserver context 0x7f8025505750>}
-	8 : <CFRunLoopSource 0x600001e70000 [0x7fff8062d750]>{signalled = No, valid = Yes, order = -1, context = <CFRunLoopSource context>{version = 0, info = 0x600001078410, callout = __handleEventQueue (0x7fff493c2e6e)}}
-	9 : <CFRunLoopObserver 0x600001a74960 [0x7fff8062d750]>{valid = Yes, activities = 0xa0, repeats = Yes, order = 2000000, callout = _ZN2CA11Transaction17observer_callbackEP19__CFRunLoopObservermPv (0x7fff2b477daa), context = <CFRunLoopObserver context 0x0>}
-	//_afterCACommitHandler动画
-	11 : <CFRunLoopObserver 0x600001a745a0 [0x7fff8062d750]>{valid = Yes, activities = 0xa0, repeats = Yes, order = 2001000, callout = _afterCACommitHandler (0x7fff4934fab8), context = <CFRunLoopObserver context 0x7f8025505750>}
-	//_UIGestureRecognizerUpdateObserver手势识别的
-	12 : <CFRunLoopObserver 0x600001a78320 [0x7fff8062d750]>{valid = Yes, activities = 0x20, repeats = Yes, order = 0, callout = _UIGestureRecognizerUpdateObserver (0x7fff48eaa99e), context = <CFRunLoopObserver context 0x600000078310>}
-}
-```
 
 ## Runloop结构体：__CFRunLoop
 

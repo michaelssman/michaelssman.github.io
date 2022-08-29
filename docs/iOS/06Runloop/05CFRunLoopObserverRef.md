@@ -50,7 +50,7 @@ typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) {
 };
 ```
 
-监听RunLoop的状态变化可以用于优化程序，比如表格要加载大量数据、图片、处理耗时操作、会造成UI卡顿，这时就可以利用监听RunLoop，在他休眠时唤醒它去处理这些任务。
+监听RunLoop的状态变化可以用于优化程序，比如表格要加载大量数据、图片、处理耗时操作、会造成UI卡顿，这时就可以利用监听RunLoop，**在他休眠时唤醒它去处理这些任务**。
 
 点击CFRunLoopRef到API中发现定义了Observer的相关声明CFRunLoopObserverRef,这正是我们想要的:
 

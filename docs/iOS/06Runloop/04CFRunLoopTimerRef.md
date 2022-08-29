@@ -1,6 +1,8 @@
 # CFRunLoopTimerRef
 
-**CFRunLoopTimerRef**：基于时间的触发器，CFRunLoopTimerRef是Core Foundation提供的基础定时器，NSTimer则是建立在CFRunLoopTimerRef之上的高层组件。当Timer被加入到RunLoop时，RunLoop会注册对应的时间点，当达到时间时，RunLoop会被唤醒，执行创建Timer时的回调。
+**CFRunLoopTimerRef**：基于时间的触发器，CFRunLoopTimerRef是Core Foundation提供的基础定时器，NSTimer则是建立在CFRunLoopTimerRef之上的高层组件。
+
+当Timer被加入到RunLoop时，RunLoop会注册对应的时间点，当达到时间时，RunLoop会被唤醒，执行创建Timer时的回调。
 
 ```objective-c
     [NSTimer scheduledTimerWithTimeInterval:1 repeats:YES block:^(NSTimer * _Nonnull timer) {
@@ -64,7 +66,7 @@ void CFRunLoopAddTimer(CFRunLoopRef rl, CFRunLoopTimerRef rlt, CFStringRef modeN
             CFRelease(set);
         }
     } else {
-        //根据mode名字找到模型
+        //根据mode名字找到mode
         CFRunLoopModeRef rlm = __CFRunLoopFindMode(rl, modeName, true);
         //如果没有 就创建一个
         if (NULL != rlm) {
@@ -100,6 +102,43 @@ void CFRunLoopAddTimer(CFRunLoopRef rl, CFRunLoopTimerRef rlt, CFStringRef modeN
         }
     }
     __CFRunLoopUnlock(rl);
+}
+```
+
+## 执行timer
+
+1. timer依赖mode去run
+2. runloop run的时候：
+3. 遍历timers
+4. __CFRunLoopDoTimer
+   1. 根据mode拿到runloop中的timer
+   2. 执行回调`__CFRUNLOOP_IS_CALLING_OUT_TO_A_TIMER_CALLBACK_FUNCTION__`
+
+```c
+// rl and rlm are locked on entry and exit
+static Boolean __CFRunLoopDoTimers(CFRunLoopRef rl, CFRunLoopModeRef rlm, uint64_t limitTSR) {    /* DOES CALLOUT */
+    Boolean timerHandled = false;
+    CFMutableArrayRef timers = NULL;
+  //先找到runloop里的所有timer，可能不止一个
+    for (CFIndex idx = 0, cnt = rlm->_timers ? CFArrayGetCount(rlm->_timers) : 0; idx < cnt; idx++) {
+        CFRunLoopTimerRef rlt = (CFRunLoopTimerRef)CFArrayGetValueAtIndex(rlm->_timers, idx);
+        
+        if (__CFIsValid(rlt) && !__CFRunLoopTimerIsFiring(rlt)) {
+            if (rlt->_fireTSR <= limitTSR) {
+                if (!timers) timers = CFArrayCreateMutable(kCFAllocatorSystemDefault, 0, &kCFTypeArrayCallBacks);
+                CFArrayAppendValue(timers, rlt);
+            }
+        }
+    }
+    
+  //遍历 执行。__CFRunLoopDoTimer
+    for (CFIndex idx = 0, cnt = timers ? CFArrayGetCount(timers) : 0; idx < cnt; idx++) {
+        CFRunLoopTimerRef rlt = (CFRunLoopTimerRef)CFArrayGetValueAtIndex(timers, idx);
+        Boolean did = __CFRunLoopDoTimer(rl, rlm, rlt);
+        timerHandled = timerHandled || did;
+    }
+    if (timers) CFRelease(timers);
+    return timerHandled;
 }
 ```
 
