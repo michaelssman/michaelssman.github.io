@@ -25,11 +25,3 @@
 使用`brew help`命令，可以看到所有的使用：
 ![image.png](https://upload-images.jianshu.io/upload_images/1892989-d52d0427144dde5d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-
-#### 安装nvm
-1. brew install nvm
-![image.png](https://upload-images.jianshu.io/upload_images/1892989-eba052e4e11fe5ae.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-2. mkdir ~/.nvm
-3. export NVM_DIR="$HOME/.nvm"
-4. . $(brew --prefix nvm)/nvm.sh
-
