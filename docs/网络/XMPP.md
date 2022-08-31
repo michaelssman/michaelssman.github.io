@@ -20,7 +20,35 @@
 1. 优点：开放、安全、分散、可扩展
 2. 缺点：数据负载过重XML、没有二进制传输
 
+## Openfire
 
+1. XMPP协议的服务器实现开源框架
+
+2. 通过配置Openfifire服务器管理平台实现XMPP协议中的功能
+
+3. Openfifire服务器管理平台需要配置⼀个进⾏数据存储的数据库
+
+## 注册、登录
+
+常⽤的类
+
+1. XMPPStream(通道管理对象) 
+
+2. XMPPJID(账号对象) 
+
+3. XMPPPresence(上线状态对象)
+
+## 好友、聊天
+
+常⽤的类
+
+1. XMPPStream(通信管道管理对象) 
+
+2. XMPPRoster(好友花名册管理对象) 
+
+3. XMPPJID(账号对象) 
+
+4. XMPPMessageArchivingCoreDataStorage(聊天消息持久化存储对象)
 
 多账号登录：source
 
