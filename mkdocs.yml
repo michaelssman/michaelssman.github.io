@@ -336,6 +336,14 @@ nav:
       - 算法/面试/玻璃球.md
       - 算法/面试/第几瓶水有毒.md
       - 算法/面试/阿里.md
+  - 网络:
+    - 网络/Http.md
+    - 网络/Socket.md
+    - 网络/TCP_IP协议.md
+    - 网络/TCP和UDP.md
+    - 网络/XMPP.md
+    - 网络/七层模型.md
+    - 网络/基础概念.md
   - svn&git:
     - svn&git/Git/git.md
     - svn&git/Git/git_config.md
@@ -345,15 +353,6 @@ nav:
     - svn&git/SVN/SVN项目回滚.md
     - svn&git/SVN/svn_ignores.md
     - svn&git/SVN/svn打tag.md
-  - 网络:
-    - 网络/Http.md
-    - 网络/Socket.md
-    - 网络/TCP_IP协议.md
-    - 网络/TCP和UDP.md
-    - 网络/XMPP.md
-    - 网络/七层模型.md
-    - 网络/CDN.md
-    - 网络/基础概念.md
   - 设计模式:
     - 设计模式/总结.md
     - 设计模式/结构模式.md
