@@ -121,6 +121,7 @@ nav:
       - iOS/11架构模式/MVVM.md
       - iOS/11架构模式/MVX.md
     - 12音视频:
+      - iOS/12音视频/视频基本知识.md
       - iOS/12音视频/AVFoundation.md
       - iOS/12音视频/H264.md
       - iOS/12音视频/视频编解码.md
@@ -423,7 +424,6 @@ nav:
   - 正则:
     - 正则/正则表达式.md
   - 源码: 查看源码.md
-  - 递归: 递归.md
   - Mac:
     - MAC/brew.md
     - MAC/linux.md
