@@ -2,9 +2,7 @@
 
 我们打开了一个App，可以理解在手机的操作系统上运行了一个App进程。而进程是特殊文件在内存中加载得到的结果，这种特殊文件必须是操作系统可理解的。
 
-在unix中，可运行的程序会编译成一个二进制文件，unix对于二进制文件，有一个标准的格式叫ElF。苹果定制了一个属于苹果的格式，这个就是Mach-O格式。
-
-Mach-O 其实是Mach Object文件格式的缩写，是 mac 以及 iOS 上可执行文件的格式， 类似于 windows上的 PE 格式 (Portable Executable ), linux 上的 elf 格式 (Executable and Linking Format) 。
+Mach-O 其实是Mach Object文件格式的缩写，是 mac 以及 iOS 上可执行文件的格式， 类似于 windows上的 PE 格式 (Portable Executable ), linux 上的 ElF 格式 (Executable and Linking Format) 。
 
 但是Mach-O不仅仅是只是可执行文件的格式标准，还是macOS和iOS中一些其他文件的标准格式。
 
@@ -45,29 +43,7 @@ Mach-O总的来说可以说是苹果的一种文件标准的格式。
 
 Products文件夹下的`.app`文件显示包内容，可执行文件在MachOView中整体如下
 
-1. mach-header 
-
-   ASLR
-
-   _pageZero
-
-2. Load Commands
-
-3. Text代码段
-
-4. Data数据段
-
-   里面会有符号表（间接符号表），访问NSLog。
-
-5. Symbol Table（符号表）自定定义的
-
-   Symbols
-
-6. Dynamic Symbol Table
-
-   Indirect Symbols间接符号，外部动态库符号 系统的符号。符号绑定。
-
-### 1. mach_header
+### 1、mach_header
 
 文件头mach_header 位于 Mach-O 文件的头部，有以下作用：
 
@@ -77,7 +53,7 @@ Products文件夹下的`.app`文件显示包内容，可执行文件在MachOView
 - 其他的文件属性信息
 - 文件头信息影响后续的文件结构安排 
 
-### 2. load commands
+### 2、load commands
 
 加载的指令，依赖的库Foundation
 
@@ -105,8 +81,11 @@ load commands记录地址信息
     <tr><td>LC_FUNCTION_STARTS</td> <td>函数起始地址表</td></tr>
     <tr><td>LC_CODE_SIGNATURE</td> <td>代码签名</td></tr>
 </table>
+### 3、Text代码段
 
-### 3. Data数据段
+### 4、Data数据段
+
+里面会有符号表（间接符号表），访问NSLog。
 
 **data区主要就是负责代码和数据记录的。Mach-O 是以 Segment 这种结构来组织数据的，一个 Segment 可以包含 0 个或多个 Section。根据 Segment 是映射的哪一个 Load Command，Segment 中 section 就可以被解读为是是代码，常量或者一些其他的数据类型。在装载在内存中时，也是根据 Segment 做内存映射的。** 
 
@@ -126,10 +105,10 @@ load commands记录地址信息
 3. __DATA。数据区域
 4. __LINKEDIT；包含了方法和变量的元数据，代码签名等信息
 
-### image镜像文件
+### 5、Symbol Table（符号表）自定定义的
 
-UIKit，Foundation都是镜像文件
+Symbols
 
-编译完成之后的mach-o到内存中就叫镜像。
+### 6、Dynamic Symbol Table
 
-image list第0个是项目本身在内存中的地址（machO地址）。
+Indirect Symbols间接符号，外部动态库符号 系统的符号。符号绑定。

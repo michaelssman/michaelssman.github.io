@@ -148,7 +148,7 @@ static Boolean __CFRunLoopDoTimers(CFRunLoopRef rl, CFRunLoopModeRef rlm, uint64
 /*
 说明：
 （1）runloop一启动就会选中一种模式，当选中了一种模式之后其它的模式就都不管了。一个mode里面可以添加多个NSTimer,也就是说以后当创建NSTimer的时候，可以指定它是在什么模式下运行的。
-（2）它是基于时间的触发器，说直白点那就是时间到了我就触发一个事件，触发一个操作。基本上说的就是NSTimer
+（2）它是基于时间的触发器，说直白点那就是时间到了就触发一个事件，触发一个操作。基本上说的就是NSTimer
 （3）相关代码
 */
 - (void)timer2

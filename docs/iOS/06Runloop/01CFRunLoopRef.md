@@ -1,35 +1,5 @@
 # CFRunloopRef
 
-## 获取当前runloop
-
-线程和runloop是一一绑定的关系。
-
-1.获得当前RunLoop对象
-
-```objective-c
-//NSRunLoop
-NSRunLoop * runloop1 = [NSRunLoop currentRunLoop];
-//CFRunLoopRef
-CFRunLoopRef runloop2 = CFRunLoopGetCurrent();
-```
-
-2.拿到当前应用程序的主RunLoop（主线程对应的RunLoop）
-
-```objective-c
-//NSRunLoop
-NSRunLoop * runloop1 = [NSRunLoop mainRunLoop];
-//CFRunLoopRef
-CFRunLoopRef runloop2 = CFRunLoopGetMain();
-```
-
-3.注意点：开一个子线程创建runloop,不是通过alloc init方法创建，而是直接通过调用currentRunLoop方法来创建，它本身是一个懒加载的。
-
-4.在子线程中，如果不主动获取RunLoop的话，那么子线程内部是不会创建RunLoop的。可以下载CFRunLoopRef的源码，搜索_CFRunLoopGet0,查看代码。
-
-5.RunLoop对象是利用字典来进行存储，而且key对应的线程Value为该线程对应的RunLoop。
-
-主线程的runloop是默认创建和开启的，子线程的runloop需要手动创建和开启。
-
 ```c
 CFRunLoopRef CFRunLoopGetMain(void) {
     CHECK_FOR_FORK();
@@ -109,7 +79,7 @@ CF_EXPORT CFRunLoopRef _CFRunLoopGet0(pthread_t t) {
 }
 ```
 
-## 整体的流程可以概括为以下几步：
+## 获取runloop的流程：
 
 - 通过_CFRunLoopGet0函数传入一条线程。
 - 判断线程是否为主线程并且判断是否已经存在__CFRunLoops（全局CFMutableDictionaryRef）。
@@ -119,7 +89,19 @@ CF_EXPORT CFRunLoopRef _CFRunLoopGet0(pthread_t t) {
 - 注册一个回调，当线程销毁时，顺便也销毁其对应的 RunLoop。
 - 返回RunLoop。
 
-我们只能通过CFRunLoopGetMain函数或者CFRunLoopGetCurrent函数来获取RunLoop，无论是CFRunLoopGetMain函数还是CFRunLoopGetCurrent函数，都是通过对应的线程获取对应的RunLoop，**线程和RunLoop是一一对应的**，不会重复创建。在主线程，系统会帮我们创建RunLoop，来处理事件。而子线程RunLoop并不会默认开启。子线程操作完成后，线程就被销毁了，如果我们想线程不被销毁，得主动获取一个RunLoop，并且在RunLoop中添加Timer/Source/Observer其中的一个。
+## 线程和runloop是一一绑定的关系。
+
+RunLoop对象是利用字典来进行存储，而且key对应的线程Value为该线程对应的RunLoop。
+
+我们只能通过CFRunLoopGetMain函数或者CFRunLoopGetCurrent函数来获取RunLoop，无论是CFRunLoopGetMain函数还是CFRunLoopGetCurrent函数，都是通过对应的线程获取对应的RunLoop，**线程和RunLoop是一一对应的**，不会重复创建。
+
+## 主线程的runloop是默认创建和开启的，子线程的runloop需要手动创建和开启。
+
+开一个子线程创建runloop,不是通过alloc init方法创建，而是直接通过调用currentRunLoop方法来创建，它本身是一个懒加载的。
+
+在子线程中，如果不主动获取RunLoop的话，那么子线程内部是不会创建RunLoop的。可以下载CFRunLoopRef的源码，搜索_CFRunLoopGet0,查看代码。
+
+在主线程，系统会帮我们创建RunLoop，来处理事件。而子线程RunLoop并不会默认开启。子线程操作完成后，线程就被销毁了，如果我们想线程不被销毁，得主动获取一个RunLoop，并且在RunLoop中添加Timer/Source/Observer其中的一个。
 
 ## 创建runloop
 
@@ -157,9 +139,9 @@ static CFRunLoopRef __CFRunLoopCreate(pthread_t t) {
 }
 ```
 
-打印[NSRunLoop currentRunLoop] 打印出来的是一个**CFRunLoop**结构体
-
 ## Runloop结构体：__CFRunLoop
+
+打印[NSRunLoop currentRunLoop] 打印出来的是一个**CFRunLoop**结构体
 
 ```c
 struct __CFRunLoop {

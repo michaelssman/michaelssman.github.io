@@ -24,7 +24,7 @@ runloop死循环能够保住线程。
 
 1. runloop是一个运行循环，保证程序持续运行不退出！
 
-   没有RunLoop,那么程序一启动就会退出。有了Runoop，那么相当于在内部有一个死循环，能够保证程序的持续运行
+   没有RunLoop，那么程序一启动就会退出。有了Runoop，那么相当于在内部有一个死循环，能够保证程序的持续运行。
 
    main函数中的RunLoop，在UIApplication函数内部就启动了一个RunLoop 该函数返回一个int类型的值。这个默认启动的RunLoop是跟主线程相关联的
 
@@ -279,19 +279,15 @@ runloop也有超时时间，超时了就取消。
 
 ## Runloop 循环
 
-NSRunLoop 内置循环
+### 1、Mach IPC
 
-循环问题：临时对象
+基于Mach内核实现进程间通讯（一个app向另一个app做分享的时候就是跨进程通讯）
 
-runloop 避免这个事情
+Mach IPC被抽象三种操作：`messages`、`ports` 、`port sets`。
 
-Mach Port如何进行跨线程通讯 
+### 2、Mach Port
 
-Mach IPC：基于Mach内核实现进程间通讯（一个app向另一个app做分享的时候就是跨进程通讯）
-
-Mach IPC被抽象三种操作：messages、ports and port sets。
-
-Mach Port：跨线程通讯
+跨线程通讯
 
 runloop进入休眠状态本质是被Mach端口阻塞住了，需要其它的给它发送消息，RunLoopWakeUp中调用__CFSendTrivialMachMessage，__CFSendTrivialMachMessage方法中有MACH_SEND_MSG发送消息。
 
