@@ -2,7 +2,17 @@
 
 ## weak对象存储原理和销毁为什么会置nil
 
-弱引用指针添加到**弱引用表**。对引用计数没有处理。因为不是同一个表，一个是引用计数表，一个是弱引用表。
+weak在底层维护了⼀张**弱引用表（weak_table_t结构的hash表）**，key是所指对象的地址，value是weak指针的地址数组。
+
+一个是引用计数表，一个是弱引用表。weak所引⽤对象的引⽤计数不会加1，对引用计数没有处理。
+
+## 移除弱引⽤流程总结：
+
+- ⾸先在weak_table中找出被弱引⽤对象对应的weak_entry_t。 
+- 在weak_entry_t中移除weak指针地址。
+- 移除元素后，判断此时weak_entry_t中是否还有元素，如果此时weak_entry_t已经没有元素了，则需要将weak_entry_t从weak_table中移除。
+
+## 原理探索
 
 `NSObject.mm`
 
@@ -122,36 +132,6 @@ storeWeak(id *location, objc_object *newObj)
 }
 ```
 
-```c++
-struct SideTable {
-      //自旋锁。保证线程的读写安全
-    spinlock_t slock;
-    //哈希表 保存引用计数
-    RefcountMap refcnts;
-    //全局的弱引用表。哈希表
-    weak_table_t weak_table;
-
-    SideTable() {
-        memset(&weak_table, 0, sizeof(weak_table));
-    }
-
-    ~SideTable() {
-        _objc_fatal("Do not delete SideTable.");
-    }
-
-    void lock() { slock.lock(); }
-    void unlock() { slock.unlock(); }
-    void forceReset() { slock.forceReset(); }
-
-    // Address-ordered lock discipline for a pair of side tables.
-
-    template<HaveOld, HaveNew>
-    static void lockTwo(SideTable *lock1, SideTable *lock2);
-    template<HaveOld, HaveNew>
-    static void unlockTwo(SideTable *lock1, SideTable *lock2);
-};
-```
-
 弱引用的指针存储到弱引用表
 
 通过哈希运算找到弱引用表的地址，然后把弱引用指针插入到弱引用表。
@@ -172,149 +152,144 @@ value：weak指针的地址，是一个数组 存储所有和相关对象的弱�
     id __weak obj = objc;
 ```
 
-### 调用流程：
+## 调用流程：
 
-- objc_initWeak
+### objc_initWeak
 
-  objc_initWeak调用storeWeak存储weak
+objc_initWeak调用storeWeak存储weak
 
-- store_weak
+### store_weak
 
-  先在最外层找到SideTable散列表，SideTable用来管理引用计数和弱引用表，根据当前对象的指针通过哈希运算把当前对象的SideTable取出来。
+先在最外层找到SideTable散列表，SideTable用来管理引用计数和弱引用表，根据当前对象的指针通过哈希运算把当前对象的SideTable取出来。
 
-  如果haveOld弱引用对象有可能已经在散列表的weakTable里了，移除。
+如果haveOld弱引用对象有可能已经在散列表的weakTable里了，移除。
 
-  如果haveNew，调用weak_register_no_lock注册，把弱引用对象注册到弱引用表里。
+如果haveNew，调用weak_register_no_lock注册，把弱引用对象注册到弱引用表里。
 
-  store_weak会找_class_initialize
+store_weak会找_class_initialize
 
-  _class_initialize中调用weak_register_no_lock，weak_unregister_no_lock
+_class_initialize中调用weak_register_no_lock，weak_unregister_no_lock
 
-  - weak_register_no_lock注册引用weak表
+### weak_register_no_lock注册引用weak表
 
-    注册之前判断，因为weakTable里面维护Person，Dog，Student，car很多类。为了数据不混乱就引入了entry（类似数组其实是哈希），entry里面有refreces，
+注册之前判断，因为weakTable里面维护Person，Dog，Student，car很多类。为了数据不混乱就引入了weak_entry（类似数组其实是哈希），weak_entry里面有refreces，
 
-    弱引用指针存储到弱引用表。通过哈希运算，放入weak_table
+弱引用指针存储到弱引用表。通过哈希运算，放入weak_table
 
-    weak_register_no_lock参数是：当前对象的**弱引用表**，**当前对象**，**地址指针**。
+weak_register_no_lock参数是：当前对象的**弱引用表**，**当前对象**，**地址指针**。
 
-    weak_register_no_lock方法里面调用weak_entry_for_referent，把当前要弱引用的对象添加到弱引用表。
+weak_register_no_lock方法里面调用weak_entry_for_referent，把当前要弱引用的对象添加到弱引用表。
 
-    1. weak_entry_for_referent实体引用
+### weak_entry_for_referent实体引用
 
-       weak_entry_for_referent方法里面通过哈希运算找到当前弱引用表的地址，然后插入。
+weak_entry_for_referent方法里面通过哈希运算找到当前弱引用表的地址，然后插入。
 
-       ```c++
-        id 
-       weak_register_no_lock(weak_table_t *weak_table, id referent_id, 
-                             id *referrer_id, bool crashIfDeallocating)
-       {
-       
-         /*
-         省略代码
-         */
-       
-           // now remember it and where it is being stored
-           weak_entry_t *entry;
-         //entry 加 weak 引用对象
-         //散列表.weak表.entry.数组
-           if ((entry = weak_entry_for_referent(weak_table, referent))) {
-             //有就添加
-               append_referrer(entry, referrer);
-           } 
-           else {
-             //没有就创建
-               weak_entry_t new_entry(referent, referrer);
-               weak_grow_maybe(weak_table);
-               weak_entry_insert(weak_table, &new_entry);
-           }
-       
-           // Do not set *referrer. objc_storeWeak() requires that the 
-           // value not change.
-       
-           return referent_id;
-       }
-       ```
+```c++
+ id 
+weak_register_no_lock(weak_table_t *weak_table, id referent_id, 
+                      id *referrer_id, bool crashIfDeallocating)
+{
 
-       1. 有这个entry就添加
+  /*
+  省略代码
+  */
 
-          调用append_referrer方法，将新weak弱引用的对象加入entry。
-       
-          ```c++
-           static void append_referrer(weak_entry_t *entry, objc_object **new_referrer)
-          {
-             if (! entry->out_of_line()) {
-                  // Try to insert inline.
-                  for (size_t i = 0; i < WEAK_INLINE_COUNT; i++) {
-                      if (entry->inline_referrers[i] == nil) {
-                          entry->inline_referrers[i] = new_referrer;
-                          return;
-                      }
-                  }
-          
-                  // Couldn't insert inline. Allocate out of line.
-                  weak_referrer_t *new_referrers = (weak_referrer_t *)
-                      calloc(WEAK_INLINE_COUNT, sizeof(weak_referrer_t));
-                  // This constructed table is invalid, but grow_refs_and_insert
-                  // will fix it and rehash it.
-                  for (size_t i = 0; i < WEAK_INLINE_COUNT; i++) {
-                      new_referrers[i] = entry->inline_referrers[i];
-                  }
-                  entry->referrers = new_referrers;
-                  entry->num_refs = WEAK_INLINE_COUNT;
-                  entry->out_of_line_ness = REFERRERS_OUT_OF_LINE;
-                  entry->mask = WEAK_INLINE_COUNT-1;
-                  entry->max_hash_displacement = 0;
-              }
-             
-              ASSERT(entry->out_of_line());
-          		//扩容
-              if (entry->num_refs >= TABLE_SIZE(entry) * 3/4) {
-                  return grow_refs_and_insert(entry, new_referrer);
-              }
-            /*
-            省略代码
-            */
-             
-            //哈希-->数组[index]
-              weak_referrer_t &ref = entry->referrers[index];
-              ref = new_referrer;
-              entry->num_refs++;
-          }
-          ```
-       
-          
-       
-       2. 如果没有entry
-        1. weak_entry_t如果没有就创建这个entry
-          2. weak_grow_maybe改变大小，扩容
-          3. weak_entry_insert 把referent引用对象添加进去
+    // now remember it and where it is being stored
+    weak_entry_t *entry;
+  //entry 加 weak 引用对象
+  //散列表.weak表.entry.数组
+    if ((entry = weak_entry_for_referent(weak_table, referent))) {
+      //有就添加
+        append_referrer(entry, referrer);
+    } 
+    else {
+      //没有就创建
+        weak_entry_t new_entry(referent, referrer);
+        weak_grow_maybe(weak_table);
+        weak_entry_insert(weak_table, &new_entry);
+    }
 
-  - setWeaklyReferenced_nolock没有注册 
+    // Do not set *referrer. objc_storeWeak() requires that the 
+    // value not change.
 
-    store_weak中执行完weak_register_no_lock之后，又调用了setWeaklyReferenced_nolock，把当前对象的weakly_referenced置为true，表明当前对象是一个弱引用对象。
+    return referent_id;
+}
+```
 
-- objc_destroyWeak 释放
+### 如果没有entry_t
 
-声明weak要不断的通过hash计算来找到地址然后取出表，来进行查找。
+ 1. new_entry：创建这个entry
+   2. weak_grow_maybe：改变大小，扩容
+   3. weak_entry_insert：把new_entry加入到weak_table
 
-声明太多的weak比较耗费性能。只在解决循环引用的时候使用。
+### 有这个entry就添加（append_referrer）
 
-散列表--> entry--> 引用对象
+调用append_referrer方法，将新weak弱引用的对象加入entry。
 
-#### 总结：
+```c++
+ static void append_referrer(weak_entry_t *entry, objc_object **new_referrer)
+{
+   if (! entry->out_of_line()) {
+        // Try to insert inline.
+        for (size_t i = 0; i < WEAK_INLINE_COUNT; i++) {
+            if (entry->inline_referrers[i] == nil) {
+                entry->inline_referrers[i] = new_referrer;
+                return;
+            }
+        }
 
-- SideTables：散列表，多张。sideTable里面有weak_table弱引用表。首先得到sideTable的weakTable。
+        // Couldn't insert inline. Allocate out of line.
+        weak_referrer_t *new_referrers = (weak_referrer_t *)
+            calloc(WEAK_INLINE_COUNT, sizeof(weak_referrer_t));
+        // This constructed table is invalid, but grow_refs_and_insert
+        // will fix it and rehash it.
+        for (size_t i = 0; i < WEAK_INLINE_COUNT; i++) {
+            new_referrers[i] = entry->inline_referrers[i];
+        }
+        entry->referrers = new_referrers;
+        entry->num_refs = WEAK_INLINE_COUNT;
+        entry->out_of_line_ness = REFERRERS_OUT_OF_LINE;
+        entry->mask = WEAK_INLINE_COUNT-1;
+        entry->max_hash_displacement = 0;
+    }
+   
+    ASSERT(entry->out_of_line());
+		//扩容
+    if (entry->num_refs >= TABLE_SIZE(entry) * 3/4) {
+        return grow_refs_and_insert(entry, new_referrer);
+    }
+  /*
+  省略代码
+  */
+   
+  //哈希-->数组[index]
+    weak_referrer_t &ref = entry->referrers[index];
+    ref = new_referrer;
+    entry->num_refs++;
+}
+```
 
-- weak_table里有student，person，dog等等的弱引用，不止一种的弱引用。
+### setWeaklyReferenced_nolock
 
-- Student里面又有很多属性，subModel，一层层嵌套。
+store_weak中执行完weak_register_no_lock之后，又调用了setWeaklyReferenced_nolock，把当前对象的weakly_referenced置为true，表明当前对象是一个弱引用对象。
 
-- 创建一个weak_entry_t
+## 添加弱引⽤流程总结
 
-  访问Person从weak_table中拿，给一个实体entry。没有就创建entry，放到weak_table。
+- 如果被弱引⽤的对象为nil 或这是⼀个TaggedPointer，直接返回，不做任何操作。
+- 如果被弱引⽤对象正在析构，则抛出异常。
+- 如果被弱引⽤对象不能被weak引⽤，直接返回nil。
+- 如果对象没有再析构且可以被weak引⽤，则调⽤weak_entry_for_referent ⽅法根据**弱引⽤对象的地址**从弱引⽤表中找到对应的weak_entry，
+- 如果能够找到则调⽤append_referrer⽅法向其中插⼊weak指针地址。
+- 否则新建⼀个weak_entry。
+- 
 
-  找到散列表SideTable，从散列表中找到weak表，通过Person找到entry，
+- SideTables：散列表，多张。
+
+- sideTable里面有weak_table弱引用表。首先得到sideTable的weakTable弱引用表。
+
+- weak_table里有student，person，dog等等的弱引用，不止一种的弱引用。weak_table通过对象找到实体**weak_entry_t**
+
+- 没有找到就创建一个实体**weak_entry_t**，放到weak_table。
 
 - 把referent加入到weak_table的数组inline_referrers
 
@@ -324,14 +299,13 @@ value：weak指针的地址，是一个数组 存储所有和相关对象的弱�
 
 - entry->referrers[index]
 
-  把传过来的弱引用对象new_referrer添加到entry中的referrers（referrers是一个数组）。entry添加到weak_table。
+  把传过来的弱引用对象new_referrer添加到entry中的referrers（referrers是一个数组）。
 
-weak_entry_t是一个数组。
+声明weak要不断的通过hash计算来找到地址然后取出表，来进行查找。
 
-1. 通过SideTable找到weak_table弱引用表
-2. weak_table根据referent找到或者创建**weak_entry_t**
-3. 然后append_referrer(entry, referrer)将新弱引用的对象加进去entry
-4. 最后weak_entry_insert把entry加入到weak_table（weak_table中没有这种entry的情况，需要创建，添加到weak_table）
+声明太多的weak比较耗费性能。只在解决循环引用的时候使用。
+
+散列表--> entry--> 引用对象
 
 ---
 
@@ -350,6 +324,8 @@ NSObject.mm
     _objc_rootDealloc(self);
 }
 ```
+
+### _objc_rootDealloc
 
 ```c++
 void
@@ -389,6 +365,8 @@ objc_object::rootDealloc()
     }
 }
 ```
+
+### object_dispose
 
 如果不能快速释放，则调用 object_dispose()方法，做下一步的处理(调用objc_destructInstance)
 
@@ -564,6 +542,9 @@ weak_clear_no_lock(weak_table_t *weak_table, id referent_id)
 7. sidetable_clearDeallocating
 
 8. weak_clear_no_lock
+
+   1. 会根据对象地址获取所有weak指针地址的数组，然后遍历这个数组把其中的数据设为nil，最后把这个entry从weak表中删除。
+
 
 
 
