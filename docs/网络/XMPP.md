@@ -43,272 +43,56 @@
 常⽤的类
 
 1. XMPPStream(通信管道管理对象) 
-
 2. XMPPRoster(好友花名册管理对象) 
-
 3. XMPPJID(账号对象) 
-
 4. XMPPMessageArchivingCoreDataStorage(聊天消息持久化存储对象)
 
-多账号登录：source
+## XMPPFramwork中使用的多播代理GCDMulticastDelegate
 
+iOS中通常的delegate模式只能有一个被委托的对象，这样当需要有多个被委托的对象时，实现起来就略为麻烦，在开源库XMPPFramework中提供了一个GCDMulticastDelegate类，使用它可以为一个对象添加多个被委托的对象，用起来也比较方便，用法简单小结如下：
 
+```objective-c
+#import "HHMulDelegateVC.h"
+#import <GCDMulticastDelegate.h>
+#import "PersonOne.h"
+#import "PersonTwo.h"
 
+//1、定义一个协议
+@protocol MyDelegate
+@optional
+- (void)runTo:(NSString *)string;
+@end
 
+@interface HHMulDelegateVC ()
+{
+    //2、在需要使用delegate的类中定义一个GCDMulticastDelegate变量
+    GCDMulticastDelegate<MyDelegate> *multiDelegate;
+}
+@end
 
+@implementation HHMulDelegateVC
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+    GCDMulticastDelegate<MyDelegate> *multiDelegate = (GCDMulticastDelegate <MyDelegate> *)[[GCDMulticastDelegate alloc] init];
 
+    //3、定义多个实现了协议MyDelegate的类，如Object1和Object2；
+    PersonOne *o1 = [[PersonOne alloc]init];
+    PersonTwo *o2 = [[PersonTwo alloc]init];
 
+    //4、在需要使用delegate的地方使用如下代码，将多个被委托的对象，添加到multiDelegate的delegate链中。
+    [multiDelegate addDelegate:o1 delegateQueue:dispatch_get_main_queue()];
+    [multiDelegate addDelegate:o2 delegateQueue:dispatch_get_main_queue()];
 
+    [multiDelegate runTo:@"多播"];
+}
 
+@end
+```
 
+多播的delegate与通常的delegate不同，multiDelegate并没有实现协议中的方法，而是将协议中的方法转发到自己delegate链中的对象。  对multiDelegate对象调用`runTo`方法时，由于GCDMulticastDelegate没有实现`runTo`方法，因此该类的`methodSignatureForSelector`和`forwardInvocation`函数会被触发，在该函数中会遍历delegate链，对每一个delegate对象调用`runTo`方法，从而实现了多个delegate。
 
+同时，在对multiDelegate调用协议方法时，采用的是异步的方式，协议方法会立刻返回，不会阻碍当前函数。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+## 多账号登录：source
