@@ -209,7 +209,7 @@ MachO 文件内部存有代码和数据，代码放在 _TEXT 段（代码段）�
 
 ![图片](fishhook.assets/640-20220606025640463.jpeg)
 
-我们来到 String Table 里面查看一下。我们通过起始位置加上偏移便可以定位到 NSLog 字符了。
+我们来到 String Table 里面查看一下。我们通过**起始位置加上偏移**便可以定位到 NSLog 字符了。
 
 ![图片](fishhook.assets/640-20220606025654743.jpeg)
 
