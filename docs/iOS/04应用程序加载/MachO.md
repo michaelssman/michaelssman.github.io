@@ -4,7 +4,7 @@
 
 Mach-O 其实是Mach Object文件格式的缩写，是 mac 以及 iOS 上可执行文件的格式， 类似于 windows上的 PE 格式 (Portable Executable ), linux 上的 ElF 格式 (Executable and Linking Format) 。
 
-但是Mach-O不仅仅是只是可执行文件的格式标准，还是macOS和iOS中一些其他文件的标准格式。
+但是Mach-O不仅仅是只是可执行文件的格式标准，**还是macOS和iOS中一些其他文件标准的格式**。
 
 常见的Mach-O格式有下面几种可执行文件： 
 
@@ -13,8 +13,6 @@ Mach-O 其实是Mach Object文件格式的缩写，是 mac 以及 iOS 上可执�
 - .dsym文件（符号表）
 - bundle资源文件
 - 目标文件(编译输出的.0文件)
-
-Mach-O总的来说可以说是苹果的一种文件标准的格式。
 
 以下以可执行文件为重点去讲述Mach-O
 

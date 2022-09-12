@@ -8,8 +8,8 @@ dyld链接之后
 
 1. 递归加载所依赖的动态库
    1. 加载动态库和可执行文件的初始化
-   2. libsystem第一个被初始化，libsystem调libdispatch，libdispatch调libObjc初始化objc_init
-   3. objc_init里面调`_dyld_objc_notify_register(&map_images, load_images, unmap_image);`。关于类的加载。
+   2. libsystem第一个被初始化，libsystem调libdispatch，libdispatch调libObjc初始化`_objc_init`
+   3. `_objc_init`里面调`_dyld_objc_notify_register(&map_images, load_images, unmap_image);`。关于类的加载。
 2. rebase和binding
 3. 调起main函数
 

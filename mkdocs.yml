@@ -127,6 +127,8 @@ nav:
       - iOS/12音视频/视频编解码.md
       - iOS/12音视频/音频.md
       - iOS/12音视频/倒放视频.md
+    - 13crash分析:
+      - iOS/13crach分析/crash分析.md
     - iOS/Animation/Animation.md
     - NSArray:
       - iOS/NSArray/NSArray.md
