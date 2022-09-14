@@ -130,6 +130,7 @@ nav:
       - iOS/12音视频/倒放视频.md
     - 13crash分析:
       - iOS/13crach分析/crash分析.md
+      - iOS/13crach分析/处理bug.md
     - iOS/Animation/Animation.md
     - NSArray:
       - iOS/NSArray/NSArray.md
@@ -189,7 +190,6 @@ nav:
     - iOS/Vendors.md
     - iOS/universalLink.md
     - iOS/坐标转换.md
-    - iOS/处理bug.md
     - iOS/快捷键.md
     - iOS/控制器生命周期.md
     - iOS/版本更新.md
