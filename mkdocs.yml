@@ -131,6 +131,7 @@ nav:
     - 13crash分析:
       - iOS/13crach分析/crash分析.md
       - iOS/13crach分析/处理bug.md
+    - iOS/KVO.md
     - iOS/Animation/Animation.md
     - NSArray:
       - iOS/NSArray/NSArray.md

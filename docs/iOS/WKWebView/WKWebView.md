@@ -2,8 +2,6 @@
 
 原文地址：https://mp.weixin.qq.com/s/O8Pbhz0OBN9PGwquw1mRBA
 
-`WKWebView`相对于`UIWebView`来说，性能要比`UIWebView`性能要好太多，刷新率能达到`60FPS`。内存占用也比`UIWebView`要小。
-
 `WKWebView`是一个多进程组件，`Network`、`UI Render`都在独立的进程中完成。
 
 由于`WKWebView`和`App`不在同一个进程，如果`WKWebView`进程崩溃并不会导致应用崩溃，仅仅是页面白屏等异常。页面的载入、渲染等消耗内存和性能的操作，都在`WKWebView`的进程中处理，处理后再将结果交给`App`进程用于显示，所以`App`进程的性能消耗会小很多。
@@ -34,7 +32,7 @@
 
 `WKWebView`将很多`UI`的显示都交给原生层面去处理，例如弹窗或者输入框的显示。
 
-在`WKWebView`中，系统将弹窗的显示交由客户端来控制。客户端可以通过下面的回调方法获取到弹窗的显示信息，并由客户端来调起`UIAlertController`来展示。参数中有一个`completionHandler`的回调`block`，需要客户端一定要调用，如果不调用则会发生崩溃。
+在`WKWebView`中，系统将弹窗的显示交由客户端来控制。客户端可以通过下面的回调方法获取到弹窗的显示信息。参数中有一个`completionHandler`的回调`block`，需要客户端一定要调用，如果不调用则会发生崩溃。
 
 ```objective-c
 - (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler;

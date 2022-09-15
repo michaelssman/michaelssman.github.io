@@ -4,15 +4,23 @@
 
 小视频/直播
 
-## 捕捉会话AVCaptureSession
+## AVCaptureSession
 
-## 捕捉设备（摄像头、麦克风）AVCaptureDevice
+捕捉会话
+
+## AVCaptureDevice
+
+捕捉设备（摄像头、麦克风）
 
 device修改（前后摄像后、聚焦、曝光、手电筒），需要加锁解锁。
 
-### 捕捉设备输入（摄像头、麦克风）AVCaptureDeviceInput
+### AVCaptureDeviceInput
 
-### 捕捉设备输出（图片、视频）: AVCaptureOutput抽象类
+捕捉设备输入（摄像头、麦克风）
+
+### AVCaptureOutput抽象类
+
+捕捉设备输出（图片、视频）: 
 
 - AVCaptureStillImageOutput：静态图片
 - AVCaptureMovieFileOutput：视频文件
@@ -20,9 +28,13 @@ device修改（前后摄像后、聚焦、曝光、手电筒），需要加锁�
 - AVCaptureAudioDataOutput
 - AVCaptureVideoDataOutput
 
-## 捕捉连接: AVCaptureConnection
+## AVCaptureConnection
 
-## 捕捉预览: AVCaptureVideoPreviewLayer
+捕捉连接
+
+## AVCaptureVideoPreviewLayer
+
+捕捉预览
 
 AVCaptureVideoPreviewLayer定义2个方法：摄像头/屏幕坐标系转换
 

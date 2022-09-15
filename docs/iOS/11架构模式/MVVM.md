@@ -1,6 +1,8 @@
 # MVVM
 
-谈到MVVM不得不先说一下MVC，MVC(Model-View-Controller)。
+## MVC
+
+Model-View-Controller
 
 Model模型：用来呈现数据。
 
@@ -12,26 +14,28 @@ Controller控制器：用来调节模型与视图之间的交互。
 
 它们中的一些确实属于 View Controller，但更多的是所谓的“表示逻辑（presentation logic），为了不让控制器日益增大,便于测试管理,便出现了MVVM。
 
-MVVM：它其实是一个 MVC 的增强版，并将表示逻辑从 Controller 移出放到一个新的对象里，即 View Model。
+## MVVM
+
+其实是一个 MVC 的增强版，并将表示逻辑从 Controller 移出放到一个新的对象里，即 View Model。
 
 在 iOS 上使用 MVVM 的动机,就是让它能减少 View Controller 的复杂性并使得表示逻辑更易于测试。
 
 MVVM模式是Model-View-ViewMode模式的简称。由视图(View)、视图模型(ViewModel)、模型(Model)三部分组成。通过这三部分实现UI逻辑、呈现逻辑和状态控制、数据与业务逻辑的分离。
 
-**使用MVVM模式有几大好处：**
+### 好处
 
 1. 低耦合。View可以独立于Model变化和修改，一个ViewModel可以绑定到不同的View上，当View变化的时候Model可以不变，当Model变化的时候View也可以不变。
 2. 可重用性。可以把一些视图的逻辑放在ViewModel里面，让很多View重用这段视图逻辑。
 3. 独立开发。开发人员可以专注与业务逻辑和数据的开发(ViewModel)。设计人员可以专注于界面(View)的设计。
 4. 可测试性。可以针对ViewModel来对界面(View)进行测试
 
-**1. 视图(View)**
+### 1、视图(View)
 
 视图负责界面和显示。它通过DataContext(数据上下文)和ViewModel进行数据绑定，不直接与Model交互。 
 
 可以绑定Behavior/Comand来调用ViewModel的方法，Command是View到ViewModel的单向通行，通过实现Silverlight提供的IComand接口来实现绑定，让View触发事件，ViewModel来处理事件，以解决事件绑定功能。
 
-**2. 视图模型(ViewModel)**
+### 2、视图模型(ViewModel)
 
 ViewModel: 它位于 View/Controller 与 Model 之间。
 
@@ -47,9 +51,7 @@ View的代码隐藏(Code-Behind)部分可能包含界面逻辑或者应用逻辑
 
 **ViewModel中放信号。**
 
----
-
-**代码示例：**
+### 代码示例：
 
 1、首先是model层的代码，基于JSONModel封装了BaseModel类（基类：以后的Model都可继承此类），继承自BaseModel，实现HomeModel类。
 
