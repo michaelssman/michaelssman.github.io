@@ -2,7 +2,7 @@
 
 **一、预备知识**
 
-在了解CoreData，大家有必要了解对象关系映射（英语称object Relational Mapping，简称ORM）。
+对象关系映射（英语称object Relational Mapping，简称ORM）。
 
 ORM是通过使用描述对象和数据库之间映射的元数据，可以实现将对象自动持久化到关系数据库当中。
 
@@ -10,7 +10,94 @@ ORM是通过使用描述对象和数据库之间映射的元数据，可以实�
 
 CoreData是苹果自己推出的数据存储框架，采用了一种ORM（对象关系映射）的存储关系。CoreData一个比较大的优势在于在使用CoreData过程中不需要我们编写SQL语句，也就是将OC对象存储于数据库，也可以将数据库数据转为OC对象（数据库数据与OC对象相互转换）。
 
-## 使用CoreData
+## CoreData几个类
+
+### 数据模型文件 - Data Model
+
+当我们用`Core Data`时，我们需要一个用来存放数据模型的地方，数据模型文件就是我们要创建的文件类型。它的后缀是`.xcdatamodeld`。只要在项目中选 **新建文件→Data Model** 即可创建。
+
+默认系统提供的命名为 `Model.xcdatamodeld` 。
+
+这个文件就相当于数据库中的“库”。通过编辑这个文件，就可以去添加定义自己想要处理的数据类型。
+
+### 数据模型中的“表格” - Entity实体
+
+什么是`Entity`呢？中文翻译叫“实体”。如果把数据模型文件比作数据库中的“库”，那么`Entity`就相当于库里的“表格”。`Entity`就是让你定义数据表格类型的名词。
+
+假设我这个数据模型是用来存放图书馆信息的，那么很就会建立一个叫`Book`的`Entity`。
+
+当在xcode中点击`Model.xcdatamodeld`时，会看到苹果提供的编辑视图，其中有个醒目的按钮`Add Entity`。
+
+生成对应实体的实体类，在此之前要注意下图两个设置部分，否则会引起崩溃现象
+
+![image-20211109181727834](CoreData.assets/image-20211109181727834.png)
+
+### “属性” - Attributes
+
+当建立一个名为`Book`的`Entity`时，会看到视图中有栏写着`Attributes`，我们知道，当我们定义一本书时，自然要定义书名，书的编码等信息。这部分信息叫`Attributes`，即书的属性。
+
+Book的`Entity`：
+
+| 属性名 | 类型      |
+| :----- | :-------- |
+| name   | String    |
+| isbm   | String    |
+| page   | Integer32 |
+
+其中，类型部分大部分是大家熟知的元数据类型，可以自行查阅。
+
+同理，也可以再添加一个读者：Reader的`Entity`描述。
+
+Reader的`Entity`：
+
+| 属性名 | 类型   |
+| :----- | :----- |
+| name   | String |
+| idCard | String |
+
+### “关系” - Relationship
+
+在我们使用`Entity`编辑时，除了看到了`Attributes`一栏，还看到下面有`Relationships`一栏。
+
+当定义图书馆信息时，书籍和读者的信息，这两个信息彼此是孤立的，而事实上他们存在着联系。
+
+比如一本书，它被某个读者借走了，这样的数据该怎么存储？
+
+直观的做法是再定义一张表格来处理这类关系。但是`Core Data`提供了更有效的办法 - `Relationship`。
+
+从`Relationship`的思路来思考，当一本书A被某个读者B借走，我们可以理解为这本书A当前的“借阅者”是该读者B，而读者B的“持有书”是A。
+
+从以上描述可以看出，`Relationship`所描述的关系是双向的，即A和B互相以某种方式形成了联系，而这个方式是我们来定义的。
+
+在`Reader`的`Relationship`下点击`+`号键。然后在`Relationship`栏的名字上填`borrow`，表示读者和书的关系是“借阅”，在`Destination`栏选择`Book`，这样，读者和书籍的关系就确立了。
+
+对于第三栏，`Inverse`，却没有东西可以填，这是为什么？
+
+因为我们现在定义了读者和书的关系，却没有定义书和读者的关系。记住，**关系是双向的。**
+
+就好比你定义了A是B的父亲，那也要同时去定义B是A的儿子一个道理。计算机不会帮我们打理另一边的联系。
+
+理解了这点，我们开始选择`Book`的一栏，在`Relationship`下添加新的`borrowBy`，`Destination`是`Reader`，这时候点击`Inverse`一栏，会发现弹出了`borrow`，直接点上。
+
+这是因为我们在定义`Book`的`Relationship`之前，我们已经定义了`Reader`的`Relationship`了，所以电脑已经知道了读者和书籍的关系，可以直接选上。而一旦选好了，那么在`Reader`的`Relationship`中，我们会发现`Inverse`一栏会自动补齐为`borrowBy`。因为电脑这时候已经完全理解了双方的关系，自动做了补齐。
+
+#### “一对一”和“一对多” - to one和to many
+
+我们建立`Reader`和`Book`之间的联系的时候，发现他们的联系逻辑之间还漏了一个环节。
+
+假设一本书被一个读者借走了，它就不能被另一个读者借走，而当一个读者借书时，却可以借很多本书。
+
+也就是说，一本书只能对应一个读者，而一个读者却可以对应多本书。
+
+这就是 一对一→`to one` 和 一对多→`to many` 。
+
+`Core Data`允许我们配置这种联系，具体做法就是在`RelationShip`栏点击对应的关系栏，它将会出现在右侧的栏目中。
+
+在`Relationship`的配置项里，有一项项名为`Type`，点击后有两个选项，一个是`To One`（默认值），另一个就是`To Many`了。
+
+### NSPersistentContainer
+
+![图片](CoreData.assets/640.png)
 
 AppDelegate.h
 
@@ -74,8 +161,6 @@ AppDelegate.m
     }
 }
 ```
-
-## CoreData几个类
 
 ### NSManagedObjectModel
 
@@ -152,10 +237,9 @@ NSManagedObjectContext意思是托管对象上下文，数据库的大多数操�
 
 首先讲述NSManagedObjectContext，苹果推荐使用initWithConcurrencyType方式创建，在创建时，指定当前是什么类型的并发队列，参数也是一个枚举值。
 
-NSManagedObjectContext枚举值参数有三个类型：
+NSManagedObjectContext枚举值：
 
-1. NSConfinementConcurrencyType：此类型在iOS9之后被苹果弃用，所以不建议用这个API
-2. NSPrivateQueueConcurrencyType：代表私有并发队列的类型，操作也是在子线程中完成的。
+1. NSPrivateQueueConcurrencyType：代表私有并发队列的类型，操作也是在子线程中完成的。
 3. NSMainQueueConcurrencyType：代表主并发队列类型，如果在操作过程中，需要涉及到UI操作，则应该使用这个参数初始化上下文完成操作。
 
 下面我们一个company的模型文件-主队列并发类型的NSManagedObjectContext
@@ -185,14 +269,6 @@ NSManagedObjectContext枚举值参数有三个类型：
 
 意思是托管对象类，其中CoreData里面的托管对象（实体模型对象）都会继承此类。
 
-### 创建实体
-
-![image-20211109181153954](CoreData.assets/image-20211109181153954.png)
-
-#### 生成对应实体的实体类，在此之前要注意下图两个设置部分，否则会引起崩溃现象
-
-![image-20211109181727834](CoreData.assets/image-20211109181727834.png)
-
 ### 编译报错
 
 ```
@@ -208,19 +284,13 @@ Multiple commands produce '路径/Student+CoreDataProperties.o':
 2) Target 'HHCoreDataDemo' (project 'HHCoreDataDemo') has compile command with input '路径/Student+CoreDataProperties.m'
 ```
 
-##### 解决方法：
+解决方法：
 
 需要在`Build Phases`中`Compile Sources`删除`+CoreDataClass.m`和`+CoreDataProperties.m`，不需要编译那两个文件。
-
-### 新增模型
-
-![image-20211111104243970](CoreData.assets/image-20211111104243970.png)
 
 ## 版本迁移
 
 `CoreData`版本迁移的方式有很多，一般都是先在`Xcode`中，原有模型文件的基础上，创建一个新版本的模型文件，然后在此基础上做不同方式的版本迁移。
-
-本章节将会讲三种不同的版本迁移方案，但都不会讲太深，都是从使用的角度讲起，可以满足大多数版本迁移的需求。
 
 ### 为什么要版本迁移？
 
@@ -241,12 +311,6 @@ Multiple commands produce '路径/Student+CoreDataProperties.o':
 对于新版本模型文件的命名，我在创建新版本模型文件时，一般会**拿当前工程版本号当做后缀**，这样在模型文件版本比较多的时候，就可以很容易**将模型文件版本和工程版本对应起来**。
 
 添加完成后，会发现之前的模型文件会变成一个文件夹，里面包含着多个模型文件。
-
-## 模型嵌套
-
-一个Teacher中有多个Student，点击Relationships 右边Type选择To Many。
-
-![image-20211112113258235](CoreData.assets/image-20211112113258235.png)
 
 
 
