@@ -25,20 +25,20 @@ void _objc_init(void)
     initialized = true;
     
     // fixme defer initialization until an objc-using image is found?
-    environ_init();//环境变量初始化
-    tls_init();
-    static_init();
-    runtime_init();
-    exception_init();//异常处理的初始化(数组越界，方法找不到的报错)
+    environ_init();		//环境变量初始化
+    tls_init();				//创建线程的析构函数
+    static_init();		//运⾏C++静态构造函数
+    runtime_init();		//分类表初始化，类表初始化
+    exception_init();	//异常处理的初始化(数组越界，方法找不到的报错)
 #if __OBJC2__
-    cache_t::init();//缓存的初始化
+    cache_t::init();	//缓存的初始化
 #endif
     _imp_implementationWithBlock_init();//Mac OS的
 		//&map_images引用传递，load_images值传递，加载load方法
     _dyld_objc_notify_register(&map_images, load_images, unmap_image);//3个函数
 
 #if __OBJC2__
-    didCallDyldNotifyRegister = true;
+    didCallDyldNotifyRegister = true;//标识对_dyld_objc_notify_register的调⽤已完成
 #endif
 }
 ```
@@ -342,6 +342,21 @@ void arr_init(void)
 _read_images镜像文件，llvm编译阶段SEL和IMP绑定修复。
 
 _read_images里面有很多的fix up，因为虚拟内存（ASLR）。地址空间随机布局。app每次启动内存地址都不固定。需要dyld的rebase和binding，修改镜像指针地址。
+
+作用：进行类的初始化。
+
+流程：
+
+1. 加载所有类到类的gdb_objc_realized_classes表中。 
+2. 对所有类做重映射。
+3. 将所有SEL都注册到namedSelectors表中。
+4. 修复函数指针遗留。
+5. 将所有Protocol都添加到protocol_map表中。
+6. 对所有Protocol做重映射。
+7. 初始化所有非懒加载的类，进行rw、ro等操作。 
+8. 遍历已标记的懒加载的类，并做初始化操作。
+9. 处理所有Category，包括Class和Meta Class。 
+10. 初始化所有未初始化的类。
 
 ```c++
 void _read_images(header_info **hList, uint32_t hCount, int totalClasses, int unoptimizedTotalClasses)
@@ -711,6 +726,120 @@ void _read_images(header_info **hList, uint32_t hCount, int totalClasses, int un
     }
 
 #undef EACH_HEADER
+}
+```
+
+## ⾮懒加载类的初始化
+
+关键函数： realizeClassWithoutSwift
+
+```c++
+/***********************************************************************
+* realizeClassWithoutSwift
+* Performs first-time initialization on class cls, 
+* including allocating its read-write data.
+* Does not perform any Swift-side initialization.
+* Returns the real class structure for the class. 
+* Locking: runtimeLock must be write-locked by the caller
+**********************************************************************/
+static Class realizeClassWithoutSwift(Class cls, Class previously)
+{
+    /**
+ 		 省略代码
+ 		 */
+    if (ro->flags & RO_FUTURE) {
+        // This was a future class. rw data is already allocated.
+        rw = cls->data();
+        ro = cls->data()->ro();
+        ASSERT(!isMeta);
+        cls->changeInfo(RW_REALIZED|RW_REALIZING, RW_FUTURE);
+    } else {
+        // Normal class. Allocate writeable class data.
+      	//给rw开辟内存空间，然后将ro的数据“拷⻉”到rw⾥⾯。
+        rw = objc::zalloc<class_rw_t>();
+        rw->set_ro(ro);
+        rw->flags = RW_REALIZED|RW_REALIZING|isMeta;
+        cls->setData(rw);
+    }
+
+    cls->cache.initializeToEmptyOrPreoptimizedInDisguise();
+
+#if FAST_CACHE_META
+    if (isMeta) cls->cache.setBit(FAST_CACHE_META);
+#endif
+
+    // Choose an index for this class.
+    // Sets cls->instancesRequireRawIsa if indexes no more indexes are available
+    cls->chooseClassArrayIndex();
+
+    if (PrintConnecting) {
+        _objc_inform("CLASS: realizing class '%s'%s %p %p #%u %s%s",
+                     cls->nameForLogging(), isMeta ? " (meta)" : "", 
+                     (void*)cls, ro, cls->classArrayIndex(),
+                     cls->isSwiftStable() ? "(swift)" : "",
+                     cls->isSwiftLegacy() ? "(pre-stable swift)" : "");
+    }
+
+    // Realize superclass and metaclass, if they aren't already.
+    // This needs to be done after RW_REALIZED is set above, for root classes.
+    // This needs to be done after class index is chosen, for root metaclasses.
+    // This assumes that none of those classes have Swift contents,
+    //   or that Swift's initializers have already been called.
+    //   fixme that assumption will be wrong if we add support
+    //   for ObjC subclasses of Swift classes.
+  //递归调⽤realizeClassWithoutSwift，对⽗类和元类进⾏初始化
+    supercls = realizeClassWithoutSwift(remapClass(cls->getSuperclass()), nil);
+    metacls = realizeClassWithoutSwift(remapClass(cls->ISA()), nil);
+
+#if SUPPORT_NONPOINTER_ISA
+    if (isMeta) {
+        // Metaclasses do not need any features from non pointer ISA
+        // This allows for a faspath for classes in objc_retain/objc_release.
+        cls->setInstancesRequireRawIsa();
+    } else {
+        // Disable non-pointer isa for some classes and/or platforms.
+        // Set instancesRequireRawIsa.
+        bool instancesRequireRawIsa = cls->instancesRequireRawIsa();
+        bool rawIsaIsInherited = false;
+        static bool hackedDispatch = false;
+
+        if (DisableNonpointerIsa) {
+            // Non-pointer isa disabled by environment or app SDK version
+            instancesRequireRawIsa = true;
+        }
+        else if (!hackedDispatch  &&  0 == strcmp(ro->getName(), "OS_object"))
+        {
+            // hack for libdispatch et al - isa also acts as vtable pointer
+            hackedDispatch = true;
+            instancesRequireRawIsa = true;
+        }
+        else if (supercls  &&  supercls->getSuperclass()  &&
+                 supercls->instancesRequireRawIsa())
+        {
+            // This is also propagated by addSubclass()
+            // but nonpointer isa setup needs it earlier.
+            // Special case: instancesRequireRawIsa does not propagate
+            // from root class to root metaclass
+            instancesRequireRawIsa = true;
+            rawIsaIsInherited = true;
+        }
+
+        if (instancesRequireRawIsa) {
+            cls->setInstancesRequireRawIsaRecursively(rawIsaIsInherited);
+        }
+    }
+// SUPPORT_NONPOINTER_ISA
+#endif
+
+    // Update superclass and metaclass in case of remapping
+  //设置⽗类，isa指针的初始化
+    cls->setSuperclass(supercls);
+    cls->initClassIsa(metacls);
+  
+    /**
+ 		 省略代码
+ 		 */
+    return cls;
 }
 ```
 
