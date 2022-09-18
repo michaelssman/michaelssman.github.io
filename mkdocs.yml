@@ -199,7 +199,6 @@ nav:
     - README: C++/README.md
     - Stash_指针的stash: C++/Stash_指针的stash.md
     - delete_可能会出错: C++/delete_可能会出错.md
-    - for循环_迭代器: C++/for循环_迭代器.md
     - vscode运行C: C++/vscode运行C++.md
     - 作用域: C++/作用域.md
     - 内存_释放: C++/内存_释放.md
@@ -251,10 +250,7 @@ nav:
       - C++/继承/04继承中的向上类型转换.md
       - C++/继承/05再论继承和组合.md
     - 运算符重载: C++/运算符重载/01运算符重载.md
-    - 迭代器: 
-      - C++/迭代器/01迭代器.md
-      - C++/迭代器/02迭代器.md
-      - C++/迭代器/03迭代器.md
+    - C++/迭代器.md 
   - flutter:
     - flutter/flutter简介.md
     - flutter/flutter安装.md
@@ -432,6 +428,7 @@ nav:
     - MAC/清理Xcode.md
     - MAC/环境变量.md
     - MAC/软件.md
+    - MAC/vscode.md
 
 # [Extensions]
 plugins:

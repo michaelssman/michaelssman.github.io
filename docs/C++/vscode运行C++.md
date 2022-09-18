@@ -4,7 +4,9 @@
 
 `-W -Wall`会输出警告错误提示。
 
-编译多个C++文件`g++ fileName1.cpp fileName2.cpp`
+## 编译多个C++文件
+
+`g++ fileName1.cpp fileName2.cpp`
 
 `Code Runner`插件。
 
