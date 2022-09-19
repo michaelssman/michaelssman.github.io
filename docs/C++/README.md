@@ -1,18 +1,6 @@
 只要写头文件  头要写头文件的保护
 
-C++头文件`.h`中写代码  不能使用命名空间，不能写 `using namespace std;`只能：`std::cout << std::end;`
-
-也可以导入头文件
-
-只能在源文件使用命名空间。
-
----
-
-
-
 typedef int Object;
-
----
 
 
 

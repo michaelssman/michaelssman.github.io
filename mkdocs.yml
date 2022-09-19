@@ -157,6 +157,7 @@ nav:
       - iOS/Swift/enum_switch_indirect_optional_map.md
       - iOS/Swift/类与结构体.md
       - iOS/Swift/闭包.md
+      - iOS/Swift/Swift面试班.md
     - WKWebView:
       - iOS/WKWebView/WKWebView.md
       - iOS/WKWebView/WKWebView聚焦.md
@@ -197,6 +198,7 @@ nav:
     - iOS/表情.md
   - C++: 
     - README: C++/README.md
+    - C++/名称空间.md
     - C++/运算符重载.md
     - C++/迭代器.md 
     - C++/内联函数.md
@@ -211,7 +213,6 @@ nav:
     - 动态创建对象: C++/动态创建对象.md
     - 友元: C++/友元.md
     - 句柄类: C++/句柄类.md
-    - 名称空间: C++/名称空间.md
     - 多态: C++/多态.md
     - 引用: C++/引用.md
     - 打开和关闭所有权: C++/打开和关闭所有权.md
