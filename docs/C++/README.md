@@ -22,7 +22,6 @@ typedef int Object;
 
 C++函数 参数前面表示输入、后面表示输出。
 
-
 泛型
 template <typename T>
 例：
@@ -40,7 +39,7 @@ SeqList<Teacher> list(10);
 
 ![image.png](https://upload-images.jianshu.io/upload_images/1892989-d2fc671fd10d7b5b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-C语言中的具柄在C++中就不需要了，在C++中相当于this指针。
+C语言中的句柄在C++中就不需要了，在C++中相当于this指针。
 链表没有容量 线性表顺序存储有容量
 
 
@@ -51,12 +50,6 @@ C语言中的具柄在C++中就不需要了，在C++中相当于this指针。
 
 
 C++ 解决方案是一个项目组。
-
-
-
-C++类class和结构struct都可以创建对象
-
-
 
 
 

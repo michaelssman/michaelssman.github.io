@@ -107,10 +107,16 @@ load commands记录地址信息
 3. __DATA。数据区域
 4. __LINKEDIT；包含了方法和变量的元数据，代码签名等信息
 
-### 5、Symbol Table（符号表）自定定义的
+### 5、Dynamic Symbol Table
 
-Symbols
+#### Indirect Symbols
 
-### 6、Dynamic Symbol Table
+间接符号，外部动态库符号 系统的符号。符号绑定。
 
-Indirect Symbols间接符号，外部动态库符号 系统的符号。符号绑定。
+### 6、Symbol Table（符号表）自定定义的
+
+#### Symbols
+
+总表：内部符号和外部符号都有
+
+### 7、String Table

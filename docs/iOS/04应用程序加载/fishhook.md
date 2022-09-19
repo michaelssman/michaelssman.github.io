@@ -185,19 +185,23 @@ PIC翻译过来就是位置独立代码。
 
 ### 通过符号找到字符串
 
-我们还是来到 MachOView 里面，注意，我们数一下，NSLog 这个符号，在懒加载符号表里面是第几个？很明显第一个。
+#### Lazy Symbol Pointers
+
+我们还是来到 MachOView 里面，NSLog 这个符号，在懒加载符号表里面是第一个。
 
 ![图片](fishhook.assets/640-20220606025440810.jpeg)
 
-所以，与懒加载表对应的另外一张表就出来了。indirect Symbols。懒加载表里面 NSLog 是第一个，那么它在 indirect Symbols 表里面也就是第一个。
+#### indirect Symbols
 
-![图片](fishhook.assets/640-20220606025458447.jpeg)
+与懒加载表对应的另外一张表就出来了。indirect Symbols。懒加载表里面 NSLog 是第一个，那么它在 indirect Symbols 表里面也就是第一个。
 
 接下来，将 indirect Symbols 里面对应的 Data 值换算成为10进制。
 
-![图片](fishhook.assets/640-20220606025543658.jpeg)
-
 0x81 的十进制是 129 .为什么要转换这个数据，因为它又是另外一个列表的角标。
+
+![图片](fishhook.assets/640-20220606025458447.jpeg)
+
+#### Symbols
 
 这个列表就是 Symbols ，我们查看一下。
 
@@ -207,7 +211,9 @@ PIC翻译过来就是位置独立代码。
 
 ![图片](fishhook.assets/640-20220606025640463.jpeg)
 
-我们来到 String Table 里面查看一下。我们通过**起始位置加上偏移**便可以定位到 NSLog 字符了。
+#### String Table
+
+来到 String Table 里面。通过**起始位置加上偏移**便可以定位到 NSLog 字符了。
 
 ![图片](fishhook.assets/640-20220606025654743.jpeg)
 
@@ -222,7 +228,7 @@ PIC翻译过来就是位置独立代码。
 通过`NSLog`字符串如何找到符号并修改：
 
 1. 拿到NSLog字符串，去machO的`String Table`里面找`NSLog`，用`.`来分割。得到`String Table Index`。
-2. 通过`String Table index`去`Symbol Table`的`Symbols`（总表：内部符号和外部符号都有），定位到NSLog，得到符号表的偏移值（`Symbols Index`）
+2. 通过`String Table index`去`Symbol Table`的`Symbols`，定位到NSLog，得到符号表的偏移值（`Symbols Index`）
 3. 通过`Symbols Index`去找`Indirect Symbols`得到该符号在`Indirect Symbols`中的顺序（偏移值）。
 4. 由于`Lazy Symbol Pointers`的Index和`Indirect Symbols`一一对应，所以很容易就找到了对应的符号。
 5. 最后修改`Lazy Symbol Pointers`里面的值。（因为外部符号的调用，都是找桩，桩去寻找`Lazy Symbol`里面的地址执行）
@@ -233,13 +239,20 @@ PIC翻译过来就是位置独立代码。
 
 刚才我们通过动态调试加 MachOView 的分析梳理了整个符号绑定以及重绑定的过程。这个过程也是 fishhook 能够 HOOK 系统函数的原理。
 
-## fishhook 工具用处
+## fishhook 用处
 
-举个实际的运用场景：比如最近抖音团队分享的二进制重排启动优化。在这个优化的过程中，我们如何定位到启动时所有的OC 方法？我想你已经猜到了，通过 objc_msgSend 函数的 HOOK 。
+### 1、二进制重排启动优化
 
-- 埋点
-  - Hook拦截用户手势交互或者进入某个指定页面等应用接口，进行用户行为统计分析
-- 应用加固
-  - 防止黑客通过Hook技术破解/攻破应用，来加固应用
-- 应用隔离
-  - 通过Hook技术拦截系统/应用接口，避免数据泄漏
+在这个优化的过程中，我们如何定位到启动时所有的OC 方法？我想你已经猜到了，通过 objc_msgSend 函数的 HOOK 。
+
+### 2、埋点
+
+Hook拦截用户手势交互或者进入某个指定页面等应用接口，进行用户行为统计分析
+
+### 3、应用加固
+
+防止黑客通过Hook技术破解/攻破应用，来加固应用
+
+### 4、应用隔离
+
+通过Hook技术拦截系统/应用接口，避免数据泄漏
