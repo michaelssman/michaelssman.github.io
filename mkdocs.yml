@@ -72,8 +72,7 @@ nav:
       - iOS/02类的原理/内存平移.md
       - iOS/02类的原理/cache.md
       - iOS/02类的原理/isKind和isMember.md
-    - 03Block:
-      - iOS/03Block/block.md
+    - iOS/block.md
     - 03Runtime:
       - iOS/03Runtime/category.md
       - iOS/03Runtime/runtime.md
@@ -113,8 +112,7 @@ nav:
       - iOS/08组件化/Pod.md
       - iOS/08组件化/组件化.md
       - iOS/08组件化/组件化通讯.md
-    - 09响应者链:
-      - iOS/09响应者链/响应者链.md
+    - iOS/响应者链.md
     - 10性能优化:
       - iOS/10性能优化/内存检测.md
       - iOS/10性能优化/界面优化.md
@@ -147,6 +145,7 @@ nav:
       - iOS/SDWebImage/SDWebImageManager.md
     - Swift:
       - iOS/Swift/IR.md
+      - iOS/Swift/defer.md
       - iOS/Swift/Mirror.md
       - iOS/Swift/Moya.md
       - iOS/Swift/Swift和OC.md

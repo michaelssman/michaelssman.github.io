@@ -65,7 +65,10 @@ func f() {
 }
 f()
 ```
-![image.png](https://cdn.nlark.com/yuque/0/2021/png/2977480/1619011163369-f66ffd53-8315-422f-b39f-eff2f78ac764.png#height=304&id=JaoxF&margin=%5Bobject%20Object%5D&name=image.png&originHeight=844&originWidth=1446&originalType=binary&size=116667&status=done&style=none&width=521)
+>结果输出
+End of function
+Second defer
+First defer
 
 
 defer能做什么？
@@ -1026,7 +1029,6 @@ let result = [1, 2, 3, 4, 5].reduce([Int]()){
 
 print(result)
 ```
-
 
 
 
