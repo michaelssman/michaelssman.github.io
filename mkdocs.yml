@@ -130,7 +130,7 @@ nav:
       - iOS/13crach分析/crash分析.md
       - iOS/13crach分析/处理bug.md
     - iOS/KVO.md
-    - iOS/Animation/Animation.md
+    - iOS/Animation.md
     - NSArray:
       - iOS/NSArray/NSArray.md
       - iOS/NSArray/数组随机10条数据.md
