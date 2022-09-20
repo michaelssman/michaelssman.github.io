@@ -144,18 +144,19 @@ nav:
       - iOS/SDWebImage/SDWebImage.md
       - iOS/SDWebImage/SDWebImageManager.md
     - Swift:
-      - iOS/Swift/IR.md
+      - iOS/Swift/类与结构体.md
+      - iOS/Swift/属性.md
       - iOS/Swift/defer.md
+      - iOS/Swift/associatedtype.md
+      - iOS/Swift/闭包.md
       - iOS/Swift/Mirror.md
       - iOS/Swift/Moya.md
       - iOS/Swift/Swift和OC.md
       - iOS/Swift/协议.md
-      - iOS/Swift/属性.md
       - iOS/Swift/指针和内存管理.md
       - iOS/Swift/方法的调度.md
       - iOS/Swift/enum_switch_indirect_optional_map.md
-      - iOS/Swift/类与结构体.md
-      - iOS/Swift/闭包.md
+      - iOS/Swift/IR.md
       - iOS/Swift/Swift面试班.md
     - WKWebView:
       - iOS/WKWebView/WKWebView.md

@@ -17,6 +17,8 @@ i64:64位的整型
 
 ## 结构体 
 
+`{}`大括号括起来的表示结构体
+
 ```
 %swift.refcounted = type { %swift.type*, i64 } 
 //表示形式
