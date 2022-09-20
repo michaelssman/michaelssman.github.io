@@ -58,6 +58,22 @@ nav:
     - 多线程/dispatch_queue_t.md
     - 多线程/读写锁.md
   - iOS:
+    - Swift:
+      - iOS/Swift/类与结构体.md
+      - iOS/Swift/属性.md
+      - iOS/Swift/defer.md
+      - iOS/Swift/associatedtype.md
+      - iOS/Swift/闭包.md
+      - iOS/Swift/高阶函数.md
+      - iOS/Swift/Mirror.md
+      - iOS/Swift/Moya.md
+      - iOS/Swift/Swift和OC.md
+      - iOS/Swift/协议.md
+      - iOS/Swift/指针和内存管理.md
+      - iOS/Swift/方法的调度.md
+      - iOS/Swift/enum_switch_indirect_optional_map.md
+      - iOS/Swift/IR.md
+      - iOS/Swift/Swift面试班.md
     - 00底层原理分析:
       - iOS/00底层原理分析/底层探索分析.md
       - iOS/00底层原理分析/LLDB指令.md
@@ -143,21 +159,6 @@ nav:
       - iOS/SDWebImage/SDImageCache.md
       - iOS/SDWebImage/SDWebImage.md
       - iOS/SDWebImage/SDWebImageManager.md
-    - Swift:
-      - iOS/Swift/类与结构体.md
-      - iOS/Swift/属性.md
-      - iOS/Swift/defer.md
-      - iOS/Swift/associatedtype.md
-      - iOS/Swift/闭包.md
-      - iOS/Swift/Mirror.md
-      - iOS/Swift/Moya.md
-      - iOS/Swift/Swift和OC.md
-      - iOS/Swift/协议.md
-      - iOS/Swift/指针和内存管理.md
-      - iOS/Swift/方法的调度.md
-      - iOS/Swift/enum_switch_indirect_optional_map.md
-      - iOS/Swift/IR.md
-      - iOS/Swift/Swift面试班.md
     - WKWebView:
       - iOS/WKWebView/WKWebView.md
       - iOS/WKWebView/WKWebView聚焦.md
