@@ -65,7 +65,7 @@ nav:
       - iOS/Swift/associatedtype.md
       - iOS/Swift/闭包.md
       - iOS/Swift/高阶函数.md
-      - iOS/Swift/Mirror.md
+      - iOS/Swift/Mirror_throws_Error.md
       - iOS/Swift/Moya.md
       - iOS/Swift/Swift和OC.md
       - iOS/Swift/协议.md
@@ -73,7 +73,6 @@ nav:
       - iOS/Swift/方法的调度.md
       - iOS/Swift/enum_switch_indirect_optional_map.md
       - iOS/Swift/IR.md
-      - iOS/Swift/Swift面试班.md
     - 00底层原理分析:
       - iOS/00底层原理分析/底层探索分析.md
       - iOS/00底层原理分析/LLDB指令.md
