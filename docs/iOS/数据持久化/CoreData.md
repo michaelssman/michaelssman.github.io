@@ -22,15 +22,16 @@ CoreData是苹果自己推出的数据存储框架，采用了一种ORM（对象
 
 ### 数据模型中的“表格” - Entity实体
 
-什么是`Entity`呢？中文翻译叫“实体”。如果把数据模型文件比作数据库中的“库”，那么`Entity`就相当于库里的“表格”。`Entity`就是让你定义数据表格类型的名词。
+`Entity`中文翻译叫“实体”。如果把数据模型文件比作数据库中的“库”，那么`Entity`就相当于库里的“表格”。`Entity`就是让你定义数据表格类型的名词。
 
 假设我这个数据模型是用来存放图书馆信息的，那么很就会建立一个叫`Book`的`Entity`。
 
 当在xcode中点击`Model.xcdatamodeld`时，会看到苹果提供的编辑视图，其中有个醒目的按钮`Add Entity`。
 
-生成对应实体的实体类，在此之前要注意下图两个设置部分，否则会引起崩溃现象
+#### 生成对应实体的实体类
 
-![image-20211109181727834](CoreData.assets/image-20211109181727834.png)
+1. 先选择Code Generation，Language选择OC还是Swift
+2. Xcode -- Editor -- Create NSManagedObject Subclass
 
 ### “属性” - Attributes
 
@@ -164,9 +165,9 @@ AppDelegate.m
 
 ### NSManagedObjectModel
 
-NSManagedObjectModel意思是托管对象模型，其中一个托管对象模型关联到一个模型文件，里面存储着数据库的数据结构。
+NSManagedObjectModel意思是**托管对象模型**，其中一个托管对象模型关联到一个模型文件，里面存储着数据库的数据结构。
 
-创建托管对象模型。注意URL路径文件名要和项目中的`.xcdatamodeld`一样！
+注意URL路径文件名要和项目中的`.xcdatamodeld`一样！
 
 ```objective-c
 - (NSManagedObjectModel *)managedObjectModel {
@@ -235,14 +236,12 @@ NSPersistentStoreCoordinator意思是持久化存储协调器，主要负责协�
 
 NSManagedObjectContext意思是托管对象上下文，数据库的大多数操作是在这个类操作。
 
-首先讲述NSManagedObjectContext，苹果推荐使用initWithConcurrencyType方式创建，在创建时，指定当前是什么类型的并发队列，参数也是一个枚举值。
+苹果推荐使用initWithConcurrencyType方式创建，在创建时，指定当前是什么类型的并发队列，参数也是一个枚举值。
 
 NSManagedObjectContext枚举值：
 
 1. NSPrivateQueueConcurrencyType：代表私有并发队列的类型，操作也是在子线程中完成的。
 3. NSMainQueueConcurrencyType：代表主并发队列类型，如果在操作过程中，需要涉及到UI操作，则应该使用这个参数初始化上下文完成操作。
-
-下面我们一个company的模型文件-主队列并发类型的NSManagedObjectContext
 
 ```objective-c
 - (NSManagedObjectContext *)managedObjectContext {
@@ -292,7 +291,7 @@ Multiple commands produce '路径/Student+CoreDataProperties.o':
 
 `CoreData`版本迁移的方式有很多，一般都是先在`Xcode`中，原有模型文件的基础上，创建一个新版本的模型文件，然后在此基础上做不同方式的版本迁移。
 
-### 为什么要版本迁移？
+### 为什么要版本迁移
 
 在已经运行程序并通过模型文件生成数据库后，再对模型文件进行的修改，如果只是修改已有实体属性的默认值、最大最小值、`Fetch Request`等属性自身包含的参数时，并不会发生错误。如果修改模型文件的结构，或修改属性名、实体名等，造成**模型文件的结构发生改变**，这样再次运行程序**就会导致崩溃**。
 
@@ -311,134 +310,3 @@ Multiple commands produce '路径/Student+CoreDataProperties.o':
 对于新版本模型文件的命名，我在创建新版本模型文件时，一般会**拿当前工程版本号当做后缀**，这样在模型文件版本比较多的时候，就可以很容易**将模型文件版本和工程版本对应起来**。
 
 添加完成后，会发现之前的模型文件会变成一个文件夹，里面包含着多个模型文件。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

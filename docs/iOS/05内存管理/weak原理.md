@@ -2,15 +2,21 @@
 
 ## weak对象存储原理和销毁为什么会置nil
 
-weak在底层维护了⼀张**弱引用表（weak_table_t结构的hash表）**，key是所指对象的地址，value是weak指针的地址数组。
+weak在底层维护了⼀张全局的**弱引用表（weak_table_t结构的hash表）**，全局的弱引用表保存了所有的弱引用对象。
+
+key：所指对象的地址（因为一个对象在内存中的地址是不变的）。
+
+value：weak指针的地址数组，存储所有和相关对象的弱引用指针。weak指针的地址指向当前对象的地址。
+
+```objective-c
+    NSObject *objc = [NSObject alloc];
+    //原来的散列表有 weak
+    //unregist old
+    //regist new
+    id __weak obj = objc;
+```
 
 一个是引用计数表，一个是弱引用表。weak所引⽤对象的引⽤计数不会加1，对引用计数没有处理。
-
-## 移除弱引⽤流程总结：
-
-- ⾸先在weak_table中找出被弱引⽤对象对应的weak_entry_t。 
-- 在weak_entry_t中移除weak指针地址。
-- 移除元素后，判断此时weak_entry_t中是否还有元素，如果此时weak_entry_t已经没有元素了，则需要将weak_entry_t从weak_table中移除。
 
 ## 原理探索
 
@@ -136,22 +142,6 @@ storeWeak(id *location, objc_object *newObj)
 
 通过哈希运算找到弱引用表的地址，然后把弱引用指针插入到弱引用表。
 
-### 总结：
-
-当前runtime维护了一张全局的弱引用表weak_table，也是哈希表，全局的弱引用表保存了所有的弱引用对象。
-
-key：当前对象地址（因为一个对象在内存中的地址是不变的）
-
-value：weak指针的地址，是一个数组 存储所有和相关对象的弱引用指针。weak指针的地址指向当前对象的地址。
-
-```objective-c
-    NSObject *objc = [NSObject alloc];
-    //原来的散列表有 weak
-    //unregist old
-    //regist new
-    id __weak obj = objc;
-```
-
 ## 调用流程：
 
 ### objc_initWeak
@@ -216,12 +206,6 @@ weak_register_no_lock(weak_table_t *weak_table, id referent_id,
 }
 ```
 
-### 如果没有entry_t
-
- 1. new_entry：创建这个entry
-   2. weak_grow_maybe：改变大小，扩容
-   3. weak_entry_insert：把new_entry加入到weak_table
-
 ### 有这个entry就添加（append_referrer）
 
 调用append_referrer方法，将新weak弱引用的对象加入entry。
@@ -276,12 +260,22 @@ store_weak中执行完weak_register_no_lock之后，又调用了setWeaklyReferen
 ## 添加弱引⽤流程总结
 
 - 如果被弱引⽤的对象为nil 或这是⼀个TaggedPointer，直接返回，不做任何操作。
+
 - 如果被弱引⽤对象正在析构，则抛出异常。
+
 - 如果被弱引⽤对象不能被weak引⽤，直接返回nil。
-- 如果对象没有再析构且可以被weak引⽤，则调⽤weak_entry_for_referent ⽅法根据**弱引⽤对象的地址**从弱引⽤表中找到对应的weak_entry，
-- 如果能够找到则调⽤append_referrer⽅法向其中插⼊weak指针地址。
-- 否则新建⼀个weak_entry。
-- 
+
+- 如果对象没有再析构且可以被weak引⽤，则调⽤`weak_entry_for_referent`⽅法根据**弱引⽤对象的地址**从弱引⽤表中找到对应的`weak_entry`，
+
+  - 如果能够找到则调⽤`append_referrer`⽅法向其中插⼊weak指针地址。
+
+  - 没有找到entry_t则创建一个实体**weak_entry_t**，放到weak_table。
+
+    - ```c++
+      weak_entry_t new_entry(referent, referrer);	//创建这个entry
+      weak_grow_maybe(weak_table);								//改变大小，扩容
+      weak_entry_insert(weak_table, &new_entry);	//把new_entry加入到weak_table
+      ```
 
 - SideTables：散列表，多张。
 
@@ -289,21 +283,13 @@ store_weak中执行完weak_register_no_lock之后，又调用了setWeaklyReferen
 
 - weak_table里有student，person，dog等等的弱引用，不止一种的弱引用。weak_table通过对象找到实体**weak_entry_t**
 
-- 没有找到就创建一个实体**weak_entry_t**，放到weak_table。
-
 - 把referent加入到weak_table的数组inline_referrers
-
-- 把weak_table扩容一下
-
-- 把new_entry加入到weak_table中
 
 - entry->referrers[index]
 
   把传过来的弱引用对象new_referrer添加到entry中的referrers（referrers是一个数组）。
 
-声明weak要不断的通过hash计算来找到地址然后取出表，来进行查找。
-
-声明太多的weak比较耗费性能。只在解决循环引用的时候使用。
+声明weak要不断的通过hash计算来找到地址然后取出表，来进行查找。声明太多的weak比较耗费性能，只在解决循环引用的时候使用。
 
 散列表--> entry--> 引用对象
 
@@ -545,60 +531,8 @@ weak_clear_no_lock(weak_table_t *weak_table, id referent_id)
 
    1. 会根据对象地址获取所有weak指针地址的数组，然后遍历这个数组把其中的数据设为nil，最后把这个entry从weak表中删除。
 
+## 移除弱引⽤流程总结
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- ⾸先在weak_table中找出被弱引⽤对象对应的weak_entry_t。 
+- 在weak_entry_t中移除weak指针地址。
+- 移除元素后，判断此时weak_entry_t中是否还有元素，如果此时weak_entry_t已经没有元素了，则需要将weak_entry_t从weak_table中移除。
