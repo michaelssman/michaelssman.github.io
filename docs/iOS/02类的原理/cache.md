@@ -4,10 +4,10 @@
 
 ### 分析原理
 
-```
-        LGPerson *p  = [LGPerson alloc];
-        Class pClass = [LGPerson class];
-        //打断点
+```objective-c
+LGPerson *p  = [LGPerson alloc];
+Class pClass = [LGPerson class];
+//打断点
 ```
 
 ### LLDB 验证方法存储
@@ -169,6 +169,10 @@ public:
 ```c++
 void cache_t::insert(SEL sel, IMP imp, id receiver)
 {
+  
+  //在这个方法里打断点，可以看到调用堆栈 log_and_fill_cache。
+  //log_and_fill_cache在方法lookUpImpOrForward里面。
+  
 	/**
 	省略代码
 	*/
@@ -247,15 +251,6 @@ void cache_t::insert(SEL sel, IMP imp, id receiver)
 **还有一点就是：当容器扩容之后，前面存储的方法也会随之清空。只有新增的那一个。为了性能效率考虑，舍弃了之前旧的。**
 
 负载因子。0.75。空间利用率比较高。哈希冲突不会过多。
-
-```
-void cache_t::insert(SEL sel, IMP imp, id receiver)
-{
-//在这个方法里打断点，可以看到调用堆栈 log_and_fill_cache
-}
-```
-
-log_and_fill_cache在方法lookUpImpOrForward里面。
 
 ### cache_t::buckets
 

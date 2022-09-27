@@ -62,15 +62,16 @@ nav:
       - iOS/Swift/类与结构体.md
       - iOS/Swift/属性.md
       - iOS/Swift/defer.md
-      - iOS/Swift/associatedtype.md
+      - iOS/Swift/泛型和关联类型.md
       - iOS/Swift/闭包.md
       - iOS/Swift/高阶函数.md
+      - iOS/Swift/访问权限.md
+      - iOS/Swift/方法调度.md
       - iOS/Swift/Mirror_throws_Error.md
       - iOS/Swift/Moya.md
       - iOS/Swift/Swift和OC.md
       - iOS/Swift/协议.md
       - iOS/Swift/指针和内存管理.md
-      - iOS/Swift/方法的调度.md
       - iOS/Swift/enum_switch_indirect_optional_map.md
       - iOS/Swift/IR.md
     - 00底层原理分析:
@@ -80,7 +81,7 @@ nav:
       - iOS/01对象原理/alloc.md
       - iOS/01对象原理/isa.md
       - iOS/01对象原理/对象原理.md
-      - iOS/01对象原理/结构体内存对齐.md
+      - iOS/01对象原理/内存对齐.md
       - iOS/01对象原理/联合体和位域.md
     - 02类的原理:
       - iOS/02类的原理/类的原理.md
@@ -138,6 +139,7 @@ nav:
       - iOS/13crach分析/crash分析.md
       - iOS/13crach分析/处理bug.md
     - iOS/KVO.md
+    - iOS/KVC.md
     - iOS/Animation.md
     - NSArray:
       - iOS/NSArray/NSArray.md

@@ -4,9 +4,11 @@
 
 **callAlloc走两次**
 
-alloc会先走objc_alloc，llvm底层拦截 先标记
+### alloc
 
-汇编代码把SEL是alloc的 IMP指向objc_alloc
+alloc会先走objc_alloc，llvm底层拦截 先标记。汇编代码把SEL是alloc的 IMP指向objc_alloc
+
+### objc_alloc
 
 ```c++
 // Calls [cls alloc].
@@ -16,6 +18,8 @@ objc_alloc(Class cls)
     return callAlloc(cls, true/*checkNil*/, false/*allocWithZone*/);
 }
 ```
+
+### callAlloc
 
 ```c++
 static ALWAYS_INLINE id
@@ -40,11 +44,15 @@ callAlloc(Class cls, bool checkNil, bool allocWithZone=false)
 
 然后再`((id(*)(id, SEL))objc_msgSend)(cls, @selector(alloc))`走alloc
 
+### alloc
+
 ```c++
 + (id)alloc {
     return _objc_rootAlloc(self);
 }
 ```
+
+### _objc_rootAlloc
 
 ```c++
 id
@@ -53,6 +61,8 @@ _objc_rootAlloc(Class cls)
     return callAlloc(cls, false/*checkNil*/, true/*allocWithZone*/);
 }
 ```
+
+### callAlloc
 
 ```c++
 static ALWAYS_INLINE id
@@ -75,6 +85,8 @@ callAlloc(Class cls, bool checkNil, bool allocWithZone=false)
 }
 ```
 
+### _objc_rootAllocWithZone
+
 ```c++
 NEVER_INLINE
 id
@@ -89,6 +101,8 @@ _objc_rootAllocWithZone(Class cls, malloc_zone_t *zone __unused)
 上面的每一个都下一个符号断点。然后就可以知道走到哪一个步。
 
 注：有其它的，需要先来到Person的alloc，然后再进入符号断点。
+
+### _class_createInstanceFromZone
 
 _class_createInstancesFromZone方法里面：
 
@@ -144,6 +158,8 @@ _class_createInstanceFromZone(Class cls, size_t extraBytes, void *zone,
     return object_cxxConstructFromClass(obj, cls, construct_flags);
 }
 ```
+
+### objc_object::initIsa
 
 ```c++
 inline void 
@@ -207,50 +223,7 @@ calloc只是申请一个内存，是一个指针，和person对象没有关系
    1. cls->instanceSize()	//计算对象需要的内存的⼤⼩。
    2. calloc()    //系统实际为对象分配内存的⼤⼩。
 
-# 内存对齐
-
-栈内存 连续的
-
-创建的对象最小内存大小是16字节。
-
-一个对象8字节，isa也是8字节，NSObject是8个字节，指针8字节。
-
-为什么8为倍数， 而不是16或32：没有任何成员变量只有一个isa，则是8。
-
-计算机读---存
-
-person中不同类型的成员变量占内存大小是不一样的，不断变化，CPU读取计算压力大。所以所有的成员变量都设置8字节。已8字节去读取，速度会变快（空间换时间）。
-
-整个内存中8字节的最多，所以是8倍数。
-
-8字节对齐
-
-```c++
-int func (int x) {
-//    return (x + 7) / 8 * 8;
-    return (x + 7) >> 3 << 3;//左移3 右移3
-}
-```
-
-堆 对象的内存 以16字节对齐
-
-成员变量 8字节对齐 结构体内部
-
-对象和对象之间是16字节对齐
-
-对象16字节对齐 内存访问 野指针错误减少
-
-**对象内部是8字节对齐，对象是16字节对齐。**空间换时间，因为对象isa是8字节。
-
-### 为什么要字节对⻬
-
-字节是内存的容量单位。但是，CPU在读取内存的时候，却不是以字节为单位来读取的，⽽是以“块”为单位读取的，所以⼤家也经常听到⼀块内存，“块”的⼤⼩也就是内存存取的⼒度。如果不对⻬的话，在我们频繁的存取内存的时候，CPU就需要花费⼤量的精⼒去分辨你要读取多少字节，这就会造成CPU的效率低下，如果想要CPU能够⾼效读取数据，那就需要找⼀个规范，这个规范就是字节对⻬。
-
-为什么对象内部的成员变量是以8字节对⻬，系统实际分配的内存以16字节对⻬？
-
-以空间换时间。苹果采取16字节对⻬，是因为OC的对象中，第⼀位叫isa指针，它是必然存在的，⽽且它就占了8位字节，就算对象中没有其他的属性了，也⼀定有⼀个isa，那对象就⾄少要占⽤8位字节。如果以8位字节对⻬的话，如果连续的两块内存都是没有属性的对象，那么它们的内存空间就会完全的挨在⼀起，是容易混乱的。以16字节为⼀块，这就保证了CPU在读取的时候，按照块读取就可以，效率更⾼，同时还不容易混乱。
-
-# alloc init new区别
+## alloc init new区别
 
 ```c++
 + (id)init {

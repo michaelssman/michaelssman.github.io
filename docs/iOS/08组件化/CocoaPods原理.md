@@ -6,7 +6,7 @@
 
 ### 使用pod search搜索不到时
 
-删除/Users/用户名/Library/Caches/CocoaPods 下的search_index.json检索索引文件，然后pod search就会重新生成最新的。就可以搜索到自己刚才的库。
+删除`/Users/用户名/Library/Caches/CocoaPods`下的`search_index.json`检索索引文件，然后pod search就会重新生成最新的。就可以搜索到自己刚才的库。
 
 pod search 的时候就是在search_index.json中查找的。
 
@@ -22,7 +22,7 @@ pod search 的时候就是在search_index.json中查找的。
 
 拉取代码需要安装cocoapods。
 
-本地仓库文件地址：/Users/cuihuihui/.cocoapods/repos。.cocoapods是隐藏文件
+本地仓库文件地址：`/Users/用户名/.cocoapods/repos`。`.cocoapods`是隐藏文件
 
 `pod search AFNetworking`就是在`.cocoapods/repos`本地资源库找到索引`AFNetworking.podspec.json`。
 
@@ -34,7 +34,7 @@ pod search 的时候就是在search_index.json中查找的。
 
 先抽成本地的，本地的私有索引库。然后提交远程。
 
-### 1、终端cd到本地的Lib文件夹，也可以是其它任意文件夹。
+### 1、cd到本地的Lib文件夹，也可以是其它任意文件夹。
 
 ### 2、`pod lib create GroupShadowTableView`，创建模版。
 
