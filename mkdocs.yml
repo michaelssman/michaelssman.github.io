@@ -145,10 +145,6 @@ nav:
       - iOS/NSArray/NSArray.md
       - iOS/NSArray/数组随机10条数据.md
       - iOS/NSArray/遍历数组.md
-    - OpenGL_ES:
-      - iOS/OpenGL_ES/专业名词解释.md
-      - iOS/OpenGL_ES/图片加载解码渲染.md
-      - iOS/OpenGL_ES/图像显示原理.md
     - SDWebImage:
       - iOS/SDWebImage/SDImageCache.md
       - iOS/SDWebImage/SDWebImage.md
@@ -192,6 +188,10 @@ nav:
     - iOS/版本更新.md
     - iOS/表情.md
   - 音视频:
+    - 图片加载解码渲染:
+      - 音视频/OpenGL_ES/专业名词解释.md
+      - 音视频/OpenGL_ES/图像显示原理.md
+      - 音视频/OpenGL_ES/图片加载解码渲染.md
     - 音视频/视频基本知识.md
     - 音视频/AVFoundation.md
     - 音视频/H264.md
@@ -277,6 +277,7 @@ nav:
   - 数据结构与算法:
     - 数据结构:
       - 数据结构/数据结构.md
+      - 数据结构/数组.md
       - Stash:
         - 数据结构/Stash/01Stash.md
         - 数据结构/Stash/02Stash.md
