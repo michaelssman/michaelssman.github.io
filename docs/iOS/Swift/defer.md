@@ -2,7 +2,7 @@
 
 ## defer执行时机
 
-当前作用域结束后随之执行。
+整个方法执行之后最后执行，当前作用域结束后随之执行。
 
 defer {} 里的代码会在当前*代码块*返回的时候执行，无论当前*代码块*是从哪个分支return 的，即使程序抛出错误，也会执行。 
 
@@ -87,13 +87,13 @@ try append(string: "Line 2", toFileAt: url)
 ### 在使用指针的时候
 
 ```swift
-    let count = 2
-    let pointer = UnsafeMutablePointer<Int>.allocate(capacity: count)
-    pointer.initialize(repeating: 0, count: count)
-    defer {//方法运行结束后调用，管理析构 释放
-        pointer.deinitialize(count: count)
-        pointer.deallocate()
-    }
+let count = 2
+let pointer = UnsafeMutablePointer<Int>.allocate(capacity: count)
+pointer.initialize(repeating: 0, count: count)
+defer {//方法运行结束后调用，管理析构 释放
+  pointer.deinitialize(count: count)
+  pointer.deallocate()
+}
 ```
 
 ### 请求网络的时候
@@ -118,20 +118,29 @@ defer要在guard前面
 比如下面这段代码
 
 ```swift
-//test()//调用test，如果guard返回了，就不会执行defer，所以要避免这样写
 func test() {
   guard false else { return }
   defer {
     print("defer excute")
   }
 }
+//test()//调用test，如果guard返回了，就不会执行defer，所以要避免这样写
 ```
 
-![image.png](https://cdn.nlark.com/yuque/0/2021/png/2977480/1619594226033-16e0c21a-cf01-40a9-91f1-70e085765b8a.png#height=180&id=KKlE0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=360&originWidth=2930&originalType=binary&size=63377&status=done&style=none&width=1465)
+同样的，有的 `Swift` 初学者在刚开始写 `Swift` 的时候可能会写这样的代码
 
-
-同样的，有的 `Swift` 初学者在刚开始写 `Swift` 的时候可能会写这样的代码![image.png](https://cdn.nlark.com/yuque/0/2021/png/2977480/1619594354142-6bbb8408-897f-449e-b64a-f162b14a0336.png#height=265&id=voagE&margin=%5Bobject%20Object%5D&name=image.png&originHeight=530&originWidth=2924&originalType=binary&size=91973&status=done&style=none&width=1462)
-
+```swift
+func test() throws {
+  if true {
+		throw NSError()
+  }
+  
+  //同样不会执行
+  defer {
+    print("defer excute")
+  }
+}
+```
 
 **一道关于defer的面试题** 
 

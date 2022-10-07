@@ -66,6 +66,8 @@ nav:
       - iOS/Swift/高阶函数.md
       - iOS/Swift/访问权限.md
       - iOS/Swift/方法调度.md
+      - iOS/Swift/多线程.md
+      - iOS/Swift/条件控制.md
       - iOS/Swift/Mirror_throws_Error.md
       - iOS/Swift/Moya.md
       - iOS/Swift/Swift和OC.md

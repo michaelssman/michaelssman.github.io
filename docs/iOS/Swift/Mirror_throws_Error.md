@@ -4,7 +4,7 @@
 
 ### AnyObject
 
-代表任意类的实例（instance），类的类型，仅类遵守的协议。 
+代表任意类的实例（instance）的类型，任意类的类型，仅类遵守的协议。 
 
 ```swift
     class LGTeacherM{
@@ -18,7 +18,57 @@
 
 ### Self
 
-用在方法返回值，协议
+#### 1、Self作为方法返回值
+
+```swift
+        class LGTeacherSelf{
+            static let age = 18
+            func test() -> Self {//Self作为方法返回类型 Self指当前实例对象
+                return self//当前实例对象
+            }
+            func haha() {
+                print(#function)
+            }
+        }
+
+        let t = LGTeacherSelf()
+        t.test().haha()
+```
+
+#### 2、Self在属性中
+
+```swift
+        class LGPersonP {
+            //类型属性
+            static let age = 5
+            //存储属性
+            let age1 = age
+            var age2 = age
+            //let age3 = self.age//报错，self经过初始化才可以得到，为定义时想要访问需要使用Self
+            lazy var age3 = Self.age
+        }
+        
+        let p = LGPersonP()
+        print(p.age3)
+```
+
+#### 3、Self在协议中
+
+```swift
+        protocol MyProtocol {
+            func get() -> Self//Self指遵循协议的类型
+        }
+        class LGPersonM: MyProtocol{
+            func get() -> Self {//此时Self指的就是LGPersonM类型
+                return self
+            }
+        }
+
+        func testSelf_Protocol() {
+            let p: MyProtocol = LGPersonM()//p的静态类型是MyProtocol
+            print(p.get())//返回遵循协议的类的类型
+        }
+```
 
 ### Any
 
