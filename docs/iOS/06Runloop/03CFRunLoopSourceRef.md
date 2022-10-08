@@ -24,7 +24,7 @@ mach_port大家就理解成进程间相互发送消息的一种机制就好, 比
 
 一个APP在前台静止着，此时，用户用手指点击了一下APP界面，那么过程就是下面这样的：
 
-我们触摸屏幕,先摸到硬件(屏幕)，屏幕表面的事件会被IOKit先包装成UIEvent,通过mach_Port传给正在活跃的APP，Event先告诉source1（mach_port），source1唤醒RunLoop，然后将事件Event分发给source0，然后由source0来处理。
+我们触摸屏幕,先摸到硬件(屏幕)，屏幕表面的事件会被IOKit先包装成UIEvent，通过mach_Port传给正在活跃的APP，mach_port和source1是一一对应的（key和value），source1唤醒RunLoop，然后将事件Event分发给source0，然后由source0来处理。
 
 如果没有事件，也没有timer，则runloop就会睡眠，如果有，则runloop就会被唤醒，然后跑一圈。
 
