@@ -4,11 +4,9 @@
 
 runloop有`source` `timer` `observer`，Observer用来监听RunLoop状态的。
 
-(kCFRunLoopBeforeWaiting,kCFRunLoopAfterWaiting等)
-
 ## CFRunLoopObserverRef
 
-**CFRunLoopObserverRef**：是观察者，我们可以通过CFRunLoopObserverCreateWithHandler函数来创建一个观察者（函数会有一个block回调），来对RunLoop进行观察，当RunLoop状态变化时，会触发block回调，回调会返回对应的状态，我们可以在回调里做相应做的操作。
+**CFRunLoopObserverRef**：是观察者，我们可以通过CFRunLoopObserverCreateWithHandler函数来创建一个观察者（函数会有一个block回调），来对RunLoop进行观察，当RunLoop状态变化时，会触发block回调，回调会返回对应的状态，可以在回调里做相应做的操作。
 
 （1）CFRunLoopObserverRef是观察者，能够监听RunLoop的状态改变
 
@@ -31,9 +29,9 @@ CFRelease(observer);
 
 整个事务的执行状况。
 
-kCFRunLoopBeforeWaiting和kCFRunLoopAfterWaiting关于事务生命周期。runloop会休眠。
+kCFRunLoopBeforeWaiting和kCFRunLoopAfterWaiting关于事务生命周期。
 
-kCFRunLoopBeforeWaiting和kCFRunLoopAfterWaiting之间是休息。
+kCFRunLoopBeforeWaiting和kCFRunLoopAfterWaiting之间runloop会休眠。
 
 kCFRunLoopAfterWaiting和kCFRunLoopBeforeWaiting之间是在run，可以知道做一次事情需要的时间。这是一次循环。
 
@@ -99,7 +97,7 @@ CFStringRef  (*copyDescription)(const void *info);//描述,暂时没用
 
 ### 创建一个CFRunLoopObserverContext
 
-```
+```c++
 CFRunLoopObserverContext context = {
 0,
 (__bridge void *)(self),//OC对象传递过去
@@ -111,13 +109,13 @@ NULL
 
 点击上面的CFRunLoopObserverCallBack是API跳到这样的一个声明,即告诉我们监听的回调方法的参数怎么定义
 
-```
+```c++
 typedef void (*CFRunLoopObserverCallBack)(CFRunLoopObserverRef observer, CFRunLoopActivity activity, void *info);
 ```
 
 接下来新建一个C语言用于回调方法
 
-```
+```c++
 static void runLoopOserverCallBack(CFRunLoopObserverRef observer, CFRunLoopActivity activity, void *info){
 
 //void *info正是我们要用来与OC传值的,这边可以转成OC对象,前面我们传进来的时候是self
@@ -127,7 +125,7 @@ static void runLoopOserverCallBack(CFRunLoopObserverRef observer, CFRunLoopActiv
 
 ### 创建observer
 
-```
+```c++
 //创建一个监听
 static CFRunLoopObserverRef observer;
 observer = CFRunLoopObserverCreate(NULL, kCFRunLoopAfterWaiting, YES, 0, &runLoopOserverCallBack,&context);
