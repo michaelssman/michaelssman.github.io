@@ -280,7 +280,6 @@ nav:
       - 数据结构/数组.md
       - Stash:
         - 数据结构/Stash/01Stash.md
-        - 数据结构/Stash/02Stash.md
         - 数据结构/Stash/03Stash.md
       - 01链表:
         - 数据结构/01链表/00线性表.md
@@ -316,7 +315,7 @@ nav:
     - 算法:
       - 算法/00排序.md
       - 算法/交换swap.md
-      - 算法/冒泡排序.md
+      - 算法/排序算法.md
       - 算法/加密.md
       - 算法/基数排序.md
       - 算法/归并排序merge.md
