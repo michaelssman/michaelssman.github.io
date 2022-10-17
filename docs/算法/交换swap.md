@@ -24,7 +24,7 @@ void swap(int x, int y)
 
 宏函数
 
-```c
+```c++
 #define swap(x,y,t) ((t) = (x),(x) = (y),(y) = (t))
 ```
 
