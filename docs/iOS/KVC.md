@@ -1,7 +1,5 @@
 # KVC
 key value coding
-kvc原理
-自定义kvc
 
 ## set
 
