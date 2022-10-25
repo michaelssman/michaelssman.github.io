@@ -2,18 +2,27 @@
 
 ## 类型
 
-### AnyObject
+### self
 
-代表任意类的实例（instance）的类型，任意类的类型，仅类遵守的协议。 
+**.self: 如果T是实例对象，T.self返回的就是他本身；如果T是类，T.self 返回的就是元类型**
 
 ```swift
-    class LGTeacherM{
-        var age = 18
+// MARK: self在方法中的表现
+//类LGTeacherM
+//元类LGTeacherM.Type类型 通过LGTeacherM.self获取
+class LGTeacherM{
+    var age = 18
+    func test(){
+        print(self)//在实例方法中代表当前实例对象
     }
+    static func test1(){
+        print(self)//在类方法中self是LGTeacherM这个类型本身
+    }
+}
 
-    var t = LGTeacherM()
-    var t1: AnyObject = t//AnyObject代表当前实例类型
-    var t2:AnyObject = LGTeacherM.self//代表LGTeacherM类型
+var t = LGTeacherM()
+let t3 = t.self//返回t本身
+let t4 = t.self.self//返回t本身
 ```
 
 ### Self
@@ -21,66 +30,126 @@
 #### 1、Self作为方法返回值
 
 ```swift
-        class LGTeacherSelf{
-            static let age = 18
-            func test() -> Self {//Self作为方法返回类型 Self指当前实例对象
-                return self//当前实例对象
-            }
-            func haha() {
-                print(#function)
-            }
-        }
+class LGTeacherSelf{
+  static let age = 18
+  func test() -> Self {//Self作为方法返回类型 Self指当前实例对象
+    return self//当前实例对象
+  }
+  func haha() {
+    print(#function)
+  }
+}
 
-        let t = LGTeacherSelf()
-        t.test().haha()
+let t = LGTeacherSelf()
+t.test().haha()
 ```
 
 #### 2、Self在属性中
 
 ```swift
-        class LGPersonP {
-            //类型属性
-            static let age = 5
-            //存储属性
-            let age1 = age
-            var age2 = age
-            //let age3 = self.age//报错，self经过初始化才可以得到，为定义时想要访问需要使用Self
-            lazy var age3 = Self.age
-        }
-        
-        let p = LGPersonP()
-        print(p.age3)
+class LGPersonP {
+  //类型属性
+  static let age = 5
+  //存储属性
+  let age1 = age
+  var age2 = age
+  //let age3 = self.age//报错，self经过初始化才可以得到，为定义时想要访问需要使用Self
+  lazy var age3 = Self.age
+}
+
+let p = LGPersonP()
+print(p.age3)
 ```
 
 #### 3、Self在协议中
 
 ```swift
-        protocol MyProtocol {
-            func get() -> Self//Self指遵循协议的类型
-        }
-        class LGPersonM: MyProtocol{
-            func get() -> Self {//此时Self指的就是LGPersonM类型
-                return self
-            }
-        }
+protocol MyProtocol {
+  func get() -> Self//Self指遵循协议的类型
+}
+class LGPersonM: MyProtocol{
+  func get() -> Self {//此时Self指的就是LGPersonM类型
+    return self
+  }
+}
 
-        func testSelf_Protocol() {
-            let p: MyProtocol = LGPersonM()//p的静态类型是MyProtocol
-            print(p.get())//返回遵循协议的类的类型
-        }
+func testSelf_Protocol() {
+  let p: MyProtocol = LGPersonM()//p的静态类型是MyProtocol
+  print(p.get())//返回遵循协议的类的类型
+}
+```
+
+### AnyObject
+
+代表任意类的实例（instance）的类型，任意类的类型，仅类遵守的协议。 
+
+```swift
+class LGTeacherM{
+  var age = 18
+}
+
+// MARK: AnyObject
+protocol MyProtocol0: AnyObject{//MyProtocol0只能够被class遵守，结构体不行
+}
+extension LGTeacherM: MyProtocol0{}
+
+var t = LGTeacherM()
+var t1: AnyObject = t//AnyObject代表当前实例对象的类型。返回t本身
+var t2:AnyObject = LGTeacherM.self//代表LGTeacherM类的类型（元类型）
 ```
 
 ### Any
 
 代表任意类型，包括 funcation 类型或者 Optional 类型 
 
+```swift
+// 等价于 OC的id，Any比AnyObject更广泛
+// Any: 代表任意类型，包括 funcation 类型或者 Optional 类型
+//var array0:[AnyObject] = [1,"fds"]//1是基本类型
+var array:[Any] = [1, "HHH"]
+
+class LGTeacherM{
+  var age = 18
+}
+let t = LGTeacherM()
+let t6: Any = t
+```
+
 ### AnyClass
 
-代表任意实例的类型
+**AnyClass 代表任意实例的类型，类的类型 AnyClass = AnyObject.Type**
 
 类：LGTeacherM
 
 元类：LGTeacherM.Type类型 通过LGTeacherM.self获取
+
+```swift
+class LGTeacherM{
+  var age = 18
+}
+
+var t = LGTeacherM()
+let t5: AnyClass = LGTeacherM.self//LGTeacherM.Type
+let t7: AnyClass = type(of: t)//LGTeacherM.Type
+```
+
+### type(of: <##T##>)
+
+```swift
+func test_typeof() {
+    //获取某个值的动态类型（真实类型）
+    func test(_ value: Any){//value静态类型是Any，但此时传的ageM是Int类型
+        print(type(of: value))
+    }
+    
+    let ageM = 10
+    test(ageM) //打印Int
+}		
+```
+
+### Type
+
+实例对象的Type没有意义，类才可以Type
 
 ## Swift Runtime 
 
@@ -137,7 +206,9 @@ func test(){
 
 所谓反射就是可以动态获取类型、成员信息，在运⾏时可以调⽤⽅法、属性等⾏为的特性。
 
-在使⽤OC开发时很少强调其反射概念，因为OC的Runtime要⽐其他语⾔中的反射强⼤的多。但是 Swift 是⼀⻔类型安全的语⾔，不⽀持我们像 OC 那样直接操作，它的标准库仍然提供了反射机制来让我们访问成员信息，
+在使⽤OC开发时很少强调其反射概念，因为OC的Runtime要⽐其他语⾔中的反射强⼤的多。
+
+Swift 是⼀⻔类型安全的语⾔，不⽀持像 OC 那样直接操作，它的标准库仍然提供了反射机制来让我们访问成员信息。
 
 Swift 的反射机制是基于⼀个叫 Mirror 的结构体来实现的。为具体的实例创建⼀个 Mirror 对象，然后就可以通过它查询这个实例 
 

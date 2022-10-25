@@ -154,10 +154,6 @@ func add() -> Int {
 }
 
 var tmp = add()
-print(tmp)
+print(tmp)//1
+print(a)	//2
 ```
-
-大家说上述我们打印出来的是多少？结果是 1
-![image.png](https://cdn.nlark.com/yuque/0/2021/png/2977480/1619595840724-b0b50cd7-337f-405a-a263-0a02fce9b6a6.png#height=446&id=K4fhp&margin=%5Bobject%20Object%5D&name=image.png&originHeight=892&originWidth=2308&originalType=binary&size=223286&status=done&style=none&width=1154)
-![image.png](https://cdn.nlark.com/yuque/0/2021/png/2977480/1619595924970-b88518ed-f418-41d5-97a7-a0ed0a27018c.png#height=306&id=WYbto&margin=%5Bobject%20Object%5D&name=image.png&originHeight=612&originWidth=2120&originalType=binary&size=110084&status=done&style=none&width=1060)
-当然当前 a 的值肯定是改变了的，这里我们打印 `a` 的值就可以看到 `a` 是 2.
