@@ -204,6 +204,9 @@ nav:
     - C++/运算符重载.md
     - C++/迭代器.md 
     - C++/内联函数.md
+    - 继承和组合:
+      - C++/继承/继承.md
+      - C++/继承/继承和组合.md
     - Stash_指针的stash: C++/Stash_指针的stash.md
     - delete_可能会出错: C++/delete_可能会出错.md
     - vscode运行C: C++/vscode运行C++.md
@@ -245,13 +248,6 @@ nav:
       - 04链表的Stack模版: C++/模版/04链表的Stack模版.md
       - 05模版化的指针Stash: C++/模版/05模版化的指针Stash.md
       - 06函数模版: C++/模版/06函数模版.md
-    - 继承:
-      - C++/继承/00继承语法.md
-      - C++/继承/01继承和组合.md
-      - C++/继承/02继承中的构造和析构.md
-      - C++/继承/03继承的其它要点.md
-      - C++/继承/04继承中的向上类型转换.md
-      - C++/继承/05再论继承和组合.md
   - flutter:
     - flutter/flutter简介.md
     - flutter/flutter安装.md
