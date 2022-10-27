@@ -1,7 +1,5 @@
 # package和plugin
 
-https://pub.dev/上面有写好的第三方。
-
 ## package包
 
 没有android和iOS代码。

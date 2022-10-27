@@ -1,16 +1,24 @@
 # flutter安装
 
-## 下载flutter
+## 网站
 
-https://flutter.dev/
+flutter中文网
+
+api.flutter.dev
+
+dart.cn
+
+https://pub.dev 三方库，dart packages
+
+dartpad.dev 在线编程
+
+https://flutter.dev/ 下载flutter
 
 ## flutter安装目录
 
 可以放到家目录里：只能自己访问。
 
-可以放到根目录opt：不同用户都可以访问，但是有权限。
-
-Flutter 是安装在 `/opt` 目录下, 有权限问题, 不能用命令直接升级, 需要重新下载解压安装
+可以放到根目录`/opt`下：不同用户都可以访问，但是有权限问题, 不能用命令直接升级, 需要重新下载解压安装。
 
 ## 环境配置
 
@@ -33,7 +41,11 @@ export PATH=$FLUTTER:$PATH
 
 `export PATH=$FLUTTER:$PATH`
 
-`$`表示变量，FLUTTER变量是上面定义的`export FLUTTER=/opt/flutter/bin`，变量名是：`FLUTTER`路径是：`/opt/flutter/bin`。
+`$`表示变量，FLUTTER变量是上面定义的`export FLUTTER=/opt/flutter/bin`。
+
+变量名是：`FLUTTER`
+
+路径是：`/opt/flutter/bin`。
 
 `:$PATH`表示把之前的读一遍。不同路径之间用`:`隔开。
 
@@ -240,15 +252,3 @@ buildscript {
 热重载，加载修改的。
 
 有状态的widget，数据改变的时候就需要重新启动项目。树发生改变了时候就需要重新运行。
-
-## 网站
-
-flutter中文网
-
-api.flutter.dev
-
-dart.cn
-
-dart packages:  https://pub.dev
-
-dartpad.dev 在线编程

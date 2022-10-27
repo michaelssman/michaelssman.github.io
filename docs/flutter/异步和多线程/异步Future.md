@@ -1,8 +1,10 @@
 # 异步Future
 
-逻辑iOS技术号公众号 2020-05-19
-
 Future只是异步代码，在一个队列中，还在主线程中。
+
+异步如果有返回值的，一般返回`Future`。未来的数据。
+
+先保存代码，然后回调的时候再调用，使用then。
 
 方法后面加`async`（不加也可以），把耗时的操作（任务）包装到`Future`里面。
 
@@ -17,7 +19,34 @@ Future工厂构造方法，参数是一个回调函数。函数的执行代码�
 Future对象可以一直点下去`.then .onError .catchError .whenComplete`等等
 
 ```dart
- //完整流程 catchError写在最后
+///1 
+///1秒后打印下面的
+///2 
+///3
+void future_Demo() {
+  print('1'); //主线程
+  Future(func0); //后台执行
+  sleep(const Duration(seconds: 1)); //主线程睡眠
+  print('2');
+}
+
+func0() => print('3');
+```
+
+```dart
+import 'dart:async';
+import 'dart:io';
+
+String _data = '0';
+
+void mainTest() {
+  getData();
+}
+
+getData() async {
+  print('开始data = $_data');
+
+  //完整流程 catchError写在最后
   Future(() {
     //任务 丢进异步里面
     //耗时操作
@@ -25,17 +54,82 @@ Future对象可以一直点下去`.then .onError .catchError .whenComplete`等�
       throw Exception('网络异常');
     }
   })
-      .then((value) => print('value = $value'))
+      .then(thenFunc)
       .whenComplete(() => print('完成了'))
       .catchError((e) => print('捕获到了：' + e.toString()));
+
+  //不会卡住下面的
+  print('再干点其它的');
+}
+
+FutureOr thenFunc(Null value) {
+  print('then进来了');
+  print('结束 data = $value');
+}
+
+///结果：
+///flutter: 开始data = 0
+///flutter: 再干点其它的
+///flutter: 完成了
+///flutter: 捕获到了：Exception: 网络异常
+```
+
+```dart
+import 'dart:async';
+import 'dart:io';
+
+String _data = '0';
+
+void mainTest() {
+  getData();
+}
+
+getData() async {
+  print('开始data = $_data');
+
+  //异步
+  //不会卡住下面的
+  Future future = Future(() {
+    //任务 丢进异步里面
+    //耗时操作
+    for (int i = 0; i < 10000000; i++) {
+      throw Exception('网络异常');
+    }
+  });
+
+  future
+      .then((value) => print('value = $value'))
+      .onError((error, stackTrace) => print(error.toString()));
+
+  future
+      .whenComplete(() => print('完成了'))
+      .catchError((e) => print('完成的时候捕获异常：' + e.toString()));
+
+  future
+      .then((value) => print('value = $value'))
+      .catchError((e) => print('捕获到了：' + e.toString()));
+
+  future.catchError((e) => print('使用的时候捕获到了：' + e.toString()));
+
+  print('再干点其它的');
+}
+///打印结果
+///flutter: 开始data = 0
+///flutter: 再干点其它的
+///flutter: Exception: 网络异常
+///flutter: 完成了
+///flutter: 完成的时候捕获异常：Exception: 网络异常
+///flutter: 捕获到了：Exception: 网络异常
+///flutter: 使用的时候捕获到了：Exception: 网络异常
 ```
 
 Future结果处理
 
-- `.then`用来注册一个Future完成时要调用的回调
+- `.then`用来注册一个Future完成时要调用的回调。Future里面有return时，会调用`.then`。
 - `.catchError`注册一个回调，来捕捉Future的error
   - `.catchError`回调只处理原始Future抛出的错误，不能处理回调函数抛出的错误
-  - `onError`只能处理当前Future的错误
+
+- `onError`只能处理当前Future的错误
 - `.whenComplete`在Future完成之后总是会调用，不管是错误导致的完成还是正常执行完毕
 
 ## await和async配合
@@ -50,6 +144,70 @@ Future后面是任务，要想等任务执行完毕之后再操作，需要加aw
 **等待用await**会卡住下面所有的
 
 如果不想卡住所有的，不使用await，在future.then中加入要等待的任务。
+
+```dart
+import 'dart:async';
+import 'dart:io';
+
+String _data = '0';
+
+void mainTest() {
+  getData();
+}
+
+getData() async {
+  print('开始data = $_data');
+
+  //会卡住下面的
+  await Future(() {
+    //任务 丢进异步里面
+    //耗时操作
+    for (int i = 0; i < 10000000; i++) {
+      _data = '网络数据';
+    }
+  }).then((value) => print('value = $value')).whenComplete(() => print('完成了'));
+
+  print('再干点其它的');
+}
+///打印结果
+///flutter: 开始data = 网络数据
+///flutter: value = null
+///flutter: 完成了
+///flutter: 再干点其它的
+```
+
+```dart
+import 'dart:async';
+import 'dart:io';
+
+String _data = '0';
+
+void mainTest() {
+  getData();
+}
+
+getData() async {
+  print('开始data = $_data');
+
+  //会卡住下面的
+  //方法后面的会等
+  await Future(() {
+    //任务 丢进异步里面
+    //耗时操作
+    for (int i = 0; i < 10000000; i++) {
+      return '网络数据';
+    }
+  }).then((value) => print('value = $value')).whenComplete(() => print('完成了'));
+
+  print('再干点其它的');
+}
+
+///打印结果
+///flutter: 开始data = 0
+///flutter: value = 网络数据
+///flutter: 完成了
+///flutter: 再干点其它的
+```
 
 ## 多个Future
 
@@ -69,8 +227,6 @@ void testFuture() async {
 //打印结果：B A C D
 //虽然用了async 但不是异步
 ```
-
-
 
 ```dart
 void main() {
@@ -93,7 +249,7 @@ void testFuture() async {
 
 加不加async取决于有没有await。
 
-#### 多任务
+### 多任务
 
 根据异步代码的添加顺序，任务是有序的，是一个队列，dart单线程。加耗时也是有序的。
 
@@ -109,7 +265,7 @@ void testFuture() async {
   }).then((value) => print('$value结束'));
 
   Future(() {
-    sleep(Duration(seconds: 1));
+    sleep(const Duration(seconds: 1));
     return '任务2';
   }).then((value) => print('$value结束'));
 
@@ -135,16 +291,16 @@ flutter: 任务4结束
 */
 ```
 
-#### Future关联关系 
+## Future关联关系 
 
-##### 依赖关系 链式
+### 依赖关系 链式
 
 依赖的链式关系，任务1之后任务2之后任务3。
 
 ```dart
 void testFuture1() {
   Future(() {
-    sleep(Duration(seconds: 1));
+    sleep(const Duration(seconds: 1));
     return '任务1';
   }).then((value) {
     print('$value结束');
@@ -157,9 +313,12 @@ void testFuture1() {
     return '$value任务4';
   });
 }
+///flutter: 任务1结束
+///flutter: 任务1任务2结束
+///flutter: 任务1任务2任务3结束
 ```
 
-##### 同时处理多个任务 之后所有结果结果回来之后统一处理
+### 同时处理多个任务，所有结果回来之后统一处理
 
 多个future全部结束 最后结果统一处理
 
@@ -186,15 +345,13 @@ void testFuture2() {
   ]).then((value) => print(value[1] + value[0] + value[2]));
 }
 //打印结果:
-/**
-flutter: 任务A 执行
-flutter: 任务B 执行
-flutter: 任务C 执行
-flutter: 任务B任务A任务C
-*/
+///flutter: 任务A 执行
+///flutter: 任务B 执行
+///flutter: 任务C 执行
+///flutter: 任务B任务A任务C
 ```
 
-##### 某个任务 紧急处理
+### 某个任务 紧急处理
 
 flutter两种队列
 
@@ -220,7 +377,7 @@ void testFuture3() {
   scheduleMicrotask(() {
     print('微任务A');
   });
-  sleep(Duration(seconds: 2)); //外部代码 睡2秒
+  sleep(const Duration(seconds: 2)); //外部代码 睡2秒
   print('外部代码2'); //主线程
 }
 
@@ -237,15 +394,11 @@ flutter: B结束
 */
 ```
 
-
-
 只要是队列就是有序的，无论是事件队列还是微任务队列，都是按照添加的顺序。
 
 事件队列和微任务队列是在同一个线程。串行的。微任务只是比事件队列优先级高。
 
-
-
-### 队列
+## 队列
 
 ```dart
 //队列顺序 5 3 6 1 4 2
@@ -260,11 +413,33 @@ void testFuture4() {
 }
 ```
 
-嵌套
-
 `.then()`里面的任务相当于放到了微任务队列，所以会先执行then里面的任务，再执行后面的事件队列的任务。
 
-例1
+```dart
+/// 结果
+/// flutter: 异步任务1
+/// flutter: 微任务添加完毕
+/// flutter: 微任务2
+/// flutter: 完毕
+/// flutter: 微任务1
+void futureDemo() {
+  Future x = Future(() {
+    print('异步任务1');
+    //在里面丢一个微任务
+    scheduleMicrotask(() {
+      print('微任务1');
+    });
+    print('微任务添加完毕');
+  });
+  //微任务2先执行
+  x.then((value) {
+    print('微任务2');
+  });
+  x.whenComplete(() {
+    print('完毕');
+  });
+}
+```
 
 ```dart
 //队列顺序 5 3 6 8 7 1 4 2
@@ -285,8 +460,6 @@ void testFuture4() {
 }
 ```
 
-例2
-
 ```dart
 //队列顺序 5 3 6 8 7 1 4 2
 void testFuture4() {
@@ -307,10 +480,6 @@ void testFuture4() {
 }
 ```
 
-例3
-
-2在9之前添加。
-
 ```dart
 //队列顺序 5 3 6 8 7 1 4 10 2 9
 void testFuture4() {
@@ -327,7 +496,7 @@ void testFuture4() {
     Future(() => print('9')); //9是最后添加的，在2后面。
   }).then((value) => print('10')); //then是微任务
 
-  Future(() => print('2'));
+  Future(() => print('2'));//2在9之前添加。
   scheduleMicrotask(() => print('3'));
 
   print('5'); //主线程最先 其它的按照添加的顺序

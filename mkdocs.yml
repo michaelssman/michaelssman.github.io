@@ -249,24 +249,28 @@ nav:
       - 05模版化的指针Stash: C++/模版/05模版化的指针Stash.md
       - 06函数模版: C++/模版/06函数模版.md
   - flutter:
+    - dart:
+      - flutter/Dart/dart.md
+      - flutter/Dart/factory和单例.md
+      - flutter/Dart/Mixin多继承.md
     - flutter/flutter简介.md
     - flutter/flutter安装.md
     - flutter/AS快捷键.md
+    - flutter/pubspec.yaml文件管理.md
+    - flutter/本地资源和工程配置.md
+    - flutter/生命周期.md
+    - flutter/状态管理.md
     - flutter/Key的原理.md
+    - flutter/json和map转model.md
+    - flutter/手势.md
     - flutter/package和plugin.md
     - flutter/Provider.md
-    - flutter/pubspec.yaml文件管理.md
     - flutter/widget.md
     - flutter/布局.md
-    - flutter/本地资源和工程配置.md
     - flutter/混合开发与引擎.md
     - flutter/渲染原理.md
     - flutter/热重载.md
-    - flutter/状态管理.md
-    - flutter/生命周期.md
     - flutter/网络.md
-    - dart:
-      - flutter/Dart/dart.md
     - 异步和多线程:
       - flutter/异步和多线程/异步Future.md
       - flutter/异步和多线程/异步和多线程.md
