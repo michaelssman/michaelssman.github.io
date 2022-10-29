@@ -65,8 +65,6 @@ class R : public Q
 };
 ```
 
-
-
 测试：
 
 ```c++

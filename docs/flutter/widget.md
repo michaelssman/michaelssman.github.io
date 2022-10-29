@@ -4,9 +4,38 @@ widget只是界面的描述，并不是界面本身。渲染不是整体渲染�
 
 想要更改大小颜色等等，都会重新渲染。
 
-# 部件
+## 部件
 
 无限嵌套部件
+
+## MaterialApp
+
+开发基于MaterialApp（APP素材），相当于UIKit的UIApplication的main。
+
+```dart
+MaterialApp(
+  title: 'Flutter Demo', //安卓使用，切换应用显示
+  debugShowCheckedModeBanner: false, //是否是调试
+  theme: ThemeData(
+    // This is the theme of your application.
+    //
+    // Try running your application with "flutter run". You'll see the
+    // application has a blue toolbar. Then, without quitting the app, try
+    // changing the primarySwatch below to Colors.green and then invoke
+    // "hot reload" (press "r" in the console where you ran "flutter run",
+    // or simply save your changes to "hot reload" in a Flutter IDE).
+    // Notice that the counter didn't reset back to zero; the application
+    // is not restarted.
+    primaryColor: Colors.yellow,
+    primarySwatch: Colors.grey, //主题色 影响整个app
+    highlightColor: const Color.fromRGBO(1, 0, 0, 0), //点击
+    splashColor: const Color.fromRGBO(1, 0, 0, 0.0), //弹开
+  ),
+  home: homeWidget, //主页面
+);
+```
+
+
 
 ## Scaffold
 
@@ -24,14 +53,57 @@ onTap: (index) {
 
 onTap方法调用setState，树中就没有了。所以需要把所有的tab都放到**widget树**中，切换的时候是显示不显示的问题。
 
-- Scaffold页面架构 
-  - appBar属性
-    - 导航栏可以设置文字，颜色。而且可以自定义widget
-    - centerTitle：title居中
-    - actions：导航栏按钮
-    - elevation: 0.0,//去除导航栏下面的线
-  - body属性 导航栏下面的内容
-  - bottomNavigationBar 类似iOS的tabBar
+### Scaffold页面架构 
+
+- appBar属性
+  - 导航栏可以设置文字，颜色。而且可以自定义widget
+  - centerTitle：title居中
+  - actions：导航栏按钮
+  - elevation: 0.0,//去除导航栏下面的线
+- body属性 导航栏下面的内容
+- bottomNavigationBar 类似iOS的tabBar
+
+```dart
+Scaffold(
+  //Scaffold也是一个Widget 里面有appBar
+  backgroundColor: Colors.white,
+  appBar: AppBar(
+    //导航栏 不写就不显示导航栏
+    backgroundColor: themeColor, //导航栏背景色
+    title: Text(title ?? 'Scaffold'), //导航栏标题
+    centerTitle: true, //安卓 切换应用时显示
+    elevation: 0.0, //去除导航栏底部的条
+  ),
+  body: body, //MyWidget父部件是body。开发界面是放到了body里面。
+);
+```
+
+### 自定义Scaffold基类
+
+```dart
+class HHScaffold extends StatelessWidget {
+  final Widget body;
+  final String? title;
+  const HHScaffold(this.body, {this.title, Key? key}) : super(key: key);
+  // const ScaffoldDemo({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      //Scaffold也是一个Widget 里面有appBar
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        //导航栏 不写就不显示导航栏
+        backgroundColor: themeColor, //导航栏背景色
+        title: Text(title ?? 'Scaffold'), //导航栏标题
+        centerTitle: true, //安卓 切换应用时显示
+        elevation: 0.0, //去除导航栏底部的条
+      ),
+      body: body, //MyWidget父部件是body。开发界面是放到了body里面。
+    );
+  }
+}
+```
 
 ## ListView
 
@@ -73,11 +145,15 @@ item的高度 必须要提前知道位置是多少，根据数据内容计算。
 
 ## Container
 
-类似iOS的UIView，一个空的小部件，很常用。**一般写部件都会用Container包一下，方便抽取。**
+类似iOS的UIView，一个空的小部件，很常用。**一般写部件都会用Container包一下，方便抽取和调试。**
 
-Container可以给大小，可以给颜色，方便调试。
+Container可以设置间隔、大小、背景颜色、圆角、边框、背景图片。
 
 父部件会随子部件变化，弹性布局。
+
+child:Container内容小部件
+
+### alignment
 
 ```
 alignment: Alignment(0.0, 0.0),//中心点
@@ -85,16 +161,50 @@ alignment: Alignment(0.0, 0.0),//中心点
 
 x和y是从-1.0到1.0。原点在中间位置。
 
-margin属性
+### margin属性
 
 - 内边距，让小部件往里面缩
 - EdgeInsets.all(10)上下左右都往里面缩10
 - 每一个视图的widget都可以看成一个矩形
 
-color属性
+### color属性
 
 - 当前这个widget的颜色
 - 技巧：当布局某个widget的时候，先给个颜色，便于调整布局。
+
+```dart
+Container(
+  alignment: Alignment.center, //控制child对齐方式
+  // child的额外约束条件
+  constraints: const BoxConstraints.expand(
+    height: 200,
+  ),
+  //Container变换矩阵
+  transform: Matrix4.rotationZ(0.3),
+  //child的装饰
+  decoration: BoxDecoration(
+    //设置边框
+    border: Border.all(width: 2.0, color: Colors.amberAccent),
+    //背景颜色
+    color: Colors.green,
+    //圆角
+    borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+    //背景图片
+    image: const DecorationImage(
+      image: NetworkImage(
+        'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.gpbctv.com%2Fuploads%2F20210424%2Fzip_1619246266UkP6CL.jpg&refer=http%3A%2F%2Fwww.gpbctv.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1669529410&t=e2a5d5b4f49e3977d1b24560f354029e')),
+  ),
+  padding: const EdgeInsets.all(20),
+  margin: const EdgeInsets.all(50),
+  // color: Colors.red, //设置了decoration就不能设置color属性了
+  child: const Text(
+    'Hello World',
+    style: TextStyle(
+      fontSize: 20,
+    ),
+  ),
+);
+```
 
 ## Image 图片小部件
 
@@ -140,12 +250,6 @@ class ListViewDemo extends StatelessWidget {
   }
 }
 ```
-
-## GestureDetector
-
-可以响应点击
-
-onTap：没有参数的回调
 
 ## FutureBuilder
 

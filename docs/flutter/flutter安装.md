@@ -243,7 +243,11 @@ buildscript {
 }
 ```
 
-## 保存自动格式化
+## 保存自动格式化代码
+
+Settings -> Editor -> Languages & Frameworks -> Flutter -> Editor
+
+选中Format code on save 也可以勾选子选项 Organize imports on save
 
 ![image-20211121002722283](flutter安装.assets/image-20211121002722283.png)
 
