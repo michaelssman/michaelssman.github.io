@@ -1,10 +1,10 @@
-# iOS 唤起APP之Universal Link(通用链接)
+# Universal Link
 
-## 什么是`Universal Link`（通用链接）
+通用链接，唤起APP的功能。
 
-`Universal Link`是`Apple`在`iOS 9`推出的一种能够方便的通过传统`HTTPS`链接来启动`APP`的功能。如果你的应用支持`Universal Link`，当用户点击一个链接时可以跳转到你的网站并获得无缝重定向到对应的`APP`，且不需要通过`Safari`浏览器。如果你的应用不支持的话，则会在`Safari`中打开该链接
+`Universal Link`是`Apple`在`iOS 9`推出的一种能够方便的通过传统`HTTPS`链接来启动`APP`的功能。如果你的应用支持`Universal Link`，当用户点击一个链接时可以跳转到你的网站并获得无缝重定向到对应的`APP`，且不需要通过`Safari`浏览器。如果你的应用不支持的话，则会在`Safari`中打开该链接。
 
-## 支持`Universal Link`（通用链接）
+## 支持`Universal Link`
 
 先决条件：必须有一个支持`HTTPS`的域名，并且拥有该域名下上传到根目录的权限（为了上传`Apple`指定文件）
 
@@ -12,11 +12,11 @@
 
 ### 1、开发者中心配置
 
-找到对应的`App ID`，在`Application Services`列表里有`Associated Domains`一条，把它变为`Enabled`就可以了 ![配置App ID支持Associated Domains](universalLink.assets/ec222da425b34d058b414302897a4909~tplv-k3u1fbpfcp-zoom-in-crop-mark:1304:0:0:0.awebp)
+找到对应的`App ID`，在`Application Services`列表里有`Associated Domains`一条，把它变为`Enabled`就可以了 
 
 ### 2、工程配置
 
-`targets->Capabilites->Associated Domains`，在其中的`Domains`中填入你想支持的域名，必须以`applinks:`为前缀，如：`applinks:domain` ![配置项目中的Associated Domains](universalLink.assets/8092bea9cfbf4f528db5ef723e532567~tplv-k3u1fbpfcp-zoom-in-crop-mark:1304:0:0:0.awebp)
+`targets->Capabilites->Associated Domains`，在其中的`Domains`中填入你想支持的域名，必须以`applinks:`为前缀，如：`applinks:domain` 
 
 配的universalLink是https://m.nmkjxy.com/app/
 
@@ -90,15 +90,19 @@
 
 ## Universal Link（通用链接）注意点
 
-#### `Universal Link`跨域
+### `Universal Link`跨域
 
-`Universal Link`有跨域问题，`Universal Link`必须要求跨域，如果不跨域，就不会跳转（`iOS 9.2`之后的改动）要求具备跨域能力即可， 假如当前网页的域名是`A`，当前网页发起跳转的域名是`B`，必须要求`B`和`A`是不同域名才会触发`Universal Link`，如果`B`和`A`是相同域名，只会继续在当前`WebView`里面进行跳转，哪怕你的`Universal Link`一切正常，根本不会打开`App` 2. `Universal Link`请求`apple-app-site-association`时机
+`Universal Link`必须要求跨域，如果不跨域，就不会跳转。
+
+假如当前网页的域名是`A`，当前网页发起跳转的域名是`B`，必须要求`B`和`A`是不同域名才会触发`Universal Link`，如果`B`和`A`是相同域名，只会继续在当前`WebView`里面进行跳转，哪怕你的`Universal Link`一切正常，根本不会打开`App` 
+
+### `Universal Link`请求`apple-app-site-association`时机
 
 - 当我们的`App`在设备上第一次运行时，如果支持`Associated Domains`功能，那么`iOS`会自动去`GET`定义的`Domain`下的`apple-app-site-association`文件
 - `iOS`会先请求`https://domain.com/.well-known/apple-app-site-association`，如果此文件请求不到，再去请求`https://domain.com/apple-app-site-association`，所以如果想要避免服务器接收过多`GET`请求，可以直接把`apple-app-site-association`放在`./well-known`目录下
 - 服务器上`apple-app-site-association`的更新不会让`iOS`本地的`apple-app-site-association`同步更新，即`iOS`只会在`App`第一次启动时请求一次，以后除非`App`更新或重新安装，否则不会在每次打开时请求`apple-app-site-association`
 
-#### Universal Link的好处
+### Universal Link的好处
 
 1. 之前的`Custom URL scheme`是自定义的协议，因此在没有安装该`app`的情况下是无法直接打开的。而`Universal Links`本身就是一个能够指向`web`页面或者`app`内容页的标准`web link`，因此能够很好的兼容其他情况
 2. `Universal links`是从服务器上查询是哪个`app`需要被打开，因此不存在`Custom URL scheme`那样名字被抢占、冲突的情况
