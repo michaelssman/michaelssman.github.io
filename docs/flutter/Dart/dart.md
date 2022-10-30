@@ -75,18 +75,18 @@ Dart 2.12后对空安全检测
 
 ```dart
 Container(
-                margin: EdgeInsets.all(10),
-                width: 34,
-                height: 34,
-                //圆角
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6.0),
-                  image: DecorationImage(
-                    image: imageUrl != null
-                        ? NetworkImage(imageUrl!) as ImageProvider
-                        : AssetImage(imageAssets!),
-                  ),
-                ),
-              ),
+  margin: EdgeInsets.all(10),
+  width: 34,
+  height: 34,
+  //圆角
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(6.0),
+    image: DecorationImage(
+      image: imageUrl != null
+      ? NetworkImage(imageUrl!) as ImageProvider
+      : AssetImage(imageAssets!),
+    ),
+  ),
+),
 ```
 

@@ -35,8 +35,6 @@ MaterialApp(
 );
 ```
 
-
-
 ## Scaffold
 
 带有导航栏appBar的小部件，可以不带导航栏（可选）。
