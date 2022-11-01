@@ -211,11 +211,10 @@ nav:
     - C++/引用和指针.md
     - C++/替代链接.md
     - C++/默认参数和函数重载.md
+    - C++/内存分配和释放.md
     - Stash_指针的stash: C++/Stash_指针的stash.md
-    - delete_可能会出错: C++/delete_可能会出错.md
     - vscode运行C: C++/vscode运行C++.md
     - 作用域: C++/作用域.md
-    - 内存_释放: C++/内存_释放.md
     - 函数和函数库: C++/函数和函数库.md
     - 动态创建对象: C++/动态创建对象.md
     - 友元: C++/友元.md
