@@ -45,3 +45,33 @@ git push <远程主机名> <分支名>
 `git tag 0.1.0`。打tag。
 
 `git push --tags`。提交tag到远程。
+
+## 分支
+
+列出分支基本命令：`git branch`。
+
+没有参数时，**git branch** 会列出你在本地的分支。
+
+```
+$ git branch
+* master
+```
+
+此例的意思就是，我们有一个叫做 **master** 的分支，并且该分支是当前分支。
+
+### 创建分支
+
+执行 **git branch (branchname)** 即可。
+
+```
+$ git branch testing
+$ git branch
+* master
+  testing
+```
+
+现在我们可以看到，有了一个新分支 **testing**。
+
+### 切换分支
+
+git checkout (branch) 切换到我们要修改的分支。

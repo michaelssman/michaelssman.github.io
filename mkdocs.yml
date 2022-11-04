@@ -328,15 +328,14 @@ nav:
     - 网络/七层模型.md
     - 网络/基础概念.md
     - 网络/RTP.md
-  - svn&git:
-    - svn&git/Git/git.md
-    - svn&git/Git/git_config.md
-    - svn&git/Git/git_ignore.md
-    - svn&git/Git/分支.md
-    - svn&git/SVN/01SVN.md
-    - svn&git/SVN/SVN项目回滚.md
-    - svn&git/SVN/svn_ignores.md
-    - svn&git/SVN/svn打tag.md
+  - 版本控制:
+    - 版本控制/Git/git.md
+    - 版本控制/Git/git_config.md
+    - 版本控制/Git/git_ignore.md
+    - 版本控制/SVN/01SVN.md
+    - 版本控制/SVN/SVN项目回滚.md
+    - 版本控制/SVN/svn_ignores.md
+    - 版本控制/SVN/svn打tag.md
   - 设计模式:
     - 设计模式/总结.md
     - 设计模式/结构模式.md
