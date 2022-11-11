@@ -1,14 +1,6 @@
 # Mac终端命令
 
-### open
-
-在finder中打开当前终端进入的文件夹`open .`
-
-只要是打开文件的都是open命令，打开文件夹、打开文件都是。
-
-回到根目录 文件目录
-
-首先要清楚几个文件目录：
+### 文件目录
 
 ```
 " / "  ：根目录
@@ -19,6 +11,13 @@
 
 ".."   ：父目录
 ```
+
+### open
+
+在finder中打开当前终端进入的文件夹`open .`
+
+open命令：打开文件夹、打开文件。
+
 ### cd 
 
 跳转到某个目录
@@ -31,7 +30,7 @@
 - cd /   表示跳转到根目录。
 - cd ~   表示跳转到用户主目录。
 - cd ~apple   表示跳转到用户apple的主目录。
-- cd ..   表示跳转到上级目录。（cd和..之间的空格不能漏）
+- cd ..   表示跳转到上级目录。
 
 ### mkdir
 
@@ -39,21 +38,11 @@
 
 ### clear
 
-清空当前输入
-
-如果Terminal窗口中的内容太多了，可以用clear命令将其清空。
+清空当前输入，如果Terminal窗口中的内容太多，可以用clear命令将其清空。
 
 ### ls 
 
 列出当前目录下的子目录和文件
-
-例如：
-
-```
-$ ls  
-Desktop     Downloads   Movies      Pictures    build  
-Documents   Library     Music       Public      log.txt  
-```
 
 ### chmod
 

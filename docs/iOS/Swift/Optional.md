@@ -24,10 +24,30 @@ var age: Int? = var age: Optional<Int>
 
 ```swift
 @frozen
+//泛型<Wrapped>
 public enum Optional<Wrapped>: ExpressibleByNilLiteral {
   case none 
   case some(Wrapped)
+  
+  //泛型属性 public方法，值时Wrapped泛型类型
+  @inlinable public var unsafelyUnwrapped: Wrapped { get }
 }
+
+//例
+var str: Optional<String> = "dfd"
+if let actualStr = str {
+  let count = actualStr.count
+  print(count)
+}
+
+//Optional<String>等同于String?
+var str: String? = "dfd"
+
+//Optional的展开，通过unsafelyUnwrapped获取实际的值
+if str != nil {
+  let count = str.unsafelyUnwrapped.count
+}
+print(count)
 ```
 
 既然 Optional 的本质是枚举，那么我们也可以仿照系统的实现制作一个自己的 Optional 

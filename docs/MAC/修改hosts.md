@@ -2,6 +2,10 @@
 
 在ipaddress中查找github.com与github.global.ssl.fastly.net对应的ip，配置到hosts即可。
 
+```shell
+sudo vi /etc/hosts
+```
+
 ```
 https://www.ipaddress.com/
 ```
