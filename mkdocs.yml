@@ -64,6 +64,7 @@ nav:
       - iOS/Swift/defer.md
       - iOS/Swift/泛型和关联类型.md
       - iOS/Swift/闭包.md
+      - iOS/Swift/运算符重载.md
       - iOS/Swift/高阶函数.md
       - iOS/Swift/访问权限.md
       - iOS/Swift/Optional.md
@@ -75,7 +76,7 @@ nav:
       - iOS/Swift/Swift和OC.md
       - iOS/Swift/协议.md
       - iOS/Swift/指针和内存管理.md
-      - iOS/Swift/enum_switch_indirect_map.md
+      - iOS/Swift/enum.md
       - iOS/Swift/IR.md
     - 00底层原理分析:
       - iOS/00底层原理分析/底层探索分析.md
@@ -111,7 +112,7 @@ nav:
         - iOS/04应用程序加载/动态库静态库/动态库静态库.md
         - iOS/04应用程序加载/动态库静态库/swift的module.md
       - iOS/04应用程序加载/hmap.md
-      - iOS/04应用程序加载/xcconfig.md
+      - iOS/04应用程序加载/搭建多环境支持.md
     - 05内存管理:
       - iOS/05内存管理/copy.md
       - iOS/05内存管理/iOS属性关键字.md
@@ -399,7 +400,10 @@ nav:
     - 数据库/数据库.md
   - 正则:
     - 正则/正则表达式.md
-  - 源码: 查看源码.md
+  - 计算机基础: 
+      - 计算机基础/位运算.md
+      - 计算机基础/查看源码.md
+      - 计算机基础/网址.md
   - Mac:
     - MAC/brew.md
     - MAC/linux.md

@@ -153,15 +153,22 @@ func test_typeof() {
 
 ## Swift Runtime 
 
-我们⽤下⾯这段代码来测试⼀下：
+属性和方法前都加上@objc标识，runtime才可以获取到方法和属性
 
 ```swift
 class LGTeacher{
-    var age: Int = 18
-    func teach(){
+    @objc var age: Int = 18
+    @objc func teach(){
         print("teach")
     }
 }
+class LGTeacher1: NSObject{
+    @objc var age: Int = 18
+    @objc func teach(){
+        print("teach")
+    }
+}
+
 //let t = LGTeacher()
 func test(){
     var methodCount:UInt32 = 0
@@ -174,6 +181,7 @@ func test(){
             print("not found method");
         }
     }
+  
     var count:UInt32 = 0
     let proList = class_copyPropertyList(LGTeacher.self, &count)
     for i in 0..<numericCast(count) {
@@ -191,7 +199,7 @@ func test(){
 
 上节课，我们学过 @objc 的标识，如果这个时候我们将我们当前的⽅法和属性添加上，会发⽣什么？ 
 
-此刻代码会输出我们当前的 teach ⽅法和 age 属性。但是此刻对于我们的 OC 来说是没有办法使⽤的： 
+此刻代码会输出我们当前的 teach ⽅法和 age 属性。但是此刻对于我们的 OC 来说是没有办法使⽤的。
 
 ### 结论
 
@@ -212,11 +220,33 @@ Swift 是⼀⻔类型安全的语⾔，不⽀持像 OC 那样直接操作，它�
 
 Swift 的反射机制是基于⼀个叫 Mirror 的结构体来实现的。为具体的实例创建⼀个 Mirror 对象，然后就可以通过它查询这个实例 
 
+### Mirror源码解析
+
+```swift
+// MARK: Mirror源码解析
+class LGTeacher: CustomReflectable {//会反射出来信息，lldb使用po的时候会显示详细信息
+    var age: Int
+    var name: String
+    init(age: Int, name: String) {
+        self.age = age
+        self.name = name
+    }
+    //customMirror属性，自定义反射的信息
+    var customMirror: Mirror{
+        let info = KeyValuePairs<String, Any>.init(dictionaryLiteral: ("age", age),("name", name))
+        let mirror = Mirror.init(self, children: info, displayStyle: .class, ancestorRepresentation: .generated)
+        return mirror
+    }
+}
+
+var teacher = LGTeacher(age: 18, name: "fdf")
+```
+
 ### ⽤法介绍 
 
 ```swift
 //⾸先通过构造⽅法构建⼀个Mirror实例，这⾥传⼊的参数是 Any，也就意味着当前可以是类，结 构体，枚举等
-let mirror = Mirror(reflecting: LGTeacher.self)
+let mirror = Mirror(reflecting: LGTeacher.self)//reflecting:反射
 //接下来遍历 children 属性，这是⼀个集合
 for pro in mirror.children{
   //然后我们可以直接通过 label 输出当前的名称，value 输出当前反射的值
@@ -224,7 +254,26 @@ for pro in mirror.children{
 }
 ```
 
+### Mirror获取属性列表信息
+
+```swift
+class LGTeacherMirror{
+    var age: Int = 18
+    func teach(){
+        print("teach")
+    }
+}
+func testMirror() {
+    let mirror = Mirror(reflecting: LGTeacherMirror.self)
+    for pro in mirror.children{
+        print("\(String(describing: pro.label)):\(pro.value)")
+    }
+}
+```
+
 ### Mirror用法：json解析
+
+模型转字典
 
 ```swift
 func testJson(_ mirrorObj: Any) -> Any {
@@ -279,8 +328,8 @@ var resutl = LGTeacherMirror().jsonMap()
 
 `Swift` 中`throw`和`rethrows`关键字用于异常处理（Error handling)，都是用在函数中.
 
-`throws`关键字首先用在函数申明中，**放在返回类型的前面**，明确一个函数或者方法可以抛出错误
-这个时候我们是不是就可以用协议来做？什么意思那？
+`throws`关键字用在函数申明中，**放在返回类型的前面**，明确一个函数或者方法可以抛出错误
+这个时候我们是不是就可以用协议来做？
 
 ```swift
 // MARK: Mirror用法：json解析
@@ -300,30 +349,27 @@ func testJson(_ mirrorObj: Any) -> Any {
 }
 ```
 
-```swift
-// MARK: 想要所有的对象都具有这个功能，将方法声明为一个协议
-protocol JSONMap{//定义一个协议
-    func jsonMap() throws -> Any//jsonMap函数返回一个Any类型
-}
-```
+于此同时，编译器会告诉我们当前的我们的 `function` 并没有声明成 `throws` ，所以修改代码之后就能得出这样的结果了:
 
-testJson方法里面的功能是通用的，不需要每一个遵循JSONMap的都自己实现，可以给这个JSONMap协议一个默认的实现。
+这个时候会有一个问题，那就是当前的 `value` 也会默认调用 `jsonMap` 的方法，意味着也会有错误抛出，这里我们先根据编译器的提示，修改代码，使用之后接下来我们来使用一下我们当前编写完成的代码：
+
+jsonMap方法里面的功能是通用的，不需要每一个遵循JSONMap的都自己实现，可以给这个JSONMap协议一个默认的实现。
 
 ```swift
 // MARK: 想要所有的对象都具有这个功能，将方法声明为一个协议
 protocol JSONMap{//定义一个协议
-    func jsonMap() throws -> Any//jsonMap函数返回一个Any类型
+    func jsonMap() throws -> Any//jsonMap函数返回一个Any类型，也需要定义throws关键字
 }
 // extension 给协议添加一个默认的实现
 extension JSONMap{
-    func jsonMap() throws -> Any {
+    func jsonMap() throws -> Any {//这里也要定义throws关键字
         let mirror = Mirror(reflecting: self)
         guard !mirror.children.isEmpty else { return self }
         var result: [String: Any] = [:]
         for child in mirror.children{
             if let value = child.value as? JSONMap {
                 if let key = child.label{
-                    result[key] = try? value.jsonMap//可能会出错
+                    result[key] = try? value.jsonMap//可能会出错，通过try关键字来抛出错误
                 } else {
                    return JSONMapError.emptyKey
                 }
@@ -345,7 +391,7 @@ extension Int: JSONMap{}
 extension String: JSONMap{}
 
 var tm = LGTeacherMirror()
-//在调用的时候如果不处理这个错误，依然可以用try来继续抛出错误
+//在调用的时候如果不处理这个错误，依然可以用try来继续给上层抛出错误
 var tt = try? tm.jsonMap()
 // 捕获错误
 do{
@@ -359,9 +405,9 @@ do{
 
 ## Error
 
-处理的过程中会有很多错误发生，通过`print`来代替了，不是很不专业。
+处理的过程中会有很多错误发生，通过`print`来代替不专业。
 
-这里我们来通过`Swift`中的错误处理来合理表达一个错误：
+通过`Swift`中的错误处理来合理表达一个错误：
 
 `Swift`提供`Error`协议来标识当前应用程序发生错误的情况，`Error`的定义如下：
 
@@ -375,7 +421,7 @@ enum JSONMapError: Error{//遵循ERROR协议
 
 ### try
 
-使⽤ try 关键字还有两个要注意的点，⼀个还是 try! ,⼀个是 try? 
+使⽤ try 关键字还有两个要注意的点，⼀个是 try! ,⼀个是 try? 
 
 try? :返回的是⼀个可选类型，这⾥的结果就是两类，⼀类是成功，返回具体的字典值；⼀类就错误，但是具体哪⼀类错误我们不关系，统⼀返回了⼀个nil。这样我们当前的错误也不会向上传播~
 
@@ -386,12 +432,10 @@ try! 这⾥其实在写这句代码的时候你就有蜜汁⾃信，这⾏代码
 第⼆种⽅式就是捕获并处理当前的异常：这⾥我们使⽤ do...catch 
 
 
-接下来我们把代码修改一下：
+接下来我们把代码修改一下：把return错误改为throw错误
 
 ```swift
-public protocol Error{}
-
-enum JsonMapError: Error{
+enum JsonMapError: Error{//遵循ERROR协议
 	case emptyKey
     case notConformProtocol
 }
@@ -421,37 +465,6 @@ extension LGJsonMap{
 
 1. 通过throw抛出程序中的错误。
 2. throws代表当前函数有错误发生，使用时需要使用try或者do catch来处理错误。
-
-于此同时，编译器会告诉我们当前的我们的 `function` 并没有声明成 `throws` ，所以修改代码之后就能得出这样的结果了:
-
-这个时候会有一个问题，那就是当前的 `value` 也会默认调用 `jsonMap` 的方法，意味着也会有错误抛出，这里我们先根据编译器的提示，修改代码，使用之后接下来我们来使用一下我们当前编写完成的代码：
-
-```swift
-// MARK: 想要所有的对象都具有这个功能，将方法声明为一个协议
-protocol JSONMap{//定义一个协议
-    func jsonMap() throws -> Any//jsonMap函数返回一个Any类型，也需要定义throws关键字
-}
-// extension 给协议添加一个默认的实现
-extension JSONMap{
-    func jsonMap() throws -> Any {//这里也要定义throws关键字
-        let mirror = Mirror(reflecting: self)
-        guard !mirror.children.isEmpty else { return self }
-        var result: [String: Any] = [:]
-        for child in mirror.children{
-            if let value = child.value as? JSONMap {
-                if let key = child.label{
-                    result[key] = try? value.jsonMap//可能会出错，通过try关键字来抛出错误
-                } else {
-                   return JSONMapError.emptyKey
-                }
-            } else {
-                return JSONMapError.notConformProtocol
-            }
-        }
-        return result
-    }
-}
-```
 
 
 可以使用 `rethrows` 关键字声明一个函数或方法，以表明仅当其中一个函数**参数**抛出错误时，该函数或方法才会抛出错误。抛出函数和方法必须至少具有一个抛出函数**参数**。
