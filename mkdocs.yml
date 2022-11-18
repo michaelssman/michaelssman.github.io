@@ -403,16 +403,13 @@ nav:
   - 计算机基础: 
       - 计算机基础/位运算.md
       - 计算机基础/查看源码.md
-      - 计算机基础/网址.md
   - Mac:
     - MAC/brew.md
     - MAC/linux.md
-    - MAC/oh-my-zsh.md
-    - MAC/修改hosts.md
-    - MAC/快捷键.md
+    - MAC/hosts.md
+    - MAC/Mac快捷键.md
     - MAC/搭建网站.md
     - MAC/清理Xcode.md
-    - MAC/环境变量.md
     - MAC/软件.md
     - MAC/vscode.md
 

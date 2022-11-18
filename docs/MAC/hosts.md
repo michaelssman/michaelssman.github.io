@@ -1,4 +1,6 @@
-### 配置Hosts
+# hosts
+
+## 配置Hosts
 
 在ipaddress中查找github.com与github.global.ssl.fastly.net对应的ip，配置到hosts即可。
 

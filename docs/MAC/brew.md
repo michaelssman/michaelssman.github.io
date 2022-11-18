@@ -1,3 +1,5 @@
+# brew
+
 安装[Homebrew](https://brew.sh/)
 
 在gitee上搜索brew
