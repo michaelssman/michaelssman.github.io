@@ -366,9 +366,7 @@ nav:
       - 设计模式/行为型模式/总结.md
   - Html5:
     - css: Html5/CSS/css.md
-    - framework7: Html5/Framework7/framework7.md
     - html: Html5/Html/html.md
-    - table: Html5/Html/table.md
     - JavaScript:
       - 简介: Html5/JavaScript/简介.md
       - 01JavaScript简介: Html5/JavaScript/01JavaScript简介.md
