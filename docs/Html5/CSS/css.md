@@ -13,15 +13,33 @@
 
 ### 2、在head标签中写style标签
 
-类选择器：定义样式名字.c1 用的时候class，`.`和`class`对应。方便复用和修改。
+#### 类选择器
 
-id选择器：`#`和`id`。
+定义样式名字.c1 用的时候class，`.`和`class`对应。方便复用和修改。
 
-标签选择器：html标签，例：li、div
+设置class为inputBase的style
+
+```css
+.inputBase{
+}
+```
+
+#### id选择器
+
+`#`和`id`。
+
+#### 标签选择器
+
+html标签，例：li、div
+
+设置控件style
+
+```css
+button{
+}
+```
 
 id是唯一的，标签会很多，所以用类选择器比较多。
-
-属性选择器
 
 ```html
 <!DOCTYPE html>
@@ -62,6 +80,106 @@ id是唯一的，标签会很多，所以用类选择器比较多。
 </html>
 ```
 
+属性选择器
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+      	input[type='text']{
+            border: 1px solid red;
+         }
+    </style>
+</head>
+<body>
+<form method="post" action="/login">
+    用户名：<input type="text" name="username">
+    密码：<input type="password" name="password">
+</form>
+</body>
+</html>
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .v1[xx="hehe"]{
+            color:gold;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <span style="color: red">时间：</span>
+    <span>2022-11-15</span>
+</div>
+<div class="v1" xx="haha">
+    中国联合网络通信集团有限公司（简称“中国联通”）于2009年1月6日由原中国网通和原中国联通合并重组而成，公司在国内31个省（自治区、直辖市）和境外多个国家和地区设有分支机构，以及130多个境外业务接入点，拥有覆盖全国、通达世界的现代通信网络和全球客户服务体系，主要经营固定通信业务，移动通信业务，国内、国际通信设施服务业务，数据通信业务，网络接入业务，各类电信增值业务，与通信信息业务相关的系统集成业务等。目前，用户规模达到4.6亿。
+</div>
+<div class="v1" xx="hehe">
+    中国联通是目前唯一一家整体进行混合所有制改革试点的中央企业。公司在2021年《财富》世界500强中位列第260位。作为支撑党政军系统、各行各业、广大人民群众的基础通信企业，中国联通在国民经济中具有基础性、支柱性、战略性、先导性的基本功能与地位作用，具有技术密集、全程全网、规模经济、服务经济社会与民生的特征与属性。
+</div>
+</body>
+</html>
+```
+
+后代选择器
+
+```css
+.yy li{
+  color:pink;
+}
+.yy > a{
+  color:dodgerblue;
+}
+```
+
+```html
+<div class="yy">
+  <a>百度</a>
+  <div>
+    <a>谷歌</a>
+  </div>
+  <ul>
+    <li>美国</li>
+    <li>日本</li>
+    <li>韩国</li>
+  </ul>
+</div>
+```
+
+#### 多个样式
+
+如果有多个样式，里面有重复的，下面定义的样式会覆盖上面的。
+
+```css
+.c1{
+  color: red !important;
+  border: 1px solid red;
+}
+.c2{
+  color: green;
+  font-size: 28px
+}
+```
+
+```html
+<div class="c1 c2">
+  好的技术开发的进口国
+</div>
+```
+
+##### !important
+
+如果不想让下面的覆盖上面的，使用`!important`优先级提高。
+
 ### 3、将样式写到文件中
 
 `<link rel="stylesheet" href="common.css">`导入，多个页面使用样式。
@@ -93,19 +211,23 @@ id是唯一的，标签会很多，所以用类选择器比较多。
 </html>
 ```
 
+## 样式
 
+### 宽度和高度
 
+```css
+.c1{
+  height:200px;
+  width:50%;
+}
+```
 
+注意：
 
-## !important
+- 宽度支持百分比，高度不支持。
+- 设置宽度和高度：对行内标签默认无效，对块级标签默认有效（宽度占满，即使留空白，不给别的使用）。
 
-!important优先级提高。
-
-## 设置宽度
-
-1. 使用百分比：`width: 100%;`
-
-2. 设置宽度：`width: -webkit-calc(100% - 30px); ` 屏幕宽度减去30像素
+1. 设置宽度：`width: -webkit-calc(100% - 30px); ` 屏幕宽度减去30像素
 
 设置按钮宽度60px和右边的距离0px
 
@@ -113,23 +235,41 @@ margin-left: -webkit-calc(100% - 60px);
 
 Safari 和 Chrome 需要前缀`-webkit-`
 
+### 块级标签和行内标签
 
+使用css样式：标签`display:inline-block`，同时有行内标签和块级标签特性。
 
-设置class为inputBase的style
-
-```css
-	.inputBase{
-	}
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .c1{
+        display: inline-block;
+        height: 100px;
+        width: 300px;
+        border: 1px solid red;
+        }
+    </style>
+</head>
+<body>
+<h1>详细信息</h1>
+<span class="c1">中国</span>
+<span class="c1">联通</span>
+</body>
+</html>
 ```
 
-设置控件style
+display可以把行内标签改为块级标签，把块级标签改为行内标签
 
-```css
-	button{
-	}
+```html
+<div style="display: inline;">哈哈</div>
+<span style="display: block;">很好</span>
 ```
 
-## 颜色
+### 字体和颜色
 
 背景色
 
@@ -137,18 +277,25 @@ Safari 和 Chrome 需要前缀`-webkit-`
 background-color: #42B983;
 ```
 
-字体颜色
+字体
 
 ```css
-color: #FF2F1F;
-color: rgba(0, 0, 0, 0.45);  
-```
-
-## 字体
-
-```css
-font-size: 18px;
-text-align: left;
+.c1{
+  height: 59px;
+  
+  /*字体颜色*/
+  color: red;
+  color: #FF2F1F;
+	color: rgba(0, 0, 0, 0.45); 
+  
+  font-size: 18px;/*字体大小*/
+  font-weight: 100;/*加粗*/
+  font-family: Microsoft Yahei;/*字体*/
+  
+  /*文字对齐方式*/
+  text-align: center;/*水平方向居中*/ 
+  line-height: 59px;/*垂直方向居中，只需要设置高度等于整个的高度（针对一行）*/
+}
 ```
 
 文字限制一行
@@ -159,7 +306,7 @@ white-space: nowrap;
 text-overflow: ellipsis;
 ```
 
-## 尺寸
+### 尺寸
 
 ```css
 position: fixed;
@@ -169,16 +316,58 @@ width: 100%;
 height: 45px;
 ```
 
-## 边框
+### 边框
 
 ```css
 border: none;
 border-radius: 12.5px;
 ```
 
-## 显示不同的字体颜色
+### 显示不同的字体颜色
 
 ```html
 <div :style="billData.VendName?'color:#0D0D0D':'color:#D7D7D7'">哈哈哈哈哈</div>
 ```
+
+## 浮动
+
+```html
+<div>
+    <span>左边</span>
+    <span style="float:right">右边</span>
+</div>
+```
+
+div默认是块级标签，如果浮动起来就和行内标签一样了。
+
+一旦浮动起来，就撑不起来父级的div，需要最后加上`<div style="clear: both;"></div>`。
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .item{
+        float: left;
+        width: 200px;
+        height: 170px;
+        border: 1px solid red;
+        }
+    </style>
+</head>
+<body>
+<div style="background-color: dodgerblue">
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div style="clear: both;"></div>
+</div>
+</body>
+</html>
+```
+
+## 边距
 
