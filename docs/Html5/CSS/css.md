@@ -235,7 +235,7 @@ margin-left: -webkit-calc(100% - 60px);
 
 Safari 和 Chrome 需要前缀`-webkit-`
 
-### 块级标签和行内标签
+## 块级标签和行内标签
 
 使用css样式：标签`display:inline-block`，同时有行内标签和块级标签特性。
 
@@ -269,15 +269,17 @@ display可以把行内标签改为块级标签，把块级标签改为行内标�
 <span style="display: block;">很好</span>
 ```
 
-### 字体和颜色
-
-背景色
+## 背景色
 
 ```css
 background-color: #42B983;
 ```
 
-字体
+### 透明度
+
+`opacity: 0.7;`。
+
+## 字体
 
 ```css
 .c1{
@@ -306,7 +308,7 @@ white-space: nowrap;
 text-overflow: ellipsis;
 ```
 
-### 尺寸
+## 尺寸
 
 ```css
 position: fixed;
@@ -316,14 +318,7 @@ width: 100%;
 height: 45px;
 ```
 
-### 边框
-
-```css
-border: none;
-border-radius: 12.5px;
-```
-
-### 显示不同的字体颜色
+## 显示不同的字体颜色
 
 ```html
 <div :style="billData.VendName?'color:#0D0D0D':'color:#D7D7D7'">哈哈哈哈哈</div>
@@ -340,7 +335,7 @@ border-radius: 12.5px;
 
 div默认是块级标签，如果浮动起来就和行内标签一样了。
 
-一旦浮动起来，就撑不起来父级的div，需要最后加上`<div style="clear: both;"></div>`。
+一旦浮动起来，就撑不起来父级的div，需要最后加上`<div style="clear: both;"></div>`这样才能撑起来父级标签。
 
 ```html
 <!DOCTYPE html>
@@ -369,5 +364,289 @@ div默认是块级标签，如果浮动起来就和行内标签一样了。
 </html>
 ```
 
-## 边距
+## 内边距
+
+内边距可以扩大点击响应范围
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .outer{
+          border: 1px solid red;
+          height: 200px;
+          width: 200px;
+          padding-top: 20px;
+          padding-left: 20px;
+          padding-right: 20px;
+        }
+    </style>
+</head>
+<body>
+<div style="background-color: dodgerblue">
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div style="clear: both;"></div>
+</div>
+<h1>边距</h1>
+<div class="outer">
+    <div style="background-color: gold;">听妈妈的话</div>
+    <div>好浮夸的身份的方式</div>
+</div>
+</body>
+</html>
+```
+
+```css
+padding-top: 20px;
+padding-left: 20px;
+padding-right: 20px;
+padding-bottom: 20px;
+
+padding: 20px 10px 5px 20px;
+padding: 20px
+```
+
+## 外边距
+
+```html
+<div style="background-color: red;height: 100px;margin-top:10px">
+</div>
+```
+
+body标签默认有一个边距，造成页面四边都有白色间隙，如何去除：
+
+```css
+body{
+  margin: 0px;
+}
+```
+
+## 居中
+
+文字居中：`line-height: 100px;`，图片居中使用外边距`margin-top: 22px`。
+
+内容居中auto `margin: 0 auto 4px;`：顶部0px，左右居中，下部4px。
+
+## a
+
+a标签是行内标签，行内标签的高度、外边距默认无效。
+
+去除下划线`text-decoration: none;`。
+
+鼠标放上去高亮颜色：
+
+```css
+a:hover {
+  color: red;
+}
+```
+
+## 伪类
+
+### hover
+
+鼠标放上去的样式
+
+```css
+.c1 {
+  color: green;
+  opacity: 0.7;
+  font-size: 15px;
+  border-left: 3px solid green;
+}
+.c1:hover {
+  color: red;
+  opacity: 1;
+  font-size: 19px;
+  border-left: 3px solid red;
+}
+```
+
+放上去之后，显示标签。
+
+```css
+.download {
+  display: none;
+}
+
+.app:hover .download {
+  display: block;
+}
+
+.app:hover .title {
+  color: red;
+}
+```
+
+```html
+<div class="app">
+        <div class="title">下载app</div>
+        <div class="download">
+            <img src="/static/download.png" style="width:45px; height:45px;" alt="">
+        </div>
+</div>
+```
+
+### after
+
+标签尾部加一个东西。
+
+```css
+.c1:after{
+  content: "大帅哥";
+}
+```
+
+```html
+<div class="c1">张三</div>
+<div class="c1">李四</div>
+```
+
+应用
+
+浮动，最后加`<div style="clear: both;"></div>`可以使用after代替。
+
+```css
+.clearfix:after{
+  content: "";
+  display: block;
+  clear: both;
+}
+.item{
+  float: left;
+}
+```
+
+```html
+<div class="clearfix">
+  <div class="item">1</div> 
+  <div class="item">2</div>
+  <div class="item">3</div>
+</div>
+```
+
+## position
+
+固定位置，不随页面滑动而滑动。
+
+### 1、fixed
+
+固定在窗口的某个位置
+
+#### 返回顶部
+
+```css
+.back {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  border: 1px solid red;
+  right: 0px;
+  bottom: 50px;
+}
+```
+
+```html
+<div class="back"></div>
+```
+
+#### 对话框
+
+```css
+.mask {
+  position: fixed;
+  background-color: black;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  opacity: 0.7;
+  z-index: 999;
+}
+
+.dialog {
+  position: fixed;
+  width: 500px;
+  height: 300px;
+  background-color: white;
+  left: 0px;
+  right: 0px;
+  margin: 0 auto;
+  top: 200px;
+  z-index: 1000;
+}
+```
+
+```html
+<div class="mask"></div>
+<div class="dialog"></div>
+```
+
+### 2、relative和absolute
+
+相对显示
+
+```css
+.d1 {
+  height: 300px;
+  width: 500px;
+  border: 1px solid red;
+  margin: 100px;
+  position: relative;
+}
+
+.d1 .d2 {
+  height: 59px;
+  width: 59px;
+  background-color: #00FF7F;
+  position: absolute;
+  right: 20px;
+  top: 0;
+}
+```
+
+```html
+<div class="d1">
+  <div class="d2"></div>
+</div>
+```
+
+## border
+
+`border: 1px solid red; `。1px：边框宽度，solid：实线，red边框颜色。
+
+`border: 1px solid transparent; `。transparent：透明色。
+
+```css
+border: none;
+border-radius: 12.5px;
+
+border-left: 1px solid red;
+border-right: 1px solid red;
+```
+
+例
+
+```css
+.c1{
+  height: 50px;
+  width: 500px;
+  margin: 100px;
+  background-color: #5f5750;
+  border-left: 1px solid transparent;
+}
+.c1:hover{
+    border-left: 1px solid red;
+}
+```
+
+```html
+<div class="c1">菜单</div>
+```
 
