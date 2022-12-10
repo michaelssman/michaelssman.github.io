@@ -13,9 +13,9 @@
 
 ### 2、在head标签中写style标签
 
-#### 类选择器
+#### 2.1、类选择器
 
-定义样式名字.c1 用的时候class，`.`和`class`对应。方便复用和修改。
+定义样式名字.c1，用的时候class，`.`和`class`对应。方便复用和修改。
 
 设置class为inputBase的style
 
@@ -24,15 +24,13 @@
 }
 ```
 
-#### id选择器
+#### 2.2、id选择器
 
 `#`和`id`。
 
-#### 标签选择器
+#### 2.3、标签选择器
 
-html标签，例：li、div
-
-设置控件style
+html标签的style，例：li、div
 
 ```css
 button{
@@ -57,18 +55,11 @@ id是唯一的，标签会很多，所以用类选择器比较多。
       	li{
           		color:red;
         }
-      	input[type='text']{
-            border: 1px solid red;
-         }
     </style>
 </head>
 <body>
 <h1 class="c1">用户登录</h1>
 <h1 id="c2">用户注册</h1>
-<form method="post" action="/login">
-    用户名：<input type="text" name="username">
-    密码：<input type="password" name="password">
-</form>
   
 <ul>
     <li>中国移动</li>
@@ -386,13 +377,6 @@ div默认是块级标签，如果浮动起来就和行内标签一样了。
     </style>
 </head>
 <body>
-<div style="background-color: dodgerblue">
-    <div class="item"></div>
-    <div class="item"></div>
-    <div class="item"></div>
-    <div class="item"></div>
-    <div style="clear: both;"></div>
-</div>
 <h1>边距</h1>
 <div class="outer">
     <div style="background-color: gold;">听妈妈的话</div>
@@ -415,8 +399,7 @@ padding: 20px
 ## 外边距
 
 ```html
-<div style="background-color: red;height: 100px;margin-top:10px">
-</div>
+<div style="background-color: red;height: 100px;margin-top:10px"> </div>
 ```
 
 body标签默认有一个边距，造成页面四边都有白色间隙，如何去除：
@@ -429,7 +412,9 @@ body{
 
 ## 居中
 
-文字居中：`line-height: 100px;`，图片居中使用外边距`margin-top: 22px`。
+文字居中：`line-height: 100px;`
+
+图片居中使用外边距`margin-top: 22px`。
 
 内容居中auto `margin: 0 auto 4px;`：顶部0px，左右居中，下部4px。
 
@@ -486,10 +471,12 @@ a:hover {
 
 ```html
 <div class="app">
-        <div class="title">下载app</div>
-        <div class="download">
-            <img src="/static/download.png" style="width:45px; height:45px;" alt="">
-        </div>
+  <div class="title">
+    下载app
+  </div>
+  <div class="download">
+    <img src="/static/download.png" style="width:45px; height:45px;" alt="">
+  </div>
 </div>
 ```
 
@@ -539,7 +526,7 @@ a:hover {
 
 固定在窗口的某个位置
 
-#### 返回顶部
+#### 1.1、返回顶部
 
 ```css
 .back {
@@ -556,7 +543,7 @@ a:hover {
 <div class="back"></div>
 ```
 
-#### 对话框
+#### 1.2、对话框
 
 ```css
 .mask {

@@ -112,7 +112,7 @@ nav:
         - iOS/04应用程序加载/动态库静态库/动态库静态库.md
         - iOS/04应用程序加载/动态库静态库/swift的module.md
       - iOS/04应用程序加载/hmap.md
-      - iOS/04应用程序加载/搭建多环境支持.md
+      - iOS/04应用程序加载/多环境支持.md
     - 05内存管理:
       - iOS/05内存管理/copy.md
       - iOS/05内存管理/iOS属性关键字.md
@@ -137,7 +137,6 @@ nav:
       - iOS/10性能优化/内存检测.md
       - iOS/10性能优化/界面优化.md
     - 11架构模式:
-      - iOS/11架构模式/MVVM.md
       - iOS/11架构模式/MVX.md
     - 13crash分析:
       - iOS/13crach分析/crash分析.md
@@ -364,22 +363,20 @@ nav:
       - 设计模式/行为型模式/22解释模式Interpreter.md
       - 设计模式/行为型模式/23迭代器模式Iterator.md
       - 设计模式/行为型模式/总结.md
-  - Html5:
-    - css: Html5/CSS/css.md
-    - html: Html5/Html/html.md
+  - Html:
+    - css: Html/CSS/css.md
+    - html: Html/Html/html.md
     - JavaScript:
-      - 简介: Html5/JavaScript/简介.md
-      - 01JavaScript简介: Html5/JavaScript/01JavaScript简介.md
-      - 02变量: Html5/JavaScript/02变量.md
-      - 03数据类型: Html5/JavaScript/03数据类型.md
-      - 04数据类型转换: Html5/JavaScript/04数据类型转换.md
+      - Html/JavaScript/JavaScript简介.md
+      - Html/JavaScript/变量.md
+      - Html/JavaScript/数据类型.md
     - vue:
-      - Html5/Vue/Vue.md
-      - Html5/Vue/vue框架.md
-      - Html5/Vue/数据.md
-      - Html5/Vue/文件路径.md
-      - Html5/Vue/模版方法.md
-      - Html5/Vue/添加实例 property.md
+      - Html/Vue/Vue.md
+      - Html/Vue/vue框架.md
+      - Html/Vue/数据.md
+      - Html/Vue/文件路径.md
+      - Html/Vue/模版方法.md
+      - Html/Vue/添加实例 property.md
   - static_const_define: 
     - 宏: 常量_宏_静态变量/宏定义和常量.md
     - 枚举: 常量_宏_静态变量/枚举.md

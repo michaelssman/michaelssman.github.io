@@ -2,7 +2,7 @@
 
 ## 上下跳动的动画
 
-```
+```objective-c
 //1. 先创建一个imageView
 UIImageView *imgV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"scanAnimation"]];
 imgV.frame = CGRectMake((kscreenWidth - 240) / 2.0, kscreenheightNoNANoTab - 205 - SafeAreaBottomHeight, 240, 94);
@@ -29,25 +29,25 @@ self.imgV = imgV;
 
 ## 加载动画，转圈的动画
 
-```
-    //自定义动画
-    UIImageView *gifImageView = [UIImageView new];
-    gifImageView.image = [UIImage imageNamed:@"loadAnimationIcon"];
-    //设置动画
-    CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
-    rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 ];
-    rotationAnimation.duration = 1;
-    rotationAnimation.cumulative = YES;
-    rotationAnimation.repeatCount = MAXFLOAT;
-    //开始动画
-    [gifImageView.layer addAnimation:rotationAnimation forKey:@"rotationAnimation"];
+```objective-c
+//自定义动画
+UIImageView *gifImageView = [UIImageView new];
+gifImageView.image = [UIImage imageNamed:@"loadAnimationIcon"];
+//设置动画
+CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 ];
+rotationAnimation.duration = 1;
+rotationAnimation.cumulative = YES;
+rotationAnimation.repeatCount = MAXFLOAT;
+//开始动画
+[gifImageView.layer addAnimation:rotationAnimation forKey:@"rotationAnimation"];
 ```
 
 ## 视图整体缩小一定的比例
 
-```
-        [UIView animateWithDuration:0.25 animations:^{
-            self.view.transform =CGAffineTransformMakeScale(0.95, 0.95);
-        }];
+```objective-c
+[UIView animateWithDuration:0.25 animations:^{
+  self.view.transform = CGAffineTransformMakeScale(0.95, 0.95);
+}];
 ```
 

@@ -2,11 +2,13 @@ Vscode 创建一个新的文件 保存为html格式
 
 然后输入`!` 和 回车，会自动的插入html代码。
 
-下载插件`open in browser`，右键html文件 选择`Open In Default Browser` 或者快捷键optin + B。
+下载插件`open in browser`，右键html文件，选择`Open In Default Browser` 或者快捷键optin + B。
 
 ## html标签
 
 ### h
+
+h标签是块级标签
 
 ```html
 <!DOCTYPE html>
@@ -26,8 +28,6 @@ Vscode 创建一个新的文件 保存为html格式
 </html>
 ```
 
-h标签是块级标签
-
 ### div和span
 
 ```html
@@ -45,15 +45,9 @@ span：自己有多大就占多少，行内标签，内联标签。
 
 div里面可以包含span标签。
 
-### 超链接
+### a
 
-跳转其它网站
-
-```html
-<a href="http://www.chinaunicom.com.cn/about/about.html">点击跳转</a>
-```
-
-跳转自己网站其它地址
+超链接，跳转其它网站和跳转自己网站
 
 ```html
 <a href="http://127.0.0.1:5000/show/info">点击跳转</a>
@@ -67,7 +61,7 @@ div里面可以包含span标签。
 <a href="/show/info" target="_blank">点击跳转</a>
 ```
 
-### 图片
+### img
 
 ```html
 <img style="width: 500px;height:300px" src="图片地址" />
@@ -93,11 +87,14 @@ div里面可以包含span标签。
 
 有序列表
 
+```html
 <ol>
   <li>中国移动</li>
   <li>中国联通</li>
   <li>中国电信</li>
 </ol>
+```
+
 
 ### 表格table
 
@@ -114,9 +111,9 @@ border=1：边框
   </thead>
   <tbody>
     <tr> <td>10</td> <td>蒸蛋</td> <td>18</td> </tr>
-        <tr> <td>11</td> <td>但是</td> <td>14</td> </tr>
-        <tr> <td>12</td> <td>更多</td> <td>12</td> </tr>
-        <tr> <td>13</td> <td>爱国</td> <td>16</td> </tr>
+    <tr> <td>11</td> <td>但是</td> <td>14</td> </tr>
+    <tr> <td>12</td> <td>更多</td> <td>12</td> </tr>
+    <tr> <td>13</td> <td>爱国</td> <td>16</td> </tr>
   </tbody>
 </table>
 ```
@@ -175,13 +172,7 @@ border=1：边框
 ### 下拉框
 
 ```html
-<select>
-  <option>北京</option> 
-  <option>上海</option> 
-  <option>深圳</option>
-</select>
-<!--多选-->
-<select multiple>
+<select multiple>	<!--没有multiple是单选框，带multiple是多选-->
   <option>北京</option> 
   <option>上海</option> 
   <option>深圳</option>
