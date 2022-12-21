@@ -2,7 +2,7 @@
 
 JavaScript是NetScape公司为Navigator浏览器开发的，是现实HTML文件中的一种脚本语言，能实现网页内容的交互现实。当用户在客户端显示该网页时，浏览器就会执行JavaScript程序，用户通过交互的操作来改变网页的内容，来实现HTML页岩无法实现的效果。
 
-js是客户端语言，由浏览器执行的。
+JavaScript是客户端语言，浏览器是JavaScript语言的解释器。
 
 JavaScript是用来制作web页面交互效果，提升用户体验。
 
@@ -11,7 +11,7 @@ JavaScript是用来制作web页面交互效果，提升用户体验。
 - 轮播图。
 - 楼层选择。
 - tab栏（选项卡），页面切换。
-- 表单验证（密码格式）
+- 表单验证（密码格式）。
 - 其它功能等等。
 
 ## web前端三层
@@ -53,15 +53,44 @@ JavaScript是弱变量类型的语言，变量只需要用一个var来声明。
 
 JavaScript不用关心一些其它的事情，比如内存的释放，指针。只需要关心自己的业务。
 
-1. 语言核心：变量、表达式、运算符、函数、if语句、for语句
-2. DOM：控制HTML中的元素，比如让盒子移动、变色、轮播图
-3. BOM：控制浏览器的一些东西，比如让浏览器自动滚动。
+语言核心：变量、表达式、运算符、函数、if语句、for语句。
 
 ## 如何使用JavaScript
 
-1. 通过<script></script>中直接编写
-2. 通过<script src ='目标文档的URL'></script>链接外部的js文件（公共的）
-3. 作为某个元素的事件属性值或者是超链接的href属性值
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .c1 {
+            color: red;
+        }
+    </style>
+  
+    <!-- 位置1 style标签下面-->
+    <script type="text/javascript">
+        //编写javascript代码
+    </script>
+</head>
+
+<body>
+
+    <!-- 位置2 body标签内部的最后，一般推荐放在这里，先加载页面，后加载js耗时的动作 -->
+    <script type="text/javascript">
+        //编写javascript代码
+    </script>
+  
+  	<!-- 链接外部的js文件（公共的）链接外部的js文件（公共的） -->
+  	<script src = "目标文档的url"></script>
+</body>
+
+</html>
+```
+
+1. 作为某个元素的事件属性值或者是超链接的href属性值
 
 ## 代码屏蔽
 
@@ -76,6 +105,47 @@ JavaScript不用关心一些其它的事情，比如内存的释放，指针。�
 ```
 
 2. 如果浏览器不支持js，可以使用<noscript></noscript>标签，显示noscript中的内容。
+
+```html
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+</head>
+
+<body>
+	<script type="text/javascript">
+		<!--
+		alert('js 课程');
+		//-->
+		document.write('aaa');
+		document.write('bbb');
+		document.write('<br />');
+		document.write('ccc');
+		document.write('hello \
+	world');
+
+		console.log('向控制台中书写内容');
+	</script>
+	<script src="Script/js/test1.js" type="text/javascript" charset="UTF-8"></script>
+	<noscript>
+		您的浏览器不支持JavaScript，请更换查看
+	</noscript>
+	<a href="javascript:confirm('你发你空间多少')">是的</a>
+	<p onclick="javascript:alert('hello word');">点我</p>
+</body>
+
+</html>
+```
+
+Script/js/test1.js文件内容
+
+```java
+document.write('this is\
+a test');
+```
 
 ## JavaScript基础语法
 
@@ -134,7 +204,78 @@ JavaScript不用关心一些其它的事情，比如内存的释放，指针。�
 
   逻辑错误：通过alert()进行调试
 
+## 初识javascript
 
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .menus {
+            width: 200px;
+            border: 1px solid red;
+        }
+
+        .menus .header {
+            background-color: gold;
+            padding: 20px 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="menus">
+        <div class="header" onclick="myFunc()">大标题</div>
+        <div class="item">内容</div>
+    </div>
+
+    <script type="text/javascript">
+        function myFunc() {
+            alert("你好～");
+        }
+    </script>
+</body>
+
+</html>
+```
+
+## 跑马灯
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+    <span id="txt">欢迎中国联通各位领导为林执导</span>
+
+    <script type="text/javascript">
+        function show() {
+            //1. 去html中找到某个标签并获取它的内容（DOM）
+            var tag = document.getElementById("txt");
+            var dataString = tag.innerText;
+            //2. 动态起来，把文本中的第一个字符放在字符串的最后面
+            var firstChar = dataString[0];
+            var otherString = dataString.substring(1, dataString.length);
+            var newTxt = otherString + firstChar;
+            //3. 在html标签中更新内容
+            tag.innerText = newTxt;
+        }
+
+        //定时器，每1s执行一次show函数
+        setInterval(show, 1000);
+    </script>
+</body>
+
+</html>
+```
 
 
 

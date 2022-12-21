@@ -95,16 +95,14 @@ extension LGTeacherM: MyProtocol0{}
 
 var t = LGTeacherM()
 var t1: AnyObject = t//AnyObject代表当前实例对象的类型。返回t本身
-var t2:AnyObject = LGTeacherM.self//代表LGTeacherM类的类型（元类型）
+var t2: AnyObject = LGTeacherM.self//代表LGTeacherM类的类型（元类型）
 ```
 
 ### Any
 
-代表任意类型，包括 funcation 类型或者 Optional 类型 
+代表任意类型，包括 funcation 类型或者 Optional 类型 。等价于 OC的id，Any比AnyObject更广泛。
 
 ```swift
-// 等价于 OC的id，Any比AnyObject更广泛
-// Any: 代表任意类型，包括 funcation 类型或者 Optional 类型
 //var array0:[AnyObject] = [1,"fds"]//1是基本类型
 var array:[Any] = [1, "HHH"]
 
@@ -136,15 +134,13 @@ let t7: AnyClass = type(of: t)//LGTeacherM.Type
 ### type(of: <##T##>)
 
 ```swift
-func test_typeof() {
-    //获取某个值的动态类型（真实类型）
-    func test(_ value: Any){//value静态类型是Any，但此时传的ageM是Int类型
-        print(type(of: value))
-    }
-    
-    let ageM = 10
-    test(ageM) //打印Int
-}		
+//获取某个值的动态类型（真实类型）
+func test(_ value: Any){//value静态类型是Any，但此时传的ageM是Int类型
+  print(type(of: value))
+}
+
+let ageM = 10
+test(ageM) //打印Int
 ```
 
 ### Type
@@ -257,14 +253,14 @@ for pro in mirror.children{
 ### Mirror获取属性列表信息
 
 ```swift
-class LGTeacherMirror{
+class LGTeacher{
     var age: Int = 18
     func teach(){
         print("teach")
     }
 }
 func testMirror() {
-    let mirror = Mirror(reflecting: LGTeacherMirror.self)
+    let mirror = Mirror(reflecting: LGTeacher.self)
     for pro in mirror.children{
         print("\(String(describing: pro.label)):\(pro.value)")
     }
