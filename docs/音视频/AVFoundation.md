@@ -18,6 +18,27 @@ device修改（前后摄像后、聚焦、曝光、手电筒），需要加锁�
 
 捕捉设备输入（摄像头、麦克风）
 
+```objective-c
+		// MARK: 添加输入设备麦克风
+    //选择默认音频捕捉设备 即返回一个内置麦克风
+    AVCaptureDevice *audioDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
+    //为这个设备创建一个捕捉设备输入
+    AVCaptureDeviceInput *audioInput = [AVCaptureDeviceInput deviceInputWithDevice:audioDevice error:error];
+    
+    //判断audioInput是否有效
+    if (audioInput) {
+        //canAddInput：测试是否能被添加到会话中
+        if ([self.captureSession canAddInput:audioInput])
+        {
+            //将audioInput 添加到 captureSession中
+            [self.captureSession addInput:audioInput];
+        }
+    }else
+    {
+        return NO;
+    }
+```
+
 ### AVCaptureOutput抽象类
 
 捕捉设备输出（图片、视频）: 
