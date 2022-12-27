@@ -29,7 +29,7 @@ public enum Optional<Wrapped>: ExpressibleByNilLiteral {
   case none 
   case some(Wrapped)
   
-  //泛型属性 public方法，值时Wrapped泛型类型
+  //泛型属性 public方法，值是Wrapped泛型类型
   @inlinable public var unsafelyUnwrapped: Wrapped { get }
 }
 

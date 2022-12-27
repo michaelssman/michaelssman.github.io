@@ -1,4 +1,4 @@
-# GitHub上传文件不能超过100M的解决办法
+## GitHub上传文件不能超过100M的解决办法
 
 上传项目到GitHub上，当某个文件大小超过100M时，就会上传失败，因为默认的限制了上传文件大小不能超过100M。如果需要上传超过100M的文件，就需要我们自己去修改配置。
 
@@ -9,6 +9,8 @@
 之前git中的配置是没有这一项的,执行完以上语句后输入：`git config -l`可以看到配置项的最下面多出了一行我们刚刚配置的内容. (52428000=500×1024×1024,即500M)
 
 ## SSH密钥免密登录
+
+### 电脑生成公钥私钥
 
 家目录创建.ssh文件夹`mkdir ~/.ssh`
 
@@ -45,7 +47,7 @@ The key's randomart image is:
 lemonacc@LemonAccdeMacBook-Pro .ssh %
 ```
 
-![image-20221207152122236](git_config.assets/image-20221207152122236.png)
+![image-20221226094158461](git_config.assets/image-20221226094158461.png)
 
 ### 后台启动ssh-agent
 
@@ -62,7 +64,7 @@ lemonacc@LemonAccdeMacBook-Pro .ssh %
 然后编辑内容，私钥的名字和路径。
 
 ```bash
-Host git.nmy.cn
+Host 						git.nmy.cn
 HostName        192.168.1.66
 User            cuihuihui@nmy.com
 AddKeysToAgent  yes
@@ -70,7 +72,7 @@ UseKeychain     yes
 IdentityFile    ~/.ssh/gitlab_hh
 ```
 
-## 验证是否可以连接
+### 验证是否可以连接
 
 ```bash
 lemonacc@LemonAccdeMacBook-Pro ~ % ssh -T git@git.nmy.cn                       
