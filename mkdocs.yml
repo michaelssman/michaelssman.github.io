@@ -65,6 +65,8 @@ nav:
       - iOS/Swift/defer.md
       - iOS/Swift/泛型和关联类型.md
       - iOS/Swift/闭包.md
+      - iOS/Swift/源码.md
+      - iOS/Swift/集合类.md
       - iOS/Swift/运算符重载.md
       - iOS/Swift/高阶函数.md
       - iOS/Swift/访问权限.md
@@ -73,7 +75,7 @@ nav:
       - iOS/Swift/条件控制.md
       - iOS/Swift/Mirror_throws_Error.md
       - iOS/Swift/Moya.md
-      - iOS/Swift/Swift和OC.md
+      - iOS/Swift/OC和Swift混编.md
       - iOS/Swift/协议.md
       - iOS/Swift/指针和内存管理.md
       - iOS/Swift/enum.md

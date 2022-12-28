@@ -1,14 +1,16 @@
-# swift和OC互调
+# OC和swift混编
 
-## Swift项目创建OC文件
+## swift调OC
 
-使用`项目名-Bridging-Header.h`桥接文件。一组暴露给swift的头文件。类似散头文件，通过一个头文件映射一组头文件。
+Swift项目创建OC文件。使用`项目名-Bridging-Header.h`桥接文件。一组暴露给swift的头文件。类似散头文件，通过一个头文件映射一组头文件。
 
 `项目名-Bridging-Header.h`桥接文件中引入OC头文件用`#import`，引入C头文件用`#include`。
 
 swift的framework默认创建了一个散头文件module.modulemap。
 
 TRAGETS --> Build Setting --> Objective-C Bridging Header
+
+![image-20221228171453313](OC和Swift混编.assets/image-20221228171453313.png)
 
 ### 1、OC的Block和Swift的闭包相互调用 
 
@@ -97,8 +99,9 @@ swift调用C/C++
 // 方法一：
 var value = lg_add(10, 20)
 
-// 方法二：
-// 符号映射。编译器字段 @_silgen_name ,其实是Swift的⼀个隐藏符号，作⽤是将某个C/C++语⾔ 函数直接映射为Swift函数。lg_add映射为swift_lg_add
+// 方法二：符号映射。
+// 编译器字段 @_silgen_name ,其实是Swift的⼀个隐藏符号，作⽤是将某个C/C++语⾔ 函数直接映射为Swift函数。
+// lg_add映射为swift_lg_add
 @_silgen_name("lg_add")
 func swift_lg_add(a: Int32, b: Int32) -> Int32
 var value1 = swift_lg_add(a: 10, b: 20)
@@ -128,3 +131,15 @@ func swiftC() {
 ## OC调swift
 
 通过`项目名 -Swift.h`文件。把swift代码翻译了头文件。编译的时候放到macho中变成OC符号。
+
+名字可以修改，例：`SCM-Swift.h`。
+
+OC调用的时候`#import <SCM-Swift.h>`引入头文件即可。
+
+![image-20221228142857089](OC和Swift混编.assets/image-20221228142857089.png)
+
+注：
+
+不继承NSObject的纯swift类不能被OC所访问
+
+swift中的属性和方法如果需要给OC使用，需要前面加`@objc`修饰。（用@objcMembers直接修饰在class前面，系统会自自动给class对象的属性、方法前面添加@objec来表明它们是可以被OC访问的。）
