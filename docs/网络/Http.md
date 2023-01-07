@@ -76,9 +76,11 @@ HTTP 头字段非常灵活，不仅可以使用标准里的 Host、Connection �
 
 #### Accept
 
-在TCP/IP协议栈里，数据的传输都是Header+body的形式。在传输层协议中，不需要关心数据是什么，但在应用层必须要告诉上层数据的类型，否则上层就不知该如何处理。最早的HTTP协议中，并没有附加的数据类型信息，所有传送的数据都被客户程序解释为HTML文档，而为了支持多媒体数据类型，HTTP协议中就使用了附加在文档之前的MIME(Multipurpose Internet Mail Extensions 多用途互联网邮件扩展类型)指定的数据类型信息来标识数据类型。
+在TCP/IP协议栈里，数据的传输都是Header+body的形式。在传输层协议中，不需要关心数据是什么，但在应用层必须要告诉上层数据的类型，否则上层就不知该如何处理。
 
-MINE将数据分为七大类（video、image、application、text、audio、multipart、message），再以type/subtype的格式细分出其下的子类。例如我们常用到的text/html 、text/css 、image/jpeg 、 applaction/json等。
+最早的HTTP协议中，并没有附加的数据类型信息，所有传送的数据都被客户程序解释为HTML文档，而为了支持多媒体数据类型，HTTP协议中就使用了附加在文档之前的MIME(Multipurpose Internet Mail Extensions 多用途互联网邮件扩展类型)指定的数据类型信息来标识数据类型。
+
+MIME将数据分为七大类（video、image、application、text、audio、multipart、message），再以type/subtype的格式细分出其下的子类。例如我们常用到的text/html 、text/css 、image/jpeg 、 applaction/json等。
 
 #### Accept-encoding
 
