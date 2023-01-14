@@ -65,6 +65,7 @@ nav:
       - iOS/Swift/defer.md
       - iOS/Swift/泛型和关联类型.md
       - iOS/Swift/闭包.md
+      - iOS/Swift/as.md
       - iOS/Swift/源码.md
       - iOS/Swift/集合类.md
       - iOS/Swift/运算符重载.md
@@ -260,6 +261,8 @@ nav:
     - flutter/package和plugin.md
     - flutter/Provider.md
     - flutter/widget.md
+    - flutter/widget/TabBarView.md
+    - flutter/widget/showModelBottomSheet.md
     - flutter/布局.md
     - flutter/混合开发与引擎.md
     - flutter/渲染原理.md
