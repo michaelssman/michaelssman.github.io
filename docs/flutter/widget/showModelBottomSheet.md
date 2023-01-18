@@ -88,7 +88,7 @@ Future<int?> showCustomModalBottomSheet(context, List<String> options) async {
                 IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();//弹窗消失
                     }),
               ],
             ),
