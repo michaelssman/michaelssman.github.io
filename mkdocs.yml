@@ -104,7 +104,6 @@ nav:
     - 04应用程序加载:
       - MachO: iOS/04应用程序加载/MachO.md
       - clang插件: iOS/04应用程序加载/clang插件.md
-      - dyld: iOS/04应用程序加载/dyld.md
       - fishhook: iOS/04应用程序加载/fishhook.md
       - iOS应用加载流程: iOS/04应用程序加载/iOS应用加载流程.md
       - llvm编译流程: iOS/04应用程序加载/llvm编译流程.md
@@ -261,7 +260,9 @@ nav:
     - flutter/package和plugin.md
     - flutter/Provider.md
     - flutter/widget.md
+    - flutter/widget/PageView.md
     - flutter/widget/TabBarView.md
+    - flutter/widget/TextField.md
     - flutter/widget/showModelBottomSheet.md
     - flutter/布局.md
     - flutter/混合开发与引擎.md
