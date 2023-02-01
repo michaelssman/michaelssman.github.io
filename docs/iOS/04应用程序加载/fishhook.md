@@ -24,7 +24,7 @@ struct rebinding {
 
 > 注意replaced：在使用该结构体时，由于函数内部要修改外部指针变量所保存的值，所以这里是指针的指针（二级指针）。
 
-rebind_symbols和 rebind_symbols_image 函数用来 HOOK 的两个方法。只不过后者是指定某个**镜像文件**的时候使用。所以一般我们直接使用前者。
+rebind_symbols和 rebind_symbols_image 函数用来 HOOK 的两个方法。只不过后者是指定某个**镜像文件**的时候使用。
 
 > 镜像文件：比如 NSLog 函数是在 Fundation 框架中，那么 Fundation 在内存中就是一个镜像文件。
 

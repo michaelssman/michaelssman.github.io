@@ -9,11 +9,11 @@ key：所指对象的地址（因为一个对象在内存中的地址是不变�
 value：weak指针的地址数组，存储所有和相关对象的弱引用指针。weak指针的地址指向当前对象的地址。
 
 ```objective-c
-    NSObject *objc = [NSObject alloc];
-    //原来的散列表有 weak
-    //unregist old
-    //regist new
-    id __weak obj = objc;
+NSObject *objc = [NSObject alloc];
+//原来的散列表有 weak
+//unregist old
+//regist new
+id __weak obj = objc;
 ```
 
 一个是引用计数表，一个是弱引用表。weak所引⽤对象的引⽤计数不会加1，对引用计数没有处理。
@@ -91,7 +91,7 @@ storeWeak(id *location, objc_object *newObj)
             !((objc_class *)cls)->isInitialized()) 
         {
             SideTable::unlockTwo<haveOld, haveNew>(oldTable, newTable);
-          //散列表初始化--累的初始化 --父类+子类
+          //散列表初始化--类的初始化 --父类+子类
             class_initialize(cls, (id)newObj);
 
             // If this class is finished with +initialize then we're good.
@@ -150,7 +150,7 @@ objc_initWeak调用storeWeak存储weak
 
 ### store_weak
 
-先在最外层找到SideTable散列表，SideTable用来管理引用计数和弱引用表，根据当前对象的指针通过哈希运算把当前对象的SideTable取出来。
+先在最外层找到SideTable散列表，SideTable用来管理引用计数和弱引用表，**根据当前对象的指针通过哈希运算把当前对象的SideTable取出来。**
 
 如果haveOld弱引用对象有可能已经在散列表的weakTable里了，移除。
 
@@ -162,7 +162,7 @@ _class_initialize中调用weak_register_no_lock，weak_unregister_no_lock
 
 ### weak_register_no_lock注册引用weak表
 
-注册之前判断，因为weakTable里面维护Person，Dog，Student，car很多类。为了数据不混乱就引入了weak_entry（类似数组其实是哈希），weak_entry里面有refreces，
+注册之前判断，因为weakTable里面维护Person，Dog，Student，Car很多类。为了数据不混乱就引入了weak_entry（类似数组其实是哈希），weak_entry里面有refreces，
 
 弱引用指针存储到弱引用表。通过哈希运算，放入weak_table
 
