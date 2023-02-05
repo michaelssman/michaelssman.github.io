@@ -244,8 +244,13 @@ nav:
   - flutter:
     - dart:
       - flutter/Dart/dart.md
+      - flutter/Dart/数据类型.md
+      - flutter/Dart/运算符重载.md
+      - flutter/Dart/类和对象.md
+      - flutter/Dart/abstract.md
       - flutter/Dart/factory和单例.md
       - flutter/Dart/Mixin多继承.md
+      - flutter/Dart/方法.md
     - flutter/flutter简介.md
     - flutter/flutter安装.md
     - flutter/AS快捷键.md
