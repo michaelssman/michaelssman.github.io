@@ -153,10 +153,6 @@ indirect enum List<Element>{
 var x = List.node(10, next: List.node(20, next: List.node(30, next: List.end)))//链表 10->20->30
 ```
 
-
-
-
-
 ## 模式匹配 switch
 
 ```swift
