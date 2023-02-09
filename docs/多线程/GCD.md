@@ -14,7 +14,13 @@ GCD会自动管理线程的生命周期（创建线程，调度任务，销毁�
 
 ## 多线程控制最大并发数
 
-GCD使用信号量控制
+需要控制最大并发数和控制状态时选择封装NSOperation(SDWebImage和AFN也是封装的NSOperation)
+
+NSThread一般和常驻线程使用(如AFN框架)。
+
+NSOperation直接使用系统提供的maxConcurrentOperationCount可设置最大并发数。
+
+GCD使用信号量手动去控制并发数。
 
 ## barrier
 
@@ -82,9 +88,98 @@ dispatch_semaphore_signal		信号量释放 ++
 
 信号量**大于等于**0才会正常执行，小于0就不会执行。
 
-用处：
+```objective-c
+- (void)semaphoreDemo {
+    
+    ///执行结果：
+    /// 睡2秒后
+    /// 执行任务2
+    /// 任务2完成
+    /// 执行任务1
+    /// 任务1完成
+    dispatch_queue_t queue = dispatch_get_global_queue(0, 0);
+    dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+    dispatch_queue_t queue1 = dispatch_queue_create("cooci", NULL);
+    
+    //任务1
+    dispatch_async(queue, ^{
+        //会等待，因为信号量开始是0
+        //第二个参数 是等待时间 DISPATCH_TIME_FOREVER一直等，do while循环
+        dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER); // 等待
+        
+        NSLog(@"执行任务1");
+        NSLog(@"任务1完成");
+    });
+    
+    //任务2
+    //会先执行任务2 任务2执行完之后会释放信号 然后执行任务1
+    dispatch_async(queue, ^{
+        sleep(2);
+        
+        NSLog(@"执行任务2");
+        NSLog(@"任务2完成");
+        dispatch_semaphore_signal(sem); // 发信号
+    });
+    
+    //任务3
+    dispatch_async(queue, ^{
+        dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+        sleep(2);
+        
+        NSLog(@"执行任务3");
+        NSLog(@"任务3完成");
+        dispatch_semaphore_signal(sem);
+    });
+    
+    //任务4
+    dispatch_async(queue, ^{
+        dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+        sleep(2);
+        
+        NSLog(@"执行任务4");
+        NSLog(@"任务4完成");
+        dispatch_semaphore_signal(sem);
+    });
+}
+```
 
-1. 控制一次最多上传或下载多少个任务
+控制一次最多上传或下载多少个任务：
+
+```objective-c
+///2最先打印，1最后打印，3和4顺序不一定。
+- (void)gcdConcurrentCount
+{
+    //并发队列
+    dispatch_queue_t queue = dispatch_queue_create("haha", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(2);
+  
+    dispatch_async(queue, ^{
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        sleep(5);
+        NSLog(@"1");
+        dispatch_semaphore_signal(semaphore);
+    });
+    
+    dispatch_async(queue, ^{
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        sleep(3);
+        NSLog(@"2");
+        dispatch_semaphore_signal(semaphore);
+    });
+    
+    dispatch_async(queue, ^{
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        NSLog(@"3");
+        dispatch_semaphore_signal(semaphore);
+    });
+    
+    dispatch_async(queue, ^{
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        NSLog(@"4");
+        dispatch_semaphore_signal(semaphore);
+    });
+}
+```
 
 ## Dispatch_Source
 
