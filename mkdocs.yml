@@ -81,6 +81,7 @@ nav:
       - iOS/Swift/指针和内存管理.md
       - iOS/Swift/enum.md
       - iOS/Swift/IR.md
+      - iOS/Swift/错误处理.md
     - 00底层原理分析:
       - iOS/00底层原理分析/底层探索分析.md
       - iOS/00底层原理分析/LLDB指令.md
@@ -190,6 +191,7 @@ nav:
     - iOS/快捷键.md
     - iOS/控制器生命周期.md
     - iOS/版本更新.md
+    - iOS/数据精确度.md
   - 音视频:
     - 图片加载解码渲染:
       - 音视频/OpenGL_ES/专业名词解释.md
@@ -328,7 +330,7 @@ nav:
       - 算法/面试/第几瓶水有毒.md
       - 算法/面试/阿里.md
   - 网络:
-    - 网络/七层模型.md
+    - 网络/网络模型.md
     - 网络/TCP_IP协议.md
     - 网络/TCP和UDP.md
     - 网络/Http.md

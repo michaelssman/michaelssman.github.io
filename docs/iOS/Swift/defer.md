@@ -26,33 +26,9 @@ f()
 
 ## 使用场景有哪些 
 
-### closeFile
+### 1、closeFile
 
-```swift
-func append(string: String, terminator: String = "\n", toFileAt url: URL) throws {
-    // The data to be added to the file
-    let data = (string + terminator).data(using: .utf8)!
-
-    // If file doesn't exist, create it
-    guard FileManager.default.fileExists(atPath: url.path) else {
-        try data.write(to: url)
-        return
-    }
-            
-
-    // If file already exists, append to it
-    let fileHandle = try FileHandle(forUpdating: url)
-    fileHandle.seekToEndOfFile()
-    fileHandle.write(data)
-    fileHandle.closeFile()
-}
-
-let url = URL(fileURLWithPath: NSHomeDirectory() + "/Desktop/swift.txt")
-try append(string: "iOS面试突击", toFileAt: url)
-try append(string: "Swift", toFileAt: url)
-```
-
-这里有时候如果当前方法中多次出现 `closeFile` ,那么我们就可以使用 `defer` 
+如果当前方法中多次出现 `closeFile` ,那么我们就可以使用 `defer` 
 
 ```swift
 func append(string: String, terminator: String = "\n", toFileAt url: URL) throws {
@@ -78,13 +54,12 @@ func append(string: String, terminator: String = "\n", toFileAt url: URL) throws
 
 let url = URL(fileURLWithPath: NSHomeDirectory() + "/Desktop/swift.txt")
 try append(string: "iOS面试突击", toFileAt: url)
-try append(string: "Swift", toFileAt: url)try append(string: "Line 1", toFileAt: url)
-try append(string: "Line 2", toFileAt: url)
+try append(string: "Swift", toFileAt: url)
 ```
 
 这样我们就不仅能够统一处理当前关闭文件的功能，还能防止因为忘记 `closeFile` 而造成的资源浪费。
 
-### 在使用指针的时候
+### 2、在使用指针的时候
 
 ```swift
 let count = 2
@@ -96,7 +71,7 @@ defer {//方法运行结束后调用，管理析构 释放
 }
 ```
 
-### 请求网络的时候
+### 3、请求网络的时候
 
 在进行网络请求的时候，可能有不同的分支进行回调函数的执行
 

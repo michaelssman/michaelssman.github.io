@@ -39,19 +39,17 @@ cookie 功能需要浏览器的支持。如果浏览器不支持 cookie（如大
 
 ### cookie的修改和删除
 
-在修改 cookie 的时候，只需要新 cookie 覆盖旧 cookie 即可，在覆盖的时候，由于 Cookie 具有不可跨域名性，注意 name、path、domain 需与原 cookie 一致
+修改 cookie：只需要新 cookie 覆盖旧 cookie 即可，在覆盖的时候，由于 Cookie 具有不可跨域名性，注意 name、path、domain 需与原 cookie 一致
 
-删除 cookie 也一样，设置 cookie 的过期时间 expires 为过去的一个时间点，或者 maxAge = 0(Cookie 的有效期,单位为秒)即可
+删除 cookie：设置 cookie 的过期时间 expires 为过去的一个时间点，或者 maxAge = 0(Cookie 的有效期,单位为秒)即可
 
 ### cookie的安全
 
 事实上，cookie 的使用存在争议，因为它被认为是对用户隐私的一种侵害，而且 cookie 并不安全 HTTP 协议不仅是无状态的，而且是不安全的。使用 HTTP 协议的数据不经过任何加密就直接在网络上传播，有被截获的可能。使用 HTTP 协议传输很机密的内容是一种隐患。
 
-\* 如果不希望 Cookie 在 HTTP 等非安全协议中传输，可以设置 Cookie 的 secure 属性为 true。浏览器只会在 HTTPS 和 SSL 等安全协议中传输此类 Cookie。
-
-\* 此外，secure 属性并不能对 Cookie 内容加密，因而不能保证绝对的安全性。如果需要高安全性，需要在程序中对 Cookie 内容加密、解密，以防泄密。
-
-\* 也可以设置 cookie 为 **HttpOnly**，如果在 cookie 中设置了 **HttpOnly** 属性，那么通过 js 脚本将无法读取到 cookie 信息，这样能有效的防止 **XSS**（跨站脚本攻击）攻击
+- 如果不希望 Cookie 在 HTTP 等非安全协议中传输，可以设置 Cookie 的 secure 属性为 true。浏览器只会在 HTTPS 和 SSL 等安全协议中传输此类 Cookie。
+- secure 属性并不能对 Cookie 内容加密，因而不能保证绝对的安全性。如果需要高安全性，需要在程序中对 Cookie 内容加密、解密，以防泄密
+- 也可以设置 cookie 为 **HttpOnly**，如果在 cookie 中设置了 **HttpOnly** 属性，那么通过 js 脚本将无法读取到 cookie 信息，这样能有效的防止 **XSS**（跨站脚本攻击）攻击
 
 ## Session
 
