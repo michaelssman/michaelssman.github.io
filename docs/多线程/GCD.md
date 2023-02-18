@@ -86,7 +86,7 @@ dispatch_semaphore_wait			信号量等待 -- do while死循环 等待信号量�
 dispatch_semaphore_signal		信号量释放 ++
 ```
 
-信号量**大于等于**0才会正常执行，小于0就不会执行。
+信号量是几，就可以执行几个任务。
 
 ```objective-c
 - (void)semaphoreDemo {

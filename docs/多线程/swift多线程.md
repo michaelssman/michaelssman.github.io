@@ -278,6 +278,8 @@ func synchronized(_ obj: AnyObject, closure:()->()) {
 
 ### 安全的array
 
+加锁解锁。
+
 ```swift
 var array = Array(0...10000)
 let lock = NSLock()

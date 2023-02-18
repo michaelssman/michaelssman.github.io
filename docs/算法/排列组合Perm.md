@@ -45,8 +45,8 @@ void Permutations(char *p, const int k, const int m)
         //递归结果。使用for循环 输出
         for (int i = 0; i <= m; i++) {
             cout << p[i];
-            cout << endl;
         }
+        cout << endl;
     } else {
         for (int i = k; i <= m; i++) {
             swap(p[k], p[i]);
