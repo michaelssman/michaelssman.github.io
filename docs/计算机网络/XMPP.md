@@ -28,24 +28,13 @@
 
 3. Openfifire服务器管理平台需要配置⼀个进⾏数据存储的数据库
 
-## 注册、登录
-
-常⽤的类
-
-1. XMPPStream(通道管理对象) 
-
-2. XMPPJID(账号对象) 
-
-3. XMPPPresence(上线状态对象)
-
-## 好友、聊天
-
-常⽤的类
+## 注册、登录、好友、聊天
 
 1. XMPPStream(通信管道管理对象) 
 2. XMPPRoster(好友花名册管理对象) 
 3. XMPPJID(账号对象) 
-4. XMPPMessageArchivingCoreDataStorage(聊天消息持久化存储对象)
+4. XMPPPresence(上线状态对象)
+5. XMPPMessageArchivingCoreDataStorage(聊天消息持久化存储对象)
 
 ## XMPPFramwork中使用的多播代理GCDMulticastDelegate
 
