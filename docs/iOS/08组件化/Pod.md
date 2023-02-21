@@ -81,7 +81,7 @@ pod install 命令功能：
 
 ## pod repo update
 
-更新过时的源代码库。
+`pod repo update master` 升级本机过时的 pod 库。
 
 ## 添加私有仓库spec
 

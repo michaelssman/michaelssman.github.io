@@ -1,7 +1,4 @@
-* SCRecorder    录视频
-* XHSoundRecorder  录音
 * HJCornerRadius    图片圆角
-* MSSBrowse    图片浏览
 * TZImagePickerController  相册选择
 * FLAnimatedImage 播放动图
 * YPTabBarController  新闻头条
@@ -9,7 +6,6 @@
 * NSDictionary+NilSafe  字典取空值防止崩溃
 * LXReorderableCollectionViewFlowLayout 仿头条栏目管理
 * TYVideoPlayer  			自定义视频播放器
-* SDCycleScrollView.    轮播图
 * MLeaksFinder    腾讯 内存泄漏检测
 * lottie-ios    AE动画
 * NullSafe 消息转发nil防crash

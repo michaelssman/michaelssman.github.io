@@ -2,49 +2,20 @@
 
 ```objective-c
 - (void)RACCommandTest {
+  
     RACCommand *command = [[RACCommand alloc] initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
-        return nil;
-    }];
-    [command execute:@"起飞～～～～～"];
-}
-```
-
-运行崩溃
-
-**'nil signal returned from signal block for value: 起飞～～～～～'**
-
-返回的信号不能为空，既然如此我们就放回一个信号给他呗。
-
-于是代码变成了这样子的：
-
-```objective-c
-- (void)RACCommandTest {
-    RACCommand *command = [[RACCommand alloc] initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
+        NSLog(@"%@",input);//input打印出：起飞～～～～～
+      
+      //里面需要返回一个信号
         return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
             return nil;
         }];
+      
     }];
+  
     [command execute:@"起飞～～～～～"];
 }
 ```
-
-再次运行，这次没有奔溃，啥都没有，那我们发送的数据呢？`[command execute:@"开始飞起来"];`
-没错就是在创建command的block中的input参数
-我们可以打印一下
-
-```objective-c
-- (void)RACCommandTest {
-    RACCommand *command = [[RACCommand alloc] initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
-        NSLog(@"%@",input);
-        return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
-            return nil;
-        }];
-    }];
-    [command execute:@"起飞～～～～～"];
-}
-```
-
-input打印出了**起飞～～～～～**
 
 既然返回的是一个信号，那我们就尝试着发布信息
 
@@ -197,7 +168,80 @@ input打印出了**起飞～～～～～**
 
 
 
+## RACCommand网络请求
 
+实例演示：有一个接口从服务端读取团队列表，开始读取的时候显示加载状态。读取完成后更新页面。
+
+### 1、在ViewModel中将接口声明成一个RACCommand
+
+```objective-c
+@property (nonatomic, strong) RACCommand *fetchTeamListCommand;
+// 读取我的团队列表
+- (RACCommand *)fetchTeamListCommand {
+    if (!_fetchTeamListCommand) {
+        _fetchTeamListCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id input) {
+            
+            return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+                
+                [TeamApi fetchTeamListWithResult:^(BOOL isSuccess, id data, NSError *error) {
+                    
+                    if (isSuccess) {
+                        self.teamList = [TeamModel mj_objectArrayWithKeyValuesArray:data];
+                                          
+                        [subscriber sendNext:self.teamList];
+                    }
+                    else {
+                        [subscriber sendNext:@(NO)];
+                    }
+                    // 一定要记得发送完成消息，不然不能再次执行
+                    [subscriber sendCompleted];
+                }];
+                
+                return nil;
+            }];
+        }];
+    }
+    
+    return _fetchTeamListCommand;
+}
+```
+
+1. 在Controller中订阅信号
+
+```objective-c
+[[self.viewModel.fetchTeamListCommand executionSignals] subscribeNext:^(id x) {
+        // 这里的x是一个RACSignal，即执行Command时返回的那个Signal，所以x也是可以订阅的。收到这个信号，说明网络请求开始。
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        // 这里收到信号是开始发送网络请求
+        [x subscribeNext:^(id x) {
+            // 这里收到信号是网络请求返回
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            
+            // do something            
+        }];
+        
+    }];
+```
+
+在要读取的地方执行command
+
+```objective-c
+// 执行请求
+    [self.viewModel.fetchTeamListCommand execute:nil];
+```
+
+如果不用在发送网络请求前做什么事，也可以这样订阅：
+
+```objective-c
+[[[self.viewModel.fetchTeamListCommand executionSignals] switchToLatest] subscribeNext:^(id x) {
+        
+    }];
+```
+
+## 注意的点
+
+- 在Command返回的Signal里面一定要记得发送Completed信号，不能这个Command的不能重复执行。
+- 上面的订阅方式只要订阅一次，每次执行Command都会接收到。还有一种在execute方法后面直接订阅的方式。那样每次execute都得订阅。个人更喜欢上面这种订阅方式。
 
 
 
