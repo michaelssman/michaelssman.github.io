@@ -8,6 +8,7 @@
       
       //里面需要返回一个信号
         return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+	          [subscriber sendNext:@"发布信息"];//发布信息	
             return nil;
         }];
       
@@ -17,22 +18,7 @@
 }
 ```
 
-既然返回的是一个信号，那我们就尝试着发布信息
-
-```objective-c
-- (void)RACCommandTest {
-    RACCommand *command = [[RACCommand alloc] initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
-//        NSLog(@"%@",input);
-        return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
-            [subscriber sendNext:@"发布信息"];
-            return nil;
-        }];
-    }];
-    [command execute:@"起飞～～～～～"];
-}
-```
-
-这个时候问题来了，发送的信息谁去接收呢？？？
+发送的信息谁去接收呢？？？
 
 这个时候我们注意一下`execute`这个方法
 

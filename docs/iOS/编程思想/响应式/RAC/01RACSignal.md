@@ -197,8 +197,6 @@ RACSubscriber订阅者有三个block：nextBlock，errorBlock，completeBlock
 - 创建信号的block会在订阅信号的时候调用
 - 订阅信号的block会在订阅者发布信息的时候调用
 
-
-
 ## 图
 
 ![image-20220111180953202](01RACSignal.assets/image-20220111180953202.png)
