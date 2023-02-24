@@ -148,7 +148,6 @@ nav:
     - iOS/KVC.md
     - iOS/Animation.md
     - NSArray:
-      - iOS/NSArray/NSArray.md
       - iOS/NSArray/数组随机10条数据.md
       - iOS/NSArray/遍历数组.md
     - SDWebImage:
@@ -165,7 +164,7 @@ nav:
       - iOS/推送/推送开关功能.md
     - 编程思想:
       - iOS/编程思想/编程思想.md
-      - iOS/编程思想/函数式/函数式.md
+      - iOS/编程思想/函数式/funtional_programming.md
       - iOS/编程思想/响应式/响应式编程.md
       - iOS/编程思想/响应式/RAC/01RACSignal.md
       - iOS/编程思想/响应式/RAC/02RACSubject和RACReplaySubject.md
@@ -176,9 +175,7 @@ nav:
       - iOS/编程思想/响应式/RAC/RAC过滤.md
     - AFNetworking:
       - iOS/AFNetworking/AFNetworking源码分析.md
-      - iOS/AFNetworking/AFNetworking缓存.md
       - iOS/AFNetworking/https认证.md
-      - iOS/AFNetworking/后台数据返回错误.md
       - iOS/AFNetworking/序列化.md
       - iOS/AFNetworking/设置网络请求.md
       - iOS/AFNetworking/返回NSData数据.md

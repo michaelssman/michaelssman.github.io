@@ -275,7 +275,7 @@ func testMirror() {
 func testJson(_ mirrorObj: Any) -> Any {
     let mirror = Mirror(reflecting: mirrorObj)
     guard !mirror.children.isEmpty else { return mirrorObj }
-    var result: [String: Any] = [:]
+    var result: [String: Any] = [:]	//字典
     for child in mirror.children{
         if let key = child.label{
             result[key] = testJson(child.value)
@@ -321,33 +321,9 @@ var resutl = LGTeacherMirror().jsonMap()
 
 ## throws 和 rethrows 的有哪些用法？
 
+`Swift` 中`throw`和`rethrows`关键字用于异常处理（Error handling)，都是用在函数中。
 
-`Swift` 中`throw`和`rethrows`关键字用于异常处理（Error handling)，都是用在函数中.
-
-`throws`关键字用在函数申明中，**放在返回类型的前面**，明确一个函数或者方法可以抛出错误
-这个时候我们是不是就可以用协议来做？
-
-```swift
-// MARK: Mirror用法：json解析
-func testJson(_ mirrorObj: Any) -> Any {
-    let mirror = Mirror(reflecting: mirrorObj)
-    guard !mirror.children.isEmpty else { return mirrorObj }
-    //字典
-    var result: [String: Any] = [:]
-    for child in mirror.children{
-        if let key = child.label{
-            result[key] = testJson(child.value)
-        } else {
-            print("No Keys")
-        }
-    }
-    return result
-}
-```
-
-于此同时，编译器会告诉我们当前的我们的 `function` 并没有声明成 `throws` ，所以修改代码之后就能得出这样的结果了:
-
-这个时候会有一个问题，那就是当前的 `value` 也会默认调用 `jsonMap` 的方法，意味着也会有错误抛出，这里我们先根据编译器的提示，修改代码，使用之后接下来我们来使用一下我们当前编写完成的代码：
+`throws`关键字用在函数声明中，**放在返回类型的前面**，明确一个函数或者方法可以抛出错误。
 
 jsonMap方法里面的功能是通用的，不需要每一个遵循JSONMap的都自己实现，可以给这个JSONMap协议一个默认的实现。
 
@@ -365,7 +341,7 @@ extension JSONMap{
         for child in mirror.children{
             if let value = child.value as? JSONMap {
                 if let key = child.label{
-                    result[key] = try? value.jsonMap//可能会出错，通过try关键字来抛出错误
+                    result[key] = try? value.jsonMap//可能会有错误抛出，通过try关键字来抛出错误
                 } else {
                    return JSONMapError.emptyKey
                 }
@@ -390,10 +366,10 @@ var tm = LGTeacherMirror()
 //在调用的时候如果不处理这个错误，依然可以用try来继续给上层抛出错误
 var tt = try? tm.jsonMap()
 // 捕获错误
-do{
+do {
     try tm.jsonMap()
-}catch{
-//    error
+} catch {
+	//error
 }
 ```
 

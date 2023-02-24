@@ -124,9 +124,9 @@ static RACSignal *NSObjectRACSignalForSelector(NSObject *self, SEL selector, Pro
 ## 监听事件
 
 ```objective-c
-    [[button rac_signalForControlEvents:UIControlEventTouchUpInside] subscribeNext:^(__kindof UIControl * _Nullable x) {
-        NSLog(@"点击按钮了");
-    }];
+[[button rac_signalForControlEvents:UIControlEventTouchUpInside] subscribeNext:^(__kindof UIControl * _Nullable x) {
+  NSLog(@"点击按钮了");
+}];
 ```
 
 内部实现
@@ -162,6 +162,16 @@ static RACSignal *NSObjectRACSignalForSelector(NSObject *self, SEL selector, Pro
 `action`是 ：`sendNext:`
  事件是传入的事件，
  所以现在按钮的点击方法会通过`subscriber`去调用`sendNext方法`,我们之前有提到过，`RACSignal`，所以这个时候我们订阅他就可以拿到`sendNext`的值。
+
+## 手势
+
+```objective-c
+UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
+[textLab addGestureRecognizer:tap];
+[[tap rac_gestureSignal] subscribeNext:^(id x) {
+    NSLog(@"点击Lab");
+}];
+```
 
 ## 通知
 
