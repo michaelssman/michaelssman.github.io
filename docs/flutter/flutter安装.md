@@ -165,7 +165,7 @@ Engine revision：引擎版本
 
 [✓] Connected device (1 available)
     • Chrome (web) • chrome • web-javascript • Google Chrome 97.0.4692.99
-    ! Error: 崔辉辉的iPhone is not connected. Xcode will continue when 崔辉辉的iPhone is
+    ! Error: Michael的iPhone is not connected. Xcode will continue when Michael的iPhone is
       connected. (code -13)
 
 • No issues found!
