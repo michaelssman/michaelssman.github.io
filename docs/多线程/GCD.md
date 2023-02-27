@@ -2,8 +2,6 @@
 
 全称是Grand Central Dispatch，纯C语言，提供了非常多强大等函数
 
-## GCD的优势
-
 GCD是苹果公司为多核的并发运算提出的解决方案
 
 GCD会自动利用更多的CPU内核（比如双核，四核）
@@ -38,15 +36,108 @@ dispatch_barrier_sync 作用相同，**但是这个会堵塞线程，影响后�
 
 ### 注：
 
-1. 全局并发队列不能使用barrier。队列没有处理，全局并发队列并不只是自己使用，系统后台可能也会使用，所以不能堵塞。所以只能使用自定义的并发队列。
+1. 全局并发队列不能使用barrier。全局并发队列并不只是自己使用，系统后台可能也会使用，所以不能堵塞。所以只能使用自定义的并发队列。
 
-2. 栅栏函数必须是同一个队列。栅栏函数只能控制同一并发队列
+2. 栅栏函数只能控制同一队列
 
    例：AFN封装了一层session。用barrier不能控制，不是一个队列。
 
 ### 用处
 
-加载完两张图片，合成一张图片。
+### 1、加载完两张图片，合成一张图片。
+
+### 2、读写锁
+
+需要实现功能
+
+1. 多读单写
+2. 写写互斥
+3. 读写互斥
+4. 不能阻塞任务执行（子线程，不能阻塞主线程）
+
+#### 使用栅栏函数实现 
+
+通过栅栏函数（自定义并发队列）实现写任务，如果队列前面**读写**操作没回来，后面的写不能执行。（2和3）
+
+setter写操作：`dispatch_barrier_async`主线业务逻辑可以正常执行（4）
+
+getter读操作：`dispatch_sync`同步。
+
+读写操作是同一个并发队列。
+
+```objective-c
+#import "ViewController.h"
+ 
+@interface ViewController ()
+ 
+@property (nonatomic, copy) NSString *text;
+@property (nonatomic, strong) dispatch_queue_t concurrentQueue;
+@end
+ 
+@implementation ViewController
+ 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+ 
+    [self readWriteLock];
+}
+ 
+- (void)readWriteLock {
+    // 使用自己创建的并发队列
+    self.concurrentQueue = dispatch_queue_create("aaa", DISPATCH_QUEUE_CONCURRENT);
+    // 使用全局队列,必定野指针崩溃
+//    self.concurrentQueue = dispatch_get_global_queue(0, 0);
+ 
+    // 测试代码,模拟多线程情况下的读写
+    for (int i = 0; i<10; i++) {
+        // 创建10个线程进行写操作
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [self updateText:[NSString stringWithFormat:@"噼里啪啦--%d",i]];
+        });
+ 
+    }
+ 
+    for (int i = 0; i<50; i++) {
+        // 50个线程进行读操作
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            NSLog(@"读 %@ %@",[self getCurrentText],[NSThread currentThread]);
+        });
+ 
+    }
+ 
+    for (int i = 10; i<20; i++) {
+        // 10个进行写操作
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [self updateText:[NSString stringWithFormat:@"噼里啪啦--%d",i]];
+        });
+ 
+    }
+}
+ 
+// 写操作,栅栏函数是不允许并发的,所以"写操作"是单线程进入的,根据log可以看出来
+- (void)updateText:(NSString *)text {
+    // block内不需要使用weakSelf, 不会产生循环引用
+    dispatch_barrier_async(self.concurrentQueue, ^{
+        self.text = text;
+        NSLog(@"写操作 %@ %@",text,[NSThread currentThread]);
+        // 模拟耗时操作,打印log可以放发现是1个1个执行,没有并发
+        sleep(1);
+    });
+}
+// 读操作,这个是可以并发的,log在很快时间打印完
+- (NSString *)getCurrentText {
+    __block NSString * t = nil;
+    // block内不需要使用weakSelf, 不会产生循环引用
+    dispatch_sync(self.concurrentQueue, ^{
+        t = self.text;
+        // 模拟耗时操作,瞬间执行完,说明是多个线程并发的进入的
+        sleep(1);
+    });
+    return t;
+}
+ 
+@end
+```
 
 ## group
 
@@ -64,13 +155,10 @@ dispatch_barrier_sync 作用相同，**但是这个会堵塞线程，影响后�
 
   里面封装了dispatch_group_enter和dispatch_group_leave（callout执行完毕）
 
-- dispatch_group_enter 进组     --
+  - dispatch_group_enter 进组     --
+  - dispatch_group_leave 出组 	++
 
-- dispatch_group_leave 出组 	++
-
-类似信号量的加减
-
-注意搭配使用
+  类似信号量的加减，搭配使用。
 
 每次dispatch_group_leave会wakeup-->dispatch_group_notify判断是否等于0，等于0就会callout唤醒notify的block任务。
 
@@ -78,7 +166,7 @@ dispatch_barrier_sync 作用相同，**但是这个会堵塞线程，影响后�
 
 信号量
 
-同步->当锁，控制GCD最大并发数，也可以控制流程。
+作用：同步->当锁，控制GCD最大并发数，也可以控制流程。
 
 ```
 dispatch_semaphore_create		创建信号量

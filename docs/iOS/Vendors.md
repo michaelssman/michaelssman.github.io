@@ -9,7 +9,6 @@
 * MLeaksFinder    腾讯 内存泄漏检测
 * lottie-ios    AE动画
 * NullSafe 消息转发nil防crash
-* YTKNetwork
 * XRWaterfallLayout瀑布流布局
 * MXParallaxHeader
 * YBPopupMenu 带指示箭头的弹窗

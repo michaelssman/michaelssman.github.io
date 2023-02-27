@@ -12,6 +12,3 @@
 
 按住Cmd + Tab激活程序切换 -》 按住Cmd不放按Tab（Shift + Tab）选中程序 -》 松开Tab，按住Cmd不放的同时按住Opt（alt）-》 松开Cmd。
 
-模拟器截屏
-iOSapp发布到AppStore的时候需要屏幕截图，可以使用模拟器直接去截图。快捷键` command + s `
-

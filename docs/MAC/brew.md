@@ -1,9 +1,5 @@
 # brew
 
-在gitee上搜索brew
-
-`/bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"` 
-
 ## 使用
 
 - brew -v：查看brew版本

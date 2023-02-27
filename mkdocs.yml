@@ -55,7 +55,6 @@ nav:
     - 多线程/队列和函数.md
     - 多线程/GCD.md
     - 多线程/dispatch_queue_t.md
-    - 多线程/读写锁.md
     - 多线程/swift多线程.md
   - iOS:
     - Swift:
