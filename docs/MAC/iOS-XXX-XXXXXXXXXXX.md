@@ -116,7 +116,7 @@
 #### 进销存1.2.0（2021.02-2021.06）
 - 应用程序二进制重新排列做启动优化。
 - 模型数组拷贝（利用class_copyIvarList实现NSCoding的自动归档解档）。
-- 处理友盟分享微信链接不成功UniversalLink问题。
+- 处理分享微信链接不成功UniversalLink问题。跳转其它app功能。
 - 封装多层级类别目录组件，可以展开和收起子目录。
 - 利用响应者链扩大UIButton的点击范围。
 - Runtime和NSNumber处理数据精确度问题，使用NSDecimalNumberHandler四舍五入，设置保留小数位。金额加千分符和¥符，设置特殊字体，数据转换。

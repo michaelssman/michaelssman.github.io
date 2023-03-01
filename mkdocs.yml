@@ -398,9 +398,6 @@ nav:
       - 常量_宏_静态变量/静态变量.md
       - 常量_宏_静态变量/静态对象.md
       - 常量_宏_静态变量/静态成员.md
-  - Cocos2d:
-    - Cocos2d-x认识: Cocos2d-x/Cocos2d-x认识.md
-    - 调度器(scheduler): Cocos2d-x/调度器(scheduler).md
   - 数据库:
     - 数据库/数据库.md
   - 正则:

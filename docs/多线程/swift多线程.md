@@ -17,7 +17,58 @@ let operation = BlockOperation{
 operation.start()
 ```
 
-### 2、DispatchWorkItem
+```swift
+class ObjectForThread {
+    func threadTest() {
+        let operation = BlockOperation(block: {[weak self] in
+            self?.threadWorker()
+            return
+        })
+        let queue = OperationQueue()
+        queue.addOperation(operation)
+        print("threadTest")
+    }
+    
+    @objc func threadWorker() {
+        print("threadWorker")
+    }
+}
+
+let obj = ObjectForThread()
+obj.threadTest()
+```
+
+## 2、Operation
+
+继承Operation
+
+```swift
+class HHOperation: Operation {
+    override func main() {
+        sleep(1)
+        print("HHOperation")
+    }
+}
+
+class ObjectForThread {
+    func threadTest() {
+        let operation = HHOperation()
+        //Operation完成的回调
+        operation.completionBlock = { () -> Void in
+            print("--- operation.completionBlock ---")
+        }
+        let queue = OperationQueue()
+        queue.addOperation(operation)
+        print("threadTest")
+    }
+}
+///打印结果：
+///threadTest
+///HHOperation
+///--- operation.completionBlock ---
+```
+
+### 3、DispatchWorkItem
 
 ```swift
 let workItem = DispatchWorkItem{
@@ -25,8 +76,6 @@ let workItem = DispatchWorkItem{
 }
 workItem.perform()
 ```
-
-#### DispatchWorkItem
 
 ```swift
 lazy var workItem : DispatchWorkItem = {
@@ -44,7 +93,7 @@ func testWotkItem() {
 }
 ```
 
-#### group组
+## group组
 
 ```swift
 // MARK: 组
@@ -91,57 +140,6 @@ class ObjectForThread {
 
 let obj = ObjectForThread()
 obj.threadTest()
-```
-
-## BlockOperation
-
-```swift
-class ObjectForThread {
-    func threadTest() {
-        let operation = BlockOperation(block: {[weak self] in
-            self?.threadWorker()
-            return
-        })
-        let queue = OperationQueue()
-        queue.addOperation(operation)
-        print("threadTest")
-    }
-    
-    @objc func threadWorker() {
-        print("threadWorker")
-    }
-}
-
-let obj = ObjectForThread()
-obj.threadTest()
-```
-
-## 继承Operation
-
-```swift
-class HHOperation: Operation {
-    override func main() {
-        sleep(1)
-        print("HHOperation")
-    }
-}
-
-class ObjectForThread {
-    func threadTest() {
-        let operation = HHOperation()
-        //Operation完成的回调
-        operation.completionBlock = { () -> Void in
-            print("--- operation.completionBlock ---")
-        }
-        let queue = OperationQueue()
-        queue.addOperation(operation)
-        print("threadTest")
-    }
-}
-///打印结果：
-///threadTest
-///HHOperation
-///--- operation.completionBlock ---
 ```
 
 ## GCD
