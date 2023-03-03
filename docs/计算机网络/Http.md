@@ -1,4 +1,4 @@
-# HTTP协议
+# HTTP
 
 HTTP协议即**超文本传送协议(HyperTextTransfer Protocol )**，是Web联网的基础，也是手机联网常用的协议之一，HTTP协议是建立在TCP协议之上的一种应用层协议。
 
@@ -27,7 +27,7 @@ Host: www.user.com
 Content-Type: application/x-www-form-urlencoded
 Connection: Keep-Alive
 User-agent: Mozilla/5.0
-Accept-lauguage: fr
+Accept-lauguage: en-us
 //上面是首部行
 
 //此处必须有一空行 分割header和请求内容
@@ -42,17 +42,41 @@ name=world //请求体
 
 ### 2、请求头
 
-Host：指明了该对象所在的主机
+- Host：指明了该对象所在的主机
 
-Connection：Keep-Alive 首部行用来表明该浏览器告诉服务器使用持续连接
+- Connection：Keep-Alive 首部行用来表明该浏览器告诉服务器使用持续连接
 
-Content-Type: x-www-form-urlencoded 首部行用来表明 HTTP 会将请求参数用 key1=val1&key2=val2 的方
+- Content-Type
+  - `application/x-www-form-urlencoded`：表明 HTTP 会将请求参数用`key=value&表单的形式传过去，放到请求实体里面。
 
-式进行组织，并放到请求实体里面
+  - `text/html; charset=utf-8`
 
-User-agent：首部行用来指明用户代理，即向服务器发送请求的浏览器类型
+  - `application/json;charset=UTF-8`
+  - `application/json`：body参数是一个数组，没有key只有value，json。
 
-Accept-lauguage：首部行表示用户想得到该对象的法语版本（如果服务器中有这样的对象的话），否则，服务器应发送它的默认版本
+  - `multipart/form-data`：上传图片
+
+- User-Agent：首部行用来指明用户代理，即向服务器发送请求的浏览器类型
+
+- Accept-lauguage：首部行表示用户想得到该对象的法语版本（如果服务器中有这样的对象的话），否则，服务器应发送它的默认版本
+
+  zh_CN
+
+- Accept-Encoding
+
+  gzip, deflate
+
+- Authorization
+
+  - 请求接口需要传用户信息进行验证，将用户token放在网络请求的头部。
+
+- Accept
+
+  application/json
+
+- Cookie
+
+​		`domain=.ximalaya.com; path=/; channel=ios-b1; 1&_device=iPhone&6703CF0C-6676-41C1-A5EB-CEA4A1EFEEC8&3.1.43; impl=com.jima.yijingtingshu; 1&_token=7104330&d858cae50f5f704f4f09c0607e30a375bbfc`
 
 ### 3、空行
 
@@ -299,6 +323,29 @@ SSL/TLS通过`加密（encrypt）`来传输`密文（cipher text）`保证数据
 虽然非对称加密没有`密钥交换`的难题，但因为它们都是基于复杂的数学难题，运算速度很慢，即使是 ECC 也要比 AES 差上好几个数量级。所以目前`TLS`使用`混合加密`，使二者取长补短，既能高效加密解密，又能安全的进行数据传输。
 
 在建立连接之初先使用非对称加密的形式传递密钥，然后用随机数产生对称算法使用的“会话密钥”（session key），再用公钥加密。因为会话密钥很短，通常只有 16 字节或 32 字节，所以慢一点也无所谓。对方拿到密文后用私钥解密，取出会话密钥。这样，双方就实现了对称密钥的安全交换，后续就不再使用非对称加密，全都使用对称加密。
+
+### https认证
+
+https就是披了一件ssl（加密）外套的http
+
+http网络协议：
+缺点：
+数据不安全，数据不完整性（中间人（钓鱼网站）攻击，篡改数据），数据不真实
+
+https解决上面的缺点。
+
+https 既然已经是加密了，为什么还要认证验证服务器的证书。
+
+加密了是安全的，验证服务器是安全的，确认是想请求的服务器。
+服务器是客户端想要的服务器，客户端是服务器想要的客户端。这是双向的。
+单向  验证服务器。
+
+#### iOS中的证书验证
+
+- ca机构颁布的证书 （我们代码中不需要做修改，只需要http后面加个s）
+
+- 自签证书 需要手动验证合法性。
+
 
 ### HTTPS握手过程
 

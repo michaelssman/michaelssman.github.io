@@ -45,7 +45,7 @@
 - 熟练MVC，MVP，MVVM软件架构模式。
 - 具有较强的面向对象编程概念，熟悉响应式编程、链式编程、函数式编程。
 - 熟练掌握GCD、NSOperation、NSThread多线程编程技术（设置依赖，并发数和各种锁）。
-- 熟悉SDWebImage、fishhook、Aspects、MBProgressHUD、Masonry等第三方类库，进行源码分析。
+- 熟悉SDWebImage、fishhook、Aspects、Masonry等第三方类库，进行源码分析。
 - 熟悉CoreData、SQLite、归档等数据持久化存储。
 - 掌握APNs消息推送机制，熟练极光和友盟推送的实现。
 - 了解XMPP，环信，阿里百川.云旺等即时聊天通讯。
