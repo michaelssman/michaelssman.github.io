@@ -1,8 +1,6 @@
 # block
 
-Block也是一个对象，内存结构中也是一个结构体，它封装了一段代码，这段代码可以在任何时候执行。
-
-clang编译 看底层实现
+Block是一个对象，内存结构中是一个结构体，它封装了一段代码，这段代码可以在任何时候执行。
 
 Block可以作为函数参数或者函数的返回值，而其本身又可以带输入参数或返回值。它是对C语言的扩展，用来实现匿名函数的特性。
 
@@ -57,7 +55,7 @@ MRC下
 
  `__NSStackBlock__ __NSMallocBlock__`
 
-结果分析：当Block中使用了外部变量，Block为NSStackBlock类型，存储在栈区，当函数执行结束后，该Block就会被释放，调用copy后，栈区Block被copy到了堆区NSMallocBlock。
+结果分析：当Block中使用了外部变量，Block为NSStackBlock类型，存储在栈区，当函数执行结束后，该Block就会被释放，调用copy后，栈区Block被copy到堆区NSMallocBlock。
 
 ARC下：
 
@@ -65,7 +63,7 @@ ARC下：
 
 分析结果：在ARC模式下，没有了__NSStackBlock__类型，不要认为ARC没有了栈区Block这种类型。
 
-其实在ARC下，生产的Block默认也是NSStackBlock类型，只是在变量赋值的时候，系统默认对其进行了copy，从NSStackBlock给copy到堆区的NSMallocBlock类型。而在非arc中，则需要手动copy。
+其实在ARC下，生成的Block默认也是NSStackBlock类型，只是在变量赋值的时候，系统默认对其进行了copy，从NSStackBlock给copy到堆区的NSMallocBlock类型。而在非arc中，则需要手动copy。
 
 ### 3、堆block
 
@@ -79,7 +77,7 @@ ARC下：
 
 ## block使用copy
 
-block只有引用了栈里的临时变量, 才会被创建在stack区. **没有引用临时变量的block是放在global区**, 是不会被释放的. **stack区的块只要赋值给strong类型的变量, 就会自动copy到堆里**. 所以要不要写copy都没关系
+block只有引用了栈里的临时变量, 才会被创建在stack区. **没有引用临时变量的block是放在global区**, 是不会被释放的。**stack区的块只要赋值给strong类型的变量, 就会自动copy到堆里**。所以要不要写copy都没关系
 
 **block在创建的时候，内存是分配在栈上的（内存随时可能被销毁）。**MRC使用copy的目的是将block创建默认放在栈区拷贝一份到堆区，**因为栈区中的变量管理是由它自己管理的，随时可能被销毁，一旦被销毁后续再次调用空对象就可能会造成程序崩溃问题**， block放在了堆中，block有个指针指向了栈中的block代码块，
 
@@ -92,7 +90,7 @@ block只有引用了栈里的临时变量, 才会被创建在stack区. **没有�
 
 Block的内存需要开发人员自己管理，错误的内存管理会造成循环引用内存泄露，或者内存因为提前释放造成崩溃。
 
-Block其实包含两部分：
+Block包含两部分：
 
 一部分是Block所执行的代码，这一部分在编译的时候已经生产好了。
 
@@ -109,7 +107,7 @@ self.block = ^{
 };
 ```
 
-分析：因为Block是当前self属性，self拥有了Block，在ARC下为强引用。当在Block内部捕获了self（使用_一样也是引用了self），Block便强引用了self，两者相互持有，无法释放。  
+分析：因为Block是当前self属性，self强引用Block。当在Block内部捕获了self（使用_一样也是引用了self），Block便强引用了self，两者相互持有，无法释放。  
 
 解决方法是ARC 下`__weak`修饰self：__`weak Class *weakSelf =self;` MRC下`__weak`改为`__block`.
 
@@ -146,7 +144,6 @@ self.block = ^{
     //第二种解决方式：引用一个临时第三者中间变量objc。objc->nil手动释放
     __block HHBlockViewController *vc = self;//临时变量vc持有
     self.block = ^{
-        //        NSLog(@"%@",weakSelf);
         //里面代码复杂的情况。里面有异步 耗时操作
         //延长生命周期
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -163,7 +160,6 @@ self.block = ^{
 ```objective-c
     //循环引用的原因：因为block里面要用self  作用域之间的通讯 self.name在外部，作用空间在block里面的空间。 作用域和作用域之间的传递可以用参数来传递。
     self.block1 = ^(HHBlockViewController *vc){
-        //        NSLog(@"%@",weakSelf);
         //里面代码复杂的情况。里面有异步 耗时操作
         //延长生命周期
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -183,7 +179,7 @@ self.block = ^{
 
 当在Block中使用局部变量时，在Block中只读。
 
-Block会copy该局部变量的值，在Block中作为常量使用，是不允许修改的，只能使用，所以即使变量的值在Block外改变，也不影响他在Block中的值。
+Block会copy该局部变量的值，在Block中作为常量使用，不允许修改。所以即使变量的值在Block外改变，也不影响他在Block中的值。
 
 ```objective-c
     int a = 100;
@@ -209,7 +205,7 @@ block内部修改外界变量的值直接报错，如果想要修改，可以在
 
 2、指针类型
 
-   block会copy一份指针并强引用指针所指对象，且内部不能修改指针的指向，但是可以修改指针所指向对象的值
+   block会copy一份指针并强引用指针所指对象，内部不能修改指针的指向，但是可以修改指针所指向对象的值
 
 ```objective-c
 　　NSMutableString *str = @"abc".mutableCopy; 
@@ -290,6 +286,8 @@ int main0(){
 
 进入该文件目录下
 
+clang编译 看底层实现
+
 ` clang -rewrite-objc block.c -o block.cpp`进行编译成C++
 
 在底部找到int main0()函数 三行代码 .cpp的三行代码对应上面的三个代码 定义 调用 和return0.
@@ -332,13 +330,9 @@ struct __main0_block_impl_0 {
  }
 ```
 
-block fp函数式保存
+block fp函数式保存，block调用的时候执行。
 
-#### __block_impl结构体 
-
-fp函数保存，block调用的时候执行。
-
-__block_impl 结构体：
+#### __block_impl结构体
 
 ```c++
 struct __block_impl {
@@ -361,11 +355,10 @@ struct __block_impl {
 
 ```objective-c
 int main1(){
-//    int a = 10;
     //如果要修改a的值 要在前面加__block
     __block int a = 10;
     void(^block)(void) = ^{
-        a++;//如果int a不加__block修饰，但是在里面修改a的值，但是里面的a和外面的a不是同一个a，所以就会代码歧义，报错。加了__block就是指针拷贝。同一内存空间。编码也能通过。
+        a++;//如果int a不加__block修饰，但是在里面修改a的值，但是里面的a和外面的a不是同一个a，所以就会代码歧义，报错。加了__block就是指针拷贝。同一内存空间。
         printf("Hello hh - %d",a);
     };
     
@@ -420,7 +413,7 @@ block把a的值传了进去，里面生成了一个新的变量a。
 
 block创建的时候是在栈上的，在将栈block拷⻉到堆上的时候，同时也会将block中捕获的对象拷⻉到堆上，然后就会将栈上的`__block`修饰对象的`__forwarding`指针指向堆上的拷⻉之后的对象。
 
-这样我们在block内部修改的时候虽然是修改堆上的对象的值，但是因为栈上的对象的`__forwarding`指针将堆和栈的对象链接起来。因此就可以达到修改的⽬的。
+这样在block内部修改的时候虽然是修改堆上的对象的值，但是因为栈上的对象的`__forwarding`指针将堆和栈的对象链接起来。因此就可以达到修改的⽬的。
 
 ```c++
  int main1(){
@@ -507,8 +500,6 @@ id objc_retainBlock(id x) {
     return (id)_Block_copy(x);
 }
 ```
-
-objc_retainBlock里面调用_Block_copy
 
 ### _Block_copy
 
@@ -687,7 +678,7 @@ void _Block_object_assign(void *destArg, const void *object, const int flags) {
 __block修饰的会走`_Block_byref_copy`
 
 ```c++
-// Cooci注释: __Block 捕获外界变量的操作 内存拷贝 以及常规处理
+// 注释: __Block 捕获外界变量的操作 内存拷贝 以及常规处理
 // 1. 如果 byref 原来在栈上，就将其拷贝到堆上，拷贝的包括 Block_byref、Block_byref_2、Block_byref_3，
 //    被 __weak 修饰的 byref 会被修改 isa 为 _NSConcreteWeakBlockVariable，
 //    原来 byref 的 forwarding 也会指向堆上的 byref;
@@ -758,7 +749,7 @@ static struct Block_byref *_Block_byref_copy(const void *arg) {
 }
 ```
 
-block创建的时候在栈上，block拷贝到堆时会将变量一起拷贝到堆
+block创建的时候在栈上，block拷贝到堆时会将变量一起拷贝到堆。
 
 __block修饰的变量：**Block_byref结构体中的forwording原来指向栈上的结构体，此时指向堆上的结构体。**
 
