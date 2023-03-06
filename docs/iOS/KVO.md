@@ -1,4 +1,5 @@
 # KVO
+
 KVO（Key Value Observing）
 1. 添加观察
 2. 回调观察
@@ -30,6 +31,8 @@ objc_msgSend(observer, @selector(observeValueForKeyPath:ofObject:change:context:
 
 #### 4.3、添加dealloc方法
 
+`object_setClass`isa指针指向原本的类。
+
 ## 打印person对象的类
 ```objective-c
 NSLog(@"%@", object_getClass(self.person));
@@ -40,7 +43,7 @@ NSLog(@"%@", object_getClass(self.person));
 
 ## NSKVONotifying_xxx重写了哪些方法
 使用runtime打印方法列表
-```
+```objective-c
 unsigned int count;
 Method *methods = class_copyMethodList(object_getClass(self.person), &count);
     
