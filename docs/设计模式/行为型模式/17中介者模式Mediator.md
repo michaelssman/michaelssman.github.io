@@ -54,7 +54,7 @@ A和B都持有中介者
   男人和女人自己去实现找对象的操作
 
 - 中介者模式
-  男人和女人每一个人都持有一个中介者的引用  找对象的操作由中介者去完成，中介者是男人类女人类的成员变量。男人和女人通过中介者发生关系。通过中介者找对象。    
+  男人和女人每一个人都持有一个中介者的引用  找对象的操作由中介者去完成，中介者是男人类女人类的成员变量。男人和女人通过中介者找对象。    
   其中中介者类中 持有男人和女人两类对象的引用， 在找对象的操作需要用。
 
 ### 扩展
@@ -63,13 +63,10 @@ A和B都持有中介者
 
 打开思路。
 
-#### 例：
-
 ```c++
 #include <iostream>
-using namespace std;
 #include "string"
-
+using namespace std;
 class Person
 {
 public:
@@ -152,7 +149,7 @@ protected:
 };
 
 //以上  Woman  Man类的太紧密 需要解耦合
-void main1901()
+void main1901()//问题的引出
 {
 	
 	Woman *w1 = new Woman("小芳", 2, 4);
@@ -168,7 +165,9 @@ void main1901()
 	
 	return ;
 }
+```
 
+```c++
 class Mediator ;
 class Person2
 {
@@ -279,7 +278,7 @@ public:
 private:
 };
 
-void main1902()
+void main1902()//用中介者模式 进行优化
 {
 	Mediator *mediator = new Mediator;
 	Woman2 *w1 = new Woman2("小芳", 2, 4, mediator);
@@ -294,12 +293,6 @@ void main1902()
 	delete m2;
 	delete mediator;
 }
-void main()
-{
-	//main1901(); //问题的引出
-	main1902(); //用中介者模式 进行优化
-	system("pause");
-}
 ```
 
 ### 总结
@@ -311,8 +304,6 @@ void main()
 每个人都可以通过中介者找对象，每一个人都持有一个中介者的引用（或指针）。
 
 中介要为每一个人服务，中介里面也应包含人的实例（男人和女人，或者一个集合）
-
-中介者做找对象的操作。
 
 
 
