@@ -1,14 +1,10 @@
 # CoreData
 
-**一、预备知识**
-
 对象关系映射（英语称object Relational Mapping，简称ORM）。
 
 ORM是通过使用描述对象和数据库之间映射的元数据，可以实现将对象自动持久化到关系数据库当中。
 
-**二、初识CoreData**
-
-CoreData是苹果自己推出的数据存储框架，采用了一种ORM（对象关系映射）的存储关系。CoreData一个比较大的优势在于在使用CoreData过程中不需要我们编写SQL语句，也就是将OC对象存储于数据库，也可以将数据库数据转为OC对象（数据库数据与OC对象相互转换）。
+CoreData一个比较大的优势在于在使用CoreData过程中不需要我们编写SQL语句，也就是将OC对象存储于数据库，也可以将数据库数据转为OC对象（数据库数据与OC对象相互转换）。
 
 ## CoreData几个类
 
@@ -236,9 +232,7 @@ NSPersistentStoreCoordinator意思是持久化存储协调器，主要负责协�
 
 NSManagedObjectContext意思是托管对象上下文，数据库的大多数操作是在这个类操作。
 
-苹果推荐使用initWithConcurrencyType方式创建，在创建时，指定当前是什么类型的并发队列，参数也是一个枚举值。
-
-NSManagedObjectContext枚举值：
+使用initWithConcurrencyType方式创建，在创建时，指定当前是什么类型的并发队列，参数是一个枚举值。
 
 1. NSPrivateQueueConcurrencyType：代表私有并发队列的类型，操作也是在子线程中完成的。
 3. NSMainQueueConcurrencyType：代表主并发队列类型，如果在操作过程中，需要涉及到UI操作，则应该使用这个参数初始化上下文完成操作。
