@@ -1,8 +1,10 @@
 # category
 
+分类在运行时期才加载的。为原有类扩展方法。
+
 ## 关联对象
 
-HashMap存储，存储关联策略 关联值。两个哈希表：多个类，多个属性。
+HashMap存储，存储关联策略 关联值。
 
 整个内存里只有这一个哈希表。
 
@@ -99,18 +101,17 @@ typedef DenseMap<DisguisedPtr<objc_object>, ObjectAssociationMap> AssociationsHa
 
 ### set
 
-- hashmap：AssociationsHashMap
+hashmap：AssociationsHashMap
 
-  - key：DisguisedPtr（关联的实例对象）
-  - value：ObjectAssociationMap
-    - key
-    - value：ObjcAssociation（关联策略和值）
-
-AssociationsHashMap：DisguisedPtr和ObjectAssociationMap
-
-```c++
-typedef DenseMap<const void *, ObjcAssociation> ObjectAssociationMap;
-```
+- key：DisguisedPtr（关联的实例对象）
+- value：ObjectAssociationMap
+  
+  ```c++
+  typedef DenseMap<const void *, ObjcAssociation> ObjectAssociationMap;
+  ```
+  
+  - key
+  - value：ObjcAssociation（关联策略和值）
 
 ### get
 
@@ -158,9 +159,8 @@ struct category_t {
 
 1. category只能给某个已有的类扩充方法，不能扩充成员变量。
 2. category中也可以添加属性，只不过@property只声明里实例变量，没有setter和getter方法。需要关联对象。
-3. 如果分类中有和原有类同名的方法，会优先调用分类中的方法，就是说会忽略原有类的方法
-4. 如果多个分类中都有和原有类中同名的方法，那么调用该方法的时候执行谁由编译器决定，最后一个参与编译的方法插入到方法列表前面会被调用。因为运行时在查找方法的时候是顺着方法列表的顺序查找的，它只要一找到对应名字的方法，就会罢休，殊不知后面还有一样名字的方法。
-5. 过度使用分类也会导致APP项目支离破碎感和性能降低
+3. 如果分类中有和原有类同名的方法，会优先调用分类中的方法。
+4. 如果多个分类中都有和原有类中同名的方法，最后一个参与编译的方法插入到方法列表前面会被调用。因为运行时在查找方法的时候是顺着方法列表的顺序查找的，它只要一找到对应名字的方法，就会罢休，殊不知后面还有一样名字的方法。
 
 ## 如何调用原类方法
 
@@ -262,10 +262,6 @@ attachCategories
 ### 3、类有load（非懒加载类）分类没有load（懒加载类）
 
 编译时类和分类的数据都被加载ro⾥⾯了。没有rwe。
-
-没有走attachCategories
-
-1. read_images
 
 ### 4、分类主类都没有load，都是懒加载类
 

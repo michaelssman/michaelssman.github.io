@@ -498,7 +498,3 @@ static void __ASPECTS_ARE_BEING_CALLED__(__unsafe_unretained NSObject *self, SEL
 
 Aspects的核心原理是利用了消息转发机制，通过替换消息转发方法来实现切面的分发调用。
 
-目前这个库已经很长时间没有维护了，原子操作的支持使用的还是自旋锁，目前这种锁已经不安全了
-
-另外使用这个库是需要注意类似原理的其他框架，可能会有冲突，如 JSPatch ，不过 JSPatch 已经被封杀了，但类似需求有很多。
-

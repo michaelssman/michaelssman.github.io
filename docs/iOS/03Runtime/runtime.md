@@ -1,33 +1,8 @@
 # runtime
 
-**运行时** 就是代码跑起来了，被装载到内存中去了。
+**运行时** 就是代码跑起来，被装载到内存中去了。
 
-(你的代码保存在磁盘上没装入内存之前是个死家伙，只有跑到内存中才变成活的)。而运行时类型检查就与前面讲的编译时类型检查(或者静态类型检查)不一样。不是简单的扫描代码.而是在内存中做些操作，做些判断。
-
-```objective-c
-Id person = [LGPerson alloc]
-[xxx performSelector:@selector(xxx)]
-```
-
-runtime三种方法调起
-
-1. OC 方法 
-
-   例：[person sayHello];
-
-2. NSObject 接口
-
-   例：isKindOfClass
-
-3. objc 下层api
-
-   例：Class_getInstanceSize
-
-
-
-分类在运行时期才加载的。为原有类扩展方法。
-
-
+(代码保存在磁盘上没装入内存之前是个死家伙，只有跑到内存中才变成活的)。而运行时类型检查就与前面讲的编译时类型检查(或者静态类型检查)不一样。不是简单的扫描代码，而是在内存中做些操作，做些判断。
 
 调用方法 底层 objc_msgSend imp
 
@@ -37,9 +12,7 @@ runtime三种方法调起
 
 对象通过isa指针查找到类
 
-
-
-runtime使用：
+## runtime使用
 
 - 方法交换
 - class_addMethod. 动态添加方法

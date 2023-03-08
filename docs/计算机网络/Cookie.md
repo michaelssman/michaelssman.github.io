@@ -2,7 +2,7 @@
 
 ## cookie
 
-HTTP 协议是**无状态**的。优点是服务器没有状态差异，可以很容易地组成集群，而缺点就是无法支持需要记录状态的事务操作，客户端必须每次带上自己的状态去请求服务器。好在 HTTP 协议是可扩展的，后来发明的 Cookie 技术，给 HTTP 增加了“记忆能力”。
+HTTP 协议是**无状态**的。优点是服务器没有状态差异，可以很容易地组成集群，缺点是无法支持需要记录状态的事务操作，客户端必须每次带上自己的状态去请求服务器。好在 HTTP 协议是可扩展的，后来发明的 Cookie 技术，给 HTTP 增加了“记忆能力”。
 
 cookie 主要是用来记录用户状态，区分用户，**状态保存在客户端**。
 
@@ -24,9 +24,9 @@ Cookie 主要用于以下三个方面：
 
 ![图片](https://mmbiz.qpic.cn/mmbiz_png/k0UVxv3BTLJficKZyePc37BhQTJhH5RNxfdLyc3Nbsgjmo3bewTJic7bSibUC0D8Kvic8acxAUzpRn1qOCceDk4CIQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
 
-1. 首次访问 amazon 时，客户端发送一个 HTTP 请求到服务器端 。服务器端发送一个 HTTP 响应到客户端，其中包含 Set-Cookie 头部
-2. 客户端发送一个 HTTP 请求到服务器端，其中包含 Cookie 头部。服务器端发送一个 HTTP 响应到客户端
-3. 隔段时间再去访问时，客户端会直接发包含 Cookie 头部的 HTTP 请求。服务器端发送一个 HTTP 响应到客户端
+1. 首次访问 amazon 时，客户端发送一个 HTTP 请求到服务器端 。服务器端发送一个 HTTP 响应到客户端，其中包含 Set-Cookie 头部。
+2. 客户端发送一个 HTTP 请求到服务器端，其中包含 Cookie 头部。服务器端发送一个 HTTP 响应到客户端。
+3. 隔段时间再去访问时，客户端会直接发包含 Cookie 头部的 HTTP 请求。服务器端发送一个 HTTP 响应到客户端。
 
 cookie 技术有 4 个组件：
 

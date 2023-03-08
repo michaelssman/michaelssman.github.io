@@ -378,7 +378,6 @@ nav:
       - Html/Vue/添加实例 property.md
   - static_const_define: 
     - 宏: 常量_宏_静态变量/宏定义和常量.md
-    - 枚举: 常量_宏_静态变量/枚举.md
     - 常量: 
       - 常量_宏_静态变量/01常量.md
       - 常量_宏_静态变量/04常量.md
