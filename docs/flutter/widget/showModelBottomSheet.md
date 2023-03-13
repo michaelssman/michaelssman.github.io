@@ -1,6 +1,25 @@
 # showModelBottomSheet
 
-在 Flutter 中提供了一个 showModelBottomSheet 方法用于弹出底部弹窗，
+在 Flutter 中提供了一个 showModelBottomSheet 方法用于弹出底部弹窗。
+
+```dart
+Future<T?> showModalBottomSheet<T>({
+  required BuildContext context,	//必传上下文
+  required WidgetBuilder builder,	//必传
+  Color? backgroundColor,
+  double? elevation,
+  ShapeBorder? shape,							//加圆角
+  Clip? clipBehavior,
+  BoxConstraints? constraints,
+  Color? barrierColor,
+  bool isScrollControlled = false,//当true时，则是全屏弹窗，默认是false
+  bool useRootNavigator = false,
+  bool isDismissible = true,
+  bool enableDrag = true,
+  RouteSettings? routeSettings,
+  AnimationController? transitionAnimationController,
+})
+```
 
 #### 代码结构
 
@@ -15,7 +34,7 @@ onPressed: () async {
 
 #### 基本使用
 
-基本使用对于全屏和默认只差一个参数，演示代码中，我们使用了一组模拟的数据构建选项数据，然后再传给显示底部弹窗的方法，实际这组数据大部分是从后台获取的。当 `isScrollControlled` 是 `true` 时，则是全屏弹窗，默认是 `false`。
+基本使用对于全屏和默认只差一个参数，演示代码中，我们使用了一组模拟的数据构建选项数据，然后再传给显示底部弹窗的方法，实际这组数据大部分是从后台获取的。
 
 ```dart
 Future<int> _showBasicModalBottomSheet(context, List<String> options) async {
@@ -121,4 +140,4 @@ Future<int?> showCustomModalBottomSheet(context, List<String> options) async {
 
 #### 总结
 
-本篇介绍了三种 ModalBottomSheet 的方式， 可以看到 ModalBottomSheet 非常灵活。实际开发过程中，还可以根据需要，利用 ModalBottomSheet的 builder 方法返回不同的组件进而定制自己的底部弹层组件，能够满足绝大多数场景。同时，借 ModalBottomSheet 的启发，我们自己也可以使用 Navigator方法来实现其他形式的弹层，例如从底部弹出登录页，登录后再返回原页面。
+实际开发过程中，还可以根据需要，利用 ModalBottomSheet的 builder 方法返回不同的组件进而定制自己的底部弹层组件，能够满足绝大多数场景。同时，借 ModalBottomSheet 的启发，我们自己也可以使用 Navigator方法来实现其他形式的弹层，例如从底部弹出登录页，登录后再返回原页面。
