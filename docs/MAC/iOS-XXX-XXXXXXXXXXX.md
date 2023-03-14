@@ -1,11 +1,12 @@
 ## 个人信息
 
 <table  border="0"> 
-  <tr><td>姓名：XXX</td><td>工作年限：6年</td></tr>
+  <tr><td>姓名：XXX</td><td>工作年限：7年</td></tr>
   <tr><td>学历：河南师范大学</td><td>专业：计算机科学与技术</td></tr>
   <tr><td>电话：1XX-XXXX-XXXX</td><td>邮箱：michaelss_work@outlook.com</td></tr>
   <tr><td colspan=2>个人博客：https://michaelssman.github.io/</td></tr>
 </table>
+
 ---
 
 ## 教育背景（2011.09-2015.07）
@@ -28,8 +29,8 @@
   - 了解weak对象存储的原理和销毁置nil的原理，对象dealloc流程。
 - 了解对象的底层原理（alloc流程，isa指针）。
 - 了解类的原理和底层数据结构。
-- 消息发送和消息转发机制。
-- 熟悉Runloop
+- 了解消息发送和消息转发机制。
+- 了解Runloop
   - Runloop做性能优化卡顿检测和按需加载
 - 熟悉响应者链和事件传递。
 - 熟悉Runtime
@@ -107,8 +108,10 @@
 - 利用适配器模式，适配调用接口。
   - 创建分类，AFNetworking3.0适配4.0，设置header。
   - 封装MBProgressHUD的调用接口，避免三方库升级导致多处修改。
+- 中介者模式
+  - 类似CTMediator，写Router，组件解耦合去model化。
+
 - 根据Runtime和KVC封装推送和轮播图的任意页面跳转（推送页面跳转）。
-- 类似CTMediator，写Router，组件解耦合去model化。
 - Runtime封装交换类方法和对象方法。
 - 利用响应者链处理轮播图和tableView滑动响应冲突问题
 - 封装FMDB数据库存储组件（利用KVC和runtime，支持模型字典和数组存储）。

@@ -239,66 +239,32 @@ SDWebImageManager的loadImageWithURL方法中有一个SDWebImageCombinedOperatio
 
 
 
-# 目录结构
+## 目录结构
 
 - Downloader
-   ○ SDWebImageDownloader
-   ○ SDWebImageDownloaderOperation
+   ○ SDWebImageDownloader：是专门用来下载图片和优化图片加载的，跟缓存没有关系
+   ○ SDWebImageDownloaderOperation：继承于 NSOperation，用来处理下载任务的
 - Cache
-   ○ SDImageCache
+   ○ SDImageCache：用来处理内存缓存和磁盘缓存（可选)的，其中磁盘缓存是异步进行的，因此不会阻塞主线程
 - Utils
-   ○ SDWebImageManager
-   ○ SDWebImageDecoder
-   ○ SDWebImagePrefetcher
+   ○ SDWebImageManager：作为 UIImageView+WebCache 背后的默默付出者，主要功能是将图片下载（SDWebImageDownloader）和图片缓存（SDImageCache）两个独立的功能组合起来
+   ○ SDWebImageDecoder：图片解码器，用于图片下载完成后进行解码
+   ○ SDWebImagePrefetcher：预下载图片，方便后续使用，图片下载的优先级低。
 - Categories
-   ○ UIView+WebCacheOperation
-   ○ UIImageView+WebCache
-   ○ UIImageView+HighlightedWebCache
-   ○ UIButton+WebCache
-   ○ MKAnnotationView+WebCache
-   ○ NSData+ImageContentType
-   ○ UIImage+GIF
-   ○ UIImage+MultiFormat
-   ○ UIImage+WebP
+   ○ UIView+WebCacheOperation：用来记录图片加载的 operation，方便需要时取消和移除图片加载的 operation
+   ○ UIImageView+WebCache：集成 SDWebImageManager 的图片下载和缓存功能到 UIImageView 的方法中，方便调用方的简单使用
+   ○ UIImageView+HighlightedWebCache：跟 UIImageView+WebCache 类似，也是包装了 SDWebImageManager，只不过是用于加载 highlighted 状态的图片
+   ○ UIButton+WebCache：跟 UIImageView+WebCache 类似，集成 SDWebImageManager 的图片下载和缓存功能到 UIButton 的方法中，方便调用方的简单使用
+   ○ MKAnnotationView+WebCache：跟 UIImageView+WebCache 类似
+   ○ NSData+ImageContentType：用于获取图片数据的格式（JPEG、PNG等）
+   ○ UIImage+GIF：用于加载 GIF 动图
+   ○ UIImage+MultiFormat：根据不同格式的二进制数据转成 UIImage 对象
+   ○ UIImage+WebP：用于解码并加载 WebP 图片
 - Other
    ○ SDWebImageOperation（协议）
    ○ SDWebImageCompat（宏定义、常量、通用函数）
 
-**相关类名与功能描述**
-
-SDWebImageDownloader：是专门用来下载图片和优化图片加载的，跟缓存没有关系
-
-SDWebImageDownloaderOperation：继承于 NSOperation，用来处理下载任务的
-
-SDImageCache：用来处理内存缓存和磁盘缓存（可选)的，其中磁盘缓存是异步进行的，因此不会阻塞主线程
-
-SDWebImageManager：作为 UIImageView+WebCache 背后的默默付出者，主要功能是将图片下载（SDWebImageDownloader）和图片缓存（SDImageCache）两个独立的功能组合起来
-
-SDWebImageDecoder：图片解码器，用于图片下载完成后进行解码
-
-SDWebImagePrefetcher：预下载图片，方便后续使用，图片下载的优先级低，其内部由
-
-SDWebImageManager ：来处理图片下载和缓存
-
-UIView+WebCacheOperation：用来记录图片加载的 operation，方便需要时取消和移除图片加载的 operation
-
-UIImageView+WebCache：集成 SDWebImageManager 的图片下载和缓存功能到 UIImageView 的方法中，方便调用方的简单使用
-
-UIImageView+HighlightedWebCache：跟 UIImageView+WebCache 类似，也是包装了 SDWebImageManager，只不过是用于加载 highlighted 状态的图片
-
-UIButton+WebCache：跟 UIImageView+WebCache 类似，集成 SDWebImageManager 的图片下载和缓存功能到 UIButton 的方法中，方便调用方的简单使用
-
-MKAnnotationView+WebCache：跟 UIImageView+WebCache 类似
-
-NSData+ImageContentType：用于获取图片数据的格式（JPEG、PNG等）
-
-UIImage+GIF：用于加载 GIF 动图
-
-UIImage+MultiFormat：根据不同格式的二进制数据转成 UIImage 对象
-
-UIImage+WebP用于解码并加载 WebP 图片
-
-# 工作流程
+## 工作流程
 
 ![工作流程](SDWebImage.assets/a127008dd74a4616b762e78ca2041244~tplv-k3u1fbpfcp-zoom-in-crop-mark:1304:0:0:0.awebp)
 
@@ -408,7 +374,7 @@ UIImage+WebP用于解码并加载 WebP 图片
 
 - SDWebImagePrefetcher 可以预先下载图片，方便后续使用。
 
-# 常见面试题
+## 常见面试题
 
 1. 图片文件缓存的时间有多长：1周
 
@@ -435,7 +401,6 @@ maxConcurrentDownloads ＝ 6
 ```
 1. #import <ImageIO/ImageIO.h>
 2. [UIImage animatedImageWithImages:images duration:duration];
-复制代码
 ```
 
 1. SDWebImage是如何区分不同格式的图像的
@@ -450,14 +415,15 @@ maxConcurrentDownloads ＝ 6
 - 如果单纯使用 文件名保存，重名的几率很高！
 - 使用 MD5 的散列函数！对完整的 URL 进行 md5，结果是一个 32 个字符长度的字符串！
 
-7.SDWebImage 的内存警告是如何处理的！
+### SDWebImage 的内存警告是如何处理的！
 
-- 利用通知中心观察
+利用通知中心观察
+
 - `- UIApplicationDidReceiveMemoryWarningNotification` 接收到内存警告的通知
 - 执行 `clearMemory` 方法，清理内存缓存！
 - `- UIApplicationWillTerminateNotification` 接收到应用程序将要终止通知
-- 执行 `cleanDisk` 方法，清理磁盘缓存！
+- 执行 `cleanDisk` 方法，清理磁盘缓存，将所有缓存目录中的文件，全部删除！
 - `- UIApplicationDidEnterBackgroundNotification` 接收到应用程序进入后台通知
 - 执行 `backgroundCleanDisk` 方法，后台清理磁盘！
-- 通过以上通知监听，能够保证缓存文件的大小始终在控制范围之内！
-- `clearDisk` 清空磁盘缓存，将所有缓存目录中的文件，全部删除！
+
+通过以上通知监听，能够保证缓存文件的大小始终在控制范围之内！

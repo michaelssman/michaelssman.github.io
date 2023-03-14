@@ -16,8 +16,6 @@
 
 ![img](处理bug.assets/809477-20151027144002060-1369744939.jpg)
 
-在Xcode的以前版本中，我们可以在Xcode的Console View中使用info malloc-history 0x6d564f0来查看调用堆栈来查看崩溃发生的地方。
-
 在新的Xcode中，调试器默认使用的LLDB，那么怎么在LLDB状态下定位由于内存操作不当引起的Crash呢？
 
 打开“活动监视器”，在进程列表中找到测试APP对应的进程号PID（Xcode启用调试后会在进程列表中找到对应APP的进程）
@@ -37,10 +35,6 @@ sudo malloc_history 1087 0x7f7f7523ff10
 ```
 
 得到错误日志，这样就能定位到最后调用的那行代码。
-
-
-
-崩溃。看不到reason。
 
 在终端输入`sudo malloc_history 2026 0x60055b8e3fe0`
 

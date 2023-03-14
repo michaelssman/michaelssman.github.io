@@ -16,9 +16,8 @@
 > ~/Library/Developer/Xcode/DerivedData
 > 此文件夹内是模拟器运行每个APP生成的缓存文件，项目的索引文件。可以全部删除，或者删除不常用的项目。删除之后只是再重新运行APP时会重新编译耗时较长，并再次生成缓存文件。
 
-4. 删除日志记录
+4. 删除log日志记录
 > ~/Library/Developer/Xcode/iOS Device Logs
-> 一些log日志
 
 5. 移除模拟器文件，可以清理，运行模拟器会重新生成
 > ~/Library/Developer/CoreSimulator/

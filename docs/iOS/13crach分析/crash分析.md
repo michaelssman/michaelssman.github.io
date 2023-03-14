@@ -88,11 +88,9 @@ objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler fn)
 ```
 fn是外界传进来的block。fn给了uncaught_handler回调，一发生问题就调用。
 
-异常包括
-
 ## 2、signal
 
-并不是所有的程序崩溃都是由于发生可以捕捉的异常的，有些时候引起崩溃的原因如：内存访问错误，重复释放等错误就无能为力了，这种错误它抛出的是Signal，所以必须要专门做Signal处理。
+并不是所有的程序崩溃都是由于发生可以捕捉的异常的，有些时候引起崩溃的原因如：内存访问错误，重复释放等错误，这种错误它抛出的是Signal，所以必须要专门做Signal处理。
 当应用发生错误而产生上述Signal后，就将会进入我们自定义的回调函数SignalExceptionHandler。为了得到崩溃时的信息，还可以加入一些获取CallTrace及设备信息的代码。
 
 runloop除了在异常时保持程序运行，还可以做：检测卡顿。优化页面

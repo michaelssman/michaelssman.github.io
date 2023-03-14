@@ -8,8 +8,6 @@
 - 缓存。SDImageCache
 - 解码。SDWebImageCodersManager 调用不同的实现。
 
-
-
 ## 多选选项NS_OPTIONS
 
 ```objective-c
