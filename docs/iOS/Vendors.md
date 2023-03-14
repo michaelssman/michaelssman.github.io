@@ -1,19 +1,12 @@
-* HJCornerRadius    图片圆角
 * TZImagePickerController  相册选择
 * FLAnimatedImage 播放动图
 * YPTabBarController  新闻头条
-* YLButton    自定义按钮，文字图片位置随意定制
-* NSDictionary+NilSafe  字典取空值防止崩溃
 * LXReorderableCollectionViewFlowLayout 仿头条栏目管理
-* TYVideoPlayer  			自定义视频播放器
 * MLeaksFinder    腾讯 内存泄漏检测
 * lottie-ios    AE动画
 * NullSafe 消息转发nil防crash
 * XRWaterfallLayout瀑布流布局
 * MXParallaxHeader
-* YBPopupMenu 带指示箭头的弹窗
-* QiMultiThread多线程和锁
-* [WMPlayer](https://github.com/zhengwenming/WMPlayer)
 * [IOSAnimationDemo](https://github.com/yixiangboy/IOSAnimationDemo)
 * [FishhookDemo](https://github.com/dengbin9009/FishhookDemo)
 * [ YYUIKit](https://github.com/yscMichael/YYUIKit)
