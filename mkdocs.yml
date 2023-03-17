@@ -106,7 +106,7 @@ nav:
       - clang插件: iOS/04应用程序加载/clang插件.md
       - fishhook: iOS/04应用程序加载/fishhook.md
       - iOS应用加载流程: iOS/04应用程序加载/iOS应用加载流程.md
-      - llvm编译流程: iOS/04应用程序加载/llvm编译流程.md
+      - iOS/04应用程序加载/编译流程.md
       - 应用启动优化: iOS/04应用程序加载/应用启动优化.md
       - 环境变量: iOS/04应用程序加载/环境变量.md
       - 符号表: iOS/04应用程序加载/符号表.md
@@ -115,11 +115,11 @@ nav:
         - iOS/04应用程序加载/动态库静态库/swift的module.md
       - iOS/04应用程序加载/hmap.md
       - iOS/04应用程序加载/多环境支持.md
-    - 05内存管理:
-      - iOS/05内存管理/copy.md
-      - iOS/05内存管理/iOS属性关键字.md
-      - iOS/05内存管理/weak原理.md
-      - iOS/05内存管理/内存管理.md
+    - 内存管理:
+      - iOS/内存管理/copy.md
+      - iOS/内存管理/iOS属性关键字.md
+      - iOS/内存管理/weak原理.md
+      - iOS/内存管理/内存管理.md
     - 06Runloop:
       - iOS/06Runloop/00RunLoop.md
       - iOS/06Runloop/01CFRunLoopRef.md

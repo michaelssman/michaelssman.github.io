@@ -1,13 +1,10 @@
 # Animation
 
-## 上下跳动的动画
+## CAKeyframeAnimation
+
+### 上下跳动的动画
 
 ```objective-c
-//1. 先创建一个imageView
-UIImageView *imgV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"scanAnimation"]];
-imgV.frame = CGRectMake((kscreenWidth - 240) / 2.0, kscreenheightNoNANoTab - 205 - SafeAreaBottomHeight, 240, 94);
-[_noInvoiceView addSubview:imgV];
-//2. 创建动画
 //1: 动画
 CAKeyframeAnimation *keyFramA = [CAKeyframeAnimation animationWithKeyPath:@"position"];
 //2: 设置每针动画的起始和结束点
@@ -22,17 +19,13 @@ keyFramA.duration = 2;
 keyFramA.repeatCount = MAXFLOAT;
 //5: 将动画添加到对应的控件Layer层上
 [imgV.layer addAnimation:keyFramA forKey:nil];
-
-self.keyFramA = keyFramA;
-self.imgV = imgV;
 ```
 
-## 加载动画，转圈的动画
+## CABasicAnimation
+
+### 加载动画，转圈的动画
 
 ```objective-c
-//自定义动画
-UIImageView *gifImageView = [UIImageView new];
-gifImageView.image = [UIImage imageNamed:@"loadAnimationIcon"];
 //设置动画
 CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
 rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 ];
@@ -40,7 +33,7 @@ rotationAnimation.duration = 1;
 rotationAnimation.cumulative = YES;
 rotationAnimation.repeatCount = MAXFLOAT;
 //开始动画
-[gifImageView.layer addAnimation:rotationAnimation forKey:@"rotationAnimation"];
+[imgV.layer addAnimation:rotationAnimation forKey:@"rotationAnimation"];
 ```
 
 ## 视图整体缩小一定的比例
