@@ -266,7 +266,7 @@ SDWebImageManager的loadImageWithURL方法中有一个SDWebImageCombinedOperatio
 
 ## 工作流程
 
-![工作流程](SDWebImage.assets/a127008dd74a4616b762e78ca2041244~tplv-k3u1fbpfcp-zoom-in-crop-mark:1304:0:0:0.awebp)
+![截屏2023-03-19 14.55.10](SDWebImage.assets/截屏2023-03-19 14.55.10.png)
 
 - 入口 setImageWithURL:placeholderImage:options: 会先把 placeholderImage 显示，然后 SDWebImageManager 根据 URL 开始处理图片。
 
