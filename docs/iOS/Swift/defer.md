@@ -4,7 +4,7 @@
 
 整个方法执行之后最后执行，当前作用域结束后随之执行。
 
-defer {} 里的代码会在当前*代码块*返回的时候执行，无论当前*代码块*是从哪个分支return 的，即使程序抛出错误，也会执行。 
+defer {} 里的代码会在当前代码块返回的时候执行，无论当前*代码块*是从哪个分支return 的，即使程序抛出错误，也会执行。 
 
 如果多个 defer 语句出现在同一作用域中，则它们出现的顺序与它们执行的顺序相反，也就是先出现的后执行。 
 
@@ -53,7 +53,6 @@ func append(string: String, terminator: String = "\n", toFileAt url: URL) throws
 }
 
 let url = URL(fileURLWithPath: NSHomeDirectory() + "/Desktop/swift.txt")
-try append(string: "iOS面试突击", toFileAt: url)
 try append(string: "Swift", toFileAt: url)
 ```
 
@@ -107,7 +106,7 @@ func test() {
 ```swift
 func test() throws {
   if true {
-		throw NSError()
+    throw NSError()
   }
   
   //同样不会执行
