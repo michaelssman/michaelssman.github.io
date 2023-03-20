@@ -256,3 +256,15 @@ Settings -> Editor -> Languages & Frameworks -> Flutter -> Editor
 热重载，加载修改的。
 
 有状态的widget，数据改变的时候就需要重新启动项目。树发生改变了时候就需要重新运行。
+
+## Windows
+
+下载java，打开终端输入java，如果出现java命令用法则说明安装成功。
+
+去flutter官网下载安装flutter的sdk，bin目录是flutter的运行目录，flutter_console是运行flutter
+
+### 配置环境变量
+
+系统属性--高级系统设置--环境变量--系统变量--双击Path--新建--把flutter的bin路径复制进来`"C:\Users\micha\hhsoftware\flutter\bin\"`
+
+打开终端--flutter doctor
