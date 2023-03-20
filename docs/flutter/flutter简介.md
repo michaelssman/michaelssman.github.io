@@ -51,3 +51,21 @@ iOS控件==flutter widget，flutter万物皆Widget组件，iOS在window上创建
 // ignore_for_file: avoid_print
 ```
 
+## Flutter 命令
+
+```shell
+michael@localhost flutter_demo % flutter run --release #这样运行在iPhone上，以后通过桌面就可以打开
+Launching lib/main.dart on iOS的 iPhone in release mode...
+Automatically signing iOS for device deployment using specified development team in Xcode project: FHBV35YZLP
+Running pod install...                                           1,511ms
+Running Xcode build...                                                  
+ └─Compiling, linking and signing...                         9.7s
+Xcode build done.                                           90.4s
+Installing and launching...                                        23.8s
+
+Flutter run key commands.
+h List all available interactive commands.
+c Clear the screen
+q Quit (terminate the application on the device). #退出运行
+```
+
