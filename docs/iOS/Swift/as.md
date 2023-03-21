@@ -11,7 +11,7 @@ let car = auto as! Car
 
 ### as?
 
-向下强制类型转换，只是as?在转换失败之后会返回nil对象，转换成功之后返回一个可选类型(optional)，需要我们拆包使用。
+as?在转换失败之后会返回nil对象，转换成功之后返回一个可选类型(optional)，需要我们拆包使用。
 
 ```swift
 let auto: Auto = Car()

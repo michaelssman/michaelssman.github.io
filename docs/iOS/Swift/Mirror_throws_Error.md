@@ -27,6 +27,8 @@ let t4 = t.self.self//返回t本身
 
 ### Self
 
+在static类方法中，Self表示类。
+
 #### 1、Self作为方法返回值
 
 ```swift
