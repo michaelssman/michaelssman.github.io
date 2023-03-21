@@ -58,7 +58,15 @@ flutter doctor是shell调用flutter
 
 AS创建flutter也有flutter路径
 
-## Android studio配置
+## Android studio
+
+### Android studio选择Plugins安装插件
+
+搜索flutter，Android studio安装flutter插件。会安装dart，安装完之后需要重启Android studio。
+
+搜索flutter，Android studio安装flutter插件。
+
+### Android studio配置
 
 ![image-20210716141055866](flutter安装.assets/image-20210716141055866.png)
 
@@ -69,37 +77,11 @@ AS创建flutter也有flutter路径
 1. 下载flutter压缩包
 2. 解压 移动文件到/opt
 
->**➜** **~** flutter doctor
->
->Doctor summary (to see all details, run flutter doctor -v):
->
->[✓] Flutter (Channel stable, 2.2.3, on macOS 12.0.1 21A559 darwin-x64, locale
->
->  zh-Hans-CN)
->
->[✓] Android toolchain - develop for Android devices (Android SDK version 31.0.0)
->
->[✓] Xcode - develop for iOS and macOS
->
->[✓] Chrome - develop for the web
->
->[!] Android Studio (version 2020.3)
->
->  **✗** **Unable to find bundled Java version.**
->
->[✓] VS Code (version 1.61.2)
->
->[✓] Connected device (1 available)
->
->  **!** **Error: XXX的iPhone is not connected. Xcode will continue when XXX的iPhone is**
->
->   **connected. (code -13)**
->
->
->
->! Doctor found issues in 1 category.
+### Windows Version (Unable to confirm if installed Windows version is 10 or greater)
 
-#### [!] HTTP Host Availability
+依次运行[flutter](https://so.csdn.net/so/search?q=flutter&spm=1001.2101.3001.7020) channel—>flutter channel master—>flutter upgrade—>flutter channel—>flutter doctor
+
+### [!] HTTP Host Availability
 
   **✗** **HTTP host https://maven.google.com/ is not reachable. Reason: An error**
 
@@ -111,7 +93,13 @@ AS创建flutter也有flutter路径
 2. 删除`/path-to-flutter-sdk/bin/cache` 文件夹
 3. 重新执行`flutter doctor`
 
-#### flutter doctor -v
+### Unable to find bundled Java version.
+
+安装java。
+
+更新的时候在电脑偏好设置，点击java，然后更新。
+
+## flutter doctor -v
 
 Engine revision：引擎版本
 
@@ -172,21 +160,9 @@ Engine revision：引擎版本
 ➜  ~ 
 ```
 
-### Unable to find bundled Java version.
+## flutter更新
 
-flutter和Android Studio版本不同步，更新flutter就可以了。
-
-搜索jdk安装java。
-
-更新的时候在电脑偏好设置，点击java，然后更新。
-
-### flutter更新
-
-flutter doctor会提示有版本更新，`flutter upgrade`更新flutter。
-
-## 安装插件
-
-![image-20220104110109057](flutter安装.assets/image-20220104110109057.png)
+`flutter upgrade`更新flutter。
 
 ## 安卓模拟器
 
