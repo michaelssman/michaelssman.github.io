@@ -75,6 +75,7 @@
 - 异步Future，多线程Isolate和compute
 - Provider页面传值通讯和InheritedWidget数据共享
 - GestureDetector的使用
+- 数据本地持久化存储
 - 自己写demo练习（仿微信和记账app）。
 
 #### swift

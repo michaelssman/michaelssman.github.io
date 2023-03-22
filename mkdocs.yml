@@ -252,12 +252,14 @@ nav:
     - flutter/package和plugin.md
     - flutter/Provider.md
     - flutter/widget.md
+    - flutter/widget/Scaffold.md
     - flutter/widget/ListView.md
     - flutter/widget/PageView.md
     - flutter/widget/TabBarView.md
     - flutter/widget/TextField.md
     - flutter/widget/showModelBottomSheet.md
     - flutter/布局.md
+    - flutter/数据持久化.md
     - flutter/混合开发与引擎.md
     - flutter/渲染原理.md
     - flutter/热重载.md
