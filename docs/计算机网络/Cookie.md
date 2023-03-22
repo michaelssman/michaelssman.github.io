@@ -12,7 +12,7 @@ cookie同样存在于HTTP头部字段里。
 
 `cookie`字段以`key=value`的格式保存，浏览器在一个`cookie`字段里可以存放多对数据，用`;`分割。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvatsNeWhfWKRNKrLlZ0ZQeOtqFxFBK9lrJ5aTqibPO42Q7nJYctibBSHfzE585QicxfCcwE2wRrYCxuZA/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](Cookie.assets/640.jpeg)
 
 Cookie 主要用于以下三个方面：
 
@@ -22,7 +22,7 @@ Cookie 主要用于以下三个方面：
 
 ### 用户与服务器的交互：Cookie
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/k0UVxv3BTLJficKZyePc37BhQTJhH5RNxfdLyc3Nbsgjmo3bewTJic7bSibUC0D8Kvic8acxAUzpRn1qOCceDk4CIQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](Cookie.assets/640-20230322143141751.png)
 
 1. 首次访问 amazon 时，客户端发送一个 HTTP 请求到服务器端 。服务器端发送一个 HTTP 响应到客户端，其中包含 Set-Cookie 头部。
 2. 客户端发送一个 HTTP 请求到服务器端，其中包含 Cookie 头部。服务器端发送一个 HTTP 响应到客户端。
@@ -59,7 +59,7 @@ Session 是另一种记录客户状态的机制，不同的是 **Cookie** 保存
 
 客户端浏览器访问服务器的时候，服务器把客户端信息以某种形式记录在服务器上。这就是 Session。客户端浏览器再次访问时只需要从该 Session 中查找该客户的状态就可以了。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/k0UVxv3BTLJficKZyePc37BhQTJhH5RNxXwrUwE5DwtPrA9s4icyYExwbJ4aicrumOcSoGMiaIc08lXvIbdiasMFuOA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](Cookie.assets/640.png)
 
 \* 当程序需要为某个客户端的请求创建一个 session 时，服务器首先检查这个客户端的请求里是否已包含了一个 session 标识（称为 SessionId）
 
