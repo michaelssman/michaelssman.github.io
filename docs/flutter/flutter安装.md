@@ -77,11 +77,13 @@ AS创建flutter也有flutter路径
 1. 下载flutter压缩包
 2. 解压 移动文件到/opt
 
-### Windows Version (Unable to confirm if installed Windows version is 10 or greater)
+### 1、Windows Version (Unable to confirm if installed Windows version is 10 or greater)
 
-依次运行[flutter](https://so.csdn.net/so/search?q=flutter&spm=1001.2101.3001.7020) channel—>flutter channel master—>flutter upgrade—>flutter channel—>flutter doctor
+下载master分支的flutter：`git clone -b master https://github.com/flutter/flutter.git`。
 
-### [!] HTTP Host Availability
+https://github.com/flutter/flutter/issues/119927#issuecomment-1415858226
+
+### 2、[!] HTTP Host Availability
 
   **✗** **HTTP host https://maven.google.com/ is not reachable. Reason: An error**
 
@@ -90,10 +92,33 @@ AS创建flutter也有flutter路径
 解决方法：
 
 1. 打开`/path-to-flutter-sdk/packages/flutter_tools/lib/src/http_host_validator.dart`文件，修改`https://maven.google.com/`为 google maven 的国内镜像，如`https://maven.aliyun.com/repository/google/`
-2. 删除`/path-to-flutter-sdk/bin/cache` 文件夹
-3. 重新执行`flutter doctor`
 
-### Unable to find bundled Java version.
+2. 修改 flutter 安装目录中的 `flutter.gradle` 文件
+
+   - 文件路径: /opt/flutter/packages/flutter_tools/gradle/flutter.gradle
+   - 修改内容: `buildscript` 加入阿里镜像
+
+   ```
+   buildscript {
+       repositories {
+           //google()
+           //mavenCentral()
+           maven { url 'https://maven.aliyun.com/repository/google' }
+           maven { url 'https://maven.aliyun.com/repository/jcenter' }
+           maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+   
+       }
+       dependencies {
+           classpath 'com.android.tools.build:gradle:4.1.0'
+       }
+   }
+   ```
+
+3. 删除`/path-to-flutter-sdk/bin/cache` 文件夹
+
+4. 重新执行`flutter doctor`
+
+### 3、Unable to find bundled Java version.
 
 安装java。
 
@@ -197,27 +222,6 @@ Running Gradle task 'assembleDebug'
   ```
 
   ![9C38D932-1246-4E24-B16D-875A50B2E3F4.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0f852b4735f64c83b350c6bf0480545e~tplv-k3u1fbpfcp-watermark.awebp?)
-
-2.5.2 修改 flutter 安装目录中的 `flutter.gradle` 文件
-
-- 文件路径: /opt/flutter/packages/flutter_tools/gradle/flutter.gradle
-- 修改内容: `buildscript` 加入阿里镜像
-
-```
-buildscript {
-    repositories {
-        //google()
-        //mavenCentral()
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://maven.aliyun.com/repository/jcenter' }
-        maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
-
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
-    }
-}
-```
 
 ## 保存自动格式化代码
 
