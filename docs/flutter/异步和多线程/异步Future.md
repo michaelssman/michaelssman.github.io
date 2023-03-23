@@ -2,7 +2,7 @@
 
 Future只是异步代码，在一个队列中，还在主线程中。
 
-异步如果有返回值的，一般返回`Future`。未来的数据。
+异步如果有返回值的，返回`Future`。未来的数据。
 
 先保存代码，然后回调的时候再调用，使用then。
 
@@ -125,7 +125,7 @@ getData() async {
 
 Future结果处理
 
-- `.then`用来注册一个Future完成时要调用的回调。Future里面有return时，会调用`.then`。
+- `.then`用来注册一个Future完成时要调用的回调。Future里面有return时，会调用`.then`。如果throw抛出了错误，那么不走`.then`。
 - `.catchError`注册一个回调，来捕捉Future的error
   - `.catchError`回调只处理原始Future抛出的错误，不能处理回调函数抛出的错误
 
@@ -322,7 +322,7 @@ void testFuture1() {
 
 多个future全部结束 最后结果统一处理
 
-使用wait 任务执行顺序同样是添加顺序
+使用wait，`Future.wait(futures)`， 任务执行顺序同样是添加顺序
 
 任务A任务B任务C同时处理，ABC任务顺序执行，同步处理。
 

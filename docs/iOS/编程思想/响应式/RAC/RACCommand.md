@@ -2,134 +2,46 @@
 
 ```objective-c
 - (void)RACCommandTest {
-  
+    //创建command，init方法传block，block返回一个RACSignal
     RACCommand *command = [[RACCommand alloc] initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
         NSLog(@"%@",input);//input打印出：起飞～～～～～
-      
-      //里面需要返回一个信号
+        //返回一个信号
         return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
-	          [subscriber sendNext:@"发布信息"];//发布信息	
-            return nil;
-        }];
-      
-    }];
-  
-    [command execute:@"起飞～～～～～"];
-}
-```
-
-发送的信息谁去接收呢？？？
-
-这个时候我们注意一下`execute`这个方法
-
-```objective-c
-- (RACSignal *)execute:(id)input {
-	// `immediateEnabled` is guaranteed to send a value upon subscription, so
-	// -first is acceptable here.
-	BOOL enabled = [[self.immediateEnabled first] boolValue];
-	if (!enabled) {
-		NSError *error = [NSError errorWithDomain:RACCommandErrorDomain code:RACCommandErrorNotEnabled userInfo:@{
-			NSLocalizedDescriptionKey: NSLocalizedString(@"The command is disabled and cannot be executed", nil),
-			RACUnderlyingCommandErrorKey: self
-		}];
-
-		return [RACSignal error:error];
-	}
-
-	RACSignal *signal = self.signalBlock(input);
-	NSCAssert(signal != nil, @"nil signal returned from signal block for value: %@", input);
-
-	// We subscribe to the signal on the main thread so that it occurs _after_
-	// -addActiveExecutionSignal: completes below.
-	//
-	// This means that `executing` and `enabled` will send updated values before
-	// the signal actually starts performing work.
-	RACMulticastConnection *connection = [[signal
-		subscribeOn:RACScheduler.mainThreadScheduler]
-		multicast:[RACReplaySubject subject]];
-	
-	[self.addedExecutionSignalsSubject sendNext:connection.signal];
-
-	[connection connect];
-	return [connection.signal setNameWithFormat:@"%@ -execute: %@", self, RACDescription(input)];
-}
-```
-
-最终代码
-
-```objective-c
-- (void)RACCommandTest {
-    RACCommand *command = [[RACCommand alloc] initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
-        NSLog(@"%@",input);
-        return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
-            [subscriber sendNext:@"发布信息"];
-            return nil;
+            // 1.开始网络请求
+            NSLog(@"开始网络请求");
+            
+            // 2.1网络请求成功
+            [subscriber sendNext:@"网络请求成功，对外发布数据信息"];//sendNext会调起subscribeNext
+            [subscriber sendCompleted];//告诉外界发送完成了。一定要记得发送完成消息，不然不能再次执行
+            
+            // 2.2网络请求失败
+            [subscriber sendError:nil];
+            
+            return [RACDisposable disposableWithBlock:^{
+                // 取消网络请求
+                NSLog(@"取消网络请求");
+            }];
         }];
     }];
     
-    [command.executionSignals subscribeNext:^(id  _Nullable x) {
-        [x subscribeNext:^(id  _Nullable x) {
-            NSLog(@"订阅一次 - %@",x);
-        }];
-        NSLog(@"接收数据 - %@",x);//x打印是一个信号
-    }];
-    [command execute:@"起飞～～～～～"];
-
-}
-```
-
-### switchToLatest
-
-上面代码订阅了两次，可以使用下面的方法
-
-```objective-c
-- (void)RACCommandTest {
-    RACCommand *command = [[RACCommand alloc] initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
-        NSLog(@"%@",input);
-        return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
-            [subscriber sendNext:@"发布信息"];
-            return nil;
-        }];
-    }];
-    
-//    [command.executionSignals subscribeNext:^(id  _Nullable x) {
-//        [x subscribeNext:^(id  _Nullable x) {
-//            NSLog(@"订阅一次 - %@",x);
-//        }];
-//        NSLog(@"接收数据 - %@",x);//x打印是一个信号
-//    }];
-    //等于下面这句
+    //订阅命令发出的信号
+    //    [command.executionSignals subscribeNext:^(id  _Nullable x) {
+    //        [x subscribeNext:^(id  _Nullable x) {
+    //            NSLog(@"订阅一次 - %@",x);
+    //        }];
+    //        NSLog(@"接收数据 - %@",x);//x打印是一个信号
+    //    }];
+    //上面代码订阅了两次，可以使用下面的方法`switchToLatest`表示的是最新发送的信号
     [command.executionSignals.switchToLatest subscribeNext:^(id  _Nullable x) {
         NSLog(@"接收数据 - %@",x);//x打印是一个信号
     }];
-    [command execute:@"起飞～～～～～"];
-}
-```
-
-其中`switchToLatest`表示的是最新发送的信号
-
-```objective-c
-- (void)RACCommandTest {
-    RACCommand *command = [[RACCommand alloc] initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
-        NSLog(@"%@",input);
-        return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
-            [subscriber sendNext:@"发布信息"];
-            [subscriber sendCompleted];//告诉外界发送完成了
-            return nil;
-        }];
+    
+    [command.errors subscribeNext:^(NSError * _Nullable x) {
+        NSLog(@"出错");
     }];
     
-//    [command.executionSignals subscribeNext:^(id  _Nullable x) {
-//        [x subscribeNext:^(id  _Nullable x) {
-//            NSLog(@"订阅一次 - %@",x);
-//        }];
-//        NSLog(@"接收数据 - %@",x);//x打印是一个信号
-//    }];
-    //等于下面这句
-    [command.executionSignals.switchToLatest subscribeNext:^(id  _Nullable x) {
-        NSLog(@"接收数据 - %@",x);//x打印是一个信号
-    }];
-  	//监听执行状态
+    
+    //监听命令执行状态
     [[command.executing skip:1] subscribeNext:^(NSNumber * _Nullable x) {
         if ([x boolValue]) {
             NSLog(@"还在执行");
@@ -137,7 +49,10 @@
             NSLog(@"执行结束");
         }
     }];
+    
+    //开始所有动作的导火线 执行命令 会调起RACCommand创建时候的回调
     [command execute:@"起飞～～～～～"];
+    
 }
 ```
 
