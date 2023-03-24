@@ -20,8 +20,7 @@ Future对象可以一直点下去`.then .onError .catchError .whenComplete`等�
 
 ```dart
 ///1 
-///1秒后打印下面的
-///2 
+///2 (1秒后打印的)
 ///3
 void future_Demo() {
   print('1'); //主线程
@@ -125,23 +124,22 @@ getData() async {
 
 Future结果处理
 
-- `.then`用来注册一个Future完成时要调用的回调。Future里面有return时，会调用`.then`。如果throw抛出了错误，那么不走`.then`。
+- `.then`用来注册一个Future完成时要调用的回调。Future里面有return时，`.then`回调中的`value`才有值。如果里面throw抛出了错误，那么不会调用`.then`
+- `.whenComplete`在Future完成之后总是会调用，不管是错误导致的完成还是正常执行完毕
 - `.catchError`注册一个回调，来捕捉Future的error
   - `.catchError`回调只处理原始Future抛出的错误，不能处理回调函数抛出的错误
-
 - `onError`只能处理当前Future的错误
-- `.whenComplete`在Future完成之后总是会调用，不管是错误导致的完成还是正常执行完毕
 
 ## await和async配合
 
 如果Future内部代码希望同步执行，则使用await修饰。被async修饰的函数为异步执行。
 
-1. await后面的操作必须是异步方法（Future）才能使用await修饰
+1. await后面的操作必须是异步方法（Future）
 2. 当前这个函数也必须是异步函数 async修饰的函数
 
 Future后面是任务，要想等任务执行完毕之后再操作，需要加await。
 
-**等待用await**会卡住下面所有的
+等待`await`会卡住下面所有的
 
 如果不想卡住所有的，不使用await，在future.then中加入要等待的任务。
 
@@ -155,6 +153,7 @@ void mainTest() {
   getData();
 }
 
+//方法一：
 getData() async {
   print('开始data = $_data');
 
@@ -174,19 +173,9 @@ getData() async {
 ///flutter: value = null
 ///flutter: 完成了
 ///flutter: 再干点其它的
-```
 
-```dart
-import 'dart:async';
-import 'dart:io';
-
-String _data = '0';
-
-void mainTest() {
-  getData();
-}
-
-getData() async {
+//方法二：
+getData1() async {
   print('开始data = $_data');
 
   //会卡住下面的
@@ -201,7 +190,6 @@ getData() async {
 
   print('再干点其它的');
 }
-
 ///打印结果
 ///flutter: 开始data = 0
 ///flutter: value = 网络数据
@@ -209,11 +197,10 @@ getData() async {
 ///flutter: 再干点其它的
 ```
 
-## 多个Future
-
 ```dart
 void main() {
   testFuture();
+  //testFuture1();
   print('A');
 }
 
@@ -226,15 +213,9 @@ void testFuture() async {
 }
 //打印结果：B A C D
 //虽然用了async 但不是异步
-```
 
-```dart
-void main() {
-  testFuture();
-  print('A');
-}
 
-void testFuture() async {
+void testFuture1() async {
   await Future(() {
     sleep(Duration(seconds: 1));
     print('C');
@@ -248,6 +229,8 @@ void testFuture() async {
 ```
 
 加不加async取决于有没有await。
+
+## 多个Future
 
 ### 多任务
 
@@ -293,9 +276,7 @@ flutter: 任务4结束
 
 ## Future关联关系 
 
-### 依赖关系 链式
-
-依赖的链式关系，任务1之后任务2之后任务3。
+### 依赖的链式关系
 
 ```dart
 void testFuture1() {
@@ -318,11 +299,9 @@ void testFuture1() {
 ///flutter: 任务1任务2任务3结束
 ```
 
-### 同时处理多个任务，所有结果回来之后统一处理
+### 多个任务所有结果回来之后统一处理
 
-多个future全部结束 最后结果统一处理
-
-使用wait，`Future.wait(futures)`， 任务执行顺序同样是添加顺序
+使用`Future.wait(futures)`， futures任务执行顺序同样是添加顺序
 
 任务A任务B任务C同时处理，ABC任务顺序执行，同步处理。
 
@@ -351,7 +330,7 @@ void testFuture2() {
 ///flutter: 任务B任务A任务C
 ```
 
-### 某个任务 紧急处理
+## 队列
 
 flutter两种队列
 
@@ -359,9 +338,8 @@ flutter两种队列
 
    Future放在事件队列 
 
-2. 微任务队列
+2. 微任务队列（scheduleMicrotask）
 
-   scheduleMicrotask
 
 主线程（外部代码）优先级最高，微任务优先级比Future高
 
@@ -384,8 +362,7 @@ void testFuture3() {
 /**
 结果：
 flutter: 外部代码1
-//两秒后
-flutter: 外部代码2
+flutter: 外部代码2（两秒后）
 flutter: 微任务A
 flutter: A
 flutter: A结束
@@ -396,9 +373,7 @@ flutter: B结束
 
 只要是队列就是有序的，无论是事件队列还是微任务队列，都是按照添加的顺序。
 
-事件队列和微任务队列是在同一个线程。串行的。微任务只是比事件队列优先级高。
-
-## 队列
+事件队列和微任务队列是在同一个线程，串行的。只是微任务比事件队列优先级高。
 
 ```dart
 //队列顺序 5 3 6 1 4 2
@@ -454,6 +429,7 @@ void testFuture4() {
   x.then((value) => print('4'));
 
   Future(() => print('2'));
+  
   scheduleMicrotask(() => print('3'));
 
   print('5'); //主线程最先 其它的按照添加的顺序
