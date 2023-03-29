@@ -1,6 +1,6 @@
 # Mach-O
 
-我们打开了一个App，可以理解在手机的操作系统上运行了一个App进程。而进程是特殊文件在内存中加载得到的结果，这种特殊文件必须是操作系统可理解的。
+打开了一个App，可以理解在手机的操作系统上运行了一个App进程。而进程是特殊文件在内存中加载得到的结果，这种特殊文件必须是操作系统可理解的。
 
 Mach-O 其实是Mach Object文件格式的缩写，是 mac 以及 iOS 上可执行文件的格式， 类似于 windows上的 PE 格式 (Portable Executable ), linux 上的 ElF 格式 (Executable and Linking Format) 。
 
@@ -18,7 +18,7 @@ Mach-O 其实是Mach Object文件格式的缩写，是 mac 以及 iOS 上可执�
 
 ## 可执行文件
 
-我们开发的app，编译打包后，就会生成一个可执行的，Mach-O格式的二进制文件。
+开发的app，编译打包后，就会生成一个可执行的，Mach-O格式的二进制文件。
 
 对于macOS和iOS中的App，其生成可执行二进制文件从支持的架构分为两种：
 
@@ -35,9 +35,9 @@ Mach-O 其实是Mach Object文件格式的缩写，是 mac 以及 iOS 上可执�
 - File Size : 段在文件中的大小 
 - ASLR
 
-以mac中的计算器App为例，用MachOView查看，可以看到这是一个Fat Binary类型的可执行文件，也就是我们平常说的胖二进制文件。里面包含了两个Executable二进制文件，每一个Excutable里面的格式可以参照单个架构的Mach-O的格式。当我们点击app的时候，就会从中选合适的Excutable加载到内存中。
+以mac中的计算器App为例，用MachOView查看，看到这是一个Fat Binary类型的可执行文件。里面包含了两个Executable二进制文件，每一个Excutable里面的格式可以参照单个架构的Mach-O的格式。当我们点击app的时候，就会从中选合适的Excutable加载到内存中。
 
-## 单架构的Excutable可执行文件Mach-O文件格式的内部结构
+## 单架构的Excutable文件Mach-O文件格式的内部结构
 
 Products文件夹下的`.app`文件显示包内容，可执行文件在MachOView中整体如下
 
@@ -81,11 +81,11 @@ load commands记录地址信息
 </table>
 ### 3、Text代码段
 
-代码放在 _TEXT 段（代码段）中。
+代码放在 _TEXT 段。
 
 ### 4、Data数据段
 
-数据放在 _DATA 段（数据段）中。数据段除了全局变量、常量、自定义类还有很多东西，比如**符号表**。
+数据放在 _DATA 段。数据段除了全局变量、常量、自定义类还有很多东西，比如**符号表**。
 
 里面会有符号表（间接符号表），访问NSLog。
 

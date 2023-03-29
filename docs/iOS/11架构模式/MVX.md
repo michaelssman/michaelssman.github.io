@@ -1,8 +1,8 @@
 # 架构
 
-高内聚，低耦合。（谁的事情谁做）。
+**高内聚，低耦合。（谁的事情谁做）。**
 
-类可以多次使用，依赖小。
+**类可以多处复用，依赖小。**
 
 ## MVC
 
@@ -160,9 +160,7 @@ MVP 耦合度低方便单元测试， 但是增加很多代码。
 
 ## MVVM
 
-其实是一个 MVC 的增强版，并将表示逻辑从 Controller 移出放到一个新的对象里，即 View Model。
-
-在 iOS 上使用 MVVM 的动机,就是让它能减少 View Controller 的复杂性并使得表示逻辑更易于测试。
+将表示逻辑从 Controller 移出放到View Model。减少 View Controller 的复杂性并使得表示逻辑更易于测试。
 
 MVVM模式是Model-View-ViewMode模式的简称。由视图(View)、视图模型(ViewModel)、模型(Model)三部分组成。通过这三部分实现UI逻辑、呈现逻辑和状态控制、数据与业务逻辑的分离。
 
