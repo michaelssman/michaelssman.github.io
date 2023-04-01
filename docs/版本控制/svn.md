@@ -14,10 +14,6 @@
    svn import ExcellentArtProject/ svn://123.57.53.21/yyt/ios -m ""
    ```
 
-   注：
-
-   svn服务器的地址后面要加上`-m ""`。
-
 3. Authentication
 
    身份验证，验证电脑密码，然后验证SVN远程用户名和密码。

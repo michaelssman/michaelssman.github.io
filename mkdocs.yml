@@ -386,7 +386,6 @@ nav:
     - 正则/正则表达式.md
   - 计算机基础: 
       - 计算机基础/位运算.md
-      - 计算机基础/查看源码.md
   - Mac:
     - MAC/brew.md
     - MAC/linux.md

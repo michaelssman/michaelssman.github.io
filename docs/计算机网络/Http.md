@@ -306,33 +306,34 @@ SSL/TLS通过`加密（encrypt）`来传输`密文（cipher text）`保证数据
 
 加密解密都使用相同的密钥就叫做对称加密。TLS里目前常用的有 AES 和 ChaCha20。
 
-`AES` 的意思是“高级加密标准”（Advanced Encryption Standard），密钥长度可以是 128、192 或 256。它是 DES 算法的替代者，安全强度很高，性能也很好，而且有的硬件还会做特殊优化，所以非常流行，是应用最广泛的对称加密算法。
+`AES` 的意思是“高级加密标准”（Advanced Encryption Standard），密钥长度可以是 128、192 或 256。它是 DES 算法的替代者。
 
 `ChaCha20` 是 Google 设计的另一种加密算法，密钥长度固定为 256 位，纯软件运行性能要超过 AES，曾经在移动客户端上比较流行，但 ARMv8 之后也加入了 AES 硬件优化，所以现在不再具有明显的优势。
 
 ### 非对称加密
 
-对称加密有一个问题就是如何安全的传输`密钥`。因为在`加密算法`中,只要拥有密钥就可以解密，如果密钥在传输过程中被窃取，也就无机密性可言。为了解决这个问题，又有了`非对称加密`算法。他拥有两个`密钥`,分别是`公钥（public key）`和`私钥（private key）`,`公钥`是公开的，而`私钥`是严格保密的。`公钥`和`私钥`有个特别的`“单向”性`，虽然都可以用来加密解密，但`公钥`加密后只能用`私钥`解密，反过来，`私钥`加密后也只能用`公钥`解密。非对称加密可以解决`密钥交换`的问题。网站秘密保管私钥，在网上任意分发公钥，你想要登录网站只要用公钥加密就行了，密文只能由私钥持有者才能解密。而黑客因为没有私钥，所以就无法破解密文。
+对称加密有一个问题就是如何安全的传输`密钥`。因为在`加密算法`中,只要拥有密钥就可以解密，如果密钥在传输过程中被窃取，也就无机密性可言。为了解决这个问题，又有了`非对称加密`算法。他拥有两个`密钥`,分别是`公钥（public key）`和`私钥（private key）`,`公钥`是公开的，而`私钥`是严格保密的。`公钥`和`私钥`有个特别的`“单向”性`，`公钥`加密后只能用`私钥`解密，`私钥`加密后也只能用`公钥`解密。非对称加密可以解决`密钥交换`的问题。服务器保管私钥，在网上任意分发公钥，你想要登录网站只要用公钥加密就行了，密文只能由私钥持有者才能解密。而黑客因为没有私钥，所以就无法破解密文。
 
-非对称加密算法的设计要比对称算法难得多，在 TLS 里只有很少的几种，比如 DH、DSA、RSA、ECC 等。
-`RSA` 可能是其中最著名的一个，几乎可以说是非对称加密的代名词，它的安全性基于“整数分解”的数学难题，使用两个超大素数的乘积作为生成密钥的材料，想要从公钥推算出私钥是非常困难的。
+非对称加密算法的设计比对称算法难得多，在 TLS 里只有很少的几种，比如 DH、DSA、RSA、ECC 等。
+
+`RSA` 是其中最著名的一个，它的安全性基于“整数分解”的数学难题，使用两个超大素数的乘积作为生成密钥的材料，想要从公钥推算出私钥是非常困难的。
 
 `ECC`是非对称加密里的“后起之秀”，它基于“椭圆曲线离散对数”的数学难题，使用特定的曲线方程和基点生成公钥和私钥，子算法 ECDHE 用于密钥交换，ECDSA 用于数字签名。相对RSA，ECC在安全和性能上都有更明显的优势，160位的ECC相当于1024位的RSA，260位的ECC相当于2048位的RSA。
 
 ### 混合加密
 
-虽然非对称加密没有**密钥交换**的难题，但因为它们都是基于复杂的数学难题，运算速度很慢，即使是 ECC 也要比 AES 差上好几个数量级。所以目前`TLS`使用`混合加密`，使二者取长补短，既能高效加密解密，又能安全的进行数据传输。
+虽然非对称加密没有**密钥交换**的难题，但因为它们都是基于复杂的数学难题，运算速度很慢，即使是 ECC 也要比 AES 差上好几个数量级。所以目前`TLS`使用`混合加密`，既能高效加密解密，又能安全的进行数据传输。
 
 在建立连接之初先使用非对称加密的形式传递密钥，然后用随机数产生对称算法使用的“会话密钥”（session key），再用公钥加密。因为会话密钥很短，通常只有 16 字节或 32 字节，所以慢一点也无所谓。对方拿到密文后用私钥解密，取出会话密钥。这样，双方就实现了对称密钥的安全交换，后续就不再使用非对称加密，全都使用对称加密。
 
 
 ### HTTPS握手过程
 
-先是建立TCP连接，毕竟HTTP是基于TCP的应用层协议。
+先是建立TCP连接，HTTP是基于TCP的应用层协议。
 
 在TCP成功建立完协议后，就可以开始进入HTTPS阶段。
 
-HTTPS可以用TLS或者SSL进行加密，下面我们以`TLS1.2`为例。
+HTTPS可以用TLS或者SSL进行加密，以`TLS1.2`为例。
 
 整个加密流程分为**两阶段**：
 
@@ -340,15 +341,13 @@ HTTPS可以用TLS或者SSL进行加密，下面我们以`TLS1.2`为例。
 
 **第二阶段**是则是在第一阶段的"会话秘钥"基础上，进行**对称加密**通信。
 
-#### ![图片](https://mmbiz.qpic.cn/mmbiz_png/AnAgeMhDIialv6kg0JthaZDYINaceCvwCbaBD1Rgd5WGSPFKxwm3MjIGMCbXEiczk8cib8j7o0Jktl3kgWB2OwfjA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+#### ![图片](Http.assets/640.png)
 
 #### TLS四次握手
 
-我们先来看下第一阶段的TLS四次握手是怎么样的。
-
 **第一次握手**
 
-- `Client Hello`：是客户端告诉服务端：加密协议版本（比如 `TLS1.2`），支持的加密算法（比如`RSA`），同时还给出一个**客户端随机数**。
+- `Client Hello`：客户端告诉服务端：加密协议版本（比如 `TLS1.2`），支持的加密算法（比如`RSA`），同时还给出一个**客户端随机数**。
 
 **第二次握手**
 
@@ -356,8 +355,8 @@ HTTPS可以用TLS或者SSL进行加密，下面我们以`TLS1.2`为例。
 
 **第三次握手**
 
--  `Client Key Exchange`: 客户端再生成**一个随机数**，叫前主密钥 `pre_master_key `。从第二次握手的**服务器证书**里取出服务器公钥，用公钥加密 `pre_master_key`，发给服务器。
--  `Change Cipher Spec`: 客户端这边**已经拥有三个随机数**：客户端随机数，服务器随机数和pre_master_key，用这三个随机数进行计算得到一个"**会话秘钥**"。此时客户端通知服务端，后面会用这个会话秘钥进行对称机密通信。
+-  `Client Key Exchange`: 客户端再生成**一个随机数**（前主密钥 `pre_master_key `）。从第二次握手的**服务器证书**里取出服务器公钥，用公钥加密 `pre_master_key`，发给服务器。
+-  `Change Cipher Spec`: 客户端**已经拥有三个随机数**：客户端随机数，服务器随机数和pre_master_key，用这三个随机数进行计算得到一个"**会话秘钥**"。此时客户端通知服务端，后面会用这个会话秘钥进行对称机密通信。
 -  `Encrypted Handshake Message`：客户端会把迄今为止的通信数据内容生成一个摘要，用"**会话秘钥**"加密一下，发给服务器做校验，此时客户端这边的握手流程就结束了，因此也叫**Finished报文**。
 
 **第四次握手**：
@@ -365,7 +364,7 @@ HTTPS可以用TLS或者SSL进行加密，下面我们以`TLS1.2`为例。
 -  `Change Cipher Spec`：服务端此时拿到客户端传来的 `pre_master_key`（虽然被服务器公钥加密过，但服务器有私钥，能解密获得原文），集齐三个随机数，跟客户端一样，用这三个随机数通过同样的算法获得一个"**会话秘钥**"。此时服务器告诉客户端，后面会用这个"会话秘钥"进行加密通信。
 -  `Encrypted Handshake Message`：跟客户端的操作一样，将迄今为止的通信数据内容生成一个摘要，用"**会话秘钥**"加密一下，发给客户端做校验，到这里，服务端的握手流程也结束了，因此这也叫**Finished报文**。
 
-四次握手中，客户端和服务端最后都拥有**三个随机数**，他们很关键，特地加粗了表示。
+四次握手中，客户端和服务端最后都拥有**三个随机数**。
 
 第一次握手，产生的客户端随机数，叫`client random`。
 
@@ -375,81 +374,9 @@ HTTPS可以用TLS或者SSL进行加密，下面我们以`TLS1.2`为例。
 
 这三个随机数共同构成最终的**对称加密秘钥**，也就是"**会话秘钥**"。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/AnAgeMhDIialv6kg0JthaZDYINaceCvwCibY2A20oUu6XuKFnWvHYqcia7XKxb8iaNRzsE7Lb7uv2VJCX6p4d1PtSw/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
-
 **只要知道这三个随机数，就能破解HTTPS通信。**
 
 而这三个随机数中，`client random` 和 `server random` 都是**明文**的，谁都能知道。**而`pre_master_key`被服务器的公钥加密过，只有客户端和拥有对应服务器私钥的人知道。**
-
-所以问题就变成了，怎么才能得到这个`pre_master_key`？
-
-## 怎么得到pre_master_key
-
-服务器私钥不是谁都能拿到的，所以问题就变成了，有没有办法从客户端那拿到这个`pre_master_key`。
-
-有的。
-
-客户端在使用HTTPS与服务端进行数据传输时，是需要先基于TCP建立HTTP连接，然后再调用客户端侧的TLS库（OpenSSL、NSS）。触发TLS四次握手。
-
-这时候如果加入环境变量SSLKEYLOGFILE就可以干预TLS库的行为，让它输出一份含有`pre_master_key`的文件。这个文件就是我们上面提到的`/Users/xiaobaidebug/ssl.key`。
-
-![图片](https://mmbiz.qpic.cn/mmbiz_png/AnAgeMhDIialv6kg0JthaZDYINaceCvwC48iahhIISwRmdLbZsMeoek4FHkZomIIdnozia5EMsVh2unjNpyEkM1Sg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)将环境变量注入到curl和chrome中
-
-虽然TLS库支持导出key文件。但前提也是，上层的应用程序在调用TLS库的时候，支持通过`SSLKEYLOGFILE`环境触发TLS库导出文件。实际上，**并不是所有应用程序都支持将SSLKEYLOGFILE**。只是目前常见的curl和chrome浏览器都是支持的。
-
-## SSLKEYLOGFILE文件内容
-
-再回过头来看`ssl.key`文件里的内容。
-
-```
-# SSL/TLS secrets log file, generated by NSS
-CLIENT_RANDOM 5709aef8ba36a8eeac72bd6f970a74f7533172c52be41b200ca9b91354bd662b 09d156a5e6c0d246549f6265e73bda72f0d6ee81032eaaa0bac9bea362090800174e0effc93b93c2ffa50cd8a715b0f0
-CLIENT_RANDOM 57d269386549a4cec7f91158d85ca1376a060ef5a6c2ace04658fe88aec48776 48c16429d362bea157719da5641e2f3f13b0b3fee2695ef2b7cdc71c61958d22414e599c676ca96bbdb30eca49eb488a
-CLIENT_RANDOM 5fca0f2835cbb5e248d7b3e75180b2b3aff000929e33e5bacf5f5a4bff63bbe5 424e1fcfff35e76d5bf88f21d6c361ee7a9d32cb8f2c60649135fd9b66d569d8c4add6c9d521e148c63977b7a95e8fe8
-CLIENT_RANDOM be610cb1053e6f3a01aa3b88bc9e8c77a708ae4b0f953b2063ca5f925d673140 c26e3cf83513a830af3d3401241e1bc4fdda187f98ad5ef9e14cae71b0ddec85812a81d793d6ec934b9dcdefa84bdcf3
-```
-
-这里有三列。
-
-**第一列**是CLIENT_RANDOM，意思是接下来的**第二列**就是**客户端随机数**，再接下来的**第三列**则是`pre_master_key`。
-
-但是问题又来了。
-
-**这么多行，wireshark怎么知道用哪行的pre_master_key呢？**
-
-`wireshark`是可以获得数据报文上的`client random`的。
-
-比如下图这样。
-
-![图片](https://mmbiz.qpic.cn/mmbiz_png/AnAgeMhDIialv6kg0JthaZDYINaceCvwCOYzB4M6qFotOibQGxsMOa6rQMRR90ic1hDvDmvkv1QuM4PwABMDsvG2Q/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)Client Hello 里的客户端随机数
-
-注意上面的客户端随机数是以 `"bff63bbe5"`结尾的。
-
-同样，还能在数据报文里拿到**server random**。
-
-![图片](https://mmbiz.qpic.cn/mmbiz_png/AnAgeMhDIialv6kg0JthaZDYINaceCvwCTRrKwUrAlNcWd39GBKYMlc6mzkU61dUEnCsvSVvcY52ETWrsiaKFLIQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)找到server random
-
-此时将`client random`放到ssl.key的第二列里挨个去做匹配。
-
-就能找到对应的那一行记录。
-
-![图片](https://mmbiz.qpic.cn/mmbiz_png/AnAgeMhDIialv6kg0JthaZDYINaceCvwCS1Od4bgLkMv2XTotWCL6R0LiabBpvYSTF7tLVBO2KicOcoyX6rRBN2wg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)ssl.key里的数据
-
-注意第二列的那串字符串，也是以 `"bff63bbe5"`结尾的，它其实就是前面提到的`client random`。
-
-再取出这一行的**第三列**数据，就是我们想要的`pre_master_key`。
-
-那么这时候`wireshark`就集齐了三个随机数，此时就可以计算得到**会话秘钥**，通过它对数据进行解密了。
-
-反过来，正因为需要客户端随机数，才能定位到`ssl.key`文件里对应的`pre_master_key`是哪一个。而只有TLS第一次握手（`client hello`）的时候才会有这个随机数，所以如果你想用解密HTTPS包，就必须将TLS四次握手能抓齐，才能进行解密。如果连接早已经建立了，这时候再去抓包，是没办法解密的。
-
-## 总结
-
-- 文章开头通过抓包baidu的数据包，展示了用wireshark抓包的简单操作流程。
-- HTTPS会对HTTP的URL和Request Body都进行加密，因此直接在`filter栏`进行过滤`http.host == "baidu.com"`会一无所获。
-- HTTPS握手的过程中会先通过非对称机密去交换各种信息，其中就包括3个随机数，再通过这三个随机数去生成对称加密的会话秘钥，后续使用这个会话秘钥去进行对称加密通信。如果能获得这三个随机数就能解密HTTPS的加密数据包。
-- 三个随机数，分别是客户端随机数（client random），服务端随机数（server random）以及pre_master_key。前两个，是明文，第三个是被服务器公钥加密过的，在客户端侧需要通过SSLKEYLOGFILE去导出。
-- 通过设置SSLKEYLOGFILE环境变量，再让curl或chrome会请求HTTPS域名，会让它们在调用TLS库的同时导出对应的sslkey文件。这个文件里包含了三列，其中最重要的是第二列的client random信息以及第三列的pre_master_key。第二列client random用于定位，第三列pre_master_key用于解密。
 
 ## HTTP和HTTPS的区别
 
@@ -468,14 +395,12 @@ http网络协议：
 
 https解决上面的缺点。
 
-https 既然已经是加密了，为什么还要认证验证服务器的证书。
+#### 为什么要认证验证服务器的证书。
 
-加密了是安全的，验证服务器是安全的，确认是想请求的服务器。
-服务器是客户端想要的服务器，客户端是服务器想要的客户端。这是双向的。
-单向  验证服务器。
+加密了数据是安全的。验证证书是为了确认是想请求的服务器。
 
-#### iOS中的证书验证
+但是服务器传给客服端公钥的时候，可能被中间攻击者篡改，客服端以为收到的是服务器的公钥，依然用它来加密客服端的密钥，攻击者收到后，就能用自己的私钥解密，然后用服务器的公钥进行加密传给服务器。攻击者在客户端和服务器两端之间相互欺骗，客户端和服务器对称加密的密钥也能得到。
 
-- ca机构颁布的证书 （我们代码中不需要做修改，只需要http后面加个s）
+所以需要一个第三方角色：服务器除了自己的公钥，还把自己的域名、组织名，以及所申请的第三方机构名等信息放在一起，行成一个数据集合，把这些数据去找第三方机构，第三方机构也有公私钥对，用私钥加密这些数据，得到密文（也称签名），然后把签名和原始明文数据一起发给服务器，这就是TLS证书，第三方机构也称为CA。
 
-- 自签证书 需要手动验证合法性。
+服务器给客服端的不是简单的公钥，而是证书，客服端拿到证书之后，拿CA机构公开的公钥对证书中的密文进行解密，如果解密的结果和证书中的明文一致，则通过验证，客户端开始和服务器相互传密钥。
