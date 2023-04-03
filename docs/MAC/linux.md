@@ -131,8 +131,6 @@ drwxrwxr-x  2 fn-116  admin  64 11  1 17:41 /usr/local/share/zsh/site-functions
 
 ## 环境变量
 
-![IMG_0119](linux.assets/IMG_0119.PNG)
-
 家目录下创建一个文件夹，可以是隐藏的。里面放自己的脚本和工具。
 
 用的时候需要配置环境变量。
@@ -149,6 +147,8 @@ export PUB_HOSTED_URL=https://pub.flutter-io.cn
 export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
 # Flutter 配置
 export FLUTTER=/opt/flutter/bin
+
+# 写入环境变量，多个环境变量配置中间使用:隔开
 export PATH=$FLUTTER:$PATH
 ```
 
