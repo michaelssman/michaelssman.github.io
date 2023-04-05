@@ -143,3 +143,17 @@ OC调用的时候`#import <SCM-Swift.h>`引入头文件即可。
 不继承NSObject的纯swift类不能被OC所访问
 
 swift中的属性和方法如果需要给OC使用，需要前面加`@objc`修饰。（用@objcMembers直接修饰在class前面，系统会自自动给class对象的属性、方法前面添加@objec来表明它们是可以被OC访问的。）
+
+### OC调用swift的enum
+
+- 枚举：必须定义出`Int`类型，前面加`@objc`才能调用(毕竟swift的枚举比OC强大太多)
+
+```java
+@objc enum CPLineType: Int {
+case schoolToHome = 0
+case homeToSchool
+case return
+}
+```
+
+### OC不能继承swift的类
