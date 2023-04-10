@@ -178,7 +178,6 @@ dispatch_semaphore_signal		信号量释放 ++
 
 ```objective-c
 - (void)semaphoreDemo {
-    
     ///执行结果：
     /// 睡2秒后
     /// 执行任务2
