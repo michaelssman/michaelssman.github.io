@@ -14,6 +14,7 @@ TextField(
     fontWeight: FontWeight.w300,
   ),
   enabled: false,
+  //TextInputType.none不弹出键盘
   keyboardType: TextInputType.none,
   decoration: const InputDecoration(
     //内容约束
@@ -21,7 +22,10 @@ TextField(
     border: InputBorder.none,		//输入框边框
     hintText: '金额',						//站位文字
     hintStyle: TextStyle(
-      color: Color(0xeaeaeaea), fontSize: 18, letterSpacing: 2.0),
+      color: Color(0xeaeaeaea),
+      fontSize: 18,
+      letterSpacing: 2.0,
+    ),
   ),
 )
 ```
