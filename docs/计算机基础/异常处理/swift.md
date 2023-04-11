@@ -63,7 +63,7 @@ func buyFavoriteSnack(person: String, vendingMachine: VendingMachine) throws {
 
 ### 使用 Do-Catch 做错误处理
 
-使用 do-catch 块对错误进行捕获，当在调用一个 throws 声明的函数或方法时，我们必须把调用语句放在 do 语句块中，同时 do 语句块后面紧接着使用 catch 语句块。
+使用 do-catch 块对错误进行捕获，当在调用一个 throws 声明的函数或方法时，把调用语句放在 do 语句块中，同时 do 语句块后面紧接着使用 catch 语句块。
 
 ```swift
         do {
@@ -96,7 +96,7 @@ func buyFavoriteSnack(person: String, vendingMachine: VendingMachine) throws {
 
 ### try?
 
-try?会将错误转换为可选值，当调用try?＋函数或方法语句时候，如果函数或方法抛出错误，程序不会发崩溃，而返回一个nil，如果没有抛出错误则返回可选值。
+try?会将错误转换为可选值，当调用`try?`＋函数或方法语句时候，如果函数或方法抛出错误，程序不会发崩溃，而返回一个nil，如果没有抛出错误则返回可选值。
 
 ```swift
         func someThrowingFunction() throws -> Int {
