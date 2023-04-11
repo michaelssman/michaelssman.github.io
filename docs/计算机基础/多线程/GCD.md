@@ -110,7 +110,6 @@ getter读操作：`dispatch_sync`同步。
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             [self updateText:[NSString stringWithFormat:@"噼里啪啦--%d",i]];
         });
- 
     }
 }
  
@@ -139,9 +138,7 @@ getter读操作：`dispatch_sync`同步。
 @end
 ```
 
-## group
-
-调度组
+## group调度组
 
 最直接的作用: 控制任务执行顺序
 
@@ -276,7 +273,7 @@ dispatch_semaphore_signal		信号量释放 ++
 
 通过条件控制block执行。
 
-在任一线程上调用它的的一个函数 dispatch_source_merge_data 后，会执行 Dispatch Source 事先定义好的句柄(可以把句柄简单理解为一个 block ) 这个过程叫 Custom event 用户事件。是 dispatch source 支持处理的一种事件
+在任一线程上调用它的一个函数 dispatch_source_merge_data 后，会执行 Dispatch Source 事先定义好的句柄(可以把句柄简单理解为一个 block ) 这个过程叫 Custom event 用户事件。是 dispatch source 支持处理的一种事件
 
 句柄是一种指向指针的指针 它指向的就是一个类或者结构，它和系统有很密切的关系 HINSTANCE(实例句柄)，HBITMAP(位图句柄)，HDC(设备表述句柄)，HICON (图标句柄)等。这当中还有一个通用的句柄，就是HANDLE
 

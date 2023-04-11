@@ -373,7 +373,6 @@ nav:
       - 计算机基础/多线程/锁.md
       - 计算机基础/多线程/队列和函数.md
       - 计算机基础/多线程/GCD.md
-      - 计算机基础/多线程/dispatch_queue_t.md
       - 计算机基础/多线程/swift多线程.md
     - static_const_define:
       - 计算机基础/常量_宏_静态变量/宏定义和常量.md
