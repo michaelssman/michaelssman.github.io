@@ -1,3 +1,7 @@
+---
+typora-copy-images-to: ./assert
+---
+
 JDK
 
 https://www.oracle.com/java/technologies/downloads/
@@ -38,6 +42,36 @@ public static void main(String[] args) {
 //15 98 0 0
 ```
 
+## 集合
+
+![image-20230411223425462](C:\Users\micha\Documents\michaelssman.github.io\docs\Java\assert\image-20230411223425462.png)
+
+```java
+    public static void main(String[] args) {
+//定义一个集合
+        ArrayList list = new ArrayList();
+        System.out.println(list);
+        //add
+        list.add("aaa");
+        list.add("bbb");
+        list.add("ccc");
+        list.add("ddd");
+        System.out.println(list);
+//删
+        list.remove("bbb");
+        System.out.println(list);
+        //改
+        list.set(0, "eee");
+        System.out.println(list);
+//查看
+        System.out.println(list.get(2));
+        //遍历
+        for (int i = 0; i <= list.size() - 1; i++) {
+            System.out.println(list.get(i));
+        }
+    }
+```
+
 ## 类
 
 ## 多态
@@ -55,3 +89,26 @@ public static void main(String[] args) {
 猫实现是喵喵，狗实现是汪汪。子类对父类的方法重写。
 
 调用的时候传的是动物基类，定义的时候只需要使用具体的动物类（猫或狗）。父类调用子类重写的方法。
+
+## File和IO流
+
+![image-20230411231528094](C:\Users\micha\Documents\michaelssman.github.io\docs\Java\assert\image-20230411231528094.png)
+
+![image-20230411231629967](C:\Users\micha\Documents\michaelssman.github.io\docs\Java\assert\image-20230411231629967.png)
+
+### IO流的分类
+
+按照方向划分
+
+输入流、输出流
+
+按照处理单元划分
+
+字节流、字符流
+
+按照功能划分
+
+字节流（一个流）、处理流（多个流）
+
+![image-20230411232055815](C:\Users\micha\Documents\michaelssman.github.io\docs\Java\assert\image-20230411232055815.png)
+
