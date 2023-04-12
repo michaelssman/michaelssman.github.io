@@ -1,7 +1,3 @@
----
-typora-copy-images-to: ./assert
----
-
 JDK
 
 https://www.oracle.com/java/technologies/downloads/
@@ -44,7 +40,7 @@ public static void main(String[] args) {
 
 ## 集合
 
-![image-20230411223425462](C:\Users\micha\Documents\michaelssman.github.io\docs\Java\assert\image-20230411223425462.png)
+![image-20230411223425462](\assert\image-20230411223425462.png)
 
 ```java
     public static void main(String[] args) {
@@ -92,9 +88,15 @@ public static void main(String[] args) {
 
 ## File和IO流
 
-![image-20230411231528094](C:\Users\micha\Documents\michaelssman.github.io\docs\Java\assert\image-20230411231528094.png)
+### File类的作用
 
-![image-20230411231629967](C:\Users\micha\Documents\michaelssman.github.io\docs\Java\assert\image-20230411231629967.png)
+File 类对象可封装要操作的文件，可通过 File 类的对象对文件进行操作，如查看文件的大小、判断文件是否隐藏、判断文件是否可读等。
+
+局限：File类的相关操作，并不涉及文任内容相关的操作，这是单独依靠 File 类对象无法实现的操作，此时需要借助 1/0 流完成。
+
+### I/O流的作用
+
+将I/0流理解为程序和文件之间的一根 “管子〞。I为Input， O为Output, I/0流即输入输出流，可以理解为两个流向的“管子〞。
 
 ### IO流的分类
 
@@ -110,5 +112,5 @@ public static void main(String[] args) {
 
 字节流（一个流）、处理流（多个流）
 
-![image-20230411232055815](C:\Users\micha\Documents\michaelssman.github.io\docs\Java\assert\image-20230411232055815.png)
+![image-20230411232055815](\assert\image-20230411232055815.png)
 
