@@ -84,3 +84,81 @@ app读取的是本机内核socket queue队列中的数据。当app读取socket�
 客户端和服务端有两个队列：读写队列
 
 ## IO模型
+
+## Java
+
+### 双向通信
+
+先运行服务器端，开始等待，才能接收客户端发送的数据。
+
+客户端代码
+
+```java
+package com.hh.networking;
+
+import java.io.*;
+import java.net.Socket;
+
+public class TestClient {
+    public static void main(String[] args) throws IOException {
+        System.out.println("客户端启动");
+        //套接字
+        Socket s = new Socket("192.168.0.106", 8888);//两个参数 指定服务器ip 端口
+        //对于程序员来说，感受利用输出流在传送数据
+        OutputStream os = s.getOutputStream();
+        //数据流
+        DataOutputStream dos = new DataOutputStream(os);
+        //传送数据
+        dos.writeUTF("你好，服务器，我是客户端");
+        //对服务器返回的数据做处理
+        InputStream is = s.getInputStream();
+        DataInputStream dis = new DataInputStream(is);
+        String str = dis.readUTF();
+        System.out.println("服务器对我说：" + str);
+        //流、网络资源关闭。倒着关
+        dis.close();
+        is.close();
+        dos.close();
+        os.close();
+        s.close();
+    }
+}
+```
+
+服务端代码
+
+```java
+package com.hh.networking;
+
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class TestServer {
+    public static void main(String[] args) throws IOException {
+        System.out.println("服务器端启动");
+        //套接字
+        ServerSocket ss = new ServerSocket(8888);//指定端口号，ip不需要指定
+        //等待客户端发送数据
+        Socket s = ss.accept();//一直在等
+        //服务器端感受到的是输入流
+        InputStream is = s.getInputStream();
+        DataInputStream dis = new DataInputStream(is);
+        //接收客户端发送的数据
+        String str = dis.readUTF();
+        System.out.println("接收到客户端：" + str);
+        //向客户端发送数据
+        OutputStream os = s.getOutputStream();
+        DataOutputStream dos = new DataOutputStream(os);
+        dos.writeUTF("你好客户端，我接收到你的信息了");
+        //流、网络资源关闭。倒着关
+        dos.close();
+        os.close();
+        dis.close();
+        is.close();
+        s.close();
+        ss.close();
+    }
+}
+```
+
