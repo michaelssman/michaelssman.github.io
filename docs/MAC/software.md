@@ -9,33 +9,29 @@
 - Visual Studio Code
 
 - PyCharm
-  python开发
-
+  
 - MindNode
-  查看思维导图
-
+  
 - The Unarchiver
   解压rar格式文件
 
 - Sublime Text
 
 - DB Browser for SQLite
-  查看数据库文件
-
+  
 - Postman
-  模拟接口数据请求
-
+  
 - Sourcetree
 
 - Typora
-  markdown编辑器
-
+  
 - IINA
-  视频播放器
-
+  
 - HandBrake 
 
   压缩视频
+  
+- v2rayN
 
 ## iPhone软件
 - iBetter
