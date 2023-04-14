@@ -119,6 +119,22 @@ hashmap：AssociationsHashMap
 
 关联对象不需要考虑内存管理，因为底层代码会自动的放到自动释放池中。
 
+### 案例
+
+```swift
+private var selectIndexKey: Void?
+extension UIPickerView {
+    var selectIndex: Int {
+        set {
+            objc_setAssociatedObject(self, &selectIndexKey, newValue, .OBJC_ASSOCIATION_ASSIGN)
+        }
+        get {
+            objc_getAssociatedObject(self, &selectIndexKey) as? Int ?? 0
+        }
+    }
+}
+```
+
 ## 分类的意义
 
 1. 分类在架构设计上面：解耦，开发过程中比较繁重啰嗦的业务代码对项目的可读性造成了压力，为追求架构清晰，维护成本低，通过分类梳理。（AppDelegate分类 第三方分享 推送等等拆分）

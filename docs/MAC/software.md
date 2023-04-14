@@ -31,7 +31,7 @@
 
   压缩视频
   
-- v2rayN
+- v2rayN（Win）V2rayU（Mac）
 
 ## iPhone软件
 - iBetter

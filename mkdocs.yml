@@ -386,6 +386,7 @@ nav:
       - 计算机基础/异常处理/CPP错误检查方法.md
       - 计算机基础/异常处理/Java.md
       - 计算机基础/异常处理/swift.md
+    - 计算机基础/XML.md
   - Mac:
     - MAC/brew.md
     - MAC/linux.md
@@ -393,7 +394,7 @@ nav:
     - MAC/Mac快捷键.md
     - MAC/搭建网站.md
     - MAC/清理Xcode.md
-    - MAC/软件.md
+    - MAC/software.md
     - MAC/vscode.md
 
 # [Extensions]
