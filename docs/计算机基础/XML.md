@@ -40,7 +40,7 @@ XML声明是XML文档的第一句，其格式如下：
 
 ### 案例代码
 
-创建一个`.xml`文件
+创建一个`students.xml`文件
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
@@ -75,16 +75,89 @@ id:标签的属性
 
 ### DOM解析
 
-需要使用工具dom4j
+需要使用工具dom4j，是一个jar包。
 
 下载dom4j 2.1.3.jar工具包，安装。
 
 ### 代码
 
+项目创建一个文件夹，名字lib。
 
+拷贝dom4j的jar包到项目lib。
 
-### 原理
+在项目中选中jar包，右键`Add as Library`。
 
-![image-20230414155821780](assets/image-20230414155821780.png)
+通过Iterator的hasNext()判断是否有下一个元素。
 
+```java
+package com.hh.xml;
+
+import org.dom4j.io.SAXReader;
+
+import java.io.File;
+import java.util.Iterator;
+import java.util.List;
+
+import org.dom4j.Attribute;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+
+public class Test {
+    public static void main(String[] args) throws DocumentException {
+        int num = 10;
+        //读取XML：
+        //1.创建一个xml解析器对象：（就是一个流）
+        SAXReader sr = new SAXReader();
+        //2.读取xml文件，返回Document对象出来：
+        //dom是students.xml文档
+        Document dom = sr.read(new File("FirstModule/src/students.xml"));//xml文件路径
+        System.out.println(dom);//这里就相当于将整个文档封装为Document对象了啊！
+        //3.获取根节点：（根节点只有一个啊！）students根元素
+        Element studentsEle = dom.getRootElement();
+        //4.获取根节点下的多个子节点：
+        Iterator<Element> it1 = studentsEle.elementIterator();
+        while (it1.hasNext()) {
+            //4.1获取到子节点：
+            Element studentEle = it1.next();
+            //4.2获取子节点的属性：
+            List<Attribute> atts = studentEle.attributes();
+            for (Attribute a : atts) {
+                System.out.println("该子节点的属性：" + a.getName() + "---" + a.getText());
+            }
+            //4.3获取到子节点的子节点：
+            Iterator<Element> it2 = studentEle.elementIterator();
+            while (it2.hasNext()) {
+                Element eles = it2.next();
+                System.out.println("节点：" + eles.getName() + "---" + eles.getText());
+            }
+            //5.每组输出后加一个换行：
+            System.out.println();
+        }
+    }
+
+}
+/*
+输出结果：
+"C:\Program Files\Java\jdk-17\bin\java.exe" "-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2023.1\lib\idea_rt.jar=57646:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2023.1\bin" -Dfile.encoding=UTF-8 -classpath C:\Users\micha\Documents\JavaDemo\JavaDemo\out\production\FirstModule;C:\Users\micha\Documents\JavaDemo\JavaDemo\FirstModule\lib\dom4j-2.1.3.jar com.hh.xml.Test
+org.dom4j.tree.DefaultDocument@71bc1ae4 [Document: name file:///C:/Users/micha/Documents/JavaDemo/JavaDemo/FirstModule/src/students.xml]
+该子节点的属性：id---1
+节点：name---九九
+节点：age---18
+节点：sex---女
+节点：score---98.7
+
+该子节点的属性：id---2
+节点：name---健康
+节点：age---15
+节点：sex---男
+节点：score---28.7
+
+该子节点的属性：id---3
+节点：name---解开
+节点：age---34
+节点：sex---男
+节点：score---57.7
+ */
+```
 
