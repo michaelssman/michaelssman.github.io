@@ -19,7 +19,7 @@ File 类对象可封装要操作的文件，可通过 File 类的对象对文件
 - 按照功能划分
   - 字节流（一个流）、处理流（多个流）
 
-![image-20230411232055815](\assets\image-20230411232055815.png)
+![image-20230411232055815](assets\image-20230411232055815.png)
 
 ```java
 package com.hh.test01;
@@ -118,6 +118,57 @@ public class HelloWorld {
                 break;//推出循环
             }
         }
+    }
+}
+```
+
+## book
+
+```java
+package com.hh.test01;
+
+import java.io.Serializable;
+
+public class Book implements Serializable {
+    //属性
+    private int bNo;
+    private String bName;
+    private String bAuthor;
+
+    public int getbNo() {
+        return bNo;
+    }
+
+    public void setbNo(int bNo) {
+        this.bNo = bNo;
+    }
+
+    public String getbName() {
+        return bName;
+    }
+
+    public void setbName(String bName) {
+        this.bName = bName;
+    }
+
+    public String getbAuthor() {
+        return bAuthor;
+    }
+
+    public void setbAuthor(String bAuthor) {
+        this.bAuthor = bAuthor;
+    }
+
+    //构造器
+
+
+    public Book(int bNo, String bName, String bAuthor) {
+        this.bNo = bNo;
+        this.bName = bName;
+        this.bAuthor = bAuthor;
+    }
+
+    public Book() {
     }
 }
 ```
