@@ -34,3 +34,58 @@ Version: 版本号 8.0.28。
 
 从maven官网下载Maven,官网地址:[https://maven.apache.org](https://maven.apache.org/)
 
+## Maven的常用配置
+
+### 本地仓库
+
+1.随便选择一个目录作为本地仓库，可以使用我提供的本地仓库
+
+2.在配置文件`C:\Users\micha\hhsoftware\apache-maven-3.9.1\conf\settings.xml`中指定本地仓库位置
+
+`<localRepository>D:/repository</localRepository>`
+
+### 镜像仓库
+
+指定阿里云镜像仓库：
+
+```xml
+<mirrors> 
+    <mirror>  
+        <id>alimaven</id> 
+        <name>aliyun maven</name>   
+        <url>http://maven.aliyun.com/nexus/content/groups/public/</url>   
+        <mirrorOf>central</mirrorOf> 
+    </mirror>
+</mirrors>
+```
+
+### 配置JDK
+
+在使用Maven后，项目由Maven来完成编译和打包运行，需要指定使用的JDK版本。
+
+```xml
+    <profile>
+      <id>jdk-17</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+        <jdk>17</jdk>
+      </activation>
+      <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.compilerVersion>17</maven.compiler.compilerVersion>
+      </properties>
+    </profile>
+```
+
+### 在IDEA中配置Maven
+
+maven：换为低版本3.6.3
+
+JDK：换为低版本8
+
+### 创建Maven项目
+
+
+
+### 代码演示
