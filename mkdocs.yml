@@ -362,8 +362,12 @@ nav:
   - Java:
     - Java/Java安装.md
     - Java/IO.md
+    - Java/JDBC.md
+    - Java/Maven.md
   - 数据库:
+    - 数据库/介绍.md
     - 数据库/数据库.md
+    - 数据库/SQL.md
   - 正则:
     - 正则/正则表达式.md
   - 计算机基础: 
@@ -387,6 +391,7 @@ nav:
       - 计算机基础/异常处理/Java.md
       - 计算机基础/异常处理/swift.md
     - 计算机基础/XML.md
+    - 计算机基础/注解.md
   - Mac:
     - MAC/brew.md
     - MAC/linux.md
