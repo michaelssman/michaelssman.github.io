@@ -10,7 +10,7 @@ File 类对象可封装要操作的文件，可通过 File 类的对象对文件
 
 将I/0流理解为程序和文件之间的一根 “管子〞。I为Input， O为Output, I/0流即输入输出流，可以理解为两个流向的“管子〞。
 
-### IO流的分类
+## IO流的分类
 
 - 按照方向划分
   - 输入流、输出流
@@ -19,7 +19,24 @@ File 类对象可封装要操作的文件，可通过 File 类的对象对文件
 - 按照功能划分
   - 字节流（一个流）、处理流（多个流）
 
-![image-20230411232055815](assets\image-20230411232055815.png)
+## IO流的体系结构
+
+| 分类       | 字节输入流           | 字节输出流            | 字符输入流        | 字符输出流         |
+| ---------- | -------------------- | --------------------- | ----------------- | ------------------ |
+| 抽象基类   | InputStream          | OutputStream          | Reader            | Writer             |
+| 访问文件   | FileInputStream      | FileOutputStream      | FileReader        | FileWriter         |
+| 访问数组   | ByteArrayInputStream | ByteArrayOutputStream | CharArrayReader   | CharArrayWriter    |
+| 访问管道   | PipedInputStream     | PipedOutputStream     | PipedReader       | PipedWriter        |
+| 访问字符串 |                      |                       | StringReader      | StringWriter       |
+| 缓冲流     | BufferdInputStream   | BufferedOutputStream  | BufferedReader    | BufferedWriter     |
+| 转换流     |                      |                       | InputStreamReader | OutputStreamWriter |
+| 对象流     | ObjectInputStream    | ObjectOutputStream    |                   |                    |
+|            | FilterInputStream    | FilterOutputStream    | FilterReader      | FilterWriter       |
+| 打印流     |                      | PrintStream           |                   | PrintWriter        |
+| 推回输入流 | PushbackInputStream  |                       | PushbackReader    |                    |
+| 数据流     | DataInputStream      | Data0utputStream      |                   |                    |
+
+### 案例
 
 ```java
 package com.hh.test01;
@@ -122,7 +139,7 @@ public class HelloWorld {
 }
 ```
 
-## book
+#### book
 
 ```java
 package com.hh.test01;
