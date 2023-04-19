@@ -2,8 +2,6 @@
 
 ## 枚举的基本用法 
 
-swift 中通过 `enum` 关键字来声明一个枚举
-
 ```swift
 enum LGEnum {
     case test_one
@@ -22,7 +20,7 @@ typedef NS_ENUM(NSUInteger, LGEnum) {
 };
 ```
 
-Swift 中的枚举则更加灵活，并且**不需给枚举中的每一个成员都提供值**。如果一个值（所谓“原始”值）要被提供给每一个枚举成员，那么这个值可以是字符串、字符、任意的整数值，或者是浮点类型。
+Swift 中的枚举更加灵活，并且**不需给枚举中的每一个成员都提供值**。如果一个值（所谓“原始”值）要被提供给每一个枚举成员，那么这个值可以是字符串、字符、任意的整数值，或者是浮点类型。
 
 ```swift
 enum Color : String {
@@ -63,12 +61,10 @@ print(DayOfWeekStr.sun.rawValue)//sun
 关联值，没有原始值
 
 ```swift
-// MARK: 关联值，没有原始值
 enum Shape{
     case circle(radious: Double)//圆形 半径
     case rectangle(width: Double, height: Double)//矩形
 }
-//var circle = Shape.circle(radious: 10.0)
 let shape = Shape.circle(radious: 10.0)
 switch shape {
   case .circle(let radious):
@@ -76,81 +72,6 @@ switch shape {
   case .rectangle(let width, let height):
   print("rectangle width:\(width),height\(height)")
 }
-```
-
-## 枚举大小
-
-```swift
-enum Weak {//没有关联值时，默认是UInt8类型存储，1字节，UInt最多表示256
-  case MONDAY
-  case TUEDAY
-  case WEDDAY
-  case THUDAY
-  case FRIDAY
-  case SATDAY
-  case SUNDAY
-}
-print(MemoryLayout<Weak>.size)//打印结果是1
-```
-
-### 只有一个负载时的大小
-
-```swift
-enum LGEnum{//只有一个成员负载，大小1字节
-  case test_one(Bool)
-  case test_two
-  case test_three
-  case test_four
-}
-print(MemoryLayout<LGEnum>.size)//打印结果是1
-print(MemoryLayout<LGEnum>.stride)//1
-
-enum LGEnum1{//只有一个成员负载，大小9字节
-  case test_one(Int)
-  case test_two
-  case test_three
-  case test_four
-}
-print(MemoryLayout<LGEnum1>.size)//打印结果是9
-print(MemoryLayout<LGEnum1>.stride)//16
-
-enum LGEnum2{//有两个成员负载，大小1字节
-  case test_one(Bool)
-  case test_two(Int)
-  case test_three
-  case test_four
-}
-print(MemoryLayout<LGEnum2>.size)//打印结果是9
-print(MemoryLayout<LGEnum2>.stride)//16
-
-enum LGEnum3{
-  case test_one(Bool)
-  case test_two(Int, Int, Int)
-  case test_three
-  case test_four
-}
-print(MemoryLayout<LGEnum3>.size)//打印结果是25
-print(MemoryLayout<LGEnum3>.stride)//32
-```
-
-## indirect修饰enum 分配到堆上
-
-```swift
-//二叉树
-indirect enum BinaryTree<T>{
-  case empty
-  case node(left: BinaryTree, value: T, right: BinaryTree)
-}
-var node = BinaryTree<Int>.node(left: BinaryTree<Int>.empty, value: 10, right: BinaryTree<Int>.empty)
-print(MemoryLayout<BinaryTree<Int>>.size)//8
-print(MemoryLayout<BinaryTree<Int>>.stride)//8
-
-//链表
-indirect enum List<Element>{
-  case end
-  case node(Element, next: List<Element>)
-}
-var x = List.node(10, next: List.node(20, next: List.node(30, next: List.end)))//链表 10->20->30
 ```
 
 ## 模式匹配 switch
@@ -217,7 +138,7 @@ switch shape {
 }
 ```
 
-枚举值可以修改，
+枚举值可以修改。
 
 枚举可以定义方法（mutaing 异变方法）。
 
@@ -229,11 +150,13 @@ switch shape {
 
 ## 枚举的大小 
 
-枚举是指类型，存储在栈上。
+枚举是值类型，存储在栈上。
 
-###  No-payload enums
+枚举占用的内存大小。这里区分几种不同的情况。
 
-接下来我们来讨论一下枚举占用的内存大小，这里我们区分几种不同的情况，首先第一种就是 No-payload enums 。 没有隐式值，只有关联值。
+###  1、No-payload enums
+
+没有隐式值，只有关联值。
 
 ```swift
 enum Weak {//没有关联值时，默认是UInt8类型存储，1字节，UInt最多表示256
@@ -248,9 +171,9 @@ enum Weak {//没有关联值时，默认是UInt8类型存储，1字节，UInt最
 print(MemoryLayout<Weak>.size)//打印结果是1
 ```
 
-### Single- payload enums
+### 2、Single- payload enums
 
-No-payload enums 的布局比较简单，我们也比较好理解，接下来我们来理解一下 Single- payload enums 的内存布局， 字面意思就是只有有一个负载的 enum 比如下面这个例子 
+只有有一个负载的 enum
 
 ```swift
 enum LGEnum{//只有一个成员负载，大小1字节
@@ -280,9 +203,9 @@ print(MemoryLayout<LGEnum1>.stride)//16
 
 对于 Int 类型的负载来说，其实系统是没有办法推算当前的负载所要使用的位数，也就意味着当前 Int 类型的负载是没有额外的剩余空间的，这个时候我们就需要额外开辟内存空间来去存储我们的 case 值，也就是 8 + 1 = 9 字节。 
 
-### Mutil-payload enums 
+### 3、Mutil-payload enums 
 
-上面说完了 Single-payload enums , 接下来我们说第三种情况 Mutil-payload enums , 有多个负载的情况产生时，当前的 enum 是如何进行布局的那？ 
+有多个负载的情况产生时，当前的 enum 是如何进行布局的。
 
 ```swift
 enum LGEnum2{//有两个成员负载，大小1字节
@@ -302,7 +225,7 @@ print(MemoryLayout<LGEnum2>.stride)
 我们来看一个例子 
 
 ```swift
-enum LGEnum{
+enum LGEnum{//有两个成员负载
   case test_one(Bool)
   case test_two(Int)
   case test_three
@@ -341,22 +264,24 @@ enum LGEnumTest {
 
 ## indirect关键字
 
+indirect修饰enum 分配到**堆**上
+
 ```swift
-// MARK: indirect 分配到堆上
-func test_indirect() {
-    indirect enum BinaryTree<T>{//二叉树
-        case empty
-        case node(left: BinaryTree, value: T, right: BinaryTree)
-    }
-    var node = BinaryTree<Int>.node(left: BinaryTree<Int>.empty, value: 10, right: BinaryTree<Int>.empty)
-    print(MemoryLayout<BinaryTree<Int>>.size)//8
-    print(MemoryLayout<BinaryTree<Int>>.stride)//8
-    
-    //链表
-    indirect enum List<Element>{
-        case end
-        case node(Element, next: List<Element>)
-    }
-    var x = List.node(10, next: List.node(20, next: List.node(30, next: List.end)))//链表 10 20 30
+//二叉树
+indirect enum BinaryTree<T>{
+  case empty
+  case node(left: BinaryTree, value: T, right: BinaryTree)
 }
+var node = BinaryTree<Int>.node(left: BinaryTree<Int>.empty, value: 10, right: BinaryTree<Int>.empty)
+print(MemoryLayout<BinaryTree<Int>>.size)//8
+print(MemoryLayout<BinaryTree<Int>>.stride)//8
+
+//链表
+indirect enum List<Element>{
+  case end
+  case node(Element, next: List<Element>)
+}
+var x = List.node(10, next: List.node(20, next: List.node(30, next: List.end)))//链表 10->20->30
 ```
+
+## 

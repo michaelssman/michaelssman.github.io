@@ -260,7 +260,10 @@ NSManagedObjectContext意思是托管对象上下文，数据库的大多数操�
 
 ### NSManagedObject
 
-意思是托管对象类，其中CoreData里面的托管对象（实体模型对象）都会继承此类。
+托管对象类，其中CoreData里面的托管对象（实体模型对象）都会继承此类。
+
+1. 定义一个数据模型类Person，继承自NSManagedObject。
+2. 在Person类中定义实体的属性，并使用@NSManaged修饰符告诉编译器这些属性将由CoreData管理。
 
 ### 编译报错
 

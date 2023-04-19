@@ -156,4 +156,6 @@ case return
 }
 ```
 
-### OC不能继承swift的类
+### Subclass
+
+对于自定义的类而言，Objective-C 的类，不能继承自 Swift 的类， Swift 类可以继承自 OC 的类。
