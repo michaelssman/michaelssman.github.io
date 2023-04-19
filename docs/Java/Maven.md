@@ -63,6 +63,8 @@ Version: 版本号 8.0.28。
 
 在使用Maven后，项目由Maven来完成编译和打包运行，需要指定使用的JDK版本。
 
+17换成1.8。
+
 ```xml
     <profile>
       <id>jdk-17</id>
@@ -86,6 +88,50 @@ JDK：换为低版本8
 
 ### 创建Maven项目
 
+#### IDEA
 
+新建项目 --> Empty Project
+
+Empty Project：相当于一个大文件夹容器，里面放多个项目。
+
+File | Settings | Build, Execution, Deployment | Build Tools | Maven
+
+![image-20230419215252262](assets/image-20230419215252262.png)
+
+新建Mudule模块。
+
+![image-20230419215721836](assets/image-20230419215721836.png)
+
+![image-20230419215923379](assets/image-20230419215923379.png)
+
+模块src|java文件夹下新建包Package。例`com.hh.test01`。
+
+包下面创建类。
 
 ### 代码演示
+
+例：pom.xml文件中添加JDBC包
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.hh</groupId>
+    <artifactId>TestJarProject</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.28</version>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+选择`import change`
+

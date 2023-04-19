@@ -10,6 +10,8 @@ https://www.jetbrains.com/
 
 变量类型决定占据内存空间的大小。
 
+PPT：https://cloud.fynote.com/share/s/z9JGaVu6
+
 ## 快捷键
 
 ctrl+d 复制一行
@@ -85,15 +87,3 @@ public static void main(String[] args) {
 猫实现是喵喵，狗实现是汪汪。子类对父类的方法重写。
 
 调用的时候传的是动物基类，定义的时候只需要使用具体的动物类（猫或狗）。父类调用子类重写的方法。
-
-## IDEA
-
-新建项目 --> Empty Project
-
-Empty Project：相当于一个大文件夹容器，里面放多个项目。
-
-新建Mudule模块。
-
-模块src下新建包Package。例`com.hh.test01`。
-
-包下面创建类。
