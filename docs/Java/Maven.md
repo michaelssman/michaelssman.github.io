@@ -102,9 +102,15 @@ File | Settings | Build, Execution, Deployment | Build Tools | Maven
 
 ![image-20230419215721836](assets/image-20230419215721836.png)
 
+给3个坐标：
+
 ![image-20230419215923379](assets/image-20230419215923379.png)
 
-模块src|java文件夹下新建包Package。例`com.hh.test01`。
+选择手动导入
+
+![image-20230420220415684](assets/image-20230420220415684.png)
+
+在`项目|模块|src|main|java|`文件夹下新建包Package。例`com.hh.test01`。
 
 包下面创建类。
 

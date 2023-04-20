@@ -1,0 +1,99 @@
+# MyBatis
+
+## MyBatis是持久层框架
+
+**持久层**是分层开发中专门负责访问数据源的一层
+
+Java项目中每一层都有自己的作用
+
+持久层的作用就是访问数据源，把访问数据源的代码和业务逻辑代码分离开，有利于后期维护和团队分工开发。同时也增加了数据访问代码的复用性。
+
+## MyBatis是ORM框架
+
+**ORM**(Object/Relation Mapping)，中文名称：对象/关系 映射。是一种解决数据库发展和面向对象编程语言发展不匹配问题而出现的技术。
+
+![image-20230420215343107](assets/image-20230420215343107.png)
+
+## 搭建第一个MyBatis框架
+
+1.创建数据库表
+
+​	直接在MySQL中，创建表和数据。
+
+2.创建Maven项目
+
+​	通过Maven导框架。
+
+3.在pom.xml文件中添加依赖
+
+```xml
+    <dependencies>
+        <!--        MySQL依赖-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.28</version>
+        </dependency>
+        <!--Mybatis依赖-->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.5.6</version>
+        </dependency>
+
+    </dependencies>
+```
+
+4.创建MyBatis全局配置文件（mybaits中文网址：https://mybatis.org/mybatis-3/zh/getting-started.html）
+
+在`项目|模块|src|main|java|resources`中创建.xml文件
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <environments default="mysql">
+        <environment id="mysql">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://127.0.0.1:3306/msb?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=Asia/Shanghai&amp;allowPublicKeyRetrieval=true"/>
+                <property name="username" value="root"/>
+                <property name="password" value="asdf123456"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper resource="org/mybatis/example/BlogMapper.xml"/>
+    </mappers>
+</configuration>
+```
+
+5.创建实体类
+
+在`项目|模块|src|main|java`创建包，创建类。
+
+6.创建映射文件，在核心配置文件中进行扫描
+
+对数据库做操作的sq。增删改查。
+
+在`项目|模块|src|main|resources`下创建文件夹mapper，然后在mapper文件夹中创建`BookMapper.xml`。
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="a.b">
+<!--    public List selectAllBooks(){}-->
+    <select id="selectAllBooks" resultType="b">
+        select * from t_book
+    </select>
+</mapper>
+```
+
+
+
+7.编写测试类，启动项目
