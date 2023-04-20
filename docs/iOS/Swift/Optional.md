@@ -4,7 +4,7 @@
 
 可选项没法直接使用，需要使用`!`展开后才能使用（表示这个可选项里面有值）
 
-之前我们在写代码的过程中早就接触过可选值，比如我们在代码这样定义： 
+比如我们在代码这样定义： 
 
 ```swift
 class LGTeacher{
@@ -50,14 +50,7 @@ if str != nil {
 print(count)
 ```
 
-既然 Optional 的本质是枚举，那么我们也可以仿照系统的实现制作一个自己的 Optional 
-
-```swift
-enum MyOptional<Value> {//自定义可选值
-  case some(Value)
-  case none
-}
-```
+Optional 的本质是枚举，我们也可以仿照系统的实现制作一个自己的 Optional 
 
 例：给定任意一个自然数，如果当前自然数是偶数返回，否则为 nil
 
@@ -131,13 +124,34 @@ let count = str.count
 print(count)
 ```
 
-隐式解析可选类型是可选类型的一种，使用的过程中和非可选类型无异。它们之间唯一的区别是，隐式解析可选类型是你告诉对 Swift 编译器，我在运行时访问时，值不会为 nil。 
+隐式解析可选类型是可选类型的一种，使用的过程中和非可选类型无异。它们之间唯一的区别是，隐式解析可选类型是你告诉 Swift 编译器，我在运行时访问时，值不会为 nil。 
 
 ```swift
 var age0: Int//不可选
 var age1: Int!//可选值 隐式解包，使用的时候不需要再进行解包的操作了，如果age1为nil了 则崩溃。
 var age2: Int?//可选值
 ```
+
+```swift
+class DetailViewController: BaseViewController {
+    
+    var avatarView: UIImageView!
+    var nameLabel: UILabel!
+    var descLabel: UILabel!
+    var teacherLabel: UILabel!
+    var courseCountLabel: UILabel!
+    var studentCountLabel: UILabel!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = "详情"
+        //创建上面的控件属性
+	      createViews()
+    }
+}
+```
+
+
 
 ## 可选链 
 
@@ -213,4 +227,3 @@ let result1 = array1.compactMap{ $0 } // ["1", "2", "3"]
 let array2 = ["1", "2", "3", "four"]
 let result2 = array2.compactMap{ Int($0) } // [1, 2, 3]
 ```
-
