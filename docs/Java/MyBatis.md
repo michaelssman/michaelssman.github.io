@@ -135,3 +135,27 @@ public class Test {
 }
 ```
 
+## 别名设置
+
+MyBatis提供了别名机制可以对某个类起别名或给某个包下所有类起别名，简化resultType取值的写法。
+
+在核心配置文件中，通过`<typeAlias>`标签明确设置类型的别名。
+
+- type:类型全限定路径
+- alias:别名名称
+
+```xml
+<typeAliases>  
+    <typeAlias type="com.msb.pojo.People" alias="p"></typeAlias>
+</typeAliases>
+```
+
+当类个数较多时，明确指定别名工作量较大，可以通过`<package>`标签指定包下全部类的别名。指定后所有类的别名就是类名。（也不区分大小写）
+
+```xml
+<typeAliases> 
+    <package name="com.msb.pojo"/>
+</typeAliases>
+```
+
+PS:明确指定别名和指定包的方式可以同时存在
