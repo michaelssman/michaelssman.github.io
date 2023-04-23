@@ -14,17 +14,26 @@ jar包版本控制麻烦
 
 ## Maven的仓库
 
-中央仓库(Central Repository):Maven官方服务器。里面存放了绝大多数市面上流行的jar。允许用户注册后，上传自己的项目到官方服务器。网址在国外，经常访问不了。https://mvnrepository.com/
+中央仓库(Central Repository):Maven官方服务器。里面存放了绝大多数市面上流行的jar。允许用户注册后，上传自己的项目到官方服务器。网址在国外。https://mvnrepository.com/
 
 本地仓库(Local Repository): 本机的文件夹作为本地仓库，本地仓库指本机的一份拷贝，用来缓存远程下载，包含你尚未发布的临时构件。
 
 镜像仓库(Mirror Repository): 对于国内来说，访问国外的Maven仓库会特别慢。镜像仓库就是另一台备份/复制了中央仓库的服务器。平时使用时国内开发者多使用阿里云镜像或华为云镜像，这样可以大大提升从中央仓库下载资源的速度。但它的角色仍然是一个远程库。
 
-![image-20230416230835436](assets/image-20230416230835436.png)
+### 查找依赖流程
+
+- maven项目 找依赖
+- 先在本地仓库找
+  - 没找到
+    - 配置文件`setting.xml`中是否指定镜像仓库
+      - 指定了就在镜像仓库找
+      - 没指定就在中央仓库找
+  - 找到了
+    - 找到后放入本地仓库以备下次使用
 
 ## Maven的资源坐标
 
-GroupId: 一般是逆向公司域名 com.msb。同一个公司的GroupId都是相同的。
+GroupId: 一般是逆向公司域名 com.hh。同一个公司的GroupId都是相同的。
 
 ArtifactId: 一般是项目(jar)名 mysql-connector-java。
 
@@ -94,11 +103,11 @@ JDK：换为低版本8
 
 Empty Project：相当于一个大文件夹容器，里面放多个项目。
 
-File | Settings | Build, Execution, Deployment | Build Tools | Maven
+`File | Settings | Build, Execution, Deployment | Build Tools | Maven`
 
 ![image-20230419215252262](assets/image-20230419215252262.png)
 
-新建Mudule模块。
+新建Mudule模块，ModuleSDK选择1.8版本的。
 
 ![image-20230419215721836](assets/image-20230419215721836.png)
 
@@ -110,9 +119,7 @@ File | Settings | Build, Execution, Deployment | Build Tools | Maven
 
 ![image-20230420220415684](assets/image-20230420220415684.png)
 
-在`项目|模块|src|main|java|`文件夹下新建包Package。例`com.hh.test01`。
-
-包下面创建类。
+在`项目|module|src|main|java|`文件夹下新建包Package（例`com.hh.test01`），包下面创建类。
 
 ### 代码演示
 

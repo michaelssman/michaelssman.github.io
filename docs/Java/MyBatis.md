@@ -73,13 +73,13 @@ Java项目中每一层都有自己的作用
 
 5.创建实体类
 
-在`项目|模块|src|main|java`创建包，创建类。
+在`项目|module|src|main|java|package|class`。
 
 6.创建映射文件，在核心配置文件中进行扫描
 
 对数据库做操作的sq。增删改查。
 
-在`项目|模块|src|main|resources`下创建文件夹mapper，然后在mapper文件夹中创建`BookMapper.xml`。
+在`项目|module|src|main|resources`下创建文件夹mapper，然后在mapper文件夹中创建`BookMapper.xml`。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
