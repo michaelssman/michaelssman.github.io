@@ -4,7 +4,7 @@
 
 ORM是通过使用描述对象和数据库之间映射的元数据，可以实现将对象自动持久化到关系数据库当中。
 
-CoreData一个比较大的优势在于在使用CoreData过程中不需要我们编写SQL语句，也就是将OC对象存储于数据库，也可以将数据库数据转为OC对象（数据库数据与OC对象相互转换）。
+使用CoreData过程中不需要我们编写SQL语句，也就是将OC对象存储于数据库，也可以将数据库数据转为OC对象（数据库数据与OC对象相互转换）。
 
 ## CoreData几个类
 
@@ -20,9 +20,7 @@ CoreData一个比较大的优势在于在使用CoreData过程中不需要我们�
 
 `Entity`中文翻译叫“实体”。如果把数据模型文件比作数据库中的“库”，那么`Entity`就相当于库里的“表格”。`Entity`就是让你定义数据表格类型的名词。
 
-假设我这个数据模型是用来存放图书馆信息的，那么很就会建立一个叫`Book`的`Entity`。
-
-当在xcode中点击`Model.xcdatamodeld`时，会看到苹果提供的编辑视图，其中有个醒目的按钮`Add Entity`。
+假设我这个数据模型是用来存放图书馆信息的，那么就建立一个叫`Book`的`Entity`。
 
 #### 生成对应实体的实体类
 
@@ -40,8 +38,6 @@ Book的`Entity`：
 | name   | String    |
 | isbm   | String    |
 | page   | Integer32 |
-
-其中，类型部分大部分是大家熟知的元数据类型，可以自行查阅。
 
 同理，也可以再添加一个读者：Reader的`Entity`描述。
 
@@ -92,171 +88,72 @@ Reader的`Entity`：
 
 在`Relationship`的配置项里，有一项项名为`Type`，点击后有两个选项，一个是`To One`（默认值），另一个就是`To Many`了。
 
-### NSPersistentContainer
+#### Entity的Attributes中Type是字典、数组或者其他类型的时候
 
-![图片](CoreData.assets/640.png)
+选择Transformable类型，这个类型从字面意思来理解为可转换类型。选中这条数据，如下图
 
-AppDelegate.h
+![image-20230423173239195](assets/image-20230423173239195.png)
 
-```objective-c
-#import <UIKit/UIKit.h>
-#import <CoreData/CoreData.h>
+可以看到在Trasnformer这栏填上自己定义的类，这个类需要继承于ValueTransformer
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+```swift
+@objc(ArrayMoedl)
+final class ArrayMoedl: ValueTransformer {
 
-@property (readonly, strong) NSPersistentContainer *persistentContainer;
+    override func transformedValue(_ value: Any?) -> Any? {
 
-- (void)saveContext;
-
-
-@end
-```
-
-AppDelegate.m
-
-```objective-c
-@synthesize persistentContainer = _persistentContainer;
-
-- (NSPersistentContainer *)persistentContainer {
-    // The persistent container for the application. This implementation creates and returns a container, having loaded the store for the application to it.
-    @synchronized (self) {
-        if (_persistentContainer == nil) {
-            _persistentContainer = [[NSPersistentContainer alloc] initWithName:@"HHCoreDataDemo"];
-            [_persistentContainer loadPersistentStoresWithCompletionHandler:^(NSPersistentStoreDescription *storeDescription, NSError *error) {
-                if (error != nil) {
-                    // Replace this implementation with code to handle the error appropriately.
-                    // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                    
-                    /*
-                     Typical reasons for an error here include:
-                     * The parent directory does not exist, cannot be created, or disallows writing.
-                     * The persistent store is not accessible, due to permissions or data protection when the device is locked.
-                     * The device is out of space.
-                     * The store could not be migrated to the current model version.
-                     Check the error message to determine what the actual problem was.
-                    */
-                    NSLog(@"Unresolved error %@, %@", error, error.userInfo);
-                    abort();
-                }
-            }];
+        guard let value = value as? Array<Any> else{
+            return nil
+        }
+        do {
+            if #available(iOS 11.0, *) {
+                let data = try NSKeyedArchiver.archivedData(withRootObject:value, requiringSecureCoding: true)
+                return data
+            } else {
+                // Fallback on earlier versions
+                return NSKeyedArchiver.archivedData(withRootObject:value)
+            }
+        }catch{
+            assertionFailure("Failed to transform 'Array' to 'Data'")
+            return nil
         }
     }
     
-    return _persistentContainer;
-}
-
-#pragma mark - Core Data Saving support
-
-- (void)saveContext {
-    NSManagedObjectContext *context = self.persistentContainer.viewContext;
-    NSError *error = nil;
-    if ([context hasChanges] && ![context save:&error]) {
-        // Replace this implementation with code to handle the error appropriately.
-        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-        NSLog(@"Unresolved error %@, %@", error, error.userInfo);
-        abort();
+    override func reverseTransformedValue(_ value: Any?) -> Any? {
+        guard let data = value as? NSData else{return nil}
+        do {
+            if #available(iOS 11.0, *) {
+                let result = try NSKeyedUnarchiver.unarchivedObject(ofClass:NSDictionary.self,  from:data as Data)
+                return result
+            }else {
+                guard let result = NSKeyedUnarchiver.unarchiveObject(with: data as Data)else{
+                    return nil
+                }
+                return result
+            }
+        }catch{
+            assertionFailure("Failed to transform 'Data' to 'Array'")
+            return nil
+        }
+    }
+    
+    override class func allowsReverseTransformation() -> Bool {
+        return true
     }
 }
 ```
 
-### NSManagedObjectModel
+上面的Array也可以改为其他自定义类型。
 
-NSManagedObjectModel意思是**托管对象模型**，其中一个托管对象模型关联到一个模型文件，里面存储着数据库的数据结构。
+### NSPersistentContainer
 
-注意URL路径文件名要和项目中的`.xcdatamodeld`一样！
+持久化容器
 
-```objective-c
-- (NSManagedObjectModel *)managedObjectModel {
-    // The managed object model for the application. It is a fatal error for the application not to be able to find and load its model.
-    if (_managedObjectModel != nil) {
-        return _managedObjectModel;
-    }
-    // 这个就是数据模型文件.可视化建模的文件(Model.xcdatamodeld)他会在编译后变成momd格式的文件
-    //注意名字要一样
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"Model" withExtension:@"momd"];
-    _managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
-    return _managedObjectModel;
-}
-```
-
-### NSPersistentStoreCoordinator
-
-NSPersistentStoreCoordinator意思是持久化存储协调器，主要负责协调上下文与存储的区域的关系。
-
-创建持久化存储调度器
-
-```objective-c
-- (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
-    // The persistent store coordinator for the application. This implementation creates and return a coordinator, having added the store for the application to it.
-    if (_persistentStoreCoordinator != nil) {
-        return _persistentStoreCoordinator;
-    }
-    
-    // Create the coordinator and store
-    //数据链接器指定数据模型器
-    _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
-    //沙盒路径,可以链接远程的服务器,不仅仅是本地的,所以是url
-    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"LessonCoredata.sqlite"];
-    NSError *error = nil;
-    NSString *failureReason = @"There was an error creating or loading the application's saved data.";
-    
-    //1:指定文件格式. 链接文件的格式:二进制文件.xml文件.sql文件.(最后一个为内存);
-    //2:数据连接器的一些配置信息,(一般用不上).
-    //3:真是数据文件的沙盒路径
-    //4:coredata的一些选项.如:数据库升级时使用的一些选项配置.
-    //5:错误信息
-    
-    //options升级时用的
-    //支持数据库升级
-    NSDictionary *dic = @{NSMigratePersistentStoresAutomaticallyOption : @YES, NSInferMappingModelAutomaticallyOption:@YES};
-
-    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:dic error:&error]) {
-        // Report any error we got.
-        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-        dict[NSLocalizedDescriptionKey] = @"Failed to initialize the application's saved data";
-        dict[NSLocalizedFailureReasonErrorKey] = failureReason;
-        dict[NSUnderlyingErrorKey] = error;
-        error = [NSError errorWithDomain:@"YOUR_ERROR_DOMAIN" code:9999 userInfo:dict];
-        // Replace this with code to handle the error appropriately.
-        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-        //程序中断.
-        abort();
-    }
-    
-    return _persistentStoreCoordinator;
-}
-```
+![图片](assets/640.png)
 
 ### NSManagedObjectContext
 
 NSManagedObjectContext意思是托管对象上下文，数据库的大多数操作是在这个类操作。
-
-使用initWithConcurrencyType方式创建，在创建时，指定当前是什么类型的并发队列，参数是一个枚举值。
-
-1. NSPrivateQueueConcurrencyType：代表私有并发队列的类型，操作也是在子线程中完成的。
-3. NSMainQueueConcurrencyType：代表主并发队列类型，如果在操作过程中，需要涉及到UI操作，则应该使用这个参数初始化上下文完成操作。
-
-```objective-c
-- (NSManagedObjectContext *)managedObjectContext {
-    // Returns the managed object context for the application (which is already bound to the persistent store coordinator for the application.)
-    if (_managedObjectContext != nil) {
-        return _managedObjectContext;
-    }
-    
-    //持久化存储调度器
-    NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
-    if (!coordinator) {
-        return nil;
-    }
-    
-    //创建上下文对象，并发队列设置为主队列
-    _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-    //上下文对象设置属性为持久化存储器
-    [_managedObjectContext setPersistentStoreCoordinator:coordinator];
-    return _managedObjectContext;
-}	
-```
 
 ### NSManagedObject
 
