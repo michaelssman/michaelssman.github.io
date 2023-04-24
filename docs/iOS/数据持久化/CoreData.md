@@ -97,11 +97,12 @@ Reader的`Entity`：
 可以看到在Trasnformer这栏填上自己定义的类，这个类需要继承于ValueTransformer
 
 ```swift
+import Foundation
 @objc(ArrayMoedl)
 final class ArrayMoedl: ValueTransformer {
-
+    
     override func transformedValue(_ value: Any?) -> Any? {
-
+        
         guard let value = value as? Array<Any> else{
             return nil
         }
@@ -123,7 +124,7 @@ final class ArrayMoedl: ValueTransformer {
         guard let data = value as? NSData else{return nil}
         do {
             if #available(iOS 11.0, *) {
-                let result = try NSKeyedUnarchiver.unarchivedObject(ofClass:NSDictionary.self,  from:data as Data)
+                let result = try NSKeyedUnarchiver.unarchivedObject(ofClass:NSArray.self,  from:data as Data)
                 return result
             }else {
                 guard let result = NSKeyedUnarchiver.unarchiveObject(with: data as Data)else{
@@ -143,7 +144,7 @@ final class ArrayMoedl: ValueTransformer {
 }
 ```
 
-上面的Array也可以改为其他自定义类型。
+上面的Array也可以改为字典或者其他自定义类型。
 
 ### NSPersistentContainer
 
@@ -157,7 +158,7 @@ NSManagedObjectContext意思是托管对象上下文，数据库的大多数操�
 
 ### NSManagedObject
 
-托管对象类，其中CoreData里面的托管对象（实体模型对象）都会继承此类。
+托管对象类，CoreData里面的托管对象（实体模型对象）都会继承此类。
 
 1. 定义一个数据模型类Person，继承自NSManagedObject。
 2. 在Person类中定义实体的属性，并使用@NSManaged修饰符告诉编译器这些属性将由CoreData管理。

@@ -195,13 +195,13 @@ print(MemoryLayout<LGEnum1>.size)//打印结果是9
 print(MemoryLayout<LGEnum1>.stride)//16
 ```
 
-注意， Swift 中的 enum 中的 Single-payload enums 会使用负载类型中的额外空间来记录没有负载的 case 值。
+Swift 中的 enum 中的 Single-payload enums 会使用负载类型中的额外空间来记录没有负载的 case 值。
 
 首先 Bool 类型是 1字节，也就是 UInt8 ，所以当前能表达 256 个 case的情况，对于布尔类型来说，只需要使用低位的 0, 1 这两种情况，其他剩余的空间就可以用来表示没有负载的 case 值。 
 
 可以看到，不同的 case 值确实是按照我们在开始得出来的那个结论进行布局的。 
 
-对于 Int 类型的负载来说，其实系统是没有办法推算当前的负载所要使用的位数，也就意味着当前 Int 类型的负载是没有额外的剩余空间的，这个时候我们就需要额外开辟内存空间来去存储我们的 case 值，也就是 8 + 1 = 9 字节。 
+对于 Int 类型的负载来说，系统没有办法推算当前的负载所要使用的位数，也就意味着当前 Int 类型的负载是没有额外的剩余空间，这个时候就需要额外开辟内存空间来去存储我们的 case 值，也就是 8 + 1 = 9 字节。 
 
 ### 3、Mutil-payload enums 
 
@@ -218,11 +218,11 @@ print(MemoryLayout<LGEnum2>.size)//打印结果是1
 print(MemoryLayout<LGEnum2>.stride)
 ```
 
-上面这个例子中，我们有两个 Bool 类型的负载，这个时候我们打印当前的 enum 大小，发现其大小仍然为 1，这个时候我们来看一下内存当中的存储情况 
+上面这个例子中，有两个 Bool 类型的负载，这个时候我们打印当前的 enum 大小，发现其大小仍然为 1，这个时候我们来看一下内存当中的存储情况 
 
-当前一般来说，我们有多个负载的枚举时，当前枚举类型的大小取决于当前最大关联值的大小。 
+当前一般来说，有多个负载的枚举时，当前枚举类型的大小取决于当前最大关联值的大小。 
 
-我们来看一个例子 
+来看一个例子 
 
 ```swift
 enum LGEnum{//有两个成员负载
@@ -258,7 +258,7 @@ enum LGEnumTest {
 }
 ```
 
-对于当前的 LGEnum 只有一个 case ,我们不需要用任何东西来去区分当前的 case ,所以当我们打印当前的 LGEnum 大小你会发现时 0。 
+对于当前的 LGEnum 只有一个 case ,不需要用任何东西来去区分当前的 case ,所以打印当前的 LGEnum 大小会发现是0。 
 
 **值类型在编译期大小已经确定**。
 
@@ -283,5 +283,3 @@ indirect enum List<Element>{
 }
 var x = List.node(10, next: List.node(20, next: List.node(30, next: List.end)))//链表 10->20->30
 ```
-
-## 
