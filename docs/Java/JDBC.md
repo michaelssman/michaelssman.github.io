@@ -67,14 +67,12 @@ public class Test {
 
 **getConnection方法url参数**
 
+```java
 String url="jdbc:mysql://127.0.0.1:3306/数据库名称?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true";
+```
 
-useSSL 是否使用SSL认证机制-不使用 false
-
-useUnicode ： 是否是否unicode字符集-使用
-
-characterEncoding=UTF-8 ：使用unicode 的utf-8策略
-
-serverTimezone=Asia/Shangh ai 时区参数-东八区
-
-allowPublicKeyRetrieval=true 允许客户端从服务器获取公钥
+- useSSL：是否使用SSL认证机制-不使用 false
+- useUnicode：是否unicode字符集-使用
+- characterEncoding=UTF-8：使用unicode 的utf-8策略
+- serverTimezone=Asia/Shanghai：时区参数-东八区
+- allowPublicKeyRetrieval=true：允许客户端从服务器获取公钥

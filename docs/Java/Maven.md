@@ -4,13 +4,8 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 
 ## 非Maven项目的缺点
 
-问题一：
-
-项目中的jar包资源需要我们自己从网上下载后，手动导入到项目中使用，不好管理。
-
-问题二:
-
-jar包版本控制麻烦
+1. 项目中的jar包资源需要我们自己从网上下载后，手动导入到项目中使用，不好管理。
+2. jar包版本控制麻烦
 
 ## Maven的仓库
 
@@ -33,13 +28,11 @@ jar包版本控制麻烦
 
 ## Maven的资源坐标
 
-GroupId: 一般是逆向公司域名 com.hh。同一个公司的GroupId都是相同的。
+- GroupId: 一般是逆向公司域名 com.hh。同一个公司的GroupId都是相同的。
+- ArtifactId: 一般是项目(jar)名 mysql-connector-java。
+- Version: 版本号 8.0.28。
 
-ArtifactId: 一般是项目(jar)名 mysql-connector-java。
-
-Version: 版本号 8.0.28。
-
-**Maven的下载和安装**
+## Maven的下载和安装
 
 从maven官网下载Maven,官网地址:[https://maven.apache.org](https://maven.apache.org/)
 
@@ -121,9 +114,7 @@ Empty Project：相当于一个大文件夹容器，里面放多个项目。
 
 在`项目|module|src|main|java|`文件夹下新建包Package（例`com.hh.test01`），包下面创建类。
 
-### 代码演示
-
-例：pom.xml文件中添加JDBC包
+## pom.xml文件中添加依赖包
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>

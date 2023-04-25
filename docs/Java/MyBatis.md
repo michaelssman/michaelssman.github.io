@@ -10,25 +10,25 @@ Java项目中每一层都有自己的作用
 
 ## MyBatis是ORM框架
 
-**ORM**(Object/Relation Mapping)，中文名称：对象/关系 映射。是一种解决数据库发展和面向对象编程语言发展不匹配问题而出现的技术。
+**ORM**(Object Relation Mapping)，中文名称：对象/关系 映射。是一种解决数据库发展和面向对象编程语言发展不匹配问题而出现的技术。
 
 ![image-20230420215343107](assets/image-20230420215343107.png)
 
-## 搭建第一个MyBatis框架
+## 搭建MyBatis框架
 
-1.创建数据库表
+### 1、创建数据库表
 
-​	直接在MySQL中，创建表和数据。
+直接在MySQL中，创建表和数据。
 
-2.创建Maven项目
+### 2、创建Maven项目
 
-​	通过Maven导框架。
+通过Maven导入对应框架。
 
-3.在pom.xml文件中添加依赖
+#### 2.1、在pom.xml文件中添加依赖
 
 ```xml
     <dependencies>
-        <!--        MySQL依赖-->
+        <!--MySQL依赖-->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -44,7 +44,9 @@ Java项目中每一层都有自己的作用
     </dependencies>
 ```
 
-4.创建MyBatis全局配置文件（mybaits中文网址：https://mybatis.org/mybatis-3/zh/getting-started.html）
+### 4、创建MyBatis全局配置文件
+
+（mybaits中文网址：https://mybatis.org/mybatis-3/zh/getting-started.html）
 
 在`项目|模块|src|main|java|resources`中创建.xml文件
 
@@ -71,11 +73,11 @@ Java项目中每一层都有自己的作用
 </configuration>
 ```
 
-5.创建实体类
+### 5、创建实体类
 
 在`项目|module|src|main|java|package|class`。
 
-6.创建映射文件，在核心配置文件中进行扫描
+### 6、创建映射文件，在核心配置文件中进行扫描
 
 对数据库做操作的sq。增删改查。
 
@@ -96,7 +98,7 @@ Java项目中每一层都有自己的作用
 
 映射文件默认不会被程序加载，如果想要被项目加载，需要配置到上面的核心配置文件中`<mappers>`。 
 
-7.编写测试类，启动项目
+### 7、编写测试类，启动项目
 
 ```java
 package com.hh.test;

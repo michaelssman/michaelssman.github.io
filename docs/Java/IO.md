@@ -22,7 +22,7 @@ File 类对象可封装要操作的文件，可通过 File 类的对象对文件
 ## IO流的体系结构
 
 | 分类       | 字节输入流           | 字节输出流            | 字符输入流        | 字符输出流         |
-| ---------- | :------------------- | --------------------- | ----------------- | ------------------ |
+| ---------- | :------------------- | :-------------------- | ----------------- | ------------------ |
 | 抽象基类   | InputStream          | OutputStream          | Reader            | Writer             |
 | 访问文件   | FileInputStream      | FileOutputStream      | FileReader        | FileWriter         |
 | 访问数组   | ByteArrayInputStream | ByteArrayOutputStream | CharArrayReader   | CharArrayWriter    |

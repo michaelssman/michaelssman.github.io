@@ -12,11 +12,9 @@ GCD会自动管理线程的生命周期（创建线程，调度任务，销毁�
 
 ## 多线程控制最大并发数
 
-需要控制最大并发数和控制状态时选择封装NSOperation(SDWebImage和AFN也是封装的NSOperation)
-
 NSThread一般和常驻线程使用(如AFN框架)。
 
-NSOperation直接使用系统提供的maxConcurrentOperationCount可设置最大并发数。
+NSOperation可设置最大并发数（maxConcurrentOperationCount）和控制状态。
 
 GCD使用信号量手动去控制并发数。
 
