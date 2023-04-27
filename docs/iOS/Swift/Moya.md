@@ -35,3 +35,9 @@ struct Reminder: Codable {
 JSONDecoder().decode(ReminderData.self, from: r as! Data)
 ```
 
+data转字典（数组等等）
+
+```swift
+JSONSerialization.jsonObject(with: data)
+```
+
