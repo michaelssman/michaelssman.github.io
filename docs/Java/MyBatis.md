@@ -48,28 +48,46 @@ Java项目中每一层都有自己的作用
 
 （mybaits中文网址：https://mybatis.org/mybatis-3/zh/getting-started.html）
 
-在`项目|模块|src|main|java|resources`中创建.xml文件
+4.1、在`项目|模块|src|main|resources`中创建`db.properties`文件
+
+```properties
+url=jdbc:mysql://localhost:3306/msb?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+driver=com.mysql.cj.jdbc.Driver
+username=数据库名字
+password=数据库密码
+```
+
+4.2、在`项目|模块|src|main|resources`中创建`mybatis.xml`文件
 
 ```xml
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE configuration
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+    <properties resource="db.properties"></properties>
+    <typeAliases>
+        <package name="com.msb.pojo"/>
+    </typeAliases>
+    
     <environments default="mysql">
+        <!--链接MySQL数据库的数据源配置-->
         <environment id="mysql">
-            <transactionManager type="JDBC"/>
+            <!--配置mybatis中的事务管理-->
+            <transactionManager type="JDBC"></transactionManager>
             <dataSource type="POOLED">
-                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
-                <property name="url" value="jdbc:mysql://127.0.0.1:3306/msb?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=Asia/Shanghai&amp;allowPublicKeyRetrieval=true"/>
-                <property name="username" value="root"/>
-                <property name="password" value="asdf123456"/>
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
             </dataSource>
         </environment>
     </environments>
+    <!--资源扫描、接口对应的实现类-->
     <mappers>
-        <mapper resource="mapper/BookMapper.xml"/>
+        <mapper resource="com/msb/mapper/BookMapper.xml"></mapper>
     </mappers>
+
 </configuration>
 ```
 
@@ -146,11 +164,15 @@ MyBatis提供了别名机制可以对某个类起别名或给某个包下所有�
 - type:类型全限定路径
 - alias:别名名称
 
+### 1、具体的类起别名
+
 ```xml
 <typeAliases>  
     <typeAlias type="com.msb.pojo.People" alias="p"></typeAlias>
 </typeAliases>
 ```
+
+### 2、指定的包起别名
 
 当类个数较多时，明确指定别名工作量较大，可以通过`<package>`标签指定包下全部类的别名。指定后所有类的别名就是类名。（也不区分大小写）
 

@@ -44,7 +44,7 @@ public static void main(String[] args) {
 
 ### 集合
 
-![image-20230411223425462](\assets\image-20230411223425462.png)
+![image-20230411223425462](assets\image-20230411223425462.png)
 
 ```java
     public static void main(String[] args) {
