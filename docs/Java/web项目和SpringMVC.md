@@ -80,8 +80,8 @@ tomcat和maven都是apache下的。同一个公司的。maven自带tomcat。
             <!-- Tomcat插件 -->
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
+                <artifactId>tomcat8-maven-plugin</artifactId>
+                <version>3.0-r1756463</version>
                 <configuration>
                     <path>/testwebproject</path><!--指定项目的上下文路径-->
                     <port>8080</port><!-- 端口-->
@@ -243,9 +243,9 @@ log4j.appender.D.layout.ConversionPattern = [%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %
 </beans>
 ```
 
-#### 5.2、上面的springmvc.xml配置文件也需要解析，编写web.xml内容
+#### 5.2、编写web.xml内容
 
-在web.xml中只加入了springmvc.xml的解析，还要加入applicationContext.xml的解析：
+在web.xml中加入了springmvc.xml配置文件的解析，还要加入applicationContext.xml的解析：
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -416,6 +416,8 @@ public class BookServiceImpl implements BookService {
 
 前端请求到这个类里的具体方法
 
+响应页面或者响应数据，响应数据需要加注解`@ResponseBody`，数据就可以return出去。
+
 ```java
 package com.zss.controller;
 
@@ -431,7 +433,7 @@ import java.util.List;
 public class BookController {
     @Autowired
     private BookService bookService;
-    @RequestMapping("/findAllBooks")//前端请求路径
+    @RequestMapping(value="/findAllBooks",produces = "text/html;charset=utf-8")//前端请求路径
     @ResponseBody
     public String findAll(){
         System.out.println("--");
@@ -440,7 +442,6 @@ public class BookController {
         String s = "";
         for (int i = 0; i < list.size() ; i++) {
             Book book = (Book)list.get(i);
-
             s += book.getName() + "," + book.getAuthor() + "\n";
         }
         return s;
@@ -458,7 +459,11 @@ public class BookController {
 
 ![img](assets/3af24b2c861946458dc1b2e8f618e9f9.png)
 
+tomcat7对@ResponseBody注解支持的不是特别好，升级为tomcat8。双击tomcat8:run-war启动。
 
+#### 乱码问题解决：
+
+想要改变@ResonseBody注解的响应内容类型(Content-Type)只能通过@RequestMapping的produces属性进行设置。
 
 ### 8、通过浏览器测试访问结果
 
