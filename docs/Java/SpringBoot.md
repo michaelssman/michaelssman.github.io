@@ -1,7 +1,5 @@
 # SpringBoot
 
-**springBoot概念简介**
-
 Spring Boot是Spring公司的一个顶级项目，和Spring Framework是一个级别的。
 
 Spring Boot实际上是利用Spring Framework 4 自动配置特性完成。编写项目时不需要编写xml文件。发展到现在，Spring Boot已经具有很很大的生态圈，各种主流技术已经都提供了Spring Boot的启动器。
@@ -14,13 +12,11 @@ spring问题：要写大量xml配置。
 
 springBoot不止可以整合SSM，还可以整合其它框架。
 
-**启动器、启动类**
-
-**什么是启动器**
+## 启动器
 
 Spring框架在项目中作用是Spring整合各种其他技术，让其他技术使用更加方便。Spring Boot的启动器实际上就是一个依赖。这个依赖中包含了整个这个技术的相关jar包，还包含了这个技术的自动配置，以前绝大多数XML配置都不需要配置了。以后每次使用Spring Boot整合其他技术时首先需要考虑导入启动器。
 
-**什么是启动类**
+## 启动类
 
 Spring Boot的启动类的作用是启动Spring Boot项目，是基于Main方法来运行的。
 
@@ -61,6 +57,7 @@ Spring Boot的启动类的作用是启动Spring Boot项目，是基于Main方法
             <artifactId>spring-boot-starter-web</artifactId>
             <version>2.7.6</version>
         </dependency>
+		</dependencies>
 ```
 
 开发一个Controller
@@ -89,7 +86,31 @@ class TestSpringBootApplication {
 }
 ```
 
-运行，浏览器访问测试
+运行，浏览器访问`http://localhost:8080/firstController`测试
 
+## YML配置文件
 
+springboot官方推荐的配置文件是yml文件，yml是用**层级来表示关系**的一种配置文件。
+
+yml中没有标签，而是通过两个空格的缩进来表示层级结构。
+
+例如：
+
+**properties中：**
+
+server.port=8080
+
+**yml中：**
+
+server:
+
+port: 8080
+
+**层级结构怎么找（SpringBoot常见配置，查看官网文档）：**
+
+https://docs.spring.io/spring-boot/docs/2.7.6/reference/html/application-properties.html#appendix.application-properties
+
+注意：文件名字为：`application.yml`，文件名字application开头，不能随意动。
+
+注意冒号后空格。
 
