@@ -28,15 +28,25 @@ Spring Boot的启动类的作用是启动Spring Boot项目，是基于Main方法
 
 ## SpringBoot项目搭建
 
-**案例：整合SpringMVC**
+## SpringBoot整合SSM（SpringMVC+Mybatis）
 
-（1）创建maven工程
+### 1、创建maven工程
 
 普通的maven的jar工程就可以。
 
-（2）pom.xml
+### 2、pom.xml导入依赖
 
 ```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.msb</groupId>
+    <artifactId>TestSpringBoot</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
     <!--选择springboot的版本-->
     <dependencyManagement>
         <dependencies>
@@ -52,13 +62,77 @@ Spring Boot的启动类的作用是启动Spring Boot项目，是基于Main方法
 
     <!--整合springmvc用到的包，添加启动器-->
     <dependencies>
+        
+        <!--添加springmvc的启动器-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>2.7.6</version>
         </dependency>
-		</dependencies>
+
+        <!--依赖 添加mybatis的启动器-->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>2.1.3</version>
+        </dependency>
+
+        <!--mybatis链接数据库需要mysql驱动-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.21</version>
+        </dependency>
+    </dependencies>
+
+</project>
 ```
+
+### 3、编写YML配置文件
+
+springboot支持`.properties`配置文件。创建`项目\maven项目文件\src\main\resources\application.properties`，application.properties名字固定。
+
+例如：
+
+**properties中：**
+
+```properties
+server.port=8080
+```
+
+springboot官方推荐的配置文件是yml文件，yml是用**层级来表示关系**的一种配置文件。
+
+yml中没有标签，而是通过两个空格的缩进来表示层级结构。
+
+**yml中：**
+
+连数据库，把数据源信息写到配置文件里。
+
+```yaml
+server:
+  port: 9999
+  servlet:
+    context-path: /springbootssm
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/msb?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+mybatis:
+  type-aliases-package: com.msb.pojo
+  mapper-locations: classpath:mybatis/*.xml
+```
+
+**层级结构怎么找（SpringBoot常见配置，查看官网文档）：**
+
+https://docs.spring.io/spring-boot/docs/2.7.6/reference/html/application-properties.html#appendix.application-properties
+
+注意：文件名字为：`application.yml`，文件名字application开头，不能随意动。
+
+注意冒号后空格。
+
+yml配置文件和properties配置文件可以并存。
 
 开发一个Controller
 
@@ -87,30 +161,4 @@ class TestSpringBootApplication {
 ```
 
 运行，浏览器访问`http://localhost:8080/firstController`测试
-
-## YML配置文件
-
-springboot官方推荐的配置文件是yml文件，yml是用**层级来表示关系**的一种配置文件。
-
-yml中没有标签，而是通过两个空格的缩进来表示层级结构。
-
-例如：
-
-**properties中：**
-
-server.port=8080
-
-**yml中：**
-
-server:
-
-port: 8080
-
-**层级结构怎么找（SpringBoot常见配置，查看官网文档）：**
-
-https://docs.spring.io/spring-boot/docs/2.7.6/reference/html/application-properties.html#appendix.application-properties
-
-注意：文件名字为：`application.yml`，文件名字application开头，不能随意动。
-
-注意冒号后空格。
 
