@@ -6,7 +6,7 @@
 
 ### alloc
 
-alloc会先走objc_alloc，llvm底层拦截 先标记。汇编代码把SEL是alloc的 IMP指向objc_alloc
+llvm底层拦截 先标记。汇编代码把SEL是alloc的 IMP指向objc_alloc
 
 ### objc_alloc
 

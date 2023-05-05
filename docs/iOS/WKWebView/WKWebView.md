@@ -72,9 +72,7 @@
 - (void)webView:(WKWebView *)webView didFinishNavigation:(null_unspecified WKNavigation *)navigation;
 ```
 
-### WKUserContentController
-
-#### 回调
+### WKScriptMessageHandler
 
 `WKWebView`将和`js`的交互都由`WKUserContentController`类来处理，后面统称为`userContent`。
 
