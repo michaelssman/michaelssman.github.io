@@ -2,11 +2,9 @@
 
 ## MyBatis是持久层框架
 
-**持久层**是分层开发中专门负责访问数据源的一层
+**持久层**是分层开发中专门负责访问数据源的一层，把访问数据源的代码和业务逻辑代码分离开，有利于后期维护和团队分工开发。同时也增加了数据访问代码的复用性。
 
 Java项目中每一层都有自己的作用
-
-持久层的作用就是访问数据源，把访问数据源的代码和业务逻辑代码分离开，有利于后期维护和团队分工开发。同时也增加了数据访问代码的复用性。
 
 ## MyBatis是ORM框架
 
@@ -24,11 +22,12 @@ Java项目中每一层都有自己的作用
 
 通过Maven导入对应框架。
 
-#### 2.1、在pom.xml文件中添加依赖
+### 3、在pom.xml文件中添加依赖
 
 ```xml
     <dependencies>
-        <!--MySQL依赖-->
+        
+        <!--MySQL依赖，mybatis链接数据库需要mysql驱动-->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -91,26 +90,91 @@ password=数据库密码
 </configuration>
 ```
 
+#### 别名设置
+
+MyBatis提供了别名机制可以对某个类起别名或给某个包下所有类起别名，简化resultType取值的写法。
+
+在核心配置文件中，通过`<typeAlias>`标签明确设置类型的别名。
+
+- type:类型全限定路径
+- alias:别名名称
+
+##### 1、具体的类起别名
+
+```xml
+<typeAliases>  
+    <typeAlias type="com.msb.pojo.People" alias="p"></typeAlias>
+</typeAliases>
+```
+
+##### 2、指定的包起别名
+
+当类个数较多时，明确指定别名工作量较大，可以通过`<package>`标签指定包下全部类的别名。指定后所有类的别名就是类名。（也不区分大小写）
+
+```xml
+<typeAliases> 
+    <package name="com.msb.pojo"/>
+</typeAliases>
+```
+
+PS:明确指定别名和指定包的方式可以同时存在
+
 ### 5、创建实体类
 
-在`项目|module|src|main|java|package|class`。
+在`项目|module|src|main|java|package（com.hh.pojo）`创建Book实体类。
+
+### 6、创建接口类
+
+在`项目|module|src|main|java|package（com.hh.mapper）`创建BookMapper。
+
+```java
+package com.msb.mapper;
+
+import com.msb.pojo.Book;
+
+import java.util.List;
+
+public interface BookMapper {
+    /*public abstract */List selectAllBooks();
+
+    public abstract Book selectOneBook(String name, String author);
+
+    public abstract Book selectOneBook2(Book book);
+
+    public abstract Book selectOneBook3(String name, Book book);
+
+    public abstract int insertBook(Book book);
+}
+
+```
 
 ### 6、创建映射文件，在核心配置文件中进行扫描
 
 对数据库做操作的sq。增删改查。
 
-在`项目|module|src|main|resources`下创建文件夹mapper，然后在mapper文件夹中创建`BookMapper.xml`。
+在`项目|module|src|main|resources`下创建package（com.hh.mapper)，然后在mapper文件夹中创建`BookMapper.xml`。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="a.b">
-<!--    public List selectAllBooks(){}-->
-    <select id="selectAllBooks" resultType="b">
+<mapper namespace="com.msb.mapper.BookMapper">
+    <select id="selectAllBooks" resultType="Book">
         select * from t_book
     </select>
+    <select id="selectOneBook" resultType="Book">
+        select * from t_book where name =#{param1} and author = #{param2}
+    </select>
+    <select id="selectOneBook2" resultType="Book">
+        select * from t_book where name =#{name} and author = #{author}
+    </select>
+    <select id="selectOneBook3" resultType="Book">
+        select * from t_book where name =#{param1} and author = #{param2.author}
+    </select>
+    <insert id="insertBook">
+        insert into t_book (id,name,author,price) values (#{id},#{name},#{author},#{price})
+    </insert>
 </mapper>
 ```
 
@@ -155,31 +219,3 @@ public class Test {
 }
 ```
 
-## 别名设置
-
-MyBatis提供了别名机制可以对某个类起别名或给某个包下所有类起别名，简化resultType取值的写法。
-
-在核心配置文件中，通过`<typeAlias>`标签明确设置类型的别名。
-
-- type:类型全限定路径
-- alias:别名名称
-
-### 1、具体的类起别名
-
-```xml
-<typeAliases>  
-    <typeAlias type="com.msb.pojo.People" alias="p"></typeAlias>
-</typeAliases>
-```
-
-### 2、指定的包起别名
-
-当类个数较多时，明确指定别名工作量较大，可以通过`<package>`标签指定包下全部类的别名。指定后所有类的别名就是类名。（也不区分大小写）
-
-```xml
-<typeAliases> 
-    <package name="com.msb.pojo"/>
-</typeAliases>
-```
-
-PS:明确指定别名和指定包的方式可以同时存在

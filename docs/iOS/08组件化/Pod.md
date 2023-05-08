@@ -4,14 +4,6 @@
 
 brew install cocoapods
 
-## 然后pod search AFNetworking
-
->fn-116@FN-116deMacBook-Pro ~ % pod search AFNetworking
->
->Setup completed
->
->**[!] Unable to find a pod with name, author, summary, or description matching `AFNetworking`**
-
 ## 克隆仓库到本地
 
 ##### git clone https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git ~/.cocoapods/repos/trunk
@@ -30,13 +22,11 @@ Pod search AFNetworking 成功！
 
 ## pod install
 
-每当更新Podfile去新添加或删除或更新某个或某些pod时，依然需要使用pod install。
+每当更新Podfile去新添加或删除或更新某个或某些pod时，使用pod install。
 
 每次你运行pod install的时候，都会在Podfile.lock文件里写入你安装的pod的版本号。这个文件会锁定你安装的pod的版本。
 
 运行pod install时，Cocoapods只会按照Podfile.lock中列出的版本号来安装对应版本的pod；对于Podfile.lock文件中未列出的，Cocoapods会根据Podfile中的描述（pod ‘xxx’, '～1.0' ）去安装相应的版本。
-
-查看pod的第三方库的当前版本
 
 pod install 命令功能：
 
