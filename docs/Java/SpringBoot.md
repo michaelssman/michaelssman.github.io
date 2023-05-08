@@ -2,7 +2,9 @@
 
 Spring Boot是Spring公司的一个顶级项目，和Spring Framework是一个级别的。
 
-Spring Boot实际上是利用Spring Framework 4 自动配置特性完成。编写项目时不需要编写xml文件。发展到现在，Spring Boot已经具有很很大的生态圈，各种主流技术已经都提供了Spring Boot的启动器。
+Spring Boot实际上是利用Spring Framework 4 自动配置特性完成。编写项目时不需要编写xml文件，简化配置。
+
+发展到现在，Spring Boot已经具有很很大的生态圈，各种主流技术已经都提供了Spring Boot的启动器。
 
 **为什么使用springBoot**
 
@@ -10,7 +12,7 @@ spring问题：要写大量xml配置。
 
 核心思想：约定大于配置。默认配置好了。
 
-springBoot不止可以整合SSM，还可以整合其它框架。简化配置。
+springBoot不止可以整合SSM，还可以整合其它框架。
 
 ## 启动器
 
@@ -25,8 +27,6 @@ Spring Boot的启动类的作用是启动Spring Boot项目，是基于Main方法
 启动类表示项目的启动入口
 
 启动器表示jar包的坐标
-
-## SpringBoot项目搭建
 
 ## SpringBoot整合SSM（SpringMVC+Mybatis）
 

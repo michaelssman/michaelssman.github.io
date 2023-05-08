@@ -193,7 +193,15 @@ Book b = new Book(1，"项目驱动零起点学Java");
 
 ## IoC/DI相关的注解
 
-![微信截图_20230501002623](assets/微信截图_20230501002623.png)
+| 注解名称       | 解释                                                 |
+| -------------- | ---------------------------------------------------- |
+| @Component     | 实例化Bean， 默认名称为类名首字母变小写              |
+| @Repository    | 作用和@Component一样。用在持久层                     |
+| @Service       | 作用和@Component一样。用在业务层                     |
+| @Controller    | 作用和@Component一样。用在控制器层                   |
+| @Configuration | 作用和@Component一样。用在配置类上                   |
+| @Autowired     | 自动注入。默认byType，如果多个同类型bean，使用byName |
+| @ Value        | 给普通数据类型属性赋值                               |
 
 ### @Component的使用
 
