@@ -12,17 +12,15 @@ pod search 的时候就是在search_index.json中查找的。
 
 使用的时候要在Podfile文件中添加source指定源地址。
 
-### 远程spec索引仓库
+### 远程代码spec索引仓库
 
 使用的时候 pod setup更新 本地索引库 把远程索引库pod到本地。需要经常更新索引库。
 
-### 本地spec索引仓库（.cocoapods/repos）
+### 本地代码spec索引仓库
 
-有一个本地代码仓库，向cocoapods上面上传代码和拉取代码。
+本地代码仓库的文件地址路径：`/硬盘/Users/用户名/.cocoapods/repos`，里面有master和trunk。`.cocoapods`是隐藏文件。
 
-拉取代码需要安装cocoapods。
-
-本地仓库文件地址：`/Users/用户名/.cocoapods/repos`。`.cocoapods`是隐藏文件
+向cocoapods上面上传代码和拉取代码，拉取代码需要安装cocoapods。
 
 `pod search AFNetworking`就是在`.cocoapods/repos`本地资源库找到索引`AFNetworking.podspec.json`。
 
@@ -50,17 +48,16 @@ Configuring GroupShadowTableView template. 下面就是一些配置。
 - Which testing frameworks will you use? [ Specta / Kiwi / None ] 测试framework 选None 选其它的会创建其它的模版
 - Would you like to do view based testing? [ Yes / No ] 基础测试文件 选No
 - What is your class prefix? 选择文件前缀  自己定义HH
-  然后就创建好了，项目会自动打开。
 
-​		创建好之后 里面自动有一个.podspec文件。因为前面选择 了Yes，所以里面 有Delegate和 Viewcontroller 方便测试。
+然后就创建好了，项目会自动打开。里面自动有一个.podspec文件。因为前面选择 了Yes，所以里面 有Delegate和 Viewcontroller 方便测试。
 
 ### 3、拖入文件 `Pod install` 安装
 
-​		Pods里面的Development Pods的文件夹下有一个GroupShadowTableView文件夹，也就是`ReplaceMe.m`文件所在的位置，在/Lib/GroupShadowTableView/GroupShadowTableView/Classes该文件夹中放自己抽取的代码，以及自己写的代码。再把ReplaceMe.m文件删除。
+Pods里面的Development Pods的文件夹下有一个GroupShadowTableView文件夹，也就是`ReplaceMe.m`文件所在的位置，在/Lib/GroupShadowTableView/GroupShadowTableView/Classes该文件夹中放自己抽取的代码，以及自己写的代码。再把ReplaceMe.m文件删除。
 
-​		然后 在终端cd Podfile文件路径cd /Users/cuihuihui/Documents/github/Lib/GroupShadowTableView/Example 然后pod install安装。
+然后 在终端cd Podfile文件路径cd /Users/cuihuihui/Documents/github/Lib/GroupShadowTableView/Example 然后pod install安装。
 
-​		**一定要记得pod install** 不然Development Pods文件夹下没有文件，本地无法使用。
+**一定要记得pod install** 不然Development Pods文件夹下没有文件，本地无法使用。
 
 ### 4、把依赖的其它第三方引入
 

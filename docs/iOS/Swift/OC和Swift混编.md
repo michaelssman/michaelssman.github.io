@@ -146,7 +146,7 @@ swift中的属性和方法如果需要给OC使用，需要前面加`@objc`修饰
 
 ### OC调用swift的enum
 
-- 枚举：必须定义出`Int`类型，前面加`@objc`才能调用(毕竟swift的枚举比OC强大太多)
+必须定义出`Int`类型，前面加`@objc`才能调用(毕竟swift的枚举比OC强大太多)
 
 ```java
 @objc enum CPLineType: Int {
