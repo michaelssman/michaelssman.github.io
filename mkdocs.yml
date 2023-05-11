@@ -146,10 +146,6 @@ nav:
       - iOS/WKWebView/WKWebView.md
       - iOS/WKWebView/WKWebView聚焦.md
       - iOS/WKWebView/解决webView白屏问题加载缓存问题.md
-    - 推送:
-      - iOS/推送/极光推送.md
-      - iOS/推送/角标问题.md
-      - iOS/推送/推送开关功能.md
     - 编程思想:
       - iOS/编程思想/编程思想.md
       - iOS/编程思想/函数式/funtional_programming.md
@@ -163,7 +159,6 @@ nav:
       - iOS/编程思想/响应式/RAC/RAC过滤.md
     - iOS/数据持久化/CoreData.md
     - iOS/PDF文件查看.md
-    - iOS/Vendors.md
     - iOS/universalLink.md
     - iOS/快捷键.md
     - iOS/控制器生命周期.md
