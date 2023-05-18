@@ -1,6 +1,6 @@
 # 软件
 
-## Mac软件
+## Mac
 
 - HBuilderX
 
@@ -33,6 +33,6 @@
   
 - v2rayN（Win）V2rayU（Mac）
 
-## iPhone软件
+## iPhone
 - iBetter
 - 随手记

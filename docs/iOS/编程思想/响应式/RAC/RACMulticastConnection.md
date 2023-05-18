@@ -11,6 +11,7 @@
         [subscriber sendNext:@"得到网络请求数据"];
         return nil;
     }];
+  
     //普通的订阅
     [signal subscribeNext:^(id  _Nullable x) {
         NSLog(@"1 - %@",x);
@@ -54,7 +55,7 @@
 
 # 内部实现
 
-1. 创建信号这个步骤就不用在多说了（保存了一个block，didSubscribe）
+1. 创建信号（保存了一个block，didSubscribe）
 2. 把信号转化成为一个连接类`[signal publish]`
 
 ​		在`publish`方法中首先创建了一个`subject`然后调用`multicast`创建了一个连接类，在创建连接类的时候把`signal`和`subject`保存了起来。
@@ -103,44 +104,3 @@
 	return self.serialDisposable;
 }
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

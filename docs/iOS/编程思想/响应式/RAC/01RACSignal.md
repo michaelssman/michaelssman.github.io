@@ -4,7 +4,7 @@ RACSignal：信号类，signal本身不具备发送信号的能力。
 
 遵循**RACSubscriber**代理才可以发送消息。
 
-### 在创建RACSignal中先说一下RAC的四部曲
+## RAC的四部曲
 
 1. 创建信号
 2. 订阅信号
@@ -200,3 +200,71 @@ RACSubscriber订阅者有三个block：nextBlock，errorBlock，completeBlock
 ## 图
 
 ![image-20220111180953202](01RACSignal.assets/image-20220111180953202.png)
+
+## 分页加载网络请求
+
+```objective-c
+#import <ReactiveCocoa/ReactiveCocoa.h>
+#import <AFNetworking/AFNetworking.h>
+
+// 定义接口URL
+NSString *const kAPIURL = @"https://example.com/api";
+
+// 定义每页大小和初始页索引
+NSInteger const kPageSize = 10;
+NSInteger const kInitialPageIndex = 1;
+
+// 定义网络请求方法，该方法使用AFNetworking库发起网络请求，并返回一个RACSignal信号。
+- (RACSignal *)fetchDataWithPageSize:(NSInteger)pageSize pageIndex:(NSInteger)pageIndex {
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    manager.responseSerializer = [AFJSONResponseSerializer serializer];
+
+    // 创建请求参数
+    NSDictionary *parameters = @{
+        @"pageSize" : @(pageSize),
+        @"pageIndex" : @(pageIndex)
+    };
+
+    // 发起网络请求
+    return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        [manager GET:kAPIURL parameters:parameters progress:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+            [subscriber sendNext:responseObject];
+            [subscriber sendCompleted];
+        } failure:^(NSURLSessionDataTask *task, NSError *error) {
+            [subscriber sendError:error];
+        }];
+
+        return nil;
+    }] replayLazily];
+}
+
+// 示例使用
+- (void)loadData {
+    // 初始化页码
+    __block NSInteger pageIndex = kInitialPageIndex;
+
+    // 创建分页加载信号
+	  //创建了一个loadNextPageSignal信号，通过flattenMap操作符来增加页码并发起网络请求。
+    RACSignal *loadNextPageSignal = [[[RACSignal empty] startWith:nil] flattenMap:^RACStream *(id value) {
+        // 增加页码
+        pageIndex++;
+
+        // 发起网络请求并返回信号
+        return [self fetchDataWithPageSize:kPageSize pageIndex:pageIndex];
+    }];
+
+    // 监听信号并处理返回结果
+	  //使用deliverOnMainThread将信号的结果切换到主线程，并使用subscribeNext监听信号的返回结果（处理接口返回的数据并更新UI），或在error块中处理错误情况。
+    [[loadNextPageSignal deliverOnMainThread] subscribeNext:^(id responseObject) {
+        // 处理接口返回的数据
+        NSLog(@"Received response: %@", responseObject);
+
+        // 解析数据并更新UI
+
+    } error:^(NSError *error) {
+        // 处理错误
+
+    }];
+}
+```
+
