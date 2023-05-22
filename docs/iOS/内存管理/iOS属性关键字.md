@@ -24,6 +24,19 @@ weak的原理：runtime维护了一个weak表，用于存储指向某个对象�
 
 weak表其实是一个hash（哈希）表，key是所指对象的地址，value是weak指针的地址（这个地址的值是所指对象指针的地址）数组。
 
+### 代理delegate使用weak
+
+一个类的 Delegate 对象通常还引用着类本身`self.tableView.delegate = self`，这样很容易造成引用循环的问题，所以类的 Delegate 属性要设置为弱引用。
+
+**assign：**
+
+assign 指针赋值，不对引用计数操作，使用之后如果没有置为nil，可能会产生野指针。
+delegate指向的对象销毁之后，delegate中依然会保存之前对象的地址，delegate就成了野指针。
+
+**weak：**
+
+weak 指明该对象并不负责保持delegate这个对象，delegate这个对象的销毁是由外部控制的，当delegate指向的对象销毁之后，delegate = nil。
+
 ## assign
 
 assign是默认关键字，用来修饰基本数据类型。
@@ -59,12 +72,6 @@ copy方法返回的都是不可变对象
 >
 >添加,删除,修改数组内的元素的时候,程序会因为找不到对应的方法(`unrecognised selector`)而崩溃.因为 `copy` 就是复制一个不可变 `NSArray`的对象。
 
-## retain
-
-alloc new copy 引用计数都会加1。
-
-strong就是retain  通过this（当前对象）获取sideTable 里面引用计数表。rdfCont引用计数加1。
-
 ### NSString使用copy修饰不用strong修饰，
 
 用strong修饰一个name属性，如果赋值的是一个可变对象，当可变对象的值发生改变的时候，name的值也会改变，这不是我们期望的，是因为name使用strong修饰后，指向跟可变对象相同的一块内存地址。
@@ -81,15 +88,9 @@ NSLog(@"%@",self.name);
  name属性用strong修饰 打印asdfg
  */
 ```
-### 代理delegate使用weak
 
-一个类的 Delegate 对象通常还引用着类本身`self.tableView.delegate = self`，这样很容易造成引用循环的问题，所以类的 Delegate 属性要设置为弱引用。
+## retain
 
-**assign：**
+alloc new copy 引用计数都会加1。
 
-assign 指针赋值，不对引用计数操作，使用之后如果没有置为nil，可能会产生野指针。
-delegate指向的对象销毁之后，delegate中依然会保存之前对象的地址，delegate就成了野指针。
-
-**weak：**
-
-weak 指明该对象并不负责保持delegate这个对象，delegate这个对象的销毁是由外部控制的，当delegate指向的对象销毁之后，delegate = nil。
+strong就是retain  通过this（当前对象）获取sideTable 里面引用计数表。rdfCont引用计数加1。

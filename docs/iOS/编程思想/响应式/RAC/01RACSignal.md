@@ -37,7 +37,7 @@ RACSignal：信号类，signal本身不具备发送信号的能力。
         NSLog(@"%@",x);
     }];
     
-    //主动出发取消订阅
+    //主动触发取消订阅
     [disposable dispose];
     
     //2.2订阅错误信号
