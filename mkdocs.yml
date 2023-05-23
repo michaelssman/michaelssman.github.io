@@ -158,7 +158,6 @@ nav:
       - iOS/编程思想/响应式/RAC/RAC基本用法.md
       - iOS/编程思想/响应式/RAC/RAC过滤.md
     - iOS/数据持久化/CoreData.md
-    - iOS/PDF文件查看.md
     - iOS/universalLink.md
     - iOS/快捷键.md
     - iOS/控制器生命周期.md

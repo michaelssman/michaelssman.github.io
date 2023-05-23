@@ -2,7 +2,7 @@
 
 使用递归
 
-把abc三个字母进行排列可以得到
+把abc三个字母进行排列可以得到所有排列组合
 
 - abc
 - acb
@@ -10,10 +10,6 @@
 - bca
 - cab
 - cba
-
-三个字母的所有排列组合
-
-代码：
 
 ```c++
 /// 排列组合 递归函数
@@ -39,7 +35,6 @@ void Permutations(char *p, const int k, const int m)
      swap(p[0], p[2]);//把a和c交换回来
      */
     
-    
     //上面代码可以简化 使用一个for循环
     if (k == m) {
         //递归结果。使用for循环 输出
@@ -49,18 +44,15 @@ void Permutations(char *p, const int k, const int m)
         cout << endl;
     } else {
         for (int i = k; i <= m; i++) {
-            swap(p[k], p[i]);
+            swap(p[k], p[i]);	// 交换字符位置
             Permutations(p, k + 1, m);//递归
-            swap(p[k], p[i]);
+            swap(p[k], p[i]);	// 恢复字符位置
         }
     }
     
 }
-```
 
-调用：
-
-```c++
+//调用：
 void test()
 {
     char s[] = "abc";
