@@ -93,16 +93,13 @@ nav:
       - iOS/03Runtime/Aspect.md
     - 04应用程序加载:
       - MachO: iOS/04应用程序加载/MachO.md
-      - clang插件: iOS/04应用程序加载/clang插件.md
       - fishhook: iOS/04应用程序加载/fishhook.md
       - iOS应用加载流程: iOS/04应用程序加载/iOS应用加载流程.md
       - iOS/04应用程序加载/编译流程.md
       - 应用启动优化: iOS/04应用程序加载/应用启动优化.md
       - 符号表: iOS/04应用程序加载/符号表.md
-      - 动态库静态库:
-        - iOS/04应用程序加载/动态库静态库/动态库静态库.md
-        - iOS/04应用程序加载/动态库静态库/swift的module.md
       - iOS/04应用程序加载/hmap.md
+      - iOS/04应用程序加载/动态库静态库.md
       - iOS/04应用程序加载/多环境支持.md
     - 内存管理:
       - iOS/内存管理/copy.md
@@ -385,9 +382,9 @@ nav:
     - Java/web项目SpringMVC.md
     - Java/SpringBoot.md
   - 数据库:
-    - 数据库/介绍.md
     - 数据库/数据库.md
     - 数据库/SQL.md
+    - 数据库/MySQL.md
   - Mac:
     - MAC/brew.md
     - MAC/linux.md

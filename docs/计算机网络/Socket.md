@@ -14,8 +14,6 @@ socket实际是传输层供给应用层的编程接口。传输层则在网络�
 
 Socket是对TCP/IP协议的封装，Socket本身并不是协议，而是一个调用接口（API），通过Socket，我们才能使用TCP/IP协议。
 
-![图片](Socket.assets/640-5931469.png)
-
 ## Socket机制
 
 1. Socket是网络服务的一种机制
