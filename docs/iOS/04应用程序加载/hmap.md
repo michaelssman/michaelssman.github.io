@@ -18,9 +18,9 @@ AFNetworking-project-headers.hmap：以引号方式引入头文件。
 
 buildsetting：控制clang的编译参数。定义shell环境变量。
 
-headers.hmap路径放到HEADER_SEARCH_PATHS，则变成<>引入方式。一般系统的文件。
+headers.hmap路径放到`HEADER_SEARCH_PATHS`，则变成<>引入方式。一般系统的文件。
 
-USER_HEADER_SEARCH_PATHS，引号引入方式。一般自己写的文件。
+`USER_HEADER_SEARCH_PATHS`，引号引入方式。一般自己写的文件。
 
 头文件参与文件的编译。
 
