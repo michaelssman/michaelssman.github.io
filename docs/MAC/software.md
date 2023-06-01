@@ -2,9 +2,7 @@
 
 ## Mac
 
-- HBuilderX
-
-  Vue
+- HBuilderX：Vue
 
 - Visual Studio Code
 
@@ -12,9 +10,8 @@
   
 - MindNode
   
-- The Unarchiver
-  解压rar格式文件
-
+- The Unarchiver：解压rar格式文件
+  
 - Sublime Text
 
 - DB Browser for SQLite
@@ -27,10 +24,10 @@
   
 - IINA
   
-- HandBrake 
+- HandBrake：压缩视频
 
-  压缩视频
-  
+- Audacity：剪辑音频
+
 - v2rayN（Win）V2rayU（Mac）
 
 ## iPhone
