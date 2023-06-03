@@ -28,7 +28,12 @@
 
 - Audacity：剪辑音频
 
-- v2rayN（Win）V2rayU（Mac）
+- V2rayU
+
+## win
+
+- v2rayN
+- Bandizip MSE：解压缩
 
 ## iPhone
 - iBetter

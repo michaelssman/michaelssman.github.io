@@ -17,3 +17,5 @@
 ## Windows快捷键
 
 win+shift+s：截图
+
+win+i：设置
