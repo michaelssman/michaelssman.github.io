@@ -159,6 +159,47 @@ RACSignal是不具备发送信号的能力的，但是`RACSubject`这个类就�
 
 所以对于RACSignal不同的地方是：他可以被订阅多次，并且只能是先订阅后发布。
 
+### cell中button点击方法
+
+定义RACSubject
+
+```objective-c
+@interface HHCell : UITableViewCell
+@property (nonatomic, strong) RACSubject *buttonAction;
+@end
+```
+
+```objective-c
+@implementation ACCourseCell
+
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        [self.button addTarget:self action:@selector(buttonTapped) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return self;
+}
+
+- (void)buttonTapped {
+    [self.buttonAction sendNext:nil];
+}
+
+@end
+```
+
+cell代理
+
+```objective-c
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    RACSubject *buttonAction = [RACSubject subject];
+    [buttonAction subscribeNext:^(id _Nullable x) {
+        // 处理按钮点击事件
+    }];
+    cell.buttonAction = buttonAction;
+    return cell;
+}
+```
+
 # RACReplaySubject
 
 ##### 如果非要先发送在订阅，并且也要能收到怎么处理呢？

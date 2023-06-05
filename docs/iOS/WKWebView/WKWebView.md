@@ -4,7 +4,7 @@
 
 `WKWebView`是一个多进程组件，`Network`、`UI Render`都在独立的进程中完成。
 
-由于`WKWebView`和`App`不在同一个进程，如果`WKWebView`进程崩溃并不会导致应用崩溃，仅仅是页面白屏等异常。页面的载入、渲染等消耗内存和性能的操作，都在`WKWebView`的进程中处理，处理后再将结果交给`App`进程用于显示，所以`App`进程的性能消耗会小很多。
+`WKWebView`和`App`不在同一个进程，如果`WKWebView`进程崩溃并不会导致应用崩溃，仅仅是页面白屏等异常。页面的载入、渲染等消耗内存和性能的操作，都在`WKWebView`的进程中处理，处理后再将结果交给`App`进程用于显示，所以`App`进程的性能消耗会小很多。
 
 ## 网页加载流程
 
@@ -19,7 +19,7 @@
 
 ## 代理方法
 
-`WKWebView`则会在渲染到屏幕之前，会回调一个代理方法，代理方法决定是否渲染到屏幕上。这样就可以对请求下来的数据做一次校验，防止数据被更改，或验证视图是否允许被显示到屏幕上。
+`WKWebView`则会在渲染到屏幕之前，会回调一个代理方法决定是否渲染到屏幕上。这样就可以对请求下来的数据做一次校验，防止数据被更改，或验证视图是否允许被显示到屏幕上。
 
 1. 重定向的回调，可以在请求重定向时获取到这次操作。
 2. 当`WKWebView`进程异常退出时，可以通过回调获取。
@@ -79,14 +79,13 @@
 如果需要接收并处理`js`的调用，通过调用`addScriptMessageHandler:name:`方法，并传入一个实现了`WKScriptMessageHandler`协议的对象，即可接收`js`的回调，由于`userContent`会强引用传入的对象，所以应该是新创建一个对象，而不是`self`。注册对象时，后面的`name`就是`js`调用的函数名。
 
 ```objective-c
-WKUserContentController *userContent = [[WKUserContentController alloc] init];
-[userContent addScriptMessageHandler:[[WKWeakScriptMessageDelegate alloc] initWithDelegate:self] name:@"clientCallback"];
+[self.webView.configuration.userContentController addScriptMessageHandler:[[WKWeakScriptMessageDelegate alloc] initWithDelegate:self] name:@"clientCallback"];
 ```
 
 在`dealloc`中应该通过下面的方法，移除对指定`name`的处理。
 
 ```objective-c
-[userContent removeScriptMessageHandlerForName:@"clientCallback"];
+[self.webView.configuration.userContentController removeScriptMessageHandlerForName:@"clientCallback"];
 ```
 
 `H5`通过下面的代码即可对客户端发起调用，调用是通过`postMessage`函数传一个`json`串过来，需要加上转移字符。客户端接收到调用后，根据回调方法传入的`WKScriptMessage`对象，获取到`body`字典，解析传入的参数即可。
@@ -95,14 +94,41 @@ WKUserContentController *userContent = [[WKUserContentController alloc] init];
 window.webkit.messageHandlers.clientCallback.postMessage("{\"funName\":\"getMobileCode\",\"value\":\"srggshqisslfkj\"}");
 ```
 
+监听JavaScript调用原生方法的代理方法：
+
+```objective-c
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
+    if ([message.name isEqualToString:@"Native"]) {
+        NSDictionary *bodyParam = message.body;
+        NSString *func = bodyParam[@"func"];
+        if ([func isEqualToString:@""]) {
+            //原生的方法
+        }
+    }
+}
+```
+
 #### 调用
 
 原生调用`H5`的方法也是一样，创建一个`WKUserScript`对象，并将`js`代码当做参数传入。除了调用`js`代码，也可以通过此方法注入代码改变页面`dom`，但是这样代码量较大，不建议这么做。
 
 ```objective-c
-WKUserScript *wkcookieScript = [[WKUserScript alloc] initWithSource:self.javaScriptString
-                                                          injectionTime:WKUserScriptInjectionTimeAtDocumentStart
-                                                       forMainFrameOnly:NO];
+// 适配暗黑模式颜色
+NSString *backgroundColor = @"";
+NSString *labelColor = @"";
+if (@available(iOS 13.0, *)) {
+  if (UITraitCollection.currentTraitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+    backgroundColor = @"'#1B1B21'";
+    labelColor = @"'#B0B4BB'";
+  }else{
+    backgroundColor = @"'#FFFFFF'";
+    labelColor = @"'#0D0D0D'";
+  }
+}
+//写入JS代码
+NSString *js = [NSString stringWithFormat:@"document.querySelector('.content').style.background=%@",backgroundColor];
+WKUserScript *wkUserScript = [[WKUserScript alloc]initWithSource:js injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
+
 [webView.configuration.userContentController addUserScript:wkcookieScript];
 ```
 
@@ -117,15 +143,13 @@ NSString *removeChildNode = @""
 [self.webView evaluateJavaScript:removeChildNode completionHandler:nil];
 ```
 
-首先要说明的是，这两种方式都可以注入`js`代码，这两种方式还是有一些功能上的区别的，可以根据具体业务场景去选择对应的`API`。
+这两种方式都可以注入`js`代码。
 
-先说说`evaluateJavaScript:completionHandler:`的方式，这种方式一般是在页面展示完成后执行的操作，用来调用`js`的函数并获取返回值非常方便。当然也可以用来注入一段`js`代码，但需要自己控制注入时机。
+`evaluateJavaScript:completionHandler:`这种方式一般是在页面展示完成后执行的操作，用来调用`js`的函数并获取返回值非常方便。当然也可以用来注入一段`js`代码，但需要自己控制注入时机。
 
 `WKUserScript`则可以控制注入时机，可以针对`document`是否加载完选择注入`js`。以及被注入的`js`是在当前页面有效，还是包括其子页面也有效。相对于`evaluateJavaScript:`方法，此方法不能获得`js`执行后的返回值，所以两个方法在功能上还是有区别的。
 
-## 容器设计
-
-### 设计思路
+## 容器设计思路
 
 项目中一般不会直接使用`WKWebView`，而是通过对其进行一层包装，成为一个`WKWebViewController`交给业务层使用。设计`webViewVC`时应该遵循简单灵活的思想去设计，自身只提供展示功能，不涉及任何业务逻辑。对外提供展示导航栏、设置标题、进度条等功能，都可以通过`WKWebViewConfiguration`赋值并在`WKWebViewController`实例化的时候传入。
 
@@ -175,6 +199,17 @@ Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_2 like Mac OS X) AppleWebKit/603.2.4 (KH
 
 在`iOS9`之后提供了`customUserAgent`属性，直接为`WKWebView`设置`User-Agent`，而`iOS9`之前需要通过`js`写入的方式对`H5`注入`User-Agent`。
 
+```objective-c
+- (void)setWebViewUserAgent {
+    __weak __typeof(self) weakSelf = self;
+    [self.webView evaluateJavaScript:@"navigator.userAgent" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+        NSString *userAgent = result;
+        userAgent = [userAgent stringByAppendingString:[NSString stringWithFormat:@""]];
+        weakSelf.webView.customUserAgent = userAgent;
+    }];
+}
+```
+
 ### 通信协议
 
 一个设计的比较好的`WebView`容器，应该具备很好的相互通信功能，并且灵活具有扩展性。`H5`和客户端的通信主要有以下几种场景。
@@ -213,9 +248,7 @@ Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_2 like Mac OS X) AppleWebKit/603.2.4 (KH
 
 ### 缓存机制
 
-#### 缓存规则
-
-前端浏览器包括`WKWebView`在内，为了保证快速打开页面，减少用户流量消耗，都会对资源进行缓存。这个缓存规则在`WKWebView`中也可以指定，如果我们为了保证每次的资源文件都是最新的，也可以选择不使用缓存，但我们一般不这么做。
+前端浏览器包括`WKWebView`在内，为了保证快速打开页面，减少用户流量消耗，都会对资源进行缓存。如果我们为了保证每次的资源文件都是最新的，也可以选择不使用缓存，但我们一般不这么做。
 
 - `NSURLRequestUseProtocolCachePolicy = 0`，默认缓存策略，和`Safari`内核的缓存表现一样。
 - `NSURLRequestReloadIgnoringLocalCacheData = 1,` 忽略本地缓存，直接从服务器获取数据。
@@ -294,7 +327,7 @@ Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_2 like Mac OS X) AppleWebKit/603.2.4 (KH
 
 `WKWebView`的`cookie`和`NSHTTPCookieStorage`之间也有同步操作，但是这个同步有明显的延时，而且规则不容易琢磨。所以为了代码的稳定性，还是自己处理`cookie`比较合适。
 
-`WK`和`app`是两个进程，`cookie`也是两份，但是`WK`的`cookie`在`app`的沙盒里。有一个定时同步，但是并没有一个特定规则，所以最好不要依赖同步。`WK`的`cookie`变化只有两个时机，一个是`js`执行代码`setCookie`，另一个是`response`返回`cookie`。
+`WKWebView`和`app`是两个进程，`cookie`也是两份，但是`WK`的`cookie`在`app`的沙盒里。有一个定时同步，但是并没有一个特定规则，所以最好不要依赖同步。`WK`的`cookie`变化只有两个时机，一个是`js`执行代码`setCookie`，另一个是`response`返回`cookie`。
 
 #### WKWebsiteDataStore
 
@@ -317,7 +350,7 @@ if (@available(iOS 9.0, *)) {
 
 下面是给`WKWebView`添加`cookie`的一段代码。
 
-```
+```objective-c
 NSMutableDictionary *params = [NSMutableDictionary dictionary];
 [params setObject:@"password" forKey:NSHTTPCookieName];
 [params setObject:@"e10adc3949ba5" forKey:NSHTTPCookieValue];
@@ -411,7 +444,7 @@ SVREQUEST.type(SVRequestTypePost).parameters(params).success(^(NSDictionary *coo
 }
 ```
 
-### 白屏问题
+## 白屏问题
 
 如果`WKWebView`加载内存占用过多的页面，会导致`WebContent Process`进程崩溃，进而页面出现白屏，也有可能是系统其他进程占用内存过多导致的白屏。对于低内存导致的白屏问题，有以下两种方案可以解决。
 
@@ -422,3 +455,219 @@ SVREQUEST.type(SVRequestTypePost).parameters(params).success(^(NSDictionary *coo
 ```
 
 如果从其他`App`回来导致白屏问题，可以在视图将要显示的时候，判断`webView.title`是否为空。如果为空则展示异常页面。
+
+### 问题描述：
+
+问题一：
+点击文章列表进入文章详情，会有几秒显示空白页面，之后才是加载请求数据。加载请求数据显示加载动画，这段时间是可以接受的。主要矛盾是解决加载动画显示之前的白屏问题。
+问题二：
+后台设置的过期时间还没到，但是版本更新修改比较大，加载缓存数据会有问题，需要header请求，请求头部信息，查找是否有修改，更新缓存文件。
+
+### 解决方法：
+
+把页面文件保存到本地， 加载的时候，加载本地的，因为文章详情里面html文件代码都一样，框架都是那样的。只要后台那边不改代码，一般情况下都不变，所以把那个文件存到本地，以后都读本地读文件即可。不用去请求服务器，不再受服务器响应速度影响。
+
+### 1、 先判断是否修改过
+
+#### 设置html文件过期时间
+
+在请求数据的时候，header中有一个过期时间。header信息可以在WKNavigationDelegate的`- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler;`代理方法中获得。
+
+在上面方法中打印`navigationResponse`可以看到header。
+
+```objective-c
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
+{
+    NSString *cacheControl = [(NSHTTPURLResponse*)navigationResponse.response allHeaderFields][@"Cache-Control"]; // max-age, must-revalidate, no-cache
+    NSArray *cacheControlEntities = [cacheControl componentsSeparatedByString:@","];
+
+    for(NSString *substring in cacheControlEntities) {
+        
+        if([substring rangeOfString:@"max-age"].location != NSNotFound) {
+            
+            // do some processing to calculate expiresOn
+            NSString *maxAge = nil;
+            NSArray *array = [substring componentsSeparatedByString:@"="];
+            if([array count] > 1)
+                maxAge = array[1];
+            
+           NSDate * expiresOnDate = [[NSDate date] dateByAddingTimeInterval:[maxAge intValue]];
+
+        //保存过期时间
+            [[NSUserDefaults standardUserDefaults] setObject:expiresOnDate forKey:kHtml_gqsj];
+
+        }
+    }
+
+    decisionHandler(WKNavigationResponsePolicyAllow);
+}
+```
+
+问题：
+当后台那边对html文件进行了修改之后，app内html文件还没到过期时间，那么就会出请求不到数据等等问题。
+解决方法：
+可以只请求该url地址的header头， 请求的数据也不多，响应相应的比其他的请求快些。
+
+html文件不是永远不变的， 后台那边可能会调整一些样式等，所以需要先使用header请求去 请求header判断一下缓存的html文件有没有修改过。
+对应的代码如下：
+
+```
+/**
+ header请求，获取头部的信息
+
+ @param block yes：读取本地缓存 no：重新缓存文件
+ @param baseUrl html文件地址
+ */
+- (void)requestWebViewHeader:(void (^)(BOOL isLoadCache))block
+                     baseUrl:(NSString *)baseUrl {
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    [manager HEAD:baseUrl parameters:nil success:^(NSURLSessionDataTask * _Nonnull task) {
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        if ([[userDefaults objectForKey:kHtml_lastModified] isEqual:[(NSHTTPURLResponse*)task.response allHeaderFields][@"Last-Modified"]]) {
+            block(YES);
+        } else {
+            block(NO);
+            [userDefaults setObject:[(NSHTTPURLResponse*)task.response allHeaderFields][@"Last-Modified"] forKey:kHtml_lastModified];
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        block(YES);
+    }];
+}
+```
+
+#### 控制台输出：
+
+```
+(lldb) po task.response
+<NSHTTPURLResponse: 0x60400082f480> { URL: http://apptest.ningmengyun.com/news/newsDetail.html?ArticleID=1159&withNavigationBar=true } { Status Code: 200, Headers {
+    "Accept-Ranges" =     (
+        bytes
+    );
+    "Content-Encoding" =     (
+        gzip
+    );
+    "Content-Length" =     (
+        1353
+    );
+    "Content-Type" =     (
+        "text/html"
+    );
+    Date =     (
+        "Mon, 23 Apr 2018 04:06:18 GMT"
+    );
+    Etag =     (
+        "\"809d9cf9cbd7d31:0\""
+    );
+    "Last-Modified" =     (
+        "Thu, 19 Apr 2018 10:48:39 GMT"
+    );
+    Server =     (
+        "Microsoft-IIS/7.5"
+    );
+    Vary =     (
+        "Accept-Encoding"
+    );
+    "X-Powered-By" =     (
+        "ASP.NET"
+    );
+} }
+
+(lldb) po lastModified
+Thu, 19 Apr 2018 10:48:39 GMT
+
+(lldb) 
+```
+
+##### 关于url的问题：
+
+点击每条文章，传入的url为`https://app.ningmengyun.com/news/newsDetail.html?ArticleID=1034`，其中的ArticleID为每条文章的id，但是缓存html和请求header头的时候不需要整个url，只需要前面的地址即可。参数都不需要。即：`https://app.ningmengyun.com/news/newsDetail.html`
+
+请求头的参考：
+https://blog.csdn.net/u013583789/article/details/52129316
+
+### 2、判断是否修改过， 提前载入内存
+
+没修改的话：直接加载缓存文件到内存中。
+有修改的话：重新下载html文件到本地并且缓存到内存中。
+
+```
+- (void)cacheHeadlineHtml {
+    NSString *path;
+    NSString *baseUrl;
+    NSString *cachesPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+
+        path = [cachesPath stringByAppendingString:kHtml_hcwz];
+        baseUrl =LMURLHeader5(@"/news/newsDetail.html");
+
+    [self requestWebViewHeader:^(BOOL isLoadCache) {
+        if (isLoadCache) {
+            //没修改
+ self.htmlString_new = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+        } else {
+            //修改过
+            [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+            [self writeToCache:baseUrl];
+        }
+    } baseUrl:baseUrl];
+}
+```
+
+### 3、加载webView
+
+```
+- (void)loadHtml {
+    NSString *cachesPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+   NSString *path = [cachesPath stringByAppendingString:[NSString stringWithFormat:@"/Caches/%lu.html",[@"huancunwenzhang" hash]]];
+   NSString *htmlString = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+
+//有缓存
+    if (!(htmlString == nil || [htmlString isEqualToString:@""])) {
+        [_wkWebview loadHTMLString:htmlString baseURL:[NSURL URLWithString:self.urlString]];
+    }
+//没缓存
+ else {
+        NSURL *url = [NSURL URLWithString:self.urlString];
+        NSURLRequest *request = [NSURLRequest requestWithURL:url];
+        [_wkWebview loadRequest:request];
+//没有缓存需要缓存
+        [self writeToCache];
+    }
+}
+```
+
+注：
+还有优化的地方：
+可以把上面htmlString读取到内存中，常驻内存中，app运行时使用同一个。减少一点读取文件的时间。
+
+##### 注：
+
+这是读书详情的接口`http://apptest.ningmengyun.com/commodity/booksDetail.html?productId=100106`
+可以使用接口`/commodity/booksDetail.html`直接去存储，路径和名称都使用接口的。
+
+### 适配深色模式闪白色背景色
+
+在创建WKWebView的时候直接先隐藏WKWebView
+
+```objectivec
+#pragma mark - WKNavigationDelegate
+//在开始加载WKWebVie添加一个加载框
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation{
+    [GiFHUD showInView:self.view GIF:LOADING];
+}
+//网页加载完成 延时0.2秒展示网页
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation{
+    [webView evaluateJavaScript:@"document.body.style.backgroundColor=\"#141A26\"" completionHandler:nil];
+  
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        webView.hidden = NO;
+	      [GiFHUD dismiss];	
+    });
+}
+
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error{
+    [GiFHUD dismiss];
+}
+```
+
+注：如果不设置隐藏和延时的话，设置WKWebView颜色会有闪现一下白色在变回我们设置的颜色。
+
