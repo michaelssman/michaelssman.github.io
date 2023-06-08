@@ -112,11 +112,9 @@ public class HelloWorld {
                     ObjectOutputStream oos = new ObjectOutputStream(fos);
                     //将list写出去
                     oos.writeObject(list);
-//关闭流
+										//关闭流
                     oos.close();
                 }
-
-
             }
             if (choice == 3) {
                 System.out.println("[老妈书城]>>>>>2.上新书籍");
@@ -132,7 +130,7 @@ public class HelloWorld {
 //                }
             }
             if (choice == 4) {
-                break;//推出循环
+                break;//退出循环
             }
         }
     }
@@ -177,8 +175,6 @@ public class Book implements Serializable {
     }
 
     //构造器
-
-
     public Book(int bNo, String bName, String bAuthor) {
         this.bNo = bNo;
         this.bName = bName;
