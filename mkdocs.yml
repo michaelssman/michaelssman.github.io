@@ -139,10 +139,7 @@ nav:
       - iOS/SDWebImage/SDImageCache.md
       - iOS/SDWebImage/SDWebImage.md
       - iOS/SDWebImage/SDWebImageManager.md
-    - WKWebView:
-      - iOS/WKWebView/WKWebView.md
-      - iOS/WKWebView/WKWebView聚焦.md
-      - iOS/WKWebView/解决webView白屏问题加载缓存问题.md
+    - iOS/WKWebView.md
     - 编程思想:
       - iOS/编程思想/编程思想.md
       - iOS/编程思想/函数式/funtional_programming.md
@@ -301,7 +298,6 @@ nav:
       - 数据结构与算法/算法/排序算法.md
       - 数据结构与算法/算法/加密.md
       - 数据结构与算法/算法/基数排序.md
-      - 数据结构与算法/算法/归并排序merge.md
       - 数据结构与算法/算法/快速排序quicksort.md
       - 数据结构与算法/算法/排列组合Perm.md
       - 数据结构与算法/算法/查找算法.md
@@ -372,7 +368,7 @@ nav:
       - Html/Vue/模版方法.md
       - Html/Vue/添加实例 property.md
   - Java:
-    - Java/Java安装.md
+    - Java/Java.md
     - Java/IO.md
     - Java/JDBC.md
     - Java/Maven.md

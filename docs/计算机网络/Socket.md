@@ -1,6 +1,6 @@
 # Socket套接字
 
-我们开发的网络应用程序位于应用层，TCP和UDP属于传输层协议，在应用层如何使用传输层的服务呢？在应用层和传输层之间，则是使用套接字来进行分离。
+我们开发的网络应用程序位于应用层，TCP和UDP属于传输层协议。在应用层和传输层之间，使用套接字进行分离。
 
 套接字就像传输层为应用层开的一个小口，应用程序通过这个小口向远程发送数据，或接收远程发来数据;
 
@@ -25,7 +25,9 @@ Socket是对TCP/IP协议的封装，Socket本身并不是协议，而是一个�
 
 TCP三次握手之后，连接就是内存开辟资源（socket）。
 
-四元组：ip port + ip port。内存开辟的资源有唯一性、可以区别。
+四元组：ip port + ip port。
+
+内存开辟的资源有唯一性、可以区别。
 
 例：浏览器打开2个网页，都访问百度。双方发送请求和响应才能到对应的位置。
 
@@ -73,7 +75,7 @@ Send-Q：发送队列
 
 如果服务端直接read()没有accpet()，内核可以三次握手连接。可以发送数据，但是没有程序接收。
 
-app读取的是本机内核socket queue队列中的数据。当app读取socket队列，队列中没有数据时，如果什么都没给，则是block阻塞，如果给个空，则是non block非阻塞。
+app读取的是本机内核`socket queue`队列中的数据。当app读取socket队列，队列中没有数据时，如果什么都没给，则是block阻塞，如果给个空，则是non block非阻塞。
 
 网络IO是程序与内核之间的过程。IO有阻塞和非阻塞IO。
 
@@ -88,6 +90,44 @@ app读取的是本机内核socket queue队列中的数据。当app读取socket�
 ### 双向通信
 
 先运行服务器端，开始等待，才能接收客户端发送的数据。
+
+服务端代码
+
+```java
+package com.hh.networking;
+
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class TestServer {
+    public static void main(String[] args) throws IOException {
+        System.out.println("服务器端启动");
+        //套接字
+        ServerSocket ss = new ServerSocket(8888);//指定端口号，ip不需要指定
+        //等待客户端发送数据
+        Socket s = ss.accept();//一直在等
+      
+        //服务器端感受到的是输入流
+        InputStream is = s.getInputStream();
+        DataInputStream dis = new DataInputStream(is);
+        //接收客户端发送的数据
+        String str = dis.readUTF();
+        System.out.println("接收到客户端：" + str);
+        //向客户端发送数据
+        OutputStream os = s.getOutputStream();
+        DataOutputStream dos = new DataOutputStream(os);
+        dos.writeUTF("你好客户端，我接收到你的信息了");
+        //流、网络资源关闭。倒着关
+        dos.close();
+        os.close();
+        dis.close();
+        is.close();
+        s.close();
+        ss.close();
+    }
+}
+```
 
 客户端代码
 
@@ -119,43 +159,6 @@ public class TestClient {
         dos.close();
         os.close();
         s.close();
-    }
-}
-```
-
-服务端代码
-
-```java
-package com.hh.networking;
-
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-
-public class TestServer {
-    public static void main(String[] args) throws IOException {
-        System.out.println("服务器端启动");
-        //套接字
-        ServerSocket ss = new ServerSocket(8888);//指定端口号，ip不需要指定
-        //等待客户端发送数据
-        Socket s = ss.accept();//一直在等
-        //服务器端感受到的是输入流
-        InputStream is = s.getInputStream();
-        DataInputStream dis = new DataInputStream(is);
-        //接收客户端发送的数据
-        String str = dis.readUTF();
-        System.out.println("接收到客户端：" + str);
-        //向客户端发送数据
-        OutputStream os = s.getOutputStream();
-        DataOutputStream dos = new DataOutputStream(os);
-        dos.writeUTF("你好客户端，我接收到你的信息了");
-        //流、网络资源关闭。倒着关
-        dos.close();
-        os.close();
-        dis.close();
-        is.close();
-        s.close();
-        ss.close();
     }
 }
 ```

@@ -258,7 +258,7 @@ Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_2 like Mac OS X) AppleWebKit/603.2.4 (KH
 - `NSURLRequestReloadRevalidatingCacheData = 5`, 从服务端验证缓存是否可用，本地不可用则请求服务端数据。
 - `NSURLRequestReloadIgnoringCacheData = NSURLRequestReloadIgnoringLocalCacheData`,
 
-![图片](WKWebView.assets/640.jpeg)
+![640](assets/640.jpeg)
 
 根据苹果默认的缓存策略，会进行三步检查。
 
