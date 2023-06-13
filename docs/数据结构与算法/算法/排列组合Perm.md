@@ -44,7 +44,7 @@ void Permutations(char *p, const int k, const int m)
         cout << endl;
     } else {
         for (int i = k; i <= m; i++) {
-            swap(p[k], p[i]);	// 交换字符位置
+            swap(p[k], p[i]);	// 交换字符位置。p[0]和p[1]交换，
             Permutations(p, k + 1, m);//递归
             swap(p[k], p[i]);	// 恢复字符位置
         }
