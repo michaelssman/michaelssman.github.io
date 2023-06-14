@@ -24,7 +24,7 @@ id __weak obj = objc;
 
 __weak修饰的LLVM会符号绑定
 
-通过打开汇编可以看到走的方法：
+打开汇编可以看到走的方法：
 
 ```c++
 id
@@ -137,8 +137,6 @@ storeWeak(id *location, objc_object *newObj)
     return (id)newObj;
 }
 ```
-
-弱引用的指针存储到弱引用表
 
 通过哈希运算找到弱引用表的地址，然后把弱引用指针插入到弱引用表。
 
