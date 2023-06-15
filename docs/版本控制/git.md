@@ -40,11 +40,11 @@ git push <远程主机名> <分支名>
 
 ## git tag
 
-`git tag`命令可以查看当前tag
+`git tag`：查看当前tag
 
-`git tag 0.1.0`。打tag。
+`git tag 0.1.0`：打tag。
 
-`git push --tags`。提交tag到远程。
+`git push --tags`：提交tag到远程。
 
 ## 分支
 
