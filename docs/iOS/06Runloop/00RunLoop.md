@@ -22,9 +22,7 @@ runloop死循环能够保住线程。
 
 ## 作用
 
-1. runloop是一个运行循环，保证程序持续运行不退出！
-
-   没有RunLoop，那么程序一启动就会退出。有了Runoop，那么相当于在内部有一个死循环，能够保证程序的持续运行。
+1. runloop是一个运行**循环**，保证程序持续运行不退出！
 
    main函数中的RunLoop，在UIApplication函数内部就启动了一个RunLoop 该函数返回一个int类型的值。这个默认启动的RunLoop是跟主线程相关联的
 
@@ -40,7 +38,7 @@ runloop死循环能够保住线程。
        return 0;
    }
    ```
-
+   
    运行后，控制台输出Hello,World!然后程序就退出了。
 
    然而，我们在创建的iOS程序，main.m中包含的代码如下：
@@ -52,7 +50,7 @@ runloop死循环能够保住线程。
        }
    }
    ```
-
+   
    运行后，程序并不会退出，而是一直处于运行状态，等待用户响应。当我们把main函数稍作修改，如下：
 
    ```objectivec
@@ -63,7 +61,7 @@ runloop死循环能够保住线程。
        }
    }
    ```
-
+   
    给`return i;`这一行加上断点。发现并不会被断点断住。说明并没有执行到这一步，即上一步还没有结束。为什么会这样呢，那就引出了今天的主角：**RunLoop！因为UIApplicationMain函数内部帮我创建了一个RunLoop “运行循环”**，来保证线程不会退出，能随时处理事件和消息。
 
 - 负责监听事件: 触摸(UI界面的交互)事件，定时器事件（timer），selector事件（选择器performSelector），网络事件.
@@ -105,7 +103,7 @@ runloop死循环能够保住线程。
 4. CFRunLoopTimerRef【Timer事件】
 5. CFRunLoopObserverRef【RunLoop的观察者（监听者）】
 
-RunLoop要想跑起来，它的内部必须要有一个mode,这个mode里面必须有source\observer\timer，至少要有其中的一个。
+RunLoop要想跑起来，它的内部必须要有一个mode，这个mode里面必须有source\observer\timer，至少要有其中的一个。
 
 **运行原理图**
 
