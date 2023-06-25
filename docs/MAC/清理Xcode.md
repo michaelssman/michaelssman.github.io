@@ -8,13 +8,12 @@
    > ~/Library/Developer/Xcode/iOS DeviceSupport
    > 这里放的是连接真机生成的文件，保存着对你设备的版本支持，每个版本文件夹都是几个G的大小，可以全部删掉或者把不常用的版本删掉，再次连接设备会自动生成。
 
-2. 删除打包ipa
+2. 删除打包生成的ipa
 > ~/Library/Developer/Xcode/Archives
-> app打包生成的文件，可以删掉不需要的项目打包文件
 
 3.  删除DerivedData
 > ~/Library/Developer/Xcode/DerivedData
-> 此文件夹内是模拟器运行每个APP生成的缓存文件，项目的索引文件。可以全部删除，或者删除不常用的项目。删除之后只是再重新运行APP时会重新编译耗时较长，并再次生成缓存文件。
+> 模拟器运行每个APP生成的缓存文件，项目的索引文件。
 
 4. 删除log日志记录
 > ~/Library/Developer/Xcode/iOS Device Logs
