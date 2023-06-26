@@ -44,9 +44,9 @@ sudo malloc_history 1087 0x7f7f7523ff10
 
 ![截屏2020-05-10 上午1.10.48](处理bug.assets/截屏2020-05-10 上午1.10.48.png)
 
+## bugly
 
-
-
-
-
+```bash
+java -jar buglyqq-upload-symbol.jar -appid bb45d2001f -appkey 12b7e14e-09b2-4d58-abc8-7f4145fe93be -bundleid com.ningmengyun.AccCollegeTest -version 5.1.5 -buildNo 21 -platform IOS -inputSymbol /Users/michael/Downloads/柠檬会计学院测试.app.dSYM
+```
 

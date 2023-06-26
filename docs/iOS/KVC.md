@@ -1,11 +1,9 @@
 # KVC
 NSKeyValueCoding
 
-先找方法
+先找方法，再找成员变量。
 
-再找成员变量
-
-属性本质，setter，getter，成员变量 三部分组成。
+属性本质：setter、getter、成员变量三部分。
 
 ## set
 
