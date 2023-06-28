@@ -18,17 +18,15 @@ Person s = new Person();
 
 这就是控制反转。 
 
-1.对比以往项目，Spring优势有哪些：方便解耦,简化开发；AOP切面编程；声明式事务；整合各种优秀的框架；
+1.对比以往项目，Spring优势有：方便解耦,简化开发；不改变原有代码在它的基础上扩展（AOP切面编程）；声明式事务；整合各种优秀的框架；
 
-2.发明者：Rod Johnson(罗宾·约翰逊)--Java世界的传奇大师，神级人物；Spring FrameWork的缔造者;旷世奇书"葵花宝典"《Expert one on one [J2EE](https://so.csdn.net/so/search?q=J2EE&spm=1001.2101.3001.7020) Design and Development》作者；Servlet2.4和JDO2.0的规范专家;Java Development Community杰出人物。
+2.不重复造轮子
 
-3.不重复造轮子
+3.使用Spring所需jar包
 
-4.使用Spring所需jar包
+发明者：Rod Johnson(罗宾·约翰逊)--Java世界的传奇大师，神级人物；Spring FrameWork的缔造者;旷世奇书"葵花宝典"《Expert one on one [J2EE](https://so.csdn.net/so/search?q=J2EE&spm=1001.2101.3001.7020) Design and Development》作者；Servlet2.4和JDO2.0的规范专家;Java Development Community杰出人物。
 
-5.Spring官网：https://spring.io/ 
-
-不改变原有代码在它的基础上扩展（AOP）。
+Spring官网：https://spring.io/ 
 
 ## Spring各个模块
 

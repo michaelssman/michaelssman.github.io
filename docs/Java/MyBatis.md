@@ -8,7 +8,7 @@ Java项目中每一层都有自己的作用
 
 ## MyBatis是ORM框架
 
-**ORM**(Object Relation Mapping)，中文名称：对象/关系 映射。是一种解决数据库发展和面向对象编程语言发展不匹配问题而出现的技术。
+**ORM**(Object Relation Mapping)，中文名称：对象关系映射。是一种解决数据库发展和面向对象编程语言发展不匹配问题而出现的技术。
 
 ![image-20230420215343107](assets/image-20230420215343107.png)
 

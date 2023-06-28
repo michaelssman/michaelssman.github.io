@@ -101,7 +101,7 @@ server.port=8080
 
 springboot官方推荐的配置文件是yml文件，yml是用**层级来表示关系**的一种配置文件。
 
-yml中没有标签，而是通过两个空格的缩进来表示层级结构。
+yml中没有标签，而是通过两个空格的缩进来表示层级结构。注意冒号后空格。
 
 **yml中：**
 
@@ -130,8 +130,6 @@ driver-class-name：驱动
 https://docs.spring.io/spring-boot/docs/2.7.6/reference/html/application-properties.html#appendix.application-properties
 
 注意：文件名字为：`application.yml`，文件名字application开头，不能随意动。
-
-注意冒号后空格。
 
 yml配置文件和properties配置文件可以并存。
 
@@ -220,8 +218,6 @@ public class BookServiceImpl implements BookService {
 ```
 
 ### 9、controller层
-
-开发一个Controller
 
 ```java
 package com.msb.controller;
