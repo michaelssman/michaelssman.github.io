@@ -258,7 +258,7 @@ enum LGEnumTest {
 }
 ```
 
-对于当前的 LGEnum 只有一个 case ,不需要用任何东西来去区分当前的 case ,所以打印当前的 LGEnum 大小会发现是0。 
+对于当前的 LGEnum 只有一个 case ,不需要用任何东西来去区分当前的 case ,所以打印当前的 LGEnum 大小是0。 
 
 **值类型在编译期大小已经确定**。
 

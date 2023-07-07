@@ -19,7 +19,7 @@ class ChatModel {
 }
 
 void json_map() {
-  //json转模型
+  //定义map
   final chat = {'name': 'haha', 'message': '吃了吗'};
   //map转json
   final chatJson = json.encode(chat);

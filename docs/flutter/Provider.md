@@ -126,6 +126,3 @@ class MyIcon extends StatelessWidget {
   }
 }
 ```
-
-
-

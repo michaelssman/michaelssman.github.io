@@ -88,7 +88,7 @@
                     
                     if (isSuccess) {
                         self.teamList = [TeamModel mj_objectArrayWithKeyValuesArray:data];
-                                          
+                        
                         [subscriber sendNext:self.teamList];
                     }
                     else {
@@ -98,7 +98,9 @@
                     [subscriber sendCompleted];
                 }];
                 
-                return nil;
+                return [RACDisposable disposableWithBlock:^{
+                    //
+                }];
             }];
         }];
     }
@@ -124,19 +126,19 @@
     }];
 ```
 
-在要读取的地方执行command
-
-```objective-c
-// 执行请求
-    [self.viewModel.fetchTeamListCommand execute:nil];
-```
-
 如果不用在发送网络请求前做什么事，也可以这样订阅：
 
 ```objective-c
 [[[self.viewModel.fetchTeamListCommand executionSignals] switchToLatest] subscribeNext:^(id x) {
         
-    }];
+}];
+```
+
+在要读取的地方执行command
+
+```objective-c
+// 执行请求
+    [self.viewModel.fetchTeamListCommand execute:nil];
 ```
 
 ## 注意的点
