@@ -150,7 +150,7 @@ nav:
       - iOS/编程思想/响应式/RAC/RACDisposable.md
       - iOS/编程思想/响应式/RAC/RACMulticastConnection.md
       - iOS/编程思想/响应式/RAC/RAC基本用法.md
-      - iOS/编程思想/响应式/RAC/RAC过滤.md
+      - iOS/编程思想/响应式/RAC/takeUntil过滤.md
     - iOS/数据持久化/CoreData.md
     - iOS/universalLink.md
     - iOS/快捷键.md
@@ -235,8 +235,7 @@ nav:
       - flutter/Dart/dart.md
       - flutter/Dart/数据类型.md
       - flutter/Dart/运算符重载.md
-      - flutter/Dart/类和对象.md
-      - flutter/Dart/abstract.md
+      - flutter/Dart/类对象抽象类.md
       - flutter/Dart/factory和单例.md
       - flutter/Dart/Mixin多继承.md
       - flutter/Dart/方法.md
