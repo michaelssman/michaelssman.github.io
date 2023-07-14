@@ -74,61 +74,59 @@ nav:
     - 底层原理分析:
       - iOS/底层原理分析/底层探索分析.md
       - iOS/底层原理分析/LLDB指令.md
-    - 01对象原理:
-      - iOS/01对象原理/alloc.md
-      - iOS/01对象原理/isa.md
-      - iOS/01对象原理/对象原理.md
-      - iOS/01对象原理/内存对齐.md
-      - iOS/01对象原理/联合体和位域.md
-    - 02类的原理:
-      - iOS/02类的原理/类的原理.md
-      - iOS/02类的原理/内存平移.md
-      - iOS/02类的原理/cache.md
-      - iOS/02类的原理/isKind和isMember.md
+    - 对象原理:
+      - iOS/对象原理/alloc.md
+      - iOS/对象原理/isa.md
+      - iOS/对象原理/对象原理.md
+      - iOS/对象原理/内存对齐.md
+      - iOS/对象原理/联合体和位域.md
+    - 类的原理:
+      - iOS/类的原理/类的原理.md
+      - iOS/类的原理/内存平移.md
+      - iOS/类的原理/cache.md
+      - iOS/类的原理/isKind和isMember.md
     - iOS/block.md
-    - 03Runtime:
-      - iOS/03Runtime/category.md
-      - iOS/03Runtime/runtime.md
-      - iOS/03Runtime/消息机制.md
-      - iOS/03Runtime/Aspect.md
-    - 04应用程序加载:
-      - MachO: iOS/04应用程序加载/MachO.md
-      - fishhook: iOS/04应用程序加载/fishhook.md
-      - iOS应用加载流程: iOS/04应用程序加载/iOS应用加载流程.md
-      - iOS/04应用程序加载/编译流程.md
-      - 应用启动优化: iOS/04应用程序加载/应用启动优化.md
-      - 符号表: iOS/04应用程序加载/符号表.md
-      - iOS/04应用程序加载/hmap.md
-      - iOS/04应用程序加载/动态库静态库.md
-      - iOS/04应用程序加载/多环境支持.md
+    - Runtime:
+      - iOS/Runtime/category.md
+      - iOS/Runtime/runtime.md
+      - iOS/Runtime/消息机制.md
+      - iOS/Runtime/Aspect.md
+    - 应用程序加载:
+      - MachO: iOS/应用程序加载/MachO.md
+      - fishhook: iOS/应用程序加载/fishhook.md
+      - iOS应用加载流程: iOS/应用程序加载/iOS应用加载流程.md
+      - iOS/应用程序加载/编译流程.md
+      - 应用启动优化: iOS/应用程序加载/应用启动优化.md
+      - 符号表: iOS/应用程序加载/符号表.md
+      - iOS/应用程序加载/hmap.md
+      - iOS/应用程序加载/动态库静态库.md
+      - iOS/应用程序加载/多环境支持.md
     - 内存管理:
       - iOS/内存管理/copy.md
       - iOS/内存管理/iOS属性关键字.md
       - iOS/内存管理/weak原理.md
       - iOS/内存管理/内存管理.md
-    - 06Runloop:
-      - iOS/06Runloop/00RunLoop.md
-      - iOS/06Runloop/01CFRunLoopRef.md
-      - iOS/06Runloop/02CFRunLoopModeRef.md
-      - iOS/06Runloop/03CFRunLoopSourceRef.md
-      - iOS/06Runloop/04CFRunLoopTimerRef.md
-      - iOS/06Runloop/05CFRunLoopObserverRef.md
-      - iOS/06Runloop/线程保活.md
-      - iOS/06Runloop/自动释放池.md
-    - 08组件化:
-      - iOS/08组件化/CocoaPods原理.md
-      - iOS/08组件化/Pod.md
-      - iOS/08组件化/组件化.md
-      - iOS/08组件化/组件化通讯.md
+    - Runloop:
+      - iOS/Runloop/00RunLoop.md
+      - iOS/Runloop/01CFRunLoopRef.md
+      - iOS/Runloop/02CFRunLoopModeRef.md
+      - iOS/Runloop/03CFRunLoopSourceRef.md
+      - iOS/Runloop/04CFRunLoopTimerRef.md
+      - iOS/Runloop/05CFRunLoopObserverRef.md
+      - iOS/Runloop/线程保活.md
+      - iOS/Runloop/自动释放池.md
+    - 组件化:
+      - iOS/组件化/CocoaPods原理.md
+      - iOS/组件化/Pod.md
+      - iOS/组件化/组件化.md
+      - iOS/组件化/组件化通讯.md
     - iOS/响应者链.md
-    - 10性能优化:
-      - iOS/10性能优化/内存检测.md
-      - iOS/10性能优化/界面优化.md
-    - 11架构模式:
-      - iOS/11架构模式/MVX.md
-    - 13crash分析:
-      - iOS/13crach分析/crash分析.md
-      - iOS/13crach分析/处理bug.md
+    - 性能优化:
+      - iOS/性能优化/内存检测.md
+      - iOS/性能优化/界面优化.md
+    - crash分析:
+      - iOS/crach分析/crash分析.md
+      - iOS/crach分析/处理bug.md
     - iOS/KVO.md
     - iOS/KVC.md
     - iOS/Animation.md
@@ -140,17 +138,18 @@ nav:
       - iOS/SDWebImage/SDWebImage.md
       - iOS/SDWebImage/SDWebImageManager.md
     - iOS/WKWebView.md
-    - 编程思想:
-      - iOS/编程思想/编程思想.md
-      - iOS/编程思想/函数式/funtional_programming.md
-      - iOS/编程思想/响应式/响应式编程.md
-      - iOS/编程思想/响应式/RAC/01RACSignal.md
-      - iOS/编程思想/响应式/RAC/02RACSubject和RACReplaySubject.md
-      - iOS/编程思想/响应式/RAC/RACCommand.md
-      - iOS/编程思想/响应式/RAC/RACDisposable.md
-      - iOS/编程思想/响应式/RAC/RACMulticastConnection.md
-      - iOS/编程思想/响应式/RAC/RAC基本用法.md
-      - iOS/编程思想/响应式/RAC/takeUntil过滤.md
+    - 架构模式和编程思想:
+      - iOS/架构模式和编程思想/架构模式/MVX.md
+      - iOS/架构模式和编程思想/编程思想/编程思想.md
+      - iOS/架构模式和编程思想/编程思想/函数式/funtional_programming.md
+      - iOS/架构模式和编程思想/编程思想/响应式/响应式编程.md
+      - iOS/架构模式和编程思想/编程思想/响应式/RAC/01RACSignal.md
+      - iOS/架构模式和编程思想/编程思想/响应式/RAC/02RACSubject和RACReplaySubject.md
+      - iOS/架构模式和编程思想/编程思想/响应式/RAC/RACCommand.md
+      - iOS/架构模式和编程思想/编程思想/响应式/RAC/RACDisposable.md
+      - iOS/架构模式和编程思想/编程思想/响应式/RAC/RACMulticastConnection.md
+      - iOS/架构模式和编程思想/编程思想/响应式/RAC/RAC基本用法.md
+      - iOS/架构模式和编程思想/编程思想/响应式/RAC/takeUntil过滤.md
     - iOS/数据持久化/CoreData.md
     - iOS/universalLink.md
     - iOS/快捷键.md

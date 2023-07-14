@@ -6,15 +6,11 @@
 
 ## MVC
 
-Model模型：用来呈现数据。
+Model模型：存储页面上的数据。
 
 View视图：用来呈现用户界面。
 
 Controller控制器：用来调节模型与视图之间的交互。
-
-在 iOS 应用中日益增长的重量级视图控制器的问题。在典型的 MVC 应用里， 许多逻辑被放在 View Controller 里。
-
-它们中的一些确实属于 View Controller，但更多的是所谓的“表示逻辑（presentation logic），为了不让控制器日益增大，便于测试管理，便出现了MVVM、MVP。
 
 ### 问题一：view和model高耦合
 
@@ -28,7 +24,6 @@ view中setModel方法view和model的依赖。UI不应该改变模型，难以维
 2. 通知
 3. block
 4. 指针 方法
-5. 等等
 
 ### 问题二：VC加重
 
@@ -37,7 +32,6 @@ view中setModel方法view和model的依赖。UI不应该改变模型，难以维
 3. 很长的网络层
 4. 难受的代理
 5. 内部方法
-6. 等等
 
 ### 轻量级VC
 
