@@ -20,7 +20,7 @@
 
 git status --short或git status -s 格式更为紧凑的输出
 
-## git commit 
+## git commit -m "注释"
 
 本地提交。将缓存中的文件Commit到git库
 
@@ -79,3 +79,9 @@ git checkout (branch) 切换到我们要修改的分支。
 ## 冲突解决
 
 选中冲突的文件，点击右键选择'冲突解决'菜单中的选项解决问题。
+
+
+
+
+
+`git config pull.rebase false`

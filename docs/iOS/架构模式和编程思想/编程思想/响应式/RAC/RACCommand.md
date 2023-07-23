@@ -1,7 +1,8 @@
 # RACCommand
 
+1、创建RACCommand
+
 ```objective-c
-- (void)RACCommandTest {
     //创建command，init方法传block，block返回一个RACSignal
     RACCommand *command = [[RACCommand alloc] initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
         NSLog(@"%@",input);//input打印出：起飞～～～～～
@@ -23,7 +24,11 @@
             }];
         }];
     }];
-    
+```
+
+2、订阅command
+
+```objective-c
     //订阅命令发出的信号
     //    [command.executionSignals subscribeNext:^(id  _Nullable x) {
     //        [x subscribeNext:^(id  _Nullable x) {
@@ -49,11 +54,13 @@
             NSLog(@"执行结束");
         }
     }];
-    
+```
+
+3、执行command
+
+```objective-c
     //开始所有动作的导火线 执行命令 会调起RACCommand创建时候的回调
     [command execute:@"起飞～～～～～"];
-    
-}
 ```
 
 1. 没有打印`执行结束`需要发送完消息之后调用`[subscriber sendCompleted];`告诉外界发送完成了。
@@ -67,11 +74,7 @@
  `take`取几次值 正序
  `takeLast`取几次值 倒序
 
-
-
 ## RACCommand网络请求
-
-实例演示：有一个接口从服务端读取团队列表，开始读取的时候显示加载状态。读取完成后更新页面。
 
 ### 1、在ViewModel中将接口声明成一个RACCommand
 
