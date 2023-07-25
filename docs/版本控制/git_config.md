@@ -179,3 +179,40 @@ cat ~/.ssh/id_rsa.pub
 4. 点击 "Add SSH key"（添加 SSH 密钥）按钮。
 
 现在，你应该已经成功将 SSH 密钥添加到 GitHub 帐户中。你可以尝试使用 SSH 克隆或推送到 GitHub 存储库，而无需每次都输入用户名和密码。
+
+### sourcetree
+
+报下面错误：
+
+```
+命令: git -c diff.mnemonicprefix=false -c core.quotepath=false --no-optional-locks ls-remote git@github.com:michaelssman/HHSpecs.git
+输出: 
+错误: The host key is not cached for this server:
+  github.com (port 22)
+You have no guarantee that the server is the computer
+you think it is.
+The server's ssh-ed25519 key fingerprint is:
+  ssh-ed25519 255 SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU
+If you trust this host, enter "y" to add the key to
+PuTTY's cache and carry on connecting.
+If you want to carry on connecting just once, without
+adding the key to the cache, enter "n".
+If you do not trust this host, press Return to abandon the
+connection.
+Store key in cache? (y/n, Return cancels connection, i for more info) fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+```
+
+处理方法：
+
+使用 OpenSSH 代替 PuTTY（推荐）
+
+1. 打开 Sourcetree，并在菜单栏中选择 "Tools"（工具） -> "Options"（选项）。
+2. 在 "Options" 窗口中，选择 "SSH" 选项卡。
+3. 在 "SSH Client Configuration" 部分，将 "SSH Client" 设置为 "OpenSSH"。
+4. 点击 "OK" 保存设置并关闭 "Options" 窗口。
+
+![image-20230726015224279](assets/image-20230726015224279.png)
+
