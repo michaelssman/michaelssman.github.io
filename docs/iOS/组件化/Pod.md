@@ -4,14 +4,6 @@
 
 brew install cocoapods
 
-## 克隆仓库到本地
-
-##### git clone https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git ~/.cocoapods/repos/trunk
-
->fn-116@FN-116deMacBook-Pro ~ % git clone https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git ~/.cocoapods/repos/trunk
-
-Pod search AFNetworking 成功！
-
 ## sudo gem install cocoapods --pre
 
 更新Cocoapods
@@ -79,6 +71,7 @@ pod install 命令功能：
 
 ```
 git clone https://github.com/CocoaPods/Specs.git ~/.cocoapods/repos/trunk
+git clone https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git ~/.cocoapods/repos/trunk
 ```
 
 或者执行命令
