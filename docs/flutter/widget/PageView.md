@@ -17,6 +17,7 @@ class _RootPageState extends State<RootPage> {
     const Account()
   ];
   final PageController _pageController = PageController(); //保存在widget树中 不被销毁
+    
   @override
   Widget build(BuildContext context) {
     return Scaffold(

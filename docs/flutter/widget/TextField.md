@@ -20,7 +20,7 @@ TextField(
     //内容约束
     contentPadding: EdgeInsets.only(left: 5),
     border: InputBorder.none,		//输入框边框
-    hintText: '金额',						//站位文字
+    hintText: '金额',						//占位文字
     hintStyle: TextStyle(
       color: Color(0xeaeaeaea),
       fontSize: 18,
