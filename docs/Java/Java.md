@@ -1,16 +1,22 @@
 # Java
 
+PPT：https://cloud.fynote.com/share/s/z9JGaVu6
+
 ## Java安装
 
-JDK
+### JDK
 
 https://www.oracle.com/java/technologies/downloads/
 
-idea
+Java Development Kit (JDK) 是 Sun 公司（已被 Oracle 收购）针对 Java 开发员的**软件开发工具包**。自从 Java 推出以来，JDK 已经成为使用最广泛的 Java SDK（Software development kit）。
+
+Java SE 8（LTS）、Java SE 11（LTS）、Java SE 17（LTS）企业用的比较多，长期支持版本。
+
+### idea
+
+写代码的工具。
 
 https://www.jetbrains.com/
-
-PPT：https://cloud.fynote.com/share/s/z9JGaVu6
 
 ## 快捷键
 
