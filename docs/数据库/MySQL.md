@@ -36,7 +36,9 @@ MySQL服务器 <-- Navicat客户端
 
 ##### 1、配置环境变量
 
-此电脑-属性-高级系统设置-环境变量-系统变量-path-编辑-新建-将bin路径`"C:\Program Files\MySQL\MySQL Server 8.0\bin"`粘贴
+此电脑|属性|高级系统设置|环境变量|系统变量|path|编辑|新建|将bin路径`"C:\Program Files\MySQL\MySQL Server 8.0\bin"`粘贴|确定
+
+将mysql命令注册到计算机里，能找到这个命令。
 
 ##### 2、终端输入下面命令
 
