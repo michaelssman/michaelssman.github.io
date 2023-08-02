@@ -1,53 +1,72 @@
 # RACCommand
 
-1、创建RACCommand
+### 1、创建RACCommand
+
+在ViewModel中将接口声明成一个RACCommand
 
 ```objective-c
-    //创建command，init方法传block，block返回一个RACSignal
-    RACCommand *command = [[RACCommand alloc] initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
-        NSLog(@"%@",input);//input打印出：起飞～～～～～
-        //返回一个信号
-        return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
-            // 1.开始网络请求
-            NSLog(@"开始网络请求");
-            
-            // 2.1网络请求成功
-            [subscriber sendNext:@"网络请求成功，对外发布数据信息"];//sendNext会调起subscribeNext
-            [subscriber sendCompleted];//告诉外界发送完成了。一定要记得发送完成消息，不然不能再次执行
-            
-            // 2.2网络请求失败
-            [subscriber sendError:nil];
-            
-            return [RACDisposable disposableWithBlock:^{
-                // 取消网络请求
-                NSLog(@"取消网络请求");
+@property (nonatomic, strong)RACCommand *fetchListCommand;
+
+// 读取我的团队列表
+- (RACCommand *)fetchListCommand {
+    if (!_fetchListCommand) {
+        //创建command，init方法传block，block返回一个RACSignal
+        _fetchListCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
+            NSLog(@"%@",input);//input打印出：起飞～～～～～
+            //返回一个信号
+            return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+                // 1.开始网络请求
+                NSLog(@"开始网络请求");
+                
+                // 2.1网络请求成功
+                [subscriber sendNext:@"网络请求成功，对外发布数据信息"];//sendNext会调起subscribeNext
+                [subscriber sendCompleted];//告诉外界发送完成了。一定要记得发送完成消息，不然不能再次执行
+                
+                // 2.2网络请求失败
+                [subscriber sendError:nil];
+                
+                return [RACDisposable disposableWithBlock:^{
+                    // 取消网络请求
+                    NSLog(@"取消网络请求");
+                }];
             }];
         }];
-    }];
+    }
+    return _fetchListCommand;
+}
 ```
 
-2、订阅command
+### 2、订阅command
+
+在Controller中订阅信号
 
 ```objective-c
     //订阅命令发出的信号
-    //    [command.executionSignals subscribeNext:^(id  _Nullable x) {
+    //    [self.viewModel.fetchListCommand.executionSignals subscribeNext:^(id  _Nullable x) {
+        			// 这里的x是一个RACSignal，即执行Command时返回的那个Signal，所以x也是可以订阅的。收到这个信号，说明网络请求开始。
+		//        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     //        [x subscribeNext:^(id  _Nullable x) {
+            // 这里收到信号是网络请求返回
+		//            [MBProgressHUD hideHUDForView:self.view animated:YES];
     //            NSLog(@"订阅一次 - %@",x);
+			            // do something            
     //        }];
     //        NSLog(@"接收数据 - %@",x);//x打印是一个信号
     //    }];
+
     //上面代码订阅了两次，可以使用下面的方法`switchToLatest`表示的是最新发送的信号
-    [command.executionSignals.switchToLatest subscribeNext:^(id  _Nullable x) {
+    [self.viewModel.fetchListCommand.executionSignals.switchToLatest subscribeNext:^(id  _Nullable x) {
         NSLog(@"接收数据 - %@",x);//x打印是一个信号
     }];
     
-    [command.errors subscribeNext:^(NSError * _Nullable x) {
+
+    [self.viewModel.fetchListCommand.errors subscribeNext:^(NSError * _Nullable x) {
         NSLog(@"出错");
     }];
     
     
     //监听命令执行状态
-    [[command.executing skip:1] subscribeNext:^(NSNumber * _Nullable x) {
+    [[self.viewModel.fetchListCommand.executing skip:1] subscribeNext:^(NSNumber * _Nullable x) {
         if ([x boolValue]) {
             NSLog(@"还在执行");
         } else {
@@ -56,11 +75,13 @@
     }];
 ```
 
-3、执行command
+### 3、执行command
+
+在Controller中需要读取的地方执行command请求
 
 ```objective-c
-    //开始所有动作的导火线 执行命令 会调起RACCommand创建时候的回调
-    [command execute:@"起飞～～～～～"];
+//开始所有动作的导火线 执行命令 会调起RACCommand创建时候的回调
+[self.viewModel.fetchListCommand execute:@"起飞～～～～～"];
 ```
 
 1. 没有打印`执行结束`需要发送完消息之后调用`[subscriber sendCompleted];`告诉外界发送完成了。
@@ -73,76 +94,6 @@
  `skip`跳过（忽略）次数
  `take`取几次值 正序
  `takeLast`取几次值 倒序
-
-## RACCommand网络请求
-
-### 1、在ViewModel中将接口声明成一个RACCommand
-
-```objective-c
-@property (nonatomic, strong) RACCommand *fetchTeamListCommand;
-// 读取我的团队列表
-- (RACCommand *)fetchTeamListCommand {
-    if (!_fetchTeamListCommand) {
-        _fetchTeamListCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id input) {
-            
-            return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
-                
-                [TeamApi fetchTeamListWithResult:^(BOOL isSuccess, id data, NSError *error) {
-                    
-                    if (isSuccess) {
-                        self.teamList = [TeamModel mj_objectArrayWithKeyValuesArray:data];
-                        
-                        [subscriber sendNext:self.teamList];
-                    }
-                    else {
-                        [subscriber sendNext:@(NO)];
-                    }
-                    // 一定要记得发送完成消息，不然不能再次执行
-                    [subscriber sendCompleted];
-                }];
-                
-                return [RACDisposable disposableWithBlock:^{
-                    //
-                }];
-            }];
-        }];
-    }
-    
-    return _fetchTeamListCommand;
-}
-```
-
-1. 在Controller中订阅信号
-
-```objective-c
-[[self.viewModel.fetchTeamListCommand executionSignals] subscribeNext:^(id x) {
-        // 这里的x是一个RACSignal，即执行Command时返回的那个Signal，所以x也是可以订阅的。收到这个信号，说明网络请求开始。
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        // 这里收到信号是开始发送网络请求
-        [x subscribeNext:^(id x) {
-            // 这里收到信号是网络请求返回
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            
-            // do something            
-        }];
-        
-    }];
-```
-
-如果不用在发送网络请求前做什么事，也可以这样订阅：
-
-```objective-c
-[[[self.viewModel.fetchTeamListCommand executionSignals] switchToLatest] subscribeNext:^(id x) {
-        
-}];
-```
-
-在要读取的地方执行command
-
-```objective-c
-// 执行请求
-    [self.viewModel.fetchTeamListCommand execute:nil];
-```
 
 ## 注意的点
 
