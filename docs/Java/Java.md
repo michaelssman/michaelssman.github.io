@@ -33,8 +33,38 @@ https://www.jetbrains.com/
 
 ## 目录结构
 
-Empty Project作为一个工作空间，放所有的项目。
+Create New Project --> Empty Project
 
-jar包：Empty Project|Module|lib|mysql-connector-java-8.0.11.jar|然后右键jar包|Add as Library|
+Empty Project：作为一个工作空间，相当于一个大文件夹容器。里面放所有的项目（Module模块）。
 
-Java文件：Empty Project|Module|src|package包名|创建java文件
+手动导入jar包的位置：Empty Project|Module|lib|mysql-connector-java-8.0.11.jar|然后右键jar包|Add as Library|
+
+Java文件位置：Empty Project|Module|src|package包名|创建java文件
+
+### maven项目
+
+#### src
+
+##### 1、main
+
+所有业务代码都放在main下。
+
+###### 1.1、java
+
+源码都放在java里。java文件夹下创建Package（例com.hh.test01），包下面创建类。
+
+###### 1.2、resources
+
+配置文件.propertity、.xml资源文件
+
+##### 2、test
+
+测试代码
+
+###### 2.1、java
+
+类似main下的java
+
+###### 2.2、resources
+
+类似main下的resources

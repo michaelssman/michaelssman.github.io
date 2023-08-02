@@ -41,17 +41,17 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 
 从maven官网下载Maven,官网地址:[https://maven.apache.org](https://maven.apache.org/)
 
-## Maven的常用配置
+## Maven的配置
 
-### 本地仓库
+下面三个配置都是在配置文件`C:\Users\micha\hhsoftware\apache-maven-3.9.1\conf\settings.xml`中修改。
+
+### 1、本地仓库
 
 1.随便选择一个目录作为本地仓库，可以使用我提供的本地仓库
 
-2.在配置文件`C:\Users\micha\hhsoftware\apache-maven-3.9.1\conf\settings.xml`中指定本地仓库位置
+2.指定本地仓库位置`<localRepository>C:/Users/micha/Documents/Repository</localRepository>`
 
-`<localRepository>D:/repository</localRepository>`
-
-### 镜像仓库
+### 2、镜像仓库
 
 指定阿里云镜像仓库：
 
@@ -66,46 +66,44 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 </mirrors>
 ```
 
-### 配置JDK
+### 3、配置JDK
 
 在使用Maven后，项目由Maven来完成编译和打包运行，需要指定使用的JDK版本。
 
 17换成1.8。
 
 ```xml
-    <profile>
-      <id>jdk-17</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-        <jdk>17</jdk>
-      </activation>
-      <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.compilerVersion>17</maven.compiler.compilerVersion>
-      </properties>
-    </profile>
+<profile>
+  <id>jdk-17</id>
+  <activation>
+    <activeByDefault>true</activeByDefault>
+    <jdk>17</jdk>
+  </activation>
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.compilerVersion>17</maven.compiler.compilerVersion>
+  </properties>
+</profile>
 ```
 
-### 在IDEA中配置Maven
+## 在IDEA中配置Maven
 
-maven：换为低版本3.6.3
+maven：3.8.6换为低版本3.6.3
 
-JDK：换为低版本8
+JDK：17换为低版本8
 
-### 创建Maven项目
+IEDA：2019版本
 
-#### IDEA
+## 创建Maven项目
 
-新建项目 --> Empty Project
-
-Empty Project：相当于一个大文件夹容器，里面放多个项目。
+#### IDEA集成Maven的处理
 
 `File | Settings | Build, Execution, Deployment | Build Tools | Maven`
 
 ![image-20230419215252262](assets/image-20230419215252262.png)
 
-新建Mudule模块，ModuleSDK选择1.8版本的。
+新建Module模块，ModuleSDK选择1.8版本的。
 
 ![image-20230419215721836](assets/image-20230419215721836.png)
 
@@ -119,9 +117,9 @@ Empty Project：相当于一个大文件夹容器，里面放多个项目。
 
 ![image-20230420220415684](assets/image-20230420220415684.png)
 
-在`项目|module|src|main|java|`文件夹下新建包Package（例`com.hh.test01`），包下面创建类。
-
 ## pom.xml文件中添加依赖包
+
+引入各种jar包的坐标都在这里面写。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
