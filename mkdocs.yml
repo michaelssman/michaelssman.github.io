@@ -250,6 +250,7 @@ nav:
     - flutter/package和plugin.md
     - flutter/Provider.md
     - flutter/widget.md
+    - flutter/widget/MaterialApp.md
     - flutter/widget/Scaffold.md
     - flutter/widget/ListView.md
     - flutter/widget/PageView.md
@@ -367,8 +368,9 @@ nav:
       - Html/Vue/添加实例 property.md
   - Java:
     - Java/Java.md
+    - Java/数据类型.md
     - Java/IO.md
-    - Java/JDBC.md
+    - Java/JDBC数据库连接.md
     - Java/Maven.md
     - Java/框架.md
     - Java/MyBatis.md
