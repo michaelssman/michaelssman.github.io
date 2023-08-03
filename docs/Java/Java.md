@@ -49,22 +49,34 @@ Java文件位置：Empty Project|Module|src|package包名|创建java文件
 
 所有业务代码都放在main下。
 
-###### 1.1、java
+##### 1.1、java
 
 源码都放在java里。java文件夹下创建Package（例com.hh.test01），包下面创建类。
 
-###### 1.2、resources
+###### com.hh.pojo
 
-配置文件.propertity、.xml资源文件
+实体类一般是pojo包
+
+##### 1.2、resources
+
+配置文件.properties、.xml资源文件
+
+###### mapper
+
+映射文件
 
 ##### 2、test
 
 测试代码
 
-###### 2.1、java
+##### 2.1、java
 
 类似main下的java
 
-###### 2.2、resources
+##### 2.2、resources
 
 类似main下的resources
+
+#### pom.xml
+
+导包的坐标写在这里面。

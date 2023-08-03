@@ -1,10 +1,14 @@
 # MyBatis
 
+等效于对之前学习JDBC的MyBatis框架。
+
 ## MyBatis是持久层框架
 
-**持久层**是分层开发中专门负责访问数据源的一层，把访问数据源的代码和业务逻辑代码分离开，有利于后期维护和团队分工开发。同时也增加了数据访问代码的复用性。
+**持久层**是分层开发中专门负责访问数据源的一层。
 
-Java项目中每一层都有自己的作用
+把访问数据源的代码和业务逻辑代码分离开，有利于后期维护和团队分工开发。同时也增加了数据访问代码的复用性。
+
+Java项目中每一层都有自己的作用。不同的层创建不同的类，不同的类功能不一样。
 
 ## MyBatis是ORM框架
 
@@ -25,29 +29,31 @@ Java项目中每一层都有自己的作用
 ### 3、在pom.xml文件中添加依赖
 
 ```xml
-    <dependencies>
-        
-        <!--MySQL依赖，mybatis链接数据库需要mysql驱动-->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.28</version>
-        </dependency>
-        <!--Mybatis依赖-->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.5.6</version>
-        </dependency>
-
-    </dependencies>
+<dependencies>
+    <!--MySQL依赖，mybatis链接数据库需要mysql驱动-->
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>8.0.28</version>
+    </dependency>
+    <!--Mybatis依赖-->
+    <dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis</artifactId>
+        <version>3.5.6</version>
+    </dependency>
+</dependencies>
 ```
 
 ### 4、创建MyBatis全局配置文件
 
 （mybaits中文网址：https://mybatis.org/mybatis-3/zh/getting-started.html）
 
-4.1、在`项目|模块|src|main|resources`中创建`db.properties`文件
+4.1、在`项目|模块|src|main|resources`中创建`db.properties`文件，后缀名必须是`.properties`。
+
+里面放数据库的配置信息。
+
+数据库的参数和核心配置文件解耦。改数据库的参数在`db.properties`里面改。
 
 ```properties
 url=jdbc:mysql://localhost:3306/msb?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
@@ -60,15 +66,20 @@ password=数据库密码
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--标签约束，xml的标签不能随便写，一旦随便写，代码会出错-->
 <!DOCTYPE configuration
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+    <!--    加载数据库配置文件-->
     <properties resource="db.properties"></properties>
+    <!--    别名设置-->
     <typeAliases>
-        <package name="com.msb.pojo"/>
+        <typeAlias type="com.hh.pojo.Book" alias="b"></typeAlias>
+        <package name="com.hh.pojo"/>
     </typeAliases>
-    
+
+    <!--数据库配置信息-->
     <environments default="mysql">
         <!--链接MySQL数据库的数据源配置-->
         <environment id="mysql">
@@ -84,7 +95,7 @@ password=数据库密码
     </environments>
     <!--资源扫描、接口对应的实现类-->
     <mappers>
-        <mapper resource="com/msb/mapper/BookMapper.xml"></mapper>
+        <mapper resource="mapper/BookMapper.xml"></mapper>
     </mappers>
 
 </configuration>
@@ -94,12 +105,12 @@ password=数据库密码
 
 MyBatis提供了别名机制可以对某个类起别名或给某个包下所有类起别名，简化resultType取值的写法。
 
-在核心配置文件中，通过`<typeAlias>`标签明确设置类型的别名。
+在核心配置文件mybatis.xml中，通过`<typeAlias>`标签明确设置类型的别名。
 
 - type:类型全限定路径
 - alias:别名名称
 
-##### 1、具体的类起别名
+#### 1、具体的类起别名
 
 ```xml
 <typeAliases>  
@@ -107,7 +118,7 @@ MyBatis提供了别名机制可以对某个类起别名或给某个包下所有�
 </typeAliases>
 ```
 
-##### 2、指定的包起别名
+#### 2、指定的包起别名
 
 当类个数较多时，明确指定别名工作量较大，可以通过`<package>`标签指定包下全部类的别名。指定后所有类的别名就是类名。（也不区分大小写）
 
@@ -117,11 +128,19 @@ MyBatis提供了别名机制可以对某个类起别名或给某个包下所有�
 </typeAliases>
 ```
 
-PS:明确指定别名和指定包的方式可以同时存在
+PS:明确指定别名和指定包的方式可以同时存在。
+
+**内置别名**
+
+MyBatis框架中内置了一些常见类型的别名。这些别名不需要配置
+
+![img](assets/a603e8dbde504442b6e06ee08d592cbd.png)
 
 ### 5、创建实体类
 
-在`项目|module|src|main|java|package（com.hh.pojo）`创建Book实体类。
+创建Book实体类。
+
+Mybatis查询到的数据要封装成对象，对象要依托于类。
 
 ### 6、创建接口类
 
@@ -150,17 +169,23 @@ public interface BookMapper {
 
 ### 6、创建映射文件，在核心配置文件中进行扫描
 
-对数据库做操作的sq。增删改查。
+对数据库做操作的sq信息。增删改查在这个配置文件里。
 
-在`项目|module|src|main|resources`下创建package（com.hh.mapper)，然后在mapper文件夹中创建`BookMapper.xml`。
+在`项目|module|src|main|resources`下创建mapper文件夹，然后在mapper文件夹中创建`BookMapper.xml`。
+
+sql和业务代码解耦。直接在xml中操作。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--约束 根标签是mapper-->
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.msb.mapper.BookMapper">
-    <select id="selectAllBooks" resultType="Book">
+<!--namespace：防止其它文件也有同样的名字的sql，所以定义一个命名空间-->
+<mapper namespace="com.hh.mapper.BookMapper">
+    <!--    查询操作-->
+    <!--    id类似方法名，resultType是返回值-->
+    <select id="selectAllBooks" resultType="com.hh.pojo.Book">
         select * from t_book
     </select>
     <select id="selectOneBook" resultType="Book">
@@ -172,13 +197,14 @@ public interface BookMapper {
     <select id="selectOneBook3" resultType="Book">
         select * from t_book where name =#{param1} and author = #{param2.author}
     </select>
+    <!--    插入操作-->
     <insert id="insertBook">
         insert into t_book (id,name,author,price) values (#{id},#{name},#{author},#{price})
     </insert>
 </mapper>
 ```
 
-映射文件默认不会被程序加载，如果想要被项目加载，需要配置到上面的核心配置文件中`<mappers>`。 
+映射文件默认不会被程序加载，如果想要被项目加载，需要配置到上面的核心配置文件mybatis.xml中`<mappers>`。 
 
 ### 7、编写测试类，启动项目
 
@@ -186,7 +212,6 @@ public interface BookMapper {
 package com.hh.test;
 
 import com.hh.pojo.Book;
-
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -198,7 +223,7 @@ import java.util.List;
 
 public class Test {
     public static void main(String[] args) throws IOException {
-        //指定核心配置文件的路径：
+        //指定核心配置文件的路径：从resources下开始加载，mybatis.xml在resources根目录下，所以直接写mybatis.xml。
         String resource = "mybatis.xml";
         //获取加载配置文件的输入流：
         InputStream inputStream = Resources.getResourceAsStream(resource);
@@ -207,15 +232,54 @@ public class Test {
         //通过工厂类获取一个会话：
         SqlSession sqlSession = sqlSessionFactory.openSession();
         //执行查询：
-        List list = sqlSession.selectList("a.b.selectAllBooks");
+        List list = sqlSession.selectList("com.hh.mapper.BookMapper.selectAllBooks");
         //遍历：
-        for (int i = 0; i <= list.size() - 1; i++) {
-            Book b = (Book) list.get(i);
+        for (int i = 0; i <= list.size() - 1 ; i++) {
+            Book b = (Book)list.get(i);
             System.out.println(b.getName() + "---" + b.getAuthor());
         }
         //关闭资源：
         sqlSession.close();
     }
 }
+```
+
+### MyBatis启动日志功能
+
+MyBatis框架内置日志工厂。日志工厂负责自动加载项目中配置的日志。MyBatis支持以下日志：
+
+- SLF4J
+- Apache Commons Logging
+- Log4j 2
+- **Log4j** (deprecated since 3.5.9)
+- JDK logging
+
+`pom.xml`增加log4j的依赖：
+
+```xml
+<!--log4j的依赖-->
+<dependency>
+    <groupId>log4j</groupId>
+    <artifactId>log4j</artifactId>
+    <version>1.2.17</version>
+</dependency>
+```
+
+在resources中新建`log4j.properties`配置文件。名称必须叫这个名字，扩展名必须是.properties。
+
+如果说你只是想看sql执行过程，那么可以整体调高，局部降低：将整个日志级别调为ERROR，然后mapper.xml涉及的内容级别降低为TRACE。这样整体的多余信息不会输出，然后mapper.xml中的涉及内容会详细打印，log4j.properties加入：
+
+```properties
+# log4j中定义的级别：fatal(致命错误) > error(错误) >warn(警告) >info(普通信息) >debug(调试信息)>trace(跟踪信息)
+log4j.rootLogger = error , console
+
+# log4f.logger是固定的，com.hh.mapper.BookMapper是命名空间的名字。
+log4j.logger.com.hh.mapper.BookMapper=TRACE
+
+### console ###
+log4j.appender.console = org.apache.log4j.ConsoleAppender
+log4j.appender.console.Target = System.out
+log4j.appender.console.layout = org.apache.log4j.PatternLayout
+log4j.appender.console.layout.ConversionPattern = [%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %C.%M(%L) | %m%n
 ```
 
