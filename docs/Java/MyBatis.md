@@ -26,7 +26,7 @@ Java项目中每一层都有自己的作用。不同的层创建不同的类，�
 
 通过Maven导入对应框架。
 
-### 3、在pom.xml文件中添加依赖
+### 3、pom.xml文件中添加依赖
 
 ```xml
 <dependencies>
@@ -49,7 +49,9 @@ Java项目中每一层都有自己的作用。不同的层创建不同的类，�
 
 （mybaits中文网址：https://mybatis.org/mybatis-3/zh/getting-started.html）
 
-4.1、在`项目|模块|src|main|resources`中创建`db.properties`文件，后缀名必须是`.properties`。
+4.1、配置数据库属性文件
+
+在`项目|模块|src|main|resources`中创建`db.properties`文件，后缀名必须是`.properties`。
 
 里面放数据库的配置信息。
 
@@ -95,7 +97,7 @@ password=数据库密码
     </environments>
     <!--资源扫描、接口对应的实现类-->
     <mappers>
-        <mapper resource="mapper/BookMapper.xml"></mapper>
+        <mapper resource="com/hh/mapper/BookMapper.xml"></mapper>
     </mappers>
 
 </configuration>
@@ -144,7 +146,15 @@ Mybatis查询到的数据要封装成对象，对象要依托于类。
 
 ### 6、创建接口类
 
-在`项目|module|src|main|java|package（com.hh.mapper）`创建BookMapper。
+**之前的项目存在的问题**
+
+- 方法不能直接调用
+- 多个参数问题处理麻烦
+- 项目没有规范可言，不利于面向接口编程思想。
+
+BookMapper.xml里面的sql不能作为方法调用。
+
+在`项目|module|src|main|java|package（com.hh.mapper）`创建BookMapper接口文件。
 
 ```java
 package com.msb.mapper;
@@ -171,9 +181,11 @@ public interface BookMapper {
 
 对数据库做操作的sq信息。增删改查在这个配置文件里。
 
-在`项目|module|src|main|resources`下创建mapper文件夹，然后在mapper文件夹中创建`BookMapper.xml`。
+在`项目|module|src|main|resources`下创建com文件夹->hh文件夹->mapper文件夹，然后在mapper文件夹中创建`BookMapper.xml`。
 
 sql和业务代码解耦。直接在xml中操作。
+
+创建映射文件：要求：namespace取值必须是接口的全限定路径、标签中的id属性值必须和接口中的方法名对应。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -181,11 +193,12 @@ sql和业务代码解耦。直接在xml中操作。
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!--namespace：防止其它文件也有同样的名字的sql，所以定义一个命名空间-->
+<!--namespace：防止其它文件也有同样的名字的sql，所以定义一个命名空间。下面的id方法就是接口对应的实现类-->
 <mapper namespace="com.hh.mapper.BookMapper">
     <!--    查询操作-->
     <!--    id类似方法名，resultType是返回值-->
-    <select id="selectAllBooks" resultType="com.hh.pojo.Book">
+    <!--    id方法名要与接口对应的名字一样-->
+    <select id="selectAllBooks" resultType="b">
         select * from t_book
     </select>
     <select id="selectOneBook" resultType="Book">
@@ -231,8 +244,14 @@ public class Test {
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
         //通过工厂类获取一个会话：
         SqlSession sqlSession = sqlSessionFactory.openSession();
-        //执行查询：
+        
+        //1.普通执行查询：
         List list = sqlSession.selectList("com.hh.mapper.BookMapper.selectAllBooks");
+        //2.接口绑定方案
+        //动态代理模式：通过接口找到接口对应的实现类 BookMapper mapper = BookMapper实现类BookMapper.xml
+        BookMapper mapper = sqlSession.getMapper(BookMapper.class);
+        List list = mapper.selectAllBooks();
+        
         //遍历：
         for (int i = 0; i <= list.size() - 1 ; i++) {
             Book b = (Book)list.get(i);
