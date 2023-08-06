@@ -148,7 +148,7 @@ Mybatis查询到的数据要封装成对象，对象要依托于类。
 
 **之前的项目存在的问题**
 
-- 方法不能直接调用
+- **方法不能直接调用**
 - 多个参数问题处理麻烦
 - 项目没有规范可言，不利于面向接口编程思想。
 
@@ -177,7 +177,7 @@ public interface BookMapper {
 
 ```
 
-### 6、创建映射文件，在核心配置文件中进行扫描
+### 7、创建映射文件，在核心配置文件中进行扫描
 
 对数据库做操作的sq信息。增删改查在这个配置文件里。
 
@@ -219,11 +219,12 @@ sql和业务代码解耦。直接在xml中操作。
 
 映射文件默认不会被程序加载，如果想要被项目加载，需要配置到上面的核心配置文件mybatis.xml中`<mappers>`。 
 
-### 7、编写测试类，启动项目
+### 8、编写测试类，启动项目
 
 ```java
 package com.hh.test;
 
+import com.hh.mapper.BookMapper;
 import com.hh.pojo.Book;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
@@ -234,7 +235,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-public class Test {
+public class test {
     public static void main(String[] args) throws IOException {
         //指定核心配置文件的路径：从resources下开始加载，mybatis.xml在resources根目录下，所以直接写mybatis.xml。
         String resource = "mybatis.xml";
@@ -244,19 +245,40 @@ public class Test {
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
         //通过工厂类获取一个会话：
         SqlSession sqlSession = sqlSessionFactory.openSession();
-        
-        //1.普通执行查询：
-        List list = sqlSession.selectList("com.hh.mapper.BookMapper.selectAllBooks");
-        //2.接口绑定方案
         //动态代理模式：通过接口找到接口对应的实现类 BookMapper mapper = BookMapper实现类BookMapper.xml
         BookMapper mapper = sqlSession.getMapper(BookMapper.class);
         List list = mapper.selectAllBooks();
-        
         //遍历：
-        for (int i = 0; i <= list.size() - 1 ; i++) {
-            Book b = (Book)list.get(i);
+        for (int i = 0; i <= list.size() - 1; i++) {
+            Book b = (Book) list.get(i);
             System.out.println(b.getName() + "---" + b.getAuthor());
         }
+
+        Book book = mapper.selectOneBook("java", "jj");
+        System.out.println(book.getName());
+
+        //参数传一个对象
+        Book b = new Book();
+        b.setName("java");
+        b.setAuthor("jj");
+        Book book1 = mapper.selectOneBook2(b);
+        System.out.println(book1.getAuthor());
+
+        Book book2 = mapper.selectOneBook3("java", b);
+        System.out.println(book2.getAuthor());
+
+        //插入数据
+        Book book3 = new Book();
+        book3.setId(3);
+        book3.setName("flutter");
+        book3.setAuthor("msb");
+        book3.setPrice(89);
+        int n = mapper.insertBook(book3);
+        if (n > 0) {
+            System.out.println("插入成功");
+        }
+        //事务相关操作
+        sqlSession.commit();
         //关闭资源：
         sqlSession.close();
     }
@@ -302,3 +324,42 @@ log4j.appender.console.layout = org.apache.log4j.PatternLayout
 log4j.appender.console.layout.ConversionPattern = [%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %C.%M(%L) | %m%n
 ```
 
+### 参数传递
+
+**使用接口绑定方案之前：**
+
+（1）如果是一个参数，直接传递
+
+（2）如果是多个参数，封装为对象/集合
+
+**使用接口绑定方法之后：**
+
+可以直接调用方法传递参数即可。传递后在映射文件中如何获取数据呢？
+
+在BookMapper接口文件中定义接口，在BookMapper.xml映射文件中写参数的名字和接口中的要对应。
+
+**获取数据方式-使用内置名称进行调用**
+
+使用符号： **#{}**进行获取
+
+{}中名字使用**规则**：
+
+- arg0、arg1、argM(M为从0开始的数字，和方法参数顺序对应)
+- param1、param2、paramN（N为从1开始的数字，和方法参数顺序对应）。
+
+**一个参数且参数为对象，获取参数如何处理呢？**
+
+使用符号： **#{}**进行获取
+
+直接利用属性名即可
+
+**多个参数且参数有对象，获取参数如何处理呢？**
+
+使用符号： **#{}**进行获取
+
+- argM.属性名
+- paramN.属性名
+
+PS：argM. 或者 paramN. 不可以省略不写
+
+先接口、再映射文件。
