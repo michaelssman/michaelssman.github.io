@@ -1,4 +1,4 @@
-# web项目和SpringMVC和SSM
+# web项目SpringMVC和SSM
 
 ## Java项目和web项目的区别
 

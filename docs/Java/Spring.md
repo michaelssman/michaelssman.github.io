@@ -1,12 +1,18 @@
-# Spring
+# Spring框架
 
-创建一个Student类
+## Spring优势：
+
+### 1、方便解耦
+
+#### 控制反转
+
+Student类，创建对象
 
 ```java
 Student s = new Student();
 ```
 
-如果想要改为Person
+如果想要把Student改为Person
 
 ```java
 Person s = new Person();
@@ -14,15 +20,27 @@ Person s = new Person();
 
 如果有几十处的话，都需要修改。耦合性太大。
 
-创建对象代码从java代码转移到Spring容器中。耦合性低。
+Java代码不再new创建对象，程序中用一个xml文件，里面配置对象名和类。使用反射。耦合性低。
 
-这就是控制反转。 
+spring容器里面放各种对象。
 
-1.对比以往项目，Spring优势有：方便解耦,简化开发；不改变原有代码在它的基础上扩展（AOP切面编程）；声明式事务；整合各种优秀的框架；
+### 2、简化开发
 
-2.不重复造轮子
+对比MyBatis框架，定义接口、写映射文件，主要问题是解析mybatis.xml文件的代码，Spring就可以更简洁的处理。
 
-3.使用Spring所需jar包
+### 3、不改变原有代码在它的基础上扩展（AOP切面编程）
+
+### 4、声明式事务
+
+### 5、整合各种优秀的框架
+
+Spring是框架的框架。
+
+**不重复造轮子**
+
+A公司用a框架，B公司用b框架、C公司用c框架。3个框架的作用是完全一样的，用法也差不多。原有的技术加Spring的整合就可以很简单。不过后来Spring违背了这一原则，自己又出了新轮子。
+
+使用Spring所需jar包比较多，通过maven导包就方便。
 
 发明者：Rod Johnson(罗宾·约翰逊)--Java世界的传奇大师，神级人物；Spring FrameWork的缔造者;旷世奇书"葵花宝典"《Expert one on one [J2EE](https://so.csdn.net/so/search?q=J2EE&spm=1001.2101.3001.7020) Design and Development》作者；Servlet2.4和JDO2.0的规范专家;Java Development Community杰出人物。
 
@@ -36,21 +54,17 @@ Spring官网：https://spring.io/
 
 IoC(Inversion of Control)中文名称：控制反转，也被称为DI(dependency injection )：依赖注入。
 
-创建对象的权利,或者是控制的位置,**由JAVA代码转移到spring容器,由spring的容器控制对象的创建,就是控制反转**。
+创建对象的权利（控制的位置）,**由JAVA代码转移到spring容器,由spring的容器控制对象的创建,就是控制反转**。
 
-由于控制反转概念比较含糊，所以在 2004 年大师级人物Martin Fowler又给出了一个新的名字:“依赖注入”，相对loC而言，“依赖注入”明确描述了“被注入对象依赖loC容器来配置依赖对象”，Dl(英文全称为Dependency Injection，中文译名为依赖注入）是loC的别名。
+由于控制反转概念比较含糊，所以又给出了一个新的名字:“依赖注入”，相对loC而言，“依赖注入”明确描述了“被注入对象依赖loC容器来配置依赖对象”，Dl(英文全称为Dependency Injection，中文译名依赖注入）是loC的别名。
+
+![IOCDI原理](assets/IOCDI原理.png)
 
 ### 分层处理
 
 从前端获取的数据到从数据库处理之前，所有的逻辑都在java里面，各种功能在一起，程序臃肿，需要划分。
 
 每一层都分为接口+实现类两部分。接口不会变，只需要替换实现类，就可以实现修改。
-
-
-
-Java代码不再new创建对象，程序中用一个xml文件，里面配置对象名和类。使用反射。
-
-spring容器里面放各种对象。
 
 ## 第一个Spring项目-完成IoC/DI代码的实现
 
