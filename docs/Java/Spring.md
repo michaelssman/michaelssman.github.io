@@ -1,5 +1,9 @@
 # Spring框架
 
+## Spring各个模块
+
+![img](assets/56b9acd28d814147aed69e647befb156.png)
+
 ## Spring优势：
 
 ### 1、方便解耦
@@ -46,10 +50,6 @@ A公司用a框架，B公司用b框架、C公司用c框架。3个框架的作用�
 
 Spring官网：https://spring.io/ 
 
-## Spring各个模块
-
-![img](assets/56b9acd28d814147aed69e647befb156.png)
-
 ## Spring IoC/DI 介绍
 
 IoC(Inversion of Control)中文名称：控制反转，也被称为DI(dependency injection )：依赖注入。
@@ -60,17 +60,50 @@ IoC(Inversion of Control)中文名称：控制反转，也被称为DI(dependency
 
 ![IOCDI原理](assets/IOCDI原理.png)
 
-### 分层处理
+### Java程序分层处理
 
 从前端获取的数据到从数据库处理之前，所有的逻辑都在java里面，各种功能在一起，程序臃肿，需要划分。
 
+### 1、控制层
+
+- 获取前端数据
+- 控制页面跳转（例：登录成功返回成功，失败返回失败，前面跳转对应页面）
+- 调用业务层
+
+### 2、业务层
+
+- 处理业务（业务需要增加和删除数据库数据操作同时进行，或者修改和查询同时进行。具体的业务逻辑）
+  - A逻辑 需要增加和删除操作
+  - B逻辑 需要增加和修改操作
+  - C逻辑 需要增加和查询操作
+  - 所以数据库连接层是简单的操作
+- 调用数据库连接层
+
+### 3、数据库连接层
+
+- 跟数据库进行交互（简单的增加、删除、修改）
+
+### 接口+实现类
+
 每一层都分为接口+实现类两部分。接口不会变，只需要替换实现类，就可以实现修改。
+
+通过接口=实现类的方式调用，更规范和扩展性更强。
+
+### IoC/DI原理
+
+如果每次创建对象的位置特别多，创建对象的代码和Java代码耦合性高，层和层之间的耦合性也高。所以把创建对象的代码交由Spring管理，不再在Java代码里创建对象。这就是Ioc/DI。
+
+创建对象在Spring容器，Spring容器看不到，在底层完成的。
+
+在程序中会多一个配置文件`applicationContext.xml`，名字可以自己定义。在xml中可以配置bean标签，例：`<bean id="s" class="Student">`，这行代码底层做的就是`Student s = new Student();`，构建是Spring底层通过反射技能做的。构建的对象放在一个地方：Spring容器，底层是map集合。Spring容器中放各种对象。
+
+applicationContext.xml通过反射创建对象，所有对象放在容器中，java程序从容器中取对象。
 
 ## 第一个Spring项目-完成IoC/DI代码的实现
 
-**1.创建项目，添加依赖**
+### 1、创建Maven项目，添加依赖
 
-创建普通Maven项目，在项目的pom.xml中添加Spring项目的最基本依赖。
+在项目的pom.xml中添加Spring项目的最基本依赖。
 
 Spring项目想要运行起来必须包含:
 
@@ -89,20 +122,22 @@ Spring项目想要运行起来必须包含:
   所以在Maven中想要使用Spring框架只需要在项目中导入spring-context就可以了，其他的jar包根据Maven依赖传递性都可以导入进来。
 
 ```xml
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>5.3.23</version>
-        </dependency>
-    </dependencies>
+<dependencies>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>5.3.23</version>
+    </dependency>
+</dependencies>
 ```
 
-2.创建一个类
+### 2、创建一个Book类
 
-3.创建Spring配置文件
+Project\Maven\src\main\java\com.hh.pojo包\Book.java
 
-在src/main/resources下新建applicationContext.xml文件。
+### 3、创建Spring配置文件
+
+在src/main/resources下新建`applicationContext.xml`文件。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -114,35 +149,37 @@ Spring项目想要运行起来必须包含:
         http://www.springframework.org/schema/context
         https://www.springframework.org/schema/context/spring-context.xsd">
 
-	<!-- com.msb.pojo包下component的注解都会扫描到-->
-    <context:component-scan base-package="com.msb.pojo"></context:component-scan>
+    <!-- com.hh.pojo包下component的注解都会扫描到-->
+    <context:component-scan base-package="com.hh.pojo"></context:component-scan>
 
-<!--    <bean id="b" class="com.msb.pojo.Book">-->
-<!--        <property name="id1" value="1" ></property>-->
-<!--        <property name="name1" value="项目驱动零起点学Java"></property>-->
-<!--    </bean>-->
-    
-<!--    <bean id="b2" class="com.msb.pojo.Book">-->
-<!--        <constructor-arg name="id2" value="2"></constructor-arg>-->
-<!--        <constructor-arg name="name2" value="红高粱"></constructor-arg>-->
-<!--    </bean>-->
-    
-<!--    <bean id="boy" class="com.msb.pojo.Boy">-->
-<!--        <property name="age" value="22"></property>-->
-<!--        <property name="name" value="小明"></property>-->
-<!--    </bean>-->
-<!--    <bean id="girl" class="com.msb.pojo.Girl">-->
-<!--        <property name="age" value="19"></property>-->
-<!--        <property name="name" value="露露"></property>-->
-<!--        <property name="boyfriend" ref="boy"></property>-->
-<!--    </bean>-->
-    
+    <!--    <bean id="b" class="com.hh.pojo.Book">-->
+    <!--        <property name="id1" value="1" ></property>-->
+    <!--        <property name="name1" value="项目驱动零起点学Java"></property>-->
+    <!--    </bean>-->
+
+    <!--    <bean id="b2" class="com.hh.pojo.Book">-->
+    <!--        <constructor-arg name="id2" value="2"></constructor-arg>-->
+    <!--        <constructor-arg name="name2" value="红高粱"></constructor-arg>-->
+    <!--    </bean>-->
+
+    <!--    <bean id="boy" class="com.hh.pojo.Boy">-->
+    <!--        <property name="age" value="22"></property>-->
+    <!--        <property name="name" value="小明"></property>-->
+    <!--    </bean>-->
+    <!--    <bean id="girl" class="com.hh.pojo.Girl">-->
+    <!--        <property name="age" value="19"></property>-->
+    <!--        <property name="name" value="露露"></property>-->
+    <!--        <property name="boyfriend" ref="boy"></property>-->
+    <!--    </bean>-->
+
 </beans>
 ```
 
-识别com.msb.pojo.Book这个类，通过反射创建对象。
+识别com.hh.pojo.Book这个类，通过反射创建对象。
 
-4.测试，创建容器
+### 4、创建容器
+
+在测试类中创建容器
 
 ```java
 package com.msb.test;
