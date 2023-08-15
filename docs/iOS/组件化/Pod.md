@@ -41,7 +41,11 @@ pod install 命令功能：
 
 更新pod的所有库。
 
-可以通过运行pod update *podname* 来更新某个pod至最新版本。或者通过运行pod update来更新所有Podfile中的pod。update命令并不会理会Podfile.lock中的版本信息（新版本仍然遵守在Podfile中做的限制）。
+`pod update *podname*`：更新某个pod至最新版本。
+
+`pod update`：更新所有Podfile中的pod。
+
+update命令并不会理会Podfile.lock中的版本信息（新版本仍然遵守在Podfile中做的限制）。
 
 所以，正确的用法是，当你往Podfile中添加了一个pod，记得用pod install；只有当你确定要更新某个或全部pod时，使用pod update。
 
