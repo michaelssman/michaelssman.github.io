@@ -2,13 +2,15 @@
 
 ## Java项目和web项目的区别
 
-Java项目`jar`是由main()方法来开始的，直接依赖JVM就能被编译执行。Java项目不需要服务器。
+Java项目（jar项目）是由main()方法来开始的，直接依赖JVM虚拟机就能被编译执行。Java项目不需要服务器。
 
-Web项目`war`中的Java文件是tomcat服务器来触发的，脱离了web服务器就无法启动。Web项目需要服务器。Web项目部署到服务器上，任何用户都可以通过浏览器来访问。将本地资源共享给外部访问。入口是`web.xml`。
+Web项目（war项目）中的Java文件是tomcat服务器来触发的，脱离了web服务器就无法启动。Web项目需要服务器。Web项目部署到服务器上，任何用户都可以通过浏览器来访问。将本地资源共享给外部访问。入口是`web.xml`。
 
 ## 使用服务器
 
-Tomcat服务器对Servlet，Jsp，JNDI，JavaMail有很好的的支持，并且这个Web容器是开源免费的。（Tomcat服务器是Apache下的开源免费）
+Tomcat服务器对Servlet，Jsp，JNDI，JavaMail有很好的的支持，并且这个Web容器是开源免费的。（Tomcat服务器是Apache下的）
+
+Tomcat就相当于一个电脑上的软件，
 
 ## 使用SpringMVC的原因
 
@@ -42,15 +44,27 @@ Web项目——>war项目
 
 下一步确定maven版本，maven版本设置可以看前面的Maven学习
 
-![image-20230502023618363](assets/image-20230502023618363.png)
+![image-20230815223443206](assets/image-20230815223443206.png)
 
 新建项目的剩余步骤都点击Next按钮即可，和不使用原型时创建Maven项目类似。
 
 ### 2、pom.xml添加依赖和tomcat插件
 
+使用本地tomcat（很少使用）
+
+![image-20230815232921156](assets/image-20230815232921156.png)
+
+![image-20230815233248266](assets/image-20230815233248266.png)
+
+把项目放到tomcat里面，tomcat和项目联系。
+
+![image-20230815234736298](assets/image-20230815234736298.png)
+
+#### maven中使用tomcat插件
+
 tomcat和maven都是apache下的。同一个公司的。maven自带tomcat。
 
-在项目的pom.xml中配置Tomcat插件，在<build>中添加Tomcat7插件。
+在项目的`pom.xml`中配置Tomcat插件，在`<build>`中添加Tomcat7插件。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -59,7 +73,7 @@ tomcat和maven都是apache下的。同一个公司的。maven自带tomcat。
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.msb</groupId>
+    <groupId>com.hh</groupId>
     <artifactId>TestWebProject</artifactId>
     <version>1.0-SNAPSHOT</version>
     <!--注意pom.xml中是war项目-->
@@ -105,7 +119,7 @@ tomcat和maven都是apache下的。同一个公司的。maven自带tomcat。
 
 项目|src|test|java
 
-创建完文件夹directory之后，需要右键Make Directory as 选择Sources Root、Resources Root、Test Sources Root。文件夹图标会变颜色，然后就可以在文件夹下创建各种文件。
+创建完文件夹directory之后，需要右键`Mark Directory as`选择`Sources Root`、`Resources Root`、`Test Sources Root`。文件夹图标会变颜色，然后就可以在文件夹下创建各种文件。
 
 ### 4、spring整合mybatis
 
