@@ -137,7 +137,7 @@ Project\Maven\src\main\java\com.hh.pojo包\Book.java
 
 ### 3、创建Spring配置文件
 
-在src/main/resources下新建`applicationContext.xml`文件。
+在src/main/resources下新建`applicationContext.xml`文件。在这个文件中创建对象。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -150,27 +150,30 @@ Project\Maven\src\main\java\com.hh.pojo包\Book.java
         https://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- com.hh.pojo包下component的注解都会扫描到-->
-    <context:component-scan base-package="com.hh.pojo"></context:component-scan>
+    <!--    <context:component-scan base-package="com.hh.pojo"></context:component-scan>-->
 
-    <!--    <bean id="b" class="com.hh.pojo.Book">-->
-    <!--        <property name="id1" value="1" ></property>-->
-    <!--        <property name="name1" value="项目驱动零起点学Java"></property>-->
-    <!--    </bean>-->
+    <!--    setter方法 给属性赋值。下面的id和name都是setter方法中的名字（并非属性名）-->
+    <bean id="b" class="com.hh.pojo.Book">
+        <property name="id" value="1"></property>
+        <property name="name" value="项目驱动零起点学Java"></property>
+    </bean>
 
-    <!--    <bean id="b2" class="com.hh.pojo.Book">-->
-    <!--        <constructor-arg name="id2" value="2"></constructor-arg>-->
-    <!--        <constructor-arg name="name2" value="红高粱"></constructor-arg>-->
-    <!--    </bean>-->
+    <!--    类构造器 给属性赋值。下面的id和name都是构造器方法中的参数名字（并非属性名）-->
+    <bean id="b2" class="com.hh.pojo.Book">
+        <constructor-arg name="id" value="2"></constructor-arg>
+        <constructor-arg name="name" value="红高粱"></constructor-arg>
+    </bean>
 
-    <!--    <bean id="boy" class="com.hh.pojo.Boy">-->
-    <!--        <property name="age" value="22"></property>-->
-    <!--        <property name="name" value="小明"></property>-->
-    <!--    </bean>-->
-    <!--    <bean id="girl" class="com.hh.pojo.Girl">-->
-    <!--        <property name="age" value="19"></property>-->
-    <!--        <property name="name" value="露露"></property>-->
-    <!--        <property name="boyfriend" ref="boy"></property>-->
-    <!--    </bean>-->
+    <!--    创建对象-->
+    <bean id="boy" class="com.hh.pojo.Boy">
+        <property name="age" value="22"></property>
+        <property name="name" value="小明"></property>
+    </bean>
+    <bean id="girl" class="com.hh.pojo.Girl">
+        <property name="age" value="19"></property>
+        <property name="name" value="露露"></property>
+        <property name="boyfriend" ref="boy"></property>
+    </bean>
 
 </beans>
 ```
@@ -202,7 +205,7 @@ public class Test {
 }
 ```
 
-### 属性注入方式
+### 属性注入
 
 以前：setter方式
 
@@ -240,7 +243,15 @@ Book b = new Book(1，"项目驱动零起点学Java");
 
 **类的属性：**可以是基本数据类型，也可以是引用数据类型。
 
+设置属性的值：
+
+方式1：value：简单数据类型（基本数据类型+String）直接设置:
+
+方式2：ref：需要引用另一个bean的id。也就是说这个参数是一个类类型，且这个类的对象也被Spring容器管理。
+
 ## IoC/DI相关的注解
+
+上面`<bean>`标签就是创建对象，可以通过注解简化。
 
 | 注解名称       | 解释                                                 |
 | -------------- | ---------------------------------------------------- |
@@ -254,9 +265,9 @@ Book b = new Book(1，"项目驱动零起点学Java");
 
 ### @Component的使用
 
-在要创建对象的类中加入@Component注解，对象名字默认为：类名首字母变小写
+在要创建对象的类中加入@Component注解，会自动构建这个类的对象，对象名字默认为：类名首字母变小写。创建的对象放到了Spring容器中。
 
-注解在哪个包下？要想找到这些注解，需要将注解所在的包进行扫描：设置需要扫描的包。并且需要在applicationContext.xml中添加context命名空间
+注解在哪个package包下？要想找到这些注解，需要将注解所在的包进行扫描：设置需要扫描的包。并且需要在applicationContext.xml中添加context命名空间
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?> 
@@ -269,10 +280,12 @@ Book b = new Book(1，"项目驱动零起点学Java");
 
 前五个注解作用一样，只所以搞出这么多，就是在语义上给你区别，放入不同层用不同的注解，但是作用都是创建对象。
 
-**@Value的使用**
+### 属性注入的注解
+
+#### @Value的使用
 
 给普通数据类型赋值的注解，普通数据类型包括：八种基本数据类型+String，并且不需要依赖set方法。
 
-**@Autowired的使用**
+#### @Autowired的使用
 
 添加@Autowired注解后会把容器中的对象**自动注入**进来，并且不需要依赖set方法。
