@@ -10,9 +10,11 @@ Web项目（war项目）中的Java文件是tomcat服务器来触发的，脱离�
 
 Tomcat服务器对Servlet，Jsp，JNDI，JavaMail有很好的的支持，并且这个Web容器是开源免费的。（Tomcat服务器是Apache下的）
 
-Tomcat就相当于一个电脑上的软件，
+Tomcat就相当于一个电脑上的软件。
 
 ## 使用SpringMVC的原因
+
+Spring是框架，SpringMVC也是框架。
 
 前端|后端|数据库
 
@@ -25,6 +27,8 @@ SpringMVC是对servlet的封装。servlet底层需要依赖tomcat运行。
 ## SpringMVC环境搭建（通过Maven构建项目）
 
 ### 1、创建maven-web项目
+
+SpringMVC依赖servlet，servlet依赖tomcat。
 
 1.Maven构建项目类型：
 
@@ -74,9 +78,8 @@ tomcat和maven都是apache下的。同一个公司的。maven自带tomcat。
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.hh</groupId>
-    <artifactId>TestWebProject</artifactId>
+    <artifactId>TestSpringMVC</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <!--注意pom.xml中是war项目-->
     <packaging>war</packaging>
 
     <dependencies>
@@ -87,18 +90,17 @@ tomcat和maven都是apache下的。同一个公司的。maven自带tomcat。
             <version>5.3.16</version>
         </dependency>
     </dependencies>
-
-
+  
     <build>
         <plugins>
             <!-- Tomcat插件 -->
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat8-maven-plugin</artifactId>
-                <version>3.0-r1756463</version>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
                 <configuration>
-                    <path>/testwebproject</path><!--指定项目的上下文路径-->
-                    <port>8080</port><!-- 端口-->
+                    <path>/testspringmvc</path><!--指定项目的上下文路径-->
+                    <port>8888</port><!-- 端口-->
                 </configuration>
             </plugin>
         </plugins>
@@ -233,7 +235,7 @@ log4j.appender.D.layout.ConversionPattern = [%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %
 
 #### 5.1、springmvc.xml
 
-在resources中新建Spring MVC框架配置文件springmvc.xml（上面写的注解需要在这个xml文件中进行解析）
+下面第6步中写的注解需要解析，解析需要xml配置。在`resources`中新建Spring MVC框架配置文件`springmvc.xml`（注解需要在这个xml文件中进行解析）
 
 加入springmvc.xml的配置文件：
 
@@ -251,15 +253,17 @@ log4j.appender.D.layout.ConversionPattern = [%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %
         http://www.springframework.org/schema/mvc
         https://www.springframework.org/schema/mvc/spring-mvc.xsd">
     <!-- 扫描控制器类，千万不要把service等扫描进来，也千万不要在Spring配置文件扫描控制器类所在包 -->
-    <context:component-scan base-package="com.zss.controller"></context:component-scan>
+    <context:component-scan base-package="com.hh.controller"></context:component-scan>
     <!-- 让Spring MVC的注解生效 ：@RequestMapping等注解-->
     <mvc:annotation-driven></mvc:annotation-driven>
 </beans>
 ```
 
-#### 5.2、编写web.xml内容
+#### 5.2、web.xml
 
-在web.xml中加入了springmvc.xml配置文件的解析，还要加入applicationContext.xml的解析：
+web项目的入口`web.xml`。tomcat启动的时候走到这里。
+
+在`项目\TestSpringMVC\src\main\webapp\WEB-INF\web.xml`中加入了springmvc.xml配置文件的解析，还要加入applicationContext.xml的解析：
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -267,38 +271,39 @@ log4j.appender.D.layout.ConversionPattern = [%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
-    
+
+    <!--  servlet配置-->
     <!--对SpringMVC解析-->
-  <servlet>
-    <servlet-name>springmvc</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <init-param>
-      <!-- 参数名称必须叫做：contextConfigLocation。单词和大小写错误都导致配置文件无法正确加载 -->
-      <param-name>contextConfigLocation</param-name>
-      <!-- springmvc.xml 名称自定义，只要和我们创建的配置文件的名称对应就可以了。 -->
-      <param-value>classpath:springmvc.xml</param-value>
-    </init-param>
-    <!-- Tomcat启动立即加载Servlet，而不是等到访问Servlet才去实例化DispatcherServlet -->
-    <!-- 配置上的效果：Tomcat启动立即加载Spring MVC框架的配置文件-->
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>springmvc</servlet-name>
-    <!-- /表示除了.jsp结尾的uri，其他的uri都会触发DispatcherServlet。此处前往不要写成 /* -->
-    <url-pattern>/</url-pattern>
-  </servlet-mapping>
-  
-  <!--新加入-->
-  <!--解析applicationContext.xml：利用监听器监听-->
-  <listener>
-    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-  </listener>
-  <!--给全局参数contextConfigLocation设置值，contextConfigLocation是ContextLoaderListener父类ContextLoader中的属性-->
-  <context-param>
-    <param-name>contextConfigLocation</param-name>
-    <param-value>classpath:applicationContext.xml</param-value>
-  </context-param>
-    
+    <servlet>
+        <servlet-name>springmvc</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <!-- 参数名称必须叫做：contextConfigLocation。单词和大小写错误都导致配置文件无法正确加载 -->
+            <param-name>contextConfigLocation</param-name>
+            <!-- springmvc.xml 名称自定义，只要和我们创建的配置文件的名称对应就可以了。 -->
+            <param-value>classpath:springmvc.xml</param-value>
+        </init-param>
+        <!-- Tomcat启动立即加载Servlet，而不是等到访问Servlet才去实例化DispatcherServlet -->
+        <!-- 配置上的效果：Tomcat启动立即加载Spring MVC框架的配置文件-->
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>springmvc</servlet-name>
+        <!-- /表示除了.jsp结尾的uri，其他的uri都会触发DispatcherServlet。此处前往不要写成 /* -->
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <!--新加入-->
+    <!--解析applicationContext.xml：利用监听器监听-->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <!--给全局参数contextConfigLocation设置值，contextConfigLocation是ContextLoaderListener父类ContextLoader中的属性-->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:applicationContext.xml</param-value>
+    </context-param>
+
 </web-app>
 ```
 
@@ -430,6 +435,26 @@ public class BookServiceImpl implements BookService {
 
 前端请求到这个类里的具体方法
 
+响应页面
+
+```java
+package com.hh.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+//注解 自动构建对象
+@Controller
+public class TestController {//控制器类
+    //注解，浏览器访问/test1就会进到方法
+    @RequestMapping("/test1")
+    public String test1() {
+        //响应给浏览器index.jsp页面
+        return "index.jsp";
+    }
+}
+```
+
 响应页面或者响应数据，响应数据需要加注解`@ResponseBody`，数据就可以return出去。
 
 ```java
@@ -484,6 +509,8 @@ tomcat7对@ResponseBody注解支持的不是特别好，升级为tomcat8。双�
 通过浏览器地址访问到后端，后端返回。
 
 ## SpringMVC接收请求参数
+
+浏览器和后端进行交互，前端页面上面有一些数据，交由后端进行处理。
 
 ### 获取普通参数
 
