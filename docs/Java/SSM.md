@@ -1,4 +1,6 @@
-# web项目SpringMVC和SSM
+# SSM
+
+Spring、SpringMVC、Mybatis就是SSM。
 
 ## Java项目和web项目的区别
 
@@ -52,7 +54,33 @@ Web项目——>war项目
 
 新建项目的剩余步骤都点击Next按钮即可，和不使用原型时创建Maven项目类似。
 
-### 2、pom.xml添加依赖和tomcat插件
+### 2、补全目录
+
+观察目录结构与jar项目不同之处，设置java目录为资源目录。
+
+项目|src|main|java
+
+项目|src|main|resources
+
+项目|src|test
+
+项目|src|test|java
+
+创建完文件夹directory之后，需要右键`Mark Directory as`选择`Sources Root`、`Resources Root`、`Test Sources Root`。文件夹图标会变颜色，然后就可以在文件夹下创建各种文件。
+
+### 3、pom.xml添加依赖和tomcat插件
+
+#### 3.1、添加依赖
+
+1. mybatis的依赖
+2. 连接mysql的依赖
+3. log4j的依赖
+4. spring的核心依赖
+5. springjdbc依赖
+6. spring整合mybatis的依赖
+7. springwebmvc的依赖
+
+#### 3.2、tomcat插件
 
 使用本地tomcat（很少使用）
 
@@ -109,25 +137,13 @@ tomcat和maven都是apache下的。同一个公司的。maven自带tomcat。
 </project>
 ```
 
-### 3、补全目录
-
-观察目录结构与jar项目不同之处，设置java目录为资源目录。
-
-项目|src|main|java
-
-项目|src|main|resources
-
-项目|src|test
-
-项目|src|test|java
-
-创建完文件夹directory之后，需要右键`Mark Directory as`选择`Sources Root`、`Resources Root`、`Test Sources Root`。文件夹图标会变颜色，然后就可以在文件夹下创建各种文件。
-
 ### 4、spring整合mybatis
 
 以前用mybatis先搞配置文件mybatis.xml
 
-SSM整合后：mybatis.xml要发生翻天覆地的变化了，都交由spring来管理，创建applicationContext.xml
+#### applicationContext.xml
+
+SSM整合后：mybatis.xml要发生翻天覆地的变化了，都交由spring来管理，创建`applicationContext.xml`。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -146,20 +162,20 @@ SSM整合后：mybatis.xml要发生翻天覆地的变化了，都交由spring来
         <property name="url"
                   value="jdbc:mysql://localhost:3306/msb?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=GMT%2B8&amp;allowPublicKeyRetrieval=true"/>
         <property name="username" value="root"/>
-        <property name="password" value="root"/>
+        <property name="password" value="asdf123456"/>
     </bean>
-    
+
     <!-- 【2】获取SqlSessionFactory对象  -->
     <!-- 以前SqlSessionFactory都是在测试代码中我们自己创建的，但是现在不用了，整合包中提供的对于SqlSessionFactory的封装。里面提供了MyBatis全局配置文件所有配置的属性 -->
     <bean id="factory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <!-- 注入数据源       -->
         <property name="dataSource" ref="dataSource"/>
         <!-- 给包下类起别名       -->
-        <property name="typeAliasesPackage" value="com.msb.pojo"></property>
+        <property name="typeAliasesPackage" value="com.hh.pojo"></property>
         <!--        解析mybatis.xml-->
         <property name="configLocation" value="classpath:mybatis.xml"></property>
     </bean>
-    
+
     <!-- 【3】扫描mapper文件   -->
     <!-- 设置扫描哪个包，进行接口绑定-->
     <!-- 所有Mapper接口代理对象都能创建出来，可以直接从容器中获取出来。 -->
@@ -169,18 +185,20 @@ SSM整合后：mybatis.xml要发生翻天覆地的变化了，都交由spring来
          注意这里sqlSessionFactoryBeanName类型为String，所以用value把工厂名字写过来就行-->
         <property name="sqlSessionFactoryBeanName" value="factory"></property>
         <!-- 扫描的包 接口对应的实现类 -->
-        <property name="basePackage" value="com.msb.mapper"></property>
+        <property name="basePackage" value="com.hh.mapper"></property>
     </bean>
 
     <!-- 【4】扫描com.msb.service包下注解 -->
-    <context:component-scan base-package="com.msb.service"></context:component-scan>
+    <context:component-scan base-package="com.hh.service"></context:component-scan>
 
 </beans>
 ```
 
 扫描包 接口对应的实现类
 
-日志是mybatis特有的配置方式，spring没有提供那样的配置，所以日志部分没法替代。所以可以把mybatis.xml保留，里面留下这个log4j的配置。
+#### mybatis.xml
+
+日志是mybatis特有的配置方式，spring没有提供那样的配置，所以日志部分没法替代。所以可以把`mybatis.xml`保留，里面留下这个log4j的配置。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -195,29 +213,28 @@ SSM整合后：mybatis.xml要发生翻天覆地的变化了，都交由spring来
 </configuration>
 ```
 
+#### log4j.properties
+
 log4j程序会自动去找log4j.properties，log4j.properties还是需要的。
 
 ```properties
 # log4j中定义的级别：fatal(致命错误) > error(错误) >warn(警告) >info(普通信息) >debug(调试信息)>trace(跟踪信息)
-log4j.rootLogger = ERROR , console , D 
-
+log4j.rootLogger=ERROR , console , D 
 # log4j.logger是固定的，a.b.c是命名空间的名字可以只写一部分。
 log4j.logger.a.b=TRACE
-
 ### console ###
-log4j.appender.console = org.apache.log4j.ConsoleAppender
-log4j.appender.console.Target = System.out
-log4j.appender.console.layout = org.apache.log4j.PatternLayout
-log4j.appender.console.layout.ConversionPattern = [%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %C.%M(%L) | %m%n
-
+log4j.appender.console=org.apache.log4j.ConsoleAppender
+log4j.appender.console.Target=System.out
+log4j.appender.console.layout=org.apache.log4j.PatternLayout
+log4j.appender.console.layout.ConversionPattern=[%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %C.%M(%L) | %m%n
 ### log file ###
-log4j.appender.D = org.apache.log4j.DailyRollingFileAppender
-log4j.appender.D.File = D:/log4j.log
-log4j.appender.D.Append = true
+log4j.appender.D=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.D.File=D:/log4j.log
+log4j.appender.D.Append=true
 # 只能生级别，不能降
-log4j.appender.D.Threshold = INFO
-log4j.appender.D.layout = org.apache.log4j.PatternLayout
-log4j.appender.D.layout.ConversionPattern = [%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %
+log4j.appender.D.Threshold=INFO
+log4j.appender.D.layout=org.apache.log4j.PatternLayout
+log4j.appender.D.layout.ConversionPattern=[%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %
 ```
 
 在applicationContext.xml中加入mybatis.xml解析
@@ -226,7 +243,7 @@ log4j.appender.D.layout.ConversionPattern = [%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %
 <bean id="factory" class="org.mybatis.spring.SqlSessionFactoryBean">
     <property name="dataSource" ref="dataSource"/>
     <property name="typeAliasesPackage" value="com.zss.pojo"></property>
-    <!-- 新加入 -->
+    <!-- 解析mybatis.xml -->
     <property name="configLocation" value="classpath:mybatis.xml"></property>
 </bean>
 ```
@@ -263,7 +280,7 @@ log4j.appender.D.layout.ConversionPattern = [%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %
 
 web项目的入口`web.xml`。tomcat启动的时候走到这里。
 
-在`项目\TestSpringMVC\src\main\webapp\WEB-INF\web.xml`中加入了springmvc.xml配置文件的解析，还要加入applicationContext.xml的解析：
+在`项目\TestSpringMVC\src\main\webapp\WEB-INF\web.xml`中加入了`springmvc.xml`配置文件的解析和`applicationContext.xml`的解析：
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -309,18 +326,16 @@ web项目的入口`web.xml`。tomcat启动的时候走到这里。
 
 ### 6、项目分层
 
-控制层、业务层、数据库连接层（Mybits接口绑定）
+**创建项目目录结构**
 
-#### 6.1、创建项目目录结构
+上面将整合的配置内容已经配置好了，接下来开始创建项目的目录结构，项目要分层，有controller控制层、service业务层、dao层（有数据库连接层（Mybits接口绑定），mapper层）、实体类层。
 
-上面将整合的配置内容已经配置好了，接下来开始创建项目的目录结构，项目要分层，有controller层、service层、有dao层（mapper层）、实体类层。
-
-构建实体类：
+#### 6.1、构建实体类：
 
 属性的名称和数据库字段名对应
 
 ```java
-package com.zss.pojo;
+package com.hh.pojo;
 
 public class Book {
     private int id;
@@ -359,27 +374,46 @@ public class Book {
     public void setPrice(double price) {
         this.price = price;
     }
+
+    public Book() {
+    }
+
+    public Book(int id, String name, String author, double price) {
+        this.id = id;
+        this.name = name;
+        this.author = author;
+        this.price = price;
+    }
 }
 ```
 
 #### 6.2、创建mapper数据库连接层
+
+##### 创建接口interface文件BookMapper
+
+创建接口绑定的接口BookMapper的interface文件
 
 构建mapper接口和mapper.xml映射文件:
 
 com.zss.mapper.BookMapper接口：抽象方法
 
 ```java
-package com.zss.mapper;
+package com.hh.mapper;
 
 import java.util.List;
 
 public interface BookMapper {
-	//查询所有书籍
+    //定义抽象方法
+    //查询所有书籍
     public abstract List selectAll();
 }
 ```
 
-接口构建好之后，构建映射文件：
+##### 创建接口的映射文件BookMapper.xml
+
+接口构建好之后，构建具体的映射文件：接口的实现类
+
+在`项目\TestSSM\src\main\resources`文件夹下，创建com文件夹、com下创建hh文件夹、hh下创建mapper文件夹。然后再创建和接口同名的`BookMapper.xml`文件。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -387,7 +421,7 @@ public interface BookMapper {
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.zss.mapper.BookMapper"><!--上面接口的命名空间-->
+<mapper namespace="com.hh.mapper.BookMapper"><!--上面接口的命名空间-->
     <select id="selectAll" resultType="book">
         select * from t_book
     </select>
@@ -398,10 +432,10 @@ public interface BookMapper {
 
 业务层链接数据库层
 
-接口：
+##### 创建接口：
 
 ```java
-package com.zss.service;
+package com.hh.service;
 
 import java.util.List;
 
@@ -410,20 +444,25 @@ public interface BookService {
 }
 ```
 
-实现类：
+##### 实现类：
+
+在com.hh.service包下再new一个包com.hh.service.impl
+
+在包下创建实现类BookServiceImpl。
 
 ```java
-package com.zss.service.impl;
+package com.hh.service.impl;
 
-import com.zss.mapper.BookMapper;
-import com.zss.service.BookService;
+import com.hh.mapper.BookMapper;
+import com.hh.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-@Service
+
+@Service//注解 自动创建对象
 public class BookServiceImpl implements BookService {
-    @Autowired	//注解  注入对象
+    @Autowired    //注解  注入对象
     private BookMapper bookMapper;
     public List findAll() {
         return bookMapper.selectAll();
@@ -446,7 +485,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 //注解 自动构建对象
 @Controller
 public class TestController {//控制器类
-    //注解，浏览器访问/test1就会进到方法
+    //注解，请求路径。浏览器访问/test1就会进到方法
     @RequestMapping("/test1")
     public String test1() {
         //响应给浏览器index.jsp页面
@@ -498,6 +537,10 @@ public class BookController {
 
 ![img](assets/3af24b2c861946458dc1b2e8f618e9f9.png)
 
+访问http://localhost:8888/testssm/findAllBooks
+
+![image-20230818001558583](assets/image-20230818001558583.png)
+
 tomcat7对@ResponseBody注解支持的不是特别好，升级为tomcat8。双击tomcat8:run-war启动。
 
 #### 乱码问题解决：
@@ -512,9 +555,11 @@ tomcat7对@ResponseBody注解支持的不是特别好，升级为tomcat8。双�
 
 浏览器和后端进行交互，前端页面上面有一些数据，交由后端进行处理。
 
-### 获取普通参数
+### 1、获取普通参数
 
 获取普通参数，只需要在**控制单元中提供与请求参数同名的方法参数**即可，Spring MVC会自动进行类型转换。
+
+请求路径`http://localhost:8888/testspringmvc/testParam?name=zhan8gsan&age=99`
 
 ```java
 @RequestMapping("/testParam")  
@@ -524,14 +569,18 @@ public String testParam(String name,int age){
 }
 ```
 
-### 使用类对象作为控制单元参数
+### 2、使用类对象作为控制单元参数
 
-JavaBean：一个包含私有属性，getter/setter方法和无参构造方法的Java类。是不是感觉和实体类特别像。其实写法上和实体类相同。唯一区别是实体类是数据库层面的概念，类型中属性要和数据库字段对应。而JavaBean的属性是灵活的，不是必须和哪里对应的。
+如果前台参数比较多，就可以使用一个类对象进行接收。之后再传到其它层比较方便。
+
+#### JavaBean
+
+一个包含私有属性，getter/setter方法和无参构造方法的Java类。
+
+写法上和实体类相同。唯一区别是实体类是数据库层面的概念，类型中属性要和数据库字段对应。而JavaBean的属性是灵活的，不是必须和哪里对应的。
 
 JavaBean是一个专业概念，可以简单点理解：使用类对象做为控制单元参数，接收请求参数。如果不是特别较真，狭义上可以认为JavaBean就是项目中的实体类。
 
-在控制单元中放置一个类型对象，对象名称没有要求，只需要保证请求参数名和类的属性名相同就可以了。
+在控制单元中放置一个类型对象，对象名称没有要求，**只需要保证请求参数名和类的属性名相同就可以了**。
 
-## SSM
-
-SpringMVC加上Mybatis就是SSM。
+一个类既可以是实体类又可以是JavaBean。
