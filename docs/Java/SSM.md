@@ -106,29 +106,71 @@ tomcat和maven都是apache下的。同一个公司的。maven自带tomcat。
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.hh</groupId>
-    <artifactId>TestSpringMVC</artifactId>
+    <artifactId>TestSSM</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <dependencies>
-        <!-- 依赖了Spring框架核心功能的5个依赖以及Spring整合Web的依赖spring-web -->
+        <!-- 【1】mybatis的依赖 -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.5.9</version>
+        </dependency>
+        <!-- 【2】连接mysql的依赖 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.28</version>
+        </dependency>
+        <!-- 【3】log4j的依赖 -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+        <!-- 【4】spring的核心依赖 -->
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>      <!--SpringMVC-->
+            <artifactId>spring-context</artifactId>
+            <version>5.3.16</version>
+        </dependency>
+        <!-- 【5】springjdbc依赖-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>5.3.16</version>
+        </dependency>
+        <!-- 【6】spring整合mybatis的依赖 -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>2.0.7</version>
+        </dependency>
+        <!-- 【7】springwebmvc的依赖 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
             <version>5.3.16</version>
         </dependency>
     </dependencies>
-  
+    
+    <!-- 加入tomcat插件 -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>mvnrepository</id>
+            <url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
     <build>
         <plugins>
-            <!-- Tomcat插件 -->
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
+                <artifactId>tomcat8-maven-plugin</artifactId>
+                <version>3.0-r1756463</version>
                 <configuration>
-                    <path>/testspringmvc</path><!--指定项目的上下文路径-->
-                    <port>8888</port><!-- 端口-->
+                    <port>8888</port>
+                    <path>/ssm</path>
                 </configuration>
             </plugin>
         </plugins>
@@ -474,6 +516,10 @@ public class BookServiceImpl implements BookService {
 
 前端请求到这个类里的具体方法
 
+##### 6.4.1、响应数据
+
+从前端、服务端、数据库一层一层的查找数据，然后再从数据库、服务端一层一层返还到前端。
+
 响应页面
 
 ```java
@@ -497,34 +543,36 @@ public class TestController {//控制器类
 响应页面或者响应数据，响应数据需要加注解`@ResponseBody`，数据就可以return出去。
 
 ```java
-package com.zss.controller;
+package com.hh.controller;
 
-import com.zss.pojo.Book;
-import com.zss.service.BookService;
+import com.hh.pojo.Book;
+import com.hh.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+
 @Controller
 public class BookController {
     @Autowired
-    private BookService bookService;
-    @RequestMapping(value="/findAllBooks",produces = "text/html;charset=utf-8")//前端请求路径
-    @ResponseBody
-    public String findAll(){
+    private BookService bookService;//业务层的对象
+
+    @RequestMapping(value = "/findAllBooks", produces = "text/html;charset=utf-8")//前端请求路径
+    @ResponseBody//注解，把对应响应的数据响应到浏览器
+    public String findAll() {
         System.out.println("--");
-        List list = bookService.findAll()
-        System.out.println(list.size());
+        List list = bookService.findAll();
+        System.out.println("一共有书籍数量：" + list.size());
         String s = "";
-        for (int i = 0; i < list.size() ; i++) {
-            Book book = (Book)list.get(i);
+        for (int i = 0; i < list.size(); i++) {
+            Book book = (Book) list.get(i);
             s += book.getName() + "," + book.getAuthor() + "\n";
         }
         return s;
         //响应一个页面
-        //return "/index.jsp"; 
+        //return "/index.jsp";
     }
 }
 ```
@@ -533,15 +581,13 @@ public class BookController {
 
 ### 7、启动项目tomcat
 
-点击IDEA右侧Maven面板，选择要运行的项目（配置插件的项目） -> Plugins -> tomcat7 -> tomcat7:run双击启动
+点击IDEA右侧Maven面板。
 
-![img](assets/3af24b2c861946458dc1b2e8f618e9f9.png)
+tomcat7：选择要`运行的项目（配置插件的项目） -> Plugins -> tomcat7 -> tomcat7:run`双击启动。
 
-访问http://localhost:8888/testssm/findAllBooks
+tomcat8：选择要`运行的项目（配置插件的项目） -> Plugins -> tomcat8 -> tomcat8:run-war`双击启动。
 
-![image-20230818001558583](assets/image-20230818001558583.png)
-
-tomcat7对@ResponseBody注解支持的不是特别好，升级为tomcat8。双击tomcat8:run-war启动。
+tomcat7对@ResponseBody数据响应的注解支持的不是特别好，升级为tomcat8。双击tomcat8:run-war启动。
 
 #### 乱码问题解决：
 
@@ -549,7 +595,7 @@ tomcat7对@ResponseBody注解支持的不是特别好，升级为tomcat8。双�
 
 ### 8、通过浏览器测试访问结果
 
-通过浏览器地址访问到后端，后端返回。
+通过浏览器地址http://localhost:8888/testssm/findAllBooks访问到后端，后端返回。
 
 ## SpringMVC接收请求参数
 
