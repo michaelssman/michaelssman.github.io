@@ -4,6 +4,8 @@
 
 在.gitignore_global文件中编辑，添加忽略文件。
 
+有些二进制文件（比如 Xcode 的 `.xcuserstate` 文件）产生了冲突。这些文件通常是用户特定的，不应该被包含在版本控制中。
+
 ```
 *~
 .DS_Store
