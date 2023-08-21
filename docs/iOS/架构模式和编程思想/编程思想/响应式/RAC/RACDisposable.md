@@ -33,14 +33,9 @@
 //这里代码就简单了，创建这个对象的时候保存block
 ```
 
-##### 然后在创建`RACDisposable`对象劈头盖脸的就是一个block，但是这个block啥时候调用呢？
+**然后在创建`RACDisposable`对象劈头盖脸的就是一个block，但是这个block啥时候调用呢？**
 
-1. 订阅者被销毁
-2.  `RACDisposable` 调用`dispose`取消订阅
-
-##### 然后我们就试验证明情况
-
-订阅者被销毁
+### 1、订阅者被销毁
 
 在运行上面的代码之后`RACDisposable`的block也如期而至的调用了，然后我么仔细观察一下代码，
 发生订阅者没有强引用，所以会调用`RACDisposable`的block，
@@ -74,6 +69,9 @@
 由此可以得知
 
 订阅者销毁会调用`RACDisposable`的block
+
+### 2、`RACDisposable` 调用`dispose`取消订阅
+
 然后我们接着证明第二点，就算在强引用订阅者的情况下，主动调用`dispose`也会调用block
 
 ```objective-c
