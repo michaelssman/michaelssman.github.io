@@ -1,5 +1,7 @@
 # ListView
 
+数据很多的时候，ListView可以动态加载，Column是全部加载。
+
 ## 1、数据固定写死的
 
 ```dart
