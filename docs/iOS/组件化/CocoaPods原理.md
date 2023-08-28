@@ -150,27 +150,50 @@ git push -u origin master。提交到远程。
 要找远程索引库，向远程索引库提交.spec文件，根据.spec文件中地址找框架源码。本地索引库也有.spec文件，里面也有远程地址。
 所以就要修改.spec文件。
 
-- name：框架名称
+```
+Pod::Spec.new do |s|
+	# 框架名称
+  s.name             = 'HHTableListViewController'
+  # 版本号
+  s.version          = '0.2.0'
+  # 描述
+  s.summary          = '封装tableView基类'
 
-- version：版本号
+# This description is used to generate tags and improve search results.
+#   * Think: What does it do? Why did you write it? What is the focus?
+#   * Try to keep it short, snappy and to the point.
+#   * Write the description between the DESC delimiters below.
+#   * Finally, don't worry about the indent, CocoaPods strips it!
 
-- summary：描述
+	# 可以修改也可以不改
+  s.description      = '封装tableView基类 刷新自动加载更多'
 
-- tag：版本
+	# 主页地址，远程库的地址。是github就写github地址，是码云就写gitee地址。（如果是私有的，地址只需要写到自己的github地址，不需要写项目具体地址）
+  s.homepage         = 'https://github.com/huicuihui/HHTableListViewController'
+  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
+  s.license          = { :type => 'MIT', :file => 'LICENSE' }
+  s.author           = { '805988356@qq.com' => '805988356@qq.com' }
+  
+  # 重要：框架源码地址。找框架源码的时候就是根据这个找的。这个地址错了就找不到了。github就写github，码云就写gitee，可以直接复制仓库地址。
+  s.source           = { :git => 'https://github.com/huicuihui/HHTableListViewController.git', :tag => s.version.to_s }
+  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-- s.description：可以修改也可以不改
+  s.ios.deployment_target = '8.0'
 
-- s.homepage：主页地址，远程库的地址。是github就写github地址，是码云就写gitee地址。（如果是私有的，地址只需要写到自己的github地址，不需要写项目具体地址）
+	# 资源的文件（哪些文件是需要的，根据这个去找）。/**/* 代表 ：所有文件，文件夹中的所有文件。
+  s.source_files = 'HHTableListViewController/Classes/**/*' # 找的Classes下的文件
+  
+  # s.resource_bundles = {
+  #   'HHTableListViewController' => ['HHTableListViewController/Assets/*.png']
+  # }
 
-- s.source 重要：框架源码地址。找框架源码的时候就是根据这个找的。这个地址错了就找不到了。github就写github，码云就写gitee，可以直接复制仓库地址。
-
-- s.source_files 资源的文件（哪些文件是需要的，根据这个去找）。/**/* 代表 ：所有文件，文件夹中的所有文件。
-
-  ```
-  例：s.source_files = 'HHGroupShadowTableView/Classes/**/*'
-  ```
-
-  找的Classes下的文件
+  # s.public_header_files = 'Pod/Classes/**/*.h'
+  # s.frameworks = 'UIKit', 'MapKit'
+  s.dependency 'AFNetworking', '~> 4.0'
+  s.dependency 'MJRefresh'
+  s.dependency 'Masonry'
+end
+```
 
 把spec文件提交
 提交到本地。
