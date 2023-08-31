@@ -13,7 +13,12 @@ TextField(
     color: Colors.black,
     fontWeight: FontWeight.w300,
   ),
+  //enabled是false时，点击输入框没反应。
   enabled: false,
+  //点击输入框
+  onTap: () {
+    //显示自定义键盘等处理
+  },
   //TextInputType.none不弹出键盘
   keyboardType: TextInputType.none,
   decoration: const InputDecoration(

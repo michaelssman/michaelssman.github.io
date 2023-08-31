@@ -73,9 +73,9 @@
 - json和map转模型model
 - 异步Future，多线程Isolate和compute
 - Provider页面传值通讯和InheritedWidget数据共享
-- GestureDetector的使用
+- GestureDetector手势的使用
 - 数据本地持久化存储（sqflite）
-- 自己写demo练习（仿微信和记账app）。
+- 仿微信demo和记账app（日历功能、自定义键盘、底部弹窗）。
 
 #### swift
 
