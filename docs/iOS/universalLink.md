@@ -1,8 +1,6 @@
 # Universal Link
 
-通用链接，唤起APP的功能。
-
-`Universal Link`是`Apple`在`iOS 9`推出的一种**通过HTTPS链接来启动APP**的功能。
+通用链接，一种**通过HTTPS链接来唤起APP**的功能。
 
 如果你的应用支持`Universal Link`，当用户点击一个链接时可以跳转到你的网站并获得无缝重定向到对应的`APP`，且不需要通过`Safari`浏览器。如果你的应用不支持的话，则会在`Safari`中打开该链接。
 
@@ -33,7 +31,7 @@
 
 ### 3、配置指定文件
 
-在你关联的域根目录下 创建 apple-app-site-association 文件，文件格式参照https://developer.apple.com/documentation/safariservices/supporting_associated_domains 。这里我们使用：{&quot;applinks&quot;:{&quot;apps&quot;:[],&quot;details&quot;:[{&quot;appID&quot;:&quot;teamID.bundleID&quot;,&quot;paths&quot;:[&quot;/app/link/*&quot;]}]}}
+在你关联的域根目录下 创建 apple-app-site-association 文件，文件格式参照https://developer.apple.com/documentation/safariservices/supporting_associated_domains 。
 
 创建一个内容为`json`格式的文件，苹果将会在合适的时候，从我们在项目中填入的域名请求这个文件。这个文件名必须为`apple-app-site-association`，切记没有`后缀名`，文件内容大概是这样子：
 
@@ -49,7 +47,11 @@
             {
                 "appID": "ABCD1234.com.apple.wwdc",
                 "paths": [ "*" ]
-            }
+            },
+          	{
+                "appID": "teamID.bundleID",
+                "paths": [ "/app/link/*" ]
+            },
         ]
     }
 }
