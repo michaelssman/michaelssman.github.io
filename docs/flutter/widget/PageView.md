@@ -16,6 +16,35 @@ class _RootPageState extends State<RootPage> {
     const Account(),
     const Account()
   ];
+  //底部导航栏items
+  final List<BottomNavigationBarItem> _bottomNavigationBarItems = [
+    BottomNavigationBarItem(
+      icon: Image(
+        height: 20,
+        width: 20,
+        image: AssetImage('images/tabbar_chat.png'),
+      ),
+      activeIcon: Image(
+        height: 20,
+        width: 20,
+        image: AssetImage('images/tabbar_chat_hl.png'),
+      ),
+      label: '微信',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.bookmark),
+      label: '通讯录',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.apartment),
+      label: 'apps',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.person_outline),
+      label: 'Demos',
+    ),
+  ];
+  
   final PageController _pageController = PageController(); //保存在widget树中 不被销毁
     
   @override
@@ -61,23 +90,7 @@ class _RootPageState extends State<RootPage> {
         type: BottomNavigationBarType.fixed,
         fixedColor: Colors.green, //选中时的颜色
         currentIndex: _currentIndex,
-        items: const [
-          BottomNavigationBarItem(
-              icon: Image(
-                height: 20,
-                width: 20,
-                image: AssetImage('images/tabbar_chat.png'),
-              ),
-              activeIcon: Image(
-                height: 20,
-                width: 20,
-                image: AssetImage('images/tabbar_chat_hl.png'),
-              ),
-              label: '微信'),
-          BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: '通讯录'),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: '发现'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: '我'),
-        ],
+        items: _bottomNavigationBarItems,
       ),
     );
   }

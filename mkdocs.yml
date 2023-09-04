@@ -254,10 +254,11 @@ nav:
       - flutter/widget/Scaffold.md
       - flutter/widget/PageView.md
       - flutter/widget/TabBarView.md
+      - flutter/widget/滚动.md
       - flutter/widget/TextField.md
       - flutter/widget/showModelBottomSheet.md
-      - flutter/widget/ListView.md
       - flutter/widget/Sliver.md
+      - flutter/widget/Wrap.md
     - flutter/布局.md
     - flutter/数据持久化.md
     - flutter/混合开发与引擎.md

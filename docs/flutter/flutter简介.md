@@ -84,13 +84,6 @@ Settings -> Languages & Frameworks -> Flutter -> Editor
 
 选中`Format code on save`也可以勾选子选项`Organize imports on save`
 
-## flutter doctor 
-
-查看flutter版本，有新版本就更新flutter版本。
-
-1. 下载flutter压缩包
-2. 解压 移动文件到/opt
-
 ### 1、Windows Version (Unable to confirm if installed Windows version is 10 or greater)
 
 下载master分支的flutter：`git clone -b master https://github.com/flutter/flutter.git`。
@@ -139,6 +132,8 @@ https://github.com/flutter/flutter/issues/119927#issuecomment-1415858226
 更新的时候在电脑偏好设置，点击java，然后更新。
 
 ## flutter doctor -v
+
+查看flutter版本，有新版本就更新flutter版本。
 
 Engine revision：引擎版本
 
