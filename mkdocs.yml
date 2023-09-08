@@ -259,6 +259,7 @@ nav:
       - flutter/widget/showModelBottomSheet.md
       - flutter/widget/Sliver.md
       - flutter/widget/Wrap.md
+      - flutter/widget/Button.md
     - flutter/布局.md
     - flutter/数据持久化.md
     - flutter/混合开发与引擎.md
@@ -284,7 +285,6 @@ nav:
         - 数据结构与算法/数据结构/03队列/队列.md
       - 04树:
         - 数据结构与算法/数据结构/04树/树.md
-        - 数据结构与算法/数据结构/04树/01树.md
         - 数据结构与算法/数据结构/04树/02二叉树.md
         - 数据结构与算法/数据结构/04树/红黑树.md
         - 数据结构与算法/数据结构/04树/B树.md
