@@ -2,6 +2,7 @@
 
 ```dart
 TextField(
+  textAlign: TextAlign.right,//文字对齐方式
   controller: _controller,//TextEditingController
   // onChanged: _onChange,
   //自动聚焦
@@ -33,5 +34,33 @@ TextField(
     ),
   ),
 )
+```
+
+## 回收键盘
+
+```dart
+@override
+Widget build(BuildContext context) {
+  return GestureDetector(
+    //点击回收
+    onTap: () {
+      if (_isCustomKeyboardVisible) {
+        _isCustomKeyboardVisible = false;
+        setState(() {});
+      }
+    },
+    //滑动回收
+    child: NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (_isCustomKeyboardVisible) {
+          _isCustomKeyboardVisible = false;
+          setState(() {});
+        }
+        return true;
+      },
+      child: ,
+    ),
+  );
+}
 ```
 
