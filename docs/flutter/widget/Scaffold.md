@@ -22,6 +22,26 @@ Scaffold(
     title: const Text('导航栏标题'), //导航栏标题
     centerTitle: true, //安卓 切换应用时显示
     elevation: 0.0, //去除导航栏底部的条
+    actions: [ 
+      GestureDetector(
+        onTap: () {
+          navigatorPush(
+            context,
+            const DiscoverChildPage(
+              title: '添加朋友',
+            ));
+        },
+        child: Container(
+          // height: 45,
+          // width: 45,
+          margin: const EdgeInsets.only(right: 10),
+          child: const Image(
+            image: AssetImage('images/icon_friends_add.png'),
+            width: 25,
+          ),
+        ),
+      ),
+    ],//右侧按钮
   ),
   body: body, //MyWidget父部件是body。开发界面是放到了body里面。
 );
@@ -54,4 +74,3 @@ class HHScaffold extends StatelessWidget {
 }
 ```
 
-## 

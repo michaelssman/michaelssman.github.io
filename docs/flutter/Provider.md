@@ -14,6 +14,8 @@ Provider更加方便，各个页面共享数据。
 
 #### ChangeNotifierProvider
 
+notifyListeners(); //告诉监听者 刷新build
+
 ```dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
