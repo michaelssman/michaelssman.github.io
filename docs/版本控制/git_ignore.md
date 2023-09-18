@@ -13,7 +13,6 @@ Pods
 WorkspaceSettings.xcsettings
 UserInterfaceState.xcuserstate
 Breakpoints_v2.xcbkptlist
-xcuserdata
 xcschememanagement.plist
 IDEWorkspaceChecks.plist
 *.xcworkspacedata
