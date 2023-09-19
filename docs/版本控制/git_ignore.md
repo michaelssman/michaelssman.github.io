@@ -9,10 +9,7 @@
 ```
 *~
 .DS_Store
-Pods
 WorkspaceSettings.xcsettings
-UserInterfaceState.xcuserstate
-Breakpoints_v2.xcbkptlist
 xcschememanagement.plist
 IDEWorkspaceChecks.plist
 *.xcworkspacedata
@@ -57,9 +54,8 @@ playground.xcworkspace
 # We recommend against adding the Pods directory to your .gitignore. However
 # you should judge for yourself, the pros and cons are mentioned at:
 # https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
-#
-# Pods/
-#
+Pods/
+
 # Add this line if you want to avoid checking in source code from the Xcode workspace
 # *.xcworkspace
 

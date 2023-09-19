@@ -53,6 +53,13 @@ Container(
     color: Colors.green,
     //圆角
     borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+		/**
+    //单独设置圆角
+    borderRadius: BorderRadius.only(
+      topLeft: Radius.circular(20.0),
+      topRight: Radius.circular(20.0),
+    ),
+		*/
     //背景图片
     image: const DecorationImage(
       image: NetworkImage(

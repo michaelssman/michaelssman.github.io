@@ -96,3 +96,24 @@ class _RootPageState extends State<RootPage> {
   }
 }
 ```
+
+## 无限滑动
+
+```dart
+PageView.builder(
+  controller: _pageController,
+  onPageChanged: (index) {},
+  itemBuilder: (context, index) {
+    return Container();
+  },
+),
+```
+
+默认滚动位置
+
+```dart
+_pageController = PageController(
+  initialPage: 3,
+);
+```
+
