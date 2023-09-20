@@ -81,7 +81,7 @@ class _RootPageState extends State<RootPage> {
             _pageController.jumpToPage(_currentIndex);
           });
         },
-        //样式 不然4个显示是白色的，看不到
+        //样式 不然几个显示是白色的，看不到
         type: BottomNavigationBarType.fixed,
         fixedColor: Colors.green, //选中时的颜色
         currentIndex: _currentIndex,
@@ -89,6 +89,25 @@ class _RootPageState extends State<RootPage> {
       ),
     );
   }
+}
+```
+
+禁止拖拽滑动：
+
+```dart
+physics: const NeverScrollableScrollPhysics(),
+```
+
+主动设置页面跳转：
+
+```dart
+_pageController.jumpToPage(_currentIndex);
+```
+
+页面改变的回调：
+
+```dart
+onPageChanged: (int index) {
 }
 ```
 
