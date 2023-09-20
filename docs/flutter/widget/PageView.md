@@ -9,9 +9,10 @@ class RootPage extends StatefulWidget {
 
 class _RootPageState extends State<RootPage> {
   int _currentIndex = 0;
+  final PageController _pageController = PageController(); //保存在widget树中 不被销毁
+  
   //定义一个pages数组
   final List<Widget> _pages = [
-    const Account(),
     const Account(),
     const Account(),
     const Account()
@@ -32,10 +33,6 @@ class _RootPageState extends State<RootPage> {
       label: '微信',
     ),
     BottomNavigationBarItem(
-      icon: Icon(Icons.bookmark),
-      label: '通讯录',
-    ),
-    BottomNavigationBarItem(
       icon: Icon(Icons.apartment),
       label: 'apps',
     ),
@@ -44,8 +41,6 @@ class _RootPageState extends State<RootPage> {
       label: 'Demos',
     ),
   ];
-  
-  final PageController _pageController = PageController(); //保存在widget树中 不被销毁
     
   @override
   Widget build(BuildContext context) {
@@ -92,6 +87,100 @@ class _RootPageState extends State<RootPage> {
         currentIndex: _currentIndex,
         items: _bottomNavigationBarItems,
       ),
+    );
+  }
+}
+```
+
+## 底部tabBar中间按钮
+
+```dart
+class RootPage extends StatefulWidget {
+  const RootPage({Key? key}) : super(key: key);
+
+  @override
+  _RootPageState createState() => _RootPageState();
+}
+
+class _RootPageState extends State<RootPage> {
+  int _currentIndex = 0;
+  final PageController _pageController = PageController(); //保存在widget树中 不被销毁
+
+  //定义一个pages数组
+  final List<Widget> _pages = [const AccountDetails(), const AccManager()];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: PageView(
+        //禁止拖拽
+        physics: const NeverScrollableScrollPhysics(),
+        //滑动改变
+        onPageChanged: (int index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        controller: _pageController,
+        children: _pages,
+      ),
+      // 底部导航条
+      bottomNavigationBar: BottomNavigationBar(
+        selectedFontSize: 16.0,
+        //文字选中
+        onTap: (index) {
+          int centerIndex = 1;
+          if (index == centerIndex) {
+            return;
+          }
+          setState(() {
+            int newIndex = index > centerIndex ? index - 1 : index;
+            _currentIndex = newIndex;
+            _pageController.jumpToPage(_currentIndex);
+          });
+        },
+        //样式 不然4个显示是白色的，看不到
+        type: BottomNavigationBarType.fixed,
+        fixedColor: Colors.green,
+        //选中时的颜色
+        currentIndex: _currentIndex,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Image(
+              height: 20,
+              width: 20,
+              image: AssetImage('images/tabbar_chat.png'),
+            ),
+            activeIcon: Image(
+              height: 20,
+              width: 20,
+              image: AssetImage('images/tabbar_chat_hl.png'),
+            ),
+            label: '记一笔',
+          ),
+          // 中间占位按钮
+          BottomNavigationBarItem(
+            icon: SizedBox(
+              width: 60,
+            ),
+            label: "记一笔",
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline), label: '账户'),
+        ],
+      ),
+      //浮动按钮
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          navigatorPush(context, const AccTabBar());
+        },
+        child: const Icon(
+          Icons.add_circle_rounded,
+          size: 50,
+        ),
+      ),
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.centerDocked, // 浮动按钮 停靠在底部中间位置
     );
   }
 }

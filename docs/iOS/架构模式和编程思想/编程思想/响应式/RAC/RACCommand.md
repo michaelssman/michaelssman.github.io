@@ -2,6 +2,8 @@
 
 ### 1、创建RACCommand
 
+`#import <ReactiveObjC.h>`
+
 在ViewModel中将接口声明成一个RACCommand
 
 ```objective-c

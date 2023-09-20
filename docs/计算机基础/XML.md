@@ -1,10 +1,10 @@
 # XML
 
-XML指可扩展标记语言 (EXtensible Markup Language)
+XML指可扩展标记语言 (Extensible Markup Language)
 
 ## XML的作用
 
-XML 是**不作为**的，XML 不会做任何事情。XML被设计用来**结构化、存储以及传输信息**。它**仅仅是纯文本**而已。它仅仅将信息包装在 XML标签中。我们需要编写软件或者程序，才能传送、接收和显示出这个文档。
+XML 是**不作为**的，不会做任何事情。XML被设计用来**结构化、存储以及传输信息**。它**仅仅是纯文本**而已。它仅仅将信息包装在 XML标签中。我们需要编写软件或者程序，才能传送、接收和显示出这个文档。
 
 XML是语言，可自定义标签。
 
@@ -112,8 +112,8 @@ public class Test {
         //2.读取xml文件，返回Document对象出来：
         //dom是students.xml文档
         Document dom = sr.read(new File("FirstModule/src/students.xml"));//xml文件路径
-        System.out.println(dom);//这里就相当于将整个文档封装为Document对象了啊！
-        //3.获取根节点：（根节点只有一个啊！）students根元素
+        System.out.println(dom);//这里就相当于将整个文档封装为Document对象
+        //3.获取根节点：（根节点只有一个）students根元素
         Element studentsEle = dom.getRootElement();
         //4.获取根节点下的多个子节点：
         Iterator<Element> it1 = studentsEle.elementIterator();
