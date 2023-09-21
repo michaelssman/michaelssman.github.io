@@ -68,7 +68,7 @@
 #### flutter
 - 常用widget：MaterialApp、PageView、Scaffold、ListView、Image、Container、SizeBox等。
 - StatelessWidget和StatefulWidget生命周期
-- Mixin混入保存部件的数据状态不被刷新
+- 状态管理。Mixin混入保存部件的数据状态不被刷新
 - Key和GlobalKey的使用
 - json和map转模型model
 - 异步Future，多线程Isolate和compute

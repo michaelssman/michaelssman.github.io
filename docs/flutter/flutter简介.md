@@ -196,7 +196,7 @@ Engine revision：引擎版本
 
 ## flutter更新
 
-`flutter upgrade`更新flutter。
+`flutter upgrade`或`flutter upgrade --force`更新flutter。
 
 ## 安卓模拟器
 
