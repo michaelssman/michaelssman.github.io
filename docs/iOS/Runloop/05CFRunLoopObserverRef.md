@@ -1,16 +1,10 @@
 # CFRunLoopObserverRef
 
-## Observer监听RunLoop状态变化
-
-runloop有`source` `timer` `observer`，Observer用来监听RunLoop状态的。
+runloop有`source` `timer` `observer`，**Observer用来监听RunLoop状态变化的**。
 
 ## CFRunLoopObserverRef
 
-**CFRunLoopObserverRef**：是观察者，我们可以通过CFRunLoopObserverCreateWithHandler函数来创建一个观察者（函数会有一个block回调），来对RunLoop进行观察，当RunLoop状态变化时，会触发block回调，回调会返回对应的状态，可以在回调里做相应做的操作。
-
-（1）CFRunLoopObserverRef是观察者，能够监听RunLoop的状态改变
-
-（2）如何监听
+**CFRunLoopObserverRef：是观察者，能够监听RunLoop的状态改变。**通过CFRunLoopObserverCreateWithHandler函数来创建一个观察者（函数会有一个block回调），对RunLoop进行观察，当RunLoop状态变化时，会触发block回调，回调会返回对应的状态，在回调里做相应操作。
 
 ```objective-c
 //创建一个runloop监听者
@@ -23,8 +17,6 @@ CFRunLoopAddObserver(CFRunLoopGetCurrent(), observer, kCFRunLoopDefaultMode);
 CFRelease(observer);
 ```
 
-（3）状态
-
 ## 监听的几个状态：
 
 整个事务的执行状况。
@@ -33,7 +25,7 @@ kCFRunLoopBeforeWaiting和kCFRunLoopAfterWaiting关于事务生命周期。
 
 kCFRunLoopBeforeWaiting和kCFRunLoopAfterWaiting之间runloop会休眠。
 
-kCFRunLoopAfterWaiting和kCFRunLoopBeforeWaiting之间是在run，可以知道做一次事情需要的时间。这是一次循环。
+kCFRunLoopAfterWaiting和kCFRunLoopBeforeWaiting之间是在run。可以知道做一次事情需要的时间。这是一次循环。
 
 ```c
 /* Run Loop Observer Activities */
@@ -48,7 +40,7 @@ typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) {
 };
 ```
 
-监听RunLoop的状态变化可以用于优化程序，比如表格要加载大量数据、图片、处理耗时操作、会造成UI卡顿，这时就可以利用监听RunLoop，**在他休眠时唤醒它去处理这些任务**。
+监听RunLoop的状态变化可以用于优化程序，比如表格要加载大量数据、图片、处理耗时操作、会造成UI卡顿，这时就可以利用监听RunLoop，**在休眠时唤醒它去处理这些任务**。
 
 点击CFRunLoopRef到API中发现定义了Observer的相关声明CFRunLoopObserverRef,这正是我们想要的:
 
@@ -64,7 +56,7 @@ typedef struct CF_BRIDGED_MUTABLE_TYPE(NSTimer) __CFRunLoopTimer * CFRunLoopTime
 
 找到了CFRunLoopObserverRef之后就是要创建一个Observer了,在API中找到如下函数声明:
 
-```
+```c++
 CF_EXPORT CFRunLoopObserverRef CFRunLoopObserverCreate(CFAllocatorRef allocator, CFOptionFlags activities, Boolean repeats, CFIndex order, CFRunLoopObserverCallBack callout, CFRunLoopObserverContext *context);
 ```
 
@@ -79,18 +71,18 @@ CF_EXPORT CFRunLoopObserverRef CFRunLoopObserverCreate(CFAllocatorRef allocator,
 
 既然如此现在来创建一个CFRunLoopObserverContext,在API中也找到一个CFRunLoopObserverContext的声明
 
-```
+```c++
 typedef struct {
 
-CFIndex  version; //暂时传0不研究
+  CFIndex  version; //暂时传0不研究
 
-void *  info; //重要就是C语言要与OC传递数据的引用.void *表示可以传递任何类型的数据
+  void *  info; //重要就是C语言要与OC传递数据的引用.void *表示可以传递任何类型的数据
 
-const void *(*retain)(const void *info);//引用
+  const void *(*retain)(const void *info);//引用
 
-void  (*release)(const void *info);//回收
+  void  (*release)(const void *info);//回收
 
-CFStringRef  (*copyDescription)(const void *info);//描述,暂时没用
+  CFStringRef  (*copyDescription)(const void *info);//描述,暂时没用
 
 } CFRunLoopObserverContext;
 ```
@@ -99,11 +91,11 @@ CFStringRef  (*copyDescription)(const void *info);//描述,暂时没用
 
 ```c++
 CFRunLoopObserverContext context = {
-0,
-(__bridge void *)(self),//OC对象传递过去
-&CFRetain,
-&CFRelease,
-NULL
+  0,
+  (__bridge void *)(self),//OC对象传递过去
+  &CFRetain,
+  &CFRelease,
+  NULL
 };
 ```
 

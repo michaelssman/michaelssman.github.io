@@ -1,10 +1,8 @@
 ## 代码块
 
-快速创建基于StatelessWidget和StatefulWidget的小部件，这两组代码块是最常见的了。
+`stless` ：创建一个StatelessWidget。
 
-只需要输入 `stless` 就可以创建一个StatelessWidget。
-
-只需要输入 `stful` 就可以创建一个StatefulWidget。
+`stful` ：创建一个StatefulWidget。
 
 ### 自定义代码块
 
@@ -36,7 +34,7 @@ AS中可以设置代码块。Settings -> Editor -> Live Templates
 
 `command Y` 查看选中类的属性
 
-#### Ctrl + option + O 删除未使用的import
+`Ctrl + option + O` 删除未使用的import
 
 #### CMD + [  光标回到上一次编辑的位置
 
