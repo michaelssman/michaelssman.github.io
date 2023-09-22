@@ -7,6 +7,7 @@ class TextDemo1 extends StatelessWidget {
     fontWeight: FontWeight.bold, //FontWeight是个类
     fontStyle: FontStyle.italic, //斜体
     color: Colors.red, //Colors是个类
+    //decoration: TextDecoration.none,//文字的下方出现了两条黄色下划线的处理
   );
 
   final String _teacher = 'Michael';

@@ -6,7 +6,7 @@ HTTP 协议是**无状态**的。优点是服务器没有状态差异，可以�
 
 cookie 主要是用来记录用户状态，区分用户，**状态保存在客户端**。
 
-cookie同样存在于HTTP头部字段里。
+cookie存在于HTTP头部字段里。
 
 服务端可以使用`set-cookie`标识客户端身份，客户端则在请求时携带`cookie`告诉服务端自己的信息。
 
@@ -45,7 +45,7 @@ cookie 功能需要浏览器的支持。如果浏览器不支持 cookie（如大
 
 ### cookie的安全
 
-事实上，cookie 的使用存在争议，因为它被认为是对用户隐私的一种侵害，而且 cookie 并不安全 HTTP 协议不仅是无状态的，而且是不安全的。使用 HTTP 协议的数据不经过任何加密就直接在网络上传播，有被截获的可能。使用 HTTP 协议传输很机密的内容是一种隐患。
+cookie 的使用存在争议，因为它被认为是对用户隐私的一种侵害，而且 cookie 并不安全 HTTP 协议不仅是无状态的，而且是不安全的。使用 HTTP 协议的数据不经过任何加密就直接在网络上传播，有被截获的可能。使用 HTTP 协议传输很机密的内容是一种隐患。
 
 - 如果不希望 Cookie 在 HTTP 等非安全协议中传输，可以设置 Cookie 的 secure 属性为 true。浏览器只会在 HTTPS 和 SSL 等安全协议中传输此类 Cookie。
 - secure 属性并不能对 Cookie 内容加密，因而不能保证绝对的安全性。如果需要高安全性，需要在程序中对 Cookie 内容加密、解密，以防泄密
@@ -61,18 +61,18 @@ Session 是另一种记录客户状态的机制，不同的是 **Cookie** 保存
 
 ![图片](Cookie.assets/640.png)
 
-\* 当程序需要为某个客户端的请求创建一个 session 时，服务器首先检查这个客户端的请求里是否已包含了一个 session 标识（称为 SessionId）
+当程序需要为某个客户端的请求创建一个 session 时，服务器首先检查这个客户端的请求里是否已包含了一个 session 标识（称为 SessionId）
 
-\* 如果已包含则说明以前已经为此客户端创建过 session，服务器就按照 SessionId 把这个 session 检索出来，使用（检索不到，会新建一个）
+如果已包含则说明以前已经为此客户端创建过 session，服务器就按照 SessionId 把这个 session 检索出来，使用（检索不到，会新建一个）
 
-\* 如果客户端请求不包含 SessionId，则为此客户端创建一个 session 并且生成一个与此 session 相关联的 SessionId，SessionId 的值应该是一个既不会重复，又不容易被找到规律以仿造的字符串，这个 SessionId 将被在本次响应中返回给客户端保存。
+如果客户端请求不包含 SessionId，则为此客户端创建一个 session 并且生成一个与此 session 相关联的 SessionId，SessionId 的值应该是一个既不会重复，又不容易被找到规律以仿造的字符串，这个 SessionId 将被在本次响应中返回给客户端保存。
 
-\* 保存这个 SessionId 的方式可以采用 cookie，这样在交互过程中浏览器可以自动的按照规则把这个标识发送给服务器。但 cookie 可以被人为的禁止，则必须有其他机制以便在 cookie 被禁止时仍然能够把 SessionId 传递回服务器。
+保存这个 SessionId 的方式可以采用 cookie，这样在交互过程中浏览器可以自动的按照规则把这个标识发送给服务器。但 cookie 可以被人为的禁止，则必须有其他机制以便在 cookie 被禁止时仍然能够把 SessionId 传递回服务器。
 
 ## Cookie 和 Session 的区别
 
 - cookie 数据存放在客户的浏览器上，session 数据放在服务器上。
-- cookie 相比 session 不是很安全，别人可以分析存放在本地的 cookie 并进行 cookie 欺骗,考虑到安全应当使用 session。
-- session 会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能,考虑到减轻服务器性能方面，应当使用 cookie。
-- 单个 cookie 保存的数据不能超过 4K，很多浏览器都限制一个站点最多保存 20 个 cookie。而 session 存储在服务端，可以无限量存储
-- 将登录信息等重要信息存放为 session，其他信息如果需要保留，可以放在 cookie 中
+- cookie 相比 session 不是很安全，别人可以分析存放在本地的 cookie 并进行 cookie 欺骗，考虑到安全应当使用 session。
+- session 会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能，考虑到减轻服务器性能方面，应当使用 cookie。
+- 单个 cookie 保存的数据不能超过 4K，很多浏览器都限制一个站点最多保存 20 个 cookie。而 session 存储在服务端，可以无限量存储。
+- 将登录信息等重要信息存放为 session，其他信息如果需要保留，可以放在 cookie 中。

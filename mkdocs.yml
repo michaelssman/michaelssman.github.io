@@ -130,8 +130,6 @@ nav:
     - iOS/KVO.md
     - iOS/KVC.md
     - iOS/Animation.md
-    - NSArray:
-      - iOS/NSArray/遍历数组.md
     - SDWebImage:
       - iOS/SDWebImage/SDImageCache.md
       - iOS/SDWebImage/SDWebImage.md
@@ -208,7 +206,6 @@ nav:
     - vscode运行C: C++/vscode运行C++.md
     - 函数和函数库: C++/函数和函数库.md
     - 动态创建对象: C++/动态创建对象.md
-    - 友元: C++/友元.md
     - 句柄类: C++/句柄类.md
     - C++/库.md
     - 打开和关闭所有权: C++/打开和关闭所有权.md
@@ -327,7 +324,7 @@ nav:
     - 设计模式/README.md
     - 设计模式/设计模式基本原则.md
     - 创建型模式:
-      - 设计模式/创建型模式/01单例模式.md
+      - 设计模式/创建型模式/单例模式.md
       - 设计模式/创建型模式/02工厂模式.md
       - 设计模式/创建型模式/03建造者模式.md
       - 设计模式/创建型模式/04创建者模式和工厂模式的区别.md
