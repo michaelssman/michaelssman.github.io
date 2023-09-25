@@ -24,13 +24,11 @@
 
 `mysql -hlocalhost -uroot -p密码`
 
-### 使用图形客户端navicat12连接MySQL
+### 使用图形客户端navicat12连接MySQL服务器
 
-MySQL服务器 <-- Navicat客户端
+#### 安装navicat：
 
-**安装navicat：**
-
-直接解压安装包，双击其中的navicat.exe，即可开始运行。
+直接解压安装包，双击navicat.exe，即可开始运行。
 
 #### 连接测试navicat报错2059：
 
