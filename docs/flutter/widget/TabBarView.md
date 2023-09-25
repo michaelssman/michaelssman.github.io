@@ -16,15 +16,15 @@ TabBarView 封装了 PageView，它的构造方法很简单
 }) 
 ```
 
-TabController 用于监听和控制 TabBarView 的页面切换，通常和 TabBar 联动。如果没有指定，则会在组件树中向上查找并使用最近的一个 `DefaultTabController` 。
+TabController 用于监听和控制 TabBarView 的页面切换，通常和 TabBar 联动。
 
 ## TabBar
 
-TabBar 为 TabBarView 的导航标题，如图6-20所示：
+TabBar 为 TabBarView 的导航标题，如下图所示：
 
 ![图6-20](https://book.flutterchina.club/assets/img/6-20.02ae3d67.png)
 
-TabBar 有很多配置参数，通过这些参数我们可以定义 TabBar 的样式，很多属性都是在配置 indicator 和 label，拿上图来举例，Label 是每个Tab 的文本，indicator 指 “历史” 下面的白色下划线。
+TabBar 有很多配置参数，通过这些参数可以定义 TabBar 的样式，很多属性都是在配置 indicator 和 label，拿上图来举例，Label 是每个Tab 的文本，indicator 指 “历史” 下面的白色下划线。
 
 ```dart
 const TabBar({
@@ -50,7 +50,9 @@ const TabBar({
 }) 
 ```
 
-TabBar 通常位于 AppBar 的底部，它也可以接收一个 TabController ，如果需要和 TabBarView 联动， TabBar 和 TabBarView 使用同一个 TabController 即可，注意，联动时 TabBar 和 TabBarView 的孩子数量需要一致。如果没有指定 `controller`，则会在组件树中向上查找并使用最近的一个 `DefaultTabController` 。另外我们需要创建需要的 tab 并通过 `tabs` 传给 TabBar， tab 可以是任何 Widget，不过Material 组件库中已经实现了一个 Tab 组件，我们一般都会直接使用它：
+TabBar 通常位于 AppBar 的底部，它也可以接收一个 TabController ，如果需要和 TabBarView 联动， TabBar 和 TabBarView 使用同一个 TabController 即可。注意，联动时 TabBar 和 TabBarView 的孩子数量需要一致。
+
+如果没有指定 `controller`，则会在组件树中向上查找并使用最近的一个 `DefaultTabController` 。另外我们需要创建需要的 tab 并通过 `tabs` 传给 TabBar， tab 可以是任何 Widget，不过Material 组件库中已经实现了一个 Tab 组件，我们一般都会直接使用它：
 
 ```dart
 const Tab({
@@ -66,8 +68,6 @@ const Tab({
 注意，`text` 和 `child` 是互斥的，不能同时制定。
 
 ## 实例
-
-下面我们看一个例子：
 
 ```dart
 class TabViewRoute1 extends StatefulWidget {
@@ -157,6 +157,6 @@ class TabViewRoute2 extends StatelessWidget {
 
 可以看到我们无需去手动管理 Controller 的生命周期，也不需要提供SingleTickerProviderStateMixin，同时也没有其他的状态需要管理，也就不需要用 StatefulWidget 了，这样简单很多。
 
-### 页面缓存
+## 页面缓存
 
 因为TabBarView 内部封装了 PageView，如果要缓存页面，可以参考 PageView 一节中关于页面缓存的介绍。
