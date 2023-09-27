@@ -88,7 +88,7 @@ drop Database Students;
 ## 更新某一条指定的数据update
 
 ```sql
-update Students set stu_name = '隔壁老王', stu_age = 25 where stu_id = 7;
+UPDATE ${TABLENAME} SET stu_name = '隔壁老王', stu_age = 25 WHERE stu_id = 7;
 ```
 
 ## 查找SELECT
