@@ -33,7 +33,7 @@ int rebind_symbols_image(void*header,intptr_t slide,struct rebinding rebindings[
 
 ### HOOK一下NSLog
 
-我们新建一个项目。在 ViewDidLoad 中对系统的 **NSLog** 函数进行 HOOK 。
+新建一个项目。在 ViewDidLoad 中对系统的 **NSLog** 函数进行 HOOK 。
 
 ```objective-c
 
@@ -115,7 +115,7 @@ PIC翻译过来就是位置独立代码。
 - 这里面的指针，就是**符号**。
 - 给里面的指针赋值的过程，就是**符号绑定**。
 
-fishhook 之所以 HOOK 不了自定义的函数，就是因为**自定义的函数没有通过符号寻找地址这个过程，而系统函数是通过符号去绑定实现地址的**。fishhook 就是利用这一点，去修改了系统函数的符号达到 HOOK 的目的。其实我们通过fishhook 的函数名称就不难看出来 **rebind_symbols** 符号重绑定。
+fishhook 之所以 HOOK 不了自定义的函数，就是因为**自定义的函数没有通过符号寻找地址这个过程，而系统函数是通过符号去绑定实现地址的**。fishhook 就是利用这一点，去修改了系统函数的符号达到 HOOK 的目的。通过fishhook 的函数名称就可以看出来 **rebind_symbols** 符号重绑定。
 
 ## fishHook原理探索
 
@@ -177,7 +177,7 @@ fishhook 之所以 HOOK 不了自定义的函数，就是因为**自定义的函
 
 ![图片](https://mmbiz.qpic.cn/mmbiz_jpg/yoM0qNN7RwYOHKkIp9ibnGsMWjyJGl2tOAT4OfGQxTSdDdOibv3bhiaZyfAxmxyhln0FaKgcarKkibJkQKf1QPZtgQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
 
-我们重复上面的步骤，查看符号的内存数据，然后取出里面的值，通过 dis 反汇编查看。你会发现此刻符号内的数据已经替换成了自定义的函数地址了。（符号重绑定成功！）
+重复上面的步骤，查看符号的内存数据，然后取出里面的值，通过 dis 反汇编查看。你会发现此刻符号内的数据已经替换成了自定义的函数地址了。（符号重绑定成功！）
 
 ![图片](fishhook.assets/640-20220606025427291.jpeg)
 
@@ -207,7 +207,7 @@ fishhook 之所以 HOOK 不了自定义的函数，就是因为**自定义的函
 
 ![图片](fishhook.assets/640-20220606025602267.jpeg)
 
-那么到了 Symbols 里面就接近我们最终的字符常量了。注意在 Symbols 里面有 String Table 的 Index 值。这里是 0xC9。这就说明，在 String Table 里面，偏移 0xC9 的地址就是我们NSLog字符。
+那么到了 Symbols 里面就接近我们最终的字符常量了。注意在 Symbols 里面有`String Table Index`的值。这里是 0xC9。这就说明，在 String Table 里面，偏移 0xC9 的地址就是我们NSLog字符。
 
 ![图片](fishhook.assets/640-20220606025640463.jpeg)
 
@@ -237,17 +237,17 @@ fishhook 之所以 HOOK 不了自定义的函数，就是因为**自定义的函
 
 ## 后记
 
-刚才我们通过动态调试加 MachOView 的分析梳理了整个符号绑定以及重绑定的过程。这个过程也是 fishhook 能够 HOOK 系统函数的原理。
+刚才我们通过动态调试加 MachOView 的分析梳理了整个**符号绑定以及重绑定**的过程。这个过程也是 fishhook 能够 HOOK 系统函数的原理。
 
 ## fishhook 用处
 
 ### 1、二进制重排启动优化
 
-在这个优化的过程中，我们如何定位到启动时所有的OC 方法？我想你已经猜到了，通过 objc_msgSend 函数的 HOOK 。
+通过 objc_msgSend 函数的 HOOK ，定位到启动时所有的OC 方法。
 
 ### 2、埋点
 
-Hook拦截用户手势交互或者进入某个指定页面等应用接口，进行用户行为统计分析
+Hook拦截用户手势交互或者进入某个指定页面等应用接口，进行用户行为统计分析。
 
 ### 3、应用加固
 

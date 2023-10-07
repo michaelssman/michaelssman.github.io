@@ -92,8 +92,8 @@ nav:
       - iOS/Runtime/消息机制.md
       - iOS/Runtime/Aspect.md
     - 应用程序加载:
-      - MachO: iOS/应用程序加载/MachO.md
-      - fishhook: iOS/应用程序加载/fishhook.md
+      - iOS/应用程序加载/MachO.md
+      - iOS/应用程序加载/fishhook.md
       - iOS应用加载流程: iOS/应用程序加载/iOS应用加载流程.md
       - iOS/应用程序加载/编译流程.md
       - 应用启动优化: iOS/应用程序加载/应用启动优化.md

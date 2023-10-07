@@ -1,6 +1,8 @@
 # Mach-O
 
-打开了一个App，可以理解在手机的操作系统上运行了一个App进程。而进程是特殊文件在内存中加载得到的结果，这种特殊文件必须是操作系统可理解的。
+打开了一个App，可以理解在手机的操作系统上运行了一个App进程。
+
+进程是特殊文件在内存中加载得到的结果，这种特殊文件必须是操作系统可理解的。
 
 Mach-O 其实是Mach Object文件格式的缩写，是 mac 以及 iOS 上可执行文件的格式， 类似于 windows上的 PE 格式 (Portable Executable ), linux 上的 ElF 格式 (Executable and Linking Format) 。
 
@@ -109,9 +111,9 @@ load commands记录地址信息
 
 ### 5、Dynamic Symbol Table
 
-#### Indirect Symbols
+#### Indirect Symbols间接符号
 
-间接符号，外部动态库符号 系统的符号。符号绑定。
+外部动态库符号 系统的符号。符号绑定。
 
 ### 6、Symbol Table（符号表）自定定义的
 
