@@ -193,7 +193,7 @@ fishhook 之所以 HOOK 不了自定义的函数，就是因为**自定义的函
 
 #### indirect Symbols
 
-与懒加载表对应的另外一张表就出来了。indirect Symbols。懒加载表里面 NSLog 是第一个，那么它在 indirect Symbols 表里面也就是第一个。
+indirect Symbols与懒加载表对应。懒加载表里面 NSLog 是第一个，那么它在 indirect Symbols 表里面也就是第一个。
 
 接下来，将 indirect Symbols 里面对应的 Data 值换算成为10进制。
 
