@@ -51,10 +51,11 @@ Widget build(BuildContext context) {
     },
     //滑动回收
     child: NotificationListener<ScrollNotification>(
-      onNotification: (notification) {
+      onNotification: (ScrollNotification _event) {
         if (_isCustomKeyboardVisible) {
-          _isCustomKeyboardVisible = false;
-          setState(() {});
+          setState(() {
+            _isCustomKeyboardVisible = false;
+          });
         }
         return true;
       },
