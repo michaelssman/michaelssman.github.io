@@ -2,7 +2,7 @@
 
 ## image镜像文件
 
-底层基础库。并不是所有的都是从0开始写的。例如：UIKit，Foundation，libobjc，libDispath，libsystem等等，都是镜像文件。
+底层基础库。并不是所有的都是从0开始写的。例如：UIKit，Foundation，libObjc，libDispath，libSystem等等，都是镜像文件。
 
 库 映射到 内存中 就叫镜像images。
 
@@ -18,7 +18,7 @@
 
 ### 物理内存时代
 
-早期启动一个应用程序是将整块的加载进内存里。
+早期启动一个应用程序是将整块加载进内存里。
 
 好处：
 
