@@ -2,6 +2,7 @@
 
 ```dart
 class TextDemo1 extends StatelessWidget {
+  
   final TextStyle _textStyle = const TextStyle(
     fontSize: 16.0,
     fontWeight: FontWeight.bold, //FontWeight是个类

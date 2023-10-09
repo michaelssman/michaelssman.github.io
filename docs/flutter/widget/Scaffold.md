@@ -1,6 +1,6 @@
 # Scaffold
 
-带有导航栏appBar的小部件，可以不带导航栏（可选）。
+带有导航栏appBar的Widget，可以不带导航栏（可选）。
 
 ## Scaffold页面架构 
 
@@ -14,7 +14,6 @@
 
 ```dart
 Scaffold(
-  //Scaffold也是一个Widget 里面有appBar
   backgroundColor: Colors.white,
   appBar: AppBar(
     //导航栏 不写就不显示导航栏
@@ -24,13 +23,7 @@ Scaffold(
     elevation: 0.0, //去除导航栏底部的条
     actions: [ 
       GestureDetector(
-        onTap: () {
-          navigatorPush(
-            context,
-            const DiscoverChildPage(
-              title: '添加朋友',
-            ));
-        },
+        onTap: () { },
         child: Container(
           // height: 45,
           // width: 45,

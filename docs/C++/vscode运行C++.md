@@ -1,3 +1,5 @@
+# VSCode运行C++
+
 `g++ --version`
 
 `g++ fileName.cpp -o fileNme.out -W -Wall`会编译一个`.out`的文件，然后直接运行`./fileName.out`文件
