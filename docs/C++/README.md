@@ -26,7 +26,7 @@ C语言free  C++ delete
 
 C语言有struct没有class。
 
-C++有struct也有class  所以C++用class多一点。
+C++有struct也有class，C++用class多一点。
 
 类里面包含：
 
@@ -37,7 +37,7 @@ C++有struct也有class  所以C++用class多一点。
 
 C++类class和结构struct都可以创建对象。
 
-当没有写访问控制：C++的`struct`中的成员默认是public，`class`中的成员默认是private。其他的一样。
+当没有写访问控制：C++的`struct`中的成员默认是`public`，`class`中的成员默认是`private`。其他的一样。
 
 抽象数据类型 （用户定义类型）和其他类型一样
 
