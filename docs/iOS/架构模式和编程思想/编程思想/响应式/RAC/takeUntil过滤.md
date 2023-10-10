@@ -35,6 +35,14 @@
         NSLog(@"%@", self);
     }];
 
+  
+    [[cell.tfV.rac_textSignal takeUntil:cell.rac_prepareForReuseSignal] subscribeNext:^(NSString * _Nullable x) {
+      NSLog(@"cusLevelsPrice:%@",x);
+      @strongify(self)
+        self.customerLevelVM.cusLevels[indexPath.row].LevelPrice = x;
+    }];
+  
+  
     return cell;
 }
 ```
