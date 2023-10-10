@@ -16,9 +16,7 @@ template <typename T>
 SeqList<Teacher> list(10);
 ```
 
-## C和C++
-
-C语言free  C++ delete
+## struct和class
 
 对象可以通过对象`.`点出来成员函数。通过对象，**向对象发送消息**，调用成员函数。这就是C++面向对象。
 
