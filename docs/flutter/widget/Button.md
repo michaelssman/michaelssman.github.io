@@ -28,3 +28,29 @@ IconButton(
 ),
 ```
 
+## 自定义按钮
+
+```dart
+GestureDetector(
+  onTap: () async {
+  },
+  child: Container(
+    alignment: Alignment.center,
+    margin:
+    const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+    height: 50,
+    decoration: BoxDecoration(
+      color: themeColor,
+      borderRadius: BorderRadius.circular(25),
+    ),
+    child: const Text(
+      "保存",
+      style: TextStyle(
+        fontSize: 16.0,
+        color: Colors.white,
+      ),
+    ),
+  ),
+),
+```
+

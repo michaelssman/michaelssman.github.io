@@ -59,7 +59,7 @@ Widget build(BuildContext context) {
         }
         return true;
       },
-      child: ,
+      child: CustomScrollView(),
     ),
   );
 }
