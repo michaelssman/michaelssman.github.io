@@ -50,7 +50,7 @@ The key's randomart image is:
 michael@localhost ~ % 
 ```
 
-![image-20221226094158461](git_config.assets/image-20221226094158461.png)
+![image-20221226094158461](assets/image-20221226094158461.png)
 
 ### 后台启动ssh-agent
 
