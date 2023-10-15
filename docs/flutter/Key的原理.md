@@ -1,10 +1,8 @@
 # Key的原理
 
-只要继承Widget的都有一个key，`key?`可以为空。
+只要继承Widget的都有一个key。Key是用来标识小部件的。Key是一个抽象类。
 
 StatefulWidget的Widget和State是分开的。
-
-Key是用来标识小部件的。Key是一个抽象类。
 
 Widget
 
