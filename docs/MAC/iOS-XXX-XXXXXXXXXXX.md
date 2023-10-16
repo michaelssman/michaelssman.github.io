@@ -66,7 +66,11 @@
 #### iOS底层
 
 #### flutter
+
+记账app
+
 - 常用widget：MaterialApp、PageView、Scaffold、ListView、Image、Container、SizeBox等。
+- 布局
 - StatelessWidget和StatefulWidget生命周期
 - 状态管理。Mixin混入保存部件的数据状态不被刷新
 - Key和GlobalKey的使用
@@ -76,6 +80,11 @@
 - GestureDetector手势的使用
 - 数据本地持久化存储（sqflite）
 - 仿微信demo和记账app（日历功能、自定义键盘、底部弹窗）。
+
+打卡本
+
+- 日历功能
+- SharedPreferences本地存储
 
 #### swift
 

@@ -256,6 +256,7 @@ nav:
       - flutter/widget/Text.md
     - flutter/布局.md
     - flutter/数据持久化.md
+    - flutter/拷贝.md
     - flutter/混合开发与引擎.md
     - flutter/渲染原理.md
     - flutter/热重载.md
@@ -373,6 +374,7 @@ nav:
   - 数据库:
     - 数据库/SQL.md
     - 数据库/MySQL.md
+    - 数据库/设计表.md
   - Mac:
     - MAC/brew.md
     - MAC/linux.md
