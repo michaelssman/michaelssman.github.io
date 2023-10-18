@@ -1,6 +1,6 @@
 # Scaffold
 
-带有导航栏appBar的Widget，可以不带导航栏（可选）。
+Scaffold也是一个Widget 里面有appBar（可选）。
 
 ## Scaffold页面架构 
 

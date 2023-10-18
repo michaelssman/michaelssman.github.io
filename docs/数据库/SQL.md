@@ -107,4 +107,18 @@ SELECT * FROM TABLENAME WHERE 字段1 = '<#值#>' AND showtime < '1517904068.152
 SELECT stu_name,stu_gender FROM Students
 ```
 
+### 根据条件排序查找
+
+假设你的表名是`my_table`，并且`date`和`id`是你的字段名，那么你可以使用以下SQL语句来实现你的需求：
+
+```sql
+-- 选择my_table表中的所有字段
+SELECT * 
+FROM my_table -- 从my_table表中选取数据
+ORDER BY date DESC, id DESC -- 首先根据date字段降序排序，如果date相同，那么再根据id字段降序排序
+```
+
+`DESC`关键字表示降序排序，如果你想进行升序排序，你可以使用`ASC`关键字。
+
 删除、修改、查找都可以使用where条件
+

@@ -70,3 +70,25 @@ class RichTextDemo extends StatelessWidget {
 }
 ```
 
+```dart
+RichText(
+  text: TextSpan(
+    children: [
+      TextSpan(
+        text: list[index]
+        ['fromAcName']),
+      TextSpan(
+        text: list[index]
+        ['acDetailDate']),
+      TextSpan(
+        text: list[index]
+        ['acDetailType']),
+      TextSpan(
+        text: list[index]
+        ['acDetailAmount']),
+      TextSpan(text: list[index]['元']),
+    ],
+  ),
+),
+```
+
