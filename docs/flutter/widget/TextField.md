@@ -65,3 +65,19 @@ Widget build(BuildContext context) {
 }
 ```
 
+## 自动弹出键盘
+
+```dart
+@override
+void initState() {
+  // TODO: implement initState
+  super.initState();
+  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //弹出系统
+    FocusScope.of(context).requestFocus(firstFocusNode);
+    //弹出自定义键盘
+    showMyKeyboard();
+  });
+}
+```
+

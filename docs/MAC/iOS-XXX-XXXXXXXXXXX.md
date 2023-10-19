@@ -73,13 +73,13 @@
 - 布局
 - StatelessWidget和StatefulWidget生命周期
 - 状态管理。Mixin混入保存部件的数据状态不被刷新
-- Key和GlobalKey的使用
 - json和map转模型model
 - 异步Future，多线程Isolate和compute
 - Provider页面传值通讯、InheritedWidget数据共享、利用泛型实现Provider功能。
 - GestureDetector手势的使用
 - 数据本地持久化存储（sqflite）
-- 仿微信demo和记账app（日历功能、自定义键盘、底部弹窗）。
+- 仿微信demo和记账app（底部弹窗）。
+- 自定义数字键盘。使用GlobalKey查找state控制显示和隐藏，自动弹出和回收键盘功能。
 
 打卡本
 

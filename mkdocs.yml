@@ -236,7 +236,7 @@ nav:
     - flutter/本地资源和工程配置.md
     - flutter/生命周期.md
     - flutter/状态管理.md
-    - flutter/Key的原理.md
+    - flutter/Key.md
     - flutter/json和map转model.md
     - flutter/手势.md
     - flutter/package和plugin.md
