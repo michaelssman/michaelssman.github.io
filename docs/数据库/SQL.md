@@ -115,7 +115,9 @@ SELECT stu_name,stu_gender FROM Students
 -- 选择my_table表中的所有字段
 SELECT * 
 FROM my_table -- 从my_table表中选取数据
+WHERE editDate < 'last_edit_date' -- 选择editDate小于上次查询的最后一条数据的editDate的数据
 ORDER BY date DESC, id DESC -- 首先根据date字段降序排序，如果date相同，那么再根据id字段降序排序
+LIMIT 100 -- 限制结果集的数量为100
 ```
 
 `DESC`关键字表示降序排序，如果你想进行升序排序，你可以使用`ASC`关键字。
