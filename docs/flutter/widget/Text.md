@@ -75,18 +75,17 @@ RichText(
   text: TextSpan(
     children: [
       TextSpan(
-        text: list[index]
-        ['fromAcName']),
+        text: list[index]['fromAcName'],
+        style: _textStyle1,
+      ),
       TextSpan(
-        text: list[index]
-        ['acDetailDate']),
+        text: list[index]['acDetailDate'],  
+        style: _textStyle2,
+      ),
       TextSpan(
-        text: list[index]
-        ['acDetailType']),
-      TextSpan(
-        text: list[index]
-        ['acDetailAmount']),
-      TextSpan(text: list[index]['元']),
+        text: list[index]['acDetailType'],
+        style: _textStyle3,
+      ),
     ],
   ),
 ),

@@ -18,7 +18,7 @@ pod search 的时候就是在search_index.json中查找的。
 
 ### 本地代码spec索引仓库
 
-本地代码仓库的文件地址路径：`/硬盘/Users/用户名/.cocoapods/repos`，里面有master和trunk。`.cocoapods`是隐藏文件。
+本地代码仓库的文件地址路径：`/硬盘/Users/用户名/.cocoapods/repos`，里面有master和trunk。
 
 向cocoapods上面上传代码和拉取代码，拉取代码需要安装cocoapods。
 

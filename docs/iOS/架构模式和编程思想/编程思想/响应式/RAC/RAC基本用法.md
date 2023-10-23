@@ -176,12 +176,12 @@ UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
 ## 通知
 
 ```objective-c
-    [[[NSNotificationCenter defaultCenter] rac_addObserverForName:UIKeyboardDidShowNotification object:nil] subscribeNext:^(NSNotification * _Nullable x) {
-            NSLog(@"%@",x);
-    }];
+[[[NSNotificationCenter defaultCenter] rac_addObserverForName:UIKeyboardDidShowNotification object:nil] subscribeNext:^(NSNotification * _Nullable x) {
+  NSLog(@"%@",x);
+}];
 ```
 
-这样处理事件非常的内聚呢，并且管理起来也很方便。但是内部是怎么样处理的呢？
+这样处理事件非常的内聚，并且管理起来也很方便。但是内部是怎么样处理的呢？
 一起来揭开他的面纱
 
 ```objective-c
