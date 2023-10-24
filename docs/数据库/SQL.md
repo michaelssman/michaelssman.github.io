@@ -109,7 +109,7 @@ SELECT stu_name,stu_gender FROM Students
 
 ### 根据条件排序查找
 
-假设你的表名是`my_table`，并且`date`和`id`是你的字段名，那么你可以使用以下SQL语句来实现你的需求：
+假设你的表名是`my_table`，并且`date`和`id`是你的字段名，可以使用以下SQL语句来实现你的需求：
 
 ```sql
 -- 选择my_table表中的所有字段
@@ -120,7 +120,46 @@ ORDER BY date DESC, id DESC -- 首先根据date字段降序排序，如果date�
 LIMIT 100 -- 限制结果集的数量为100
 ```
 
-`DESC`关键字表示降序排序，如果你想进行升序排序，你可以使用`ASC`关键字。
+`DESC`关键字表示降序排序，升序排序使用`ASC`关键字。
+
+### 根据日期查找的数据，按年 按月 按日倒序分组。
+
+要按年、月和日对数据库表中的日期字段进行分组，您可以使用SQL查询语句。以下是一些示例SQL查询，可以帮助您实现这一目标，假设您有一个名为"your_table"的表，其中包含日期字段"date_field"。
+
+按年分组：
+```sql
+-- 通过年份分组并计算每个年份的记录数
+SELECT YEAR(date_field) AS year, COUNT(*) AS count
+FROM your_table
+GROUP BY YEAR(date_field)
+ORDER BY YEAR(date_field) DESC;
+```
+
+按月分组：
+```sql
+-- 通过年份和月份分组，然后计算每个月份的记录数
+SELECT YEAR(date_field) AS year, MONTH(date_field) AS month, COUNT(*) AS count
+FROM your_table
+GROUP BY YEAR(date_field), MONTH(date_field)
+ORDER BY YEAR(date_field) DESC, MONTH(date_field) DESC;
+```
+
+按日分组：
+```sql
+-- 通过年份、月份和日期分组，并计算每个日期的记录数
+SELECT YEAR(date_field) AS year, MONTH(date_field) AS month, DAY(date_field) AS day, COUNT(*) AS count
+FROM your_table
+GROUP BY YEAR(date_field), MONTH(date_field), DAY(date_field)
+ORDER BY YEAR(date_field) DESC, MONTH(date_field) DESC, DAY(date_field) DESC;
+```
+
+"date_field" 是一个日期（date）类型的字段，而不是文本（text）类型。日期类型字段用于存储日期和时间信息，允许您进行日期和时间相关的操作，例如按年、月和日分组、排序和计算日期差异，以便可以对其进行查询和分组。文本字段不具备这些日期操作的能力。
+
+在大多数关系型数据库管理系统中，日期类型的字段通常被定义为"DATE"，"DATETIME"，"TIMESTAMP"等，具体的命名可能会因数据库系统而异。确保在创建数据库表时，将日期字段指定为适当的日期类型，以便能够正确地存储和处理日期数据。
+
+这些查询将从"your_table"表中选择日期数据，并将其按年、月和日进行分组，同时计算每个组中的记录数。
+
+
 
 删除、修改、查找都可以使用where条件
 
