@@ -242,6 +242,7 @@ nav:
     - flutter/package和plugin.md
     - widget:
       - flutter/widget.md
+      - flutter/widget/Material.md
       - flutter/widget/MaterialApp.md
       - flutter/widget/Scaffold.md
       - flutter/widget/PageView.md
