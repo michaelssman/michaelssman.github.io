@@ -317,7 +317,6 @@ nav:
     - 版本控制/git.md
     - 版本控制/git_config.md
     - 版本控制/git_ignore.md
-    - 版本控制/svn.md
   - 设计模式:
     - 设计模式/README.md
     - 创建型模式:
