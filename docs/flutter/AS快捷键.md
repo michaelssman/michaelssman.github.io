@@ -54,6 +54,6 @@ AS中可以设置代码块。Settings -> Editor -> Live Templates
 
 #### CMD + option + L  格式化代码
 
-#### Option + Shift + Up/Down 上下移动行
+`Option + Shift + Up/Down` 上下移动行
 
 #### Command + Shift + Up/Down  上下移动方法

@@ -84,11 +84,36 @@ git checkout (branch) 切换到我们要修改的分支。
 
 `git merge --no-ff '3.3.0'`。
 
+#### 在本地检出、审核和合并
+
+**第 1 步.** 获取并检出这个合并请求的功能分支：
+
+```
+git fetch origin
+git checkout -b '3.3.2费用改造' 'origin/3.3.2费用改造'
+```
+
+**第 2 步.** 在本地查看更改。
+
+**第 3 步.** 将功能分支合并到目标分支并修复任何冲突。 [我该如何修复它们？](http://192.168.1.66/help/user/project/merge_requests/conflicts#resolve-conflicts-from-the-command-line)
+
+```
+git fetch origin
+git checkout 'main'
+git merge --no-ff '3.3.2费用改造'
+```
+
+**第 4 步.** 将目标分支推送到 GitLab。
+
+```
+git push origin 'main'
+```
+
+**提示：** 您也可以在本地检出合并请求。[了解更多。](http://192.168.1.66/help/user/project/merge_requests/reviews/index.md#checkout-merge-requests-locally-through-the-head-ref)
+
 ## 冲突解决
 
 选中冲突的文件，点击右键选择'冲突解决'菜单中的选项解决问题。
-
-
 
 
 
