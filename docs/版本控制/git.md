@@ -8,6 +8,38 @@
 2. 终端cd进入该文件夹
 3. git clone 远程仓库的路径
 
+### clone某一次commit
+
+克隆Git仓库的特定提交，你需要先克隆整个仓库，然后使用`checkout`命令切换到特定的提交。以下是步骤：
+
+1. 克隆整个仓库：
+
+```bash
+git clone <repository-url>
+```
+
+2. 切换到你的目标仓库：
+
+```bash
+cd <repository-name>
+```
+
+3. 使用`checkout`命令切换到特定的提交。你需要知道你想要切换的提交的哈希值：
+
+```bash
+git checkout <commit-hash>
+```
+
+在这里，`<repository-url>`是你的Git仓库的URL，`<repository-name>`是你的仓库的名称，`<commit-hash>`是你想要切换到的提交的哈希值。
+
+请注意，当你切换到一个特定的提交时，你会处于一个"DETACHED HEAD"状态。这意味着任何你做的改变都不会影响任何分支。如果你想要保存你的改变，你可以创建一个新的分支：
+
+```bash
+git checkout -b <new-branch-name>
+```
+
+在这里，`<new-branch-name>`是你新分支的名称。
+
 ## git add .
 
 添加到缓存。
