@@ -81,3 +81,48 @@ void initState() {
 }
 ```
 
+## 从光标选中位置插入和删除
+
+在 TextField 控制器 TextEditingController 中有一个 selection 属性，记录了选定内容的文本范围。主要用到其中两个属性: baseOffset 和 extentOffset，baseOffset 是文本选择的起始偏移位置，extentOffset 是文本选择的结束偏移位置。baseOffset 和 extentOffset 相等时 baseOffset 就是光标的位置
+
+### 任意位置的插入
+
+```ini
+String text = "新插入的内容";
+int oldOffset = controller.selection.baseOffset; // 获取起始位置
+int oldExtentOffset = controller.selection.extentOffset; // 获取结束位置
+String oldValue = controller.text; // 获取输入框原有内容
+String newValue = oldValue.replaceRange(oldOffset, oldExtentOffset, text); // 根据起始位置和束位置替换内容，生成新内容
+int newOffset = oldOffset + text.length; // 从新计算起始位置
+controller.value = TextEditingValue(
+  // 修改输入框内容和光标位置
+  text: newValue,
+  selection: TextSelection(baseOffset: newOffset, extentOffset: newOffset),
+); // 起始位置和结束位置相同就是光标位置
+```
+
+### 任意位置的删除
+
+```ini
+int oldOffset = controller.selection.baseOffset; // 获取起始位置
+int oldExtentOffset = controller.selection.extentOffset; // 获取结束位置
+String oldValue = controller.text; // 获取输入框原有内容
+// 光标在最左边
+if (oldOffset == 0 && oldExtentOffset == 0) {
+  // 光标在输入框最左侧没有可删除内容，直接返回
+  return;
+}
+// 当没有选中文本
+if (oldOffset == oldExtentOffset) {
+  // 起始位置和束位置相同，即没有选中内容
+  oldOffset--; // 起始位置自减，自减之后可以看成选中了左边一个内容
+}
+int newOffset = oldOffset; // 生成新的起始位置
+String newValue = oldValue.replaceRange(oldOffset, oldExtentOffset, ''); // 根据起始位置和束位置替换成空支付，生成新内容
+controller.value = TextEditingValue(
+  // 修改输入框内容和光标位置
+  text: newValue,
+  selection:
+  TextSelection(baseOffset: newOffset, extentOffset: newOffset),
+); // 起始位置和结束位置相同就是光标位置
+```

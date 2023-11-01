@@ -35,7 +35,7 @@ edit_uri: "" # 编辑按钮跳转的链接
 repo_url: https://github.com/michaelssman/michaelssman.github.io # 右上角点击跳转的链接
 repo_name: michael.github.io # 右上角的名字
 ## [bottom-left corner]
-copyright: Copyright &copy; 2022 Michael # 左下角的版权声明
+copyright: Copyright &copy; 2023 Michael # 左下角的版权声明
 ## [bottom-right corner]
 extra:
   social: # icons
@@ -376,7 +376,7 @@ nav:
     - 数据库/MySQL.md
     - 数据库/设计表.md
   - Mac:
-    - MAC/brew.md
+    - MAC/软件包管理系统.md
     - MAC/linux.md
     - MAC/hosts.md
     - MAC/Mac快捷键.md
