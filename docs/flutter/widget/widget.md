@@ -26,15 +26,24 @@ alignment: Alignment(0.0, 0.0),//中心点
 
 x和y是从-1.0到1.0。原点在中间位置。
 
-### margin属性
+### margin
 
-- 内边距，让小部件往里面缩
-- EdgeInsets.all(10)上下左右都往里面缩10
-- 每一个视图的widget都可以看成一个矩形
+边距
 
-### color属性
+```dart
+margin: const EdgeInsets.only(top: 20, bottom: 20, left: 20, right: 10),
+margin: const EdgeInsets.all(10),//上下左右都往里面缩10
+```
 
-- 技巧：当布局某个widget的时候，先给个颜色，便于调整布局。
+每一个视图的widget都可以看成一个矩形
+
+### padding
+
+` padding: const EdgeInsets.all(20),`
+
+### decoration圆角和color
+
+技巧：当布局某个widget的时候，先给个颜色，便于调整布局。
 
 ```dart
 Container(
@@ -62,18 +71,10 @@ Container(
 		*/
     //背景图片
     image: const DecorationImage(
-      image: NetworkImage(
-        'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.gpbctv.com%2Fuploads%2F20210424%2Fzip_1619246266UkP6CL.jpg&refer=http%3A%2F%2Fwww.gpbctv.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1669529410&t=e2a5d5b4f49e3977d1b24560f354029e')),
+      image: NetworkImage('https://www.hh.imageurl.png')),
   ),
-  padding: const EdgeInsets.all(20),
-  margin: const EdgeInsets.all(10),//上下左右都有
   // color: Colors.red, //设置了decoration就不能设置color属性了
-  child: const Text(
-    'Hello World',
-    style: TextStyle(
-      fontSize: 20,
-    ),
-  ),
+  child: const Text(),
 );
 ```
 

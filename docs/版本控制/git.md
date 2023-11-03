@@ -30,9 +30,9 @@ cd <repository-name>
 git checkout <commit-hash>
 ```
 
-在这里，`<repository-url>`是你的Git仓库的URL，`<repository-name>`是你的仓库的名称，`<commit-hash>`是你想要切换到的提交的哈希值。
+在这里，`<repository-url>`是Git仓库的URL，`<repository-name>`是仓库的名称，`<commit-hash>`是想要切换到的提交的哈希值。
 
-请注意，当你切换到一个特定的提交时，你会处于一个"DETACHED HEAD"状态。这意味着任何你做的改变都不会影响任何分支。如果你想要保存你的改变，你可以创建一个新的分支：
+请注意，当切换到一个特定的提交时，你会处于一个"DETACHED HEAD"状态。这意味着任何你做的改变都不会影响任何分支。如果你想要保存你的改变，你可以创建一个新的分支：
 
 ```bash
 git checkout -b <new-branch-name>
@@ -56,9 +56,7 @@ git status --short或git status -s 格式更为紧凑的输出
 
 ## git commit -m "注释"
 
-本地提交。将缓存中的文件Commit到git库
-
-git commit -m "添加你的注释,一般是一些更改信息"
+本地提交，将缓存中的文件Commit到git库。
 
 ## git push  
 
