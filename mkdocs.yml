@@ -217,10 +217,7 @@ nav:
     - 多态和虚函数:
       - C++/多态和虚函数/虚函数.md
       - C++/多态和虚函数/多态和虚函数.md
-    - 模版:
-      - C++/模版/模版template.md
-      - C++/模版/Stack模板.md
-      - C++/模版/模版化的指针Stash.md
+    - C++/模版template.md
   - flutter:
     - dart:
       - flutter/Dart/dart.md
@@ -241,7 +238,7 @@ nav:
     - flutter/手势.md
     - flutter/package和plugin.md
     - widget:
-      - flutter/widget.md
+      - flutter/widget/widget.md
       - flutter/widget/Material.md
       - flutter/widget/MaterialApp.md
       - flutter/widget/Scaffold.md
