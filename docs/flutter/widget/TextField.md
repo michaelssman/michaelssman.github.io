@@ -44,19 +44,12 @@ Widget build(BuildContext context) {
   return GestureDetector(
     //点击回收
     onTap: () {
-      if (_isCustomKeyboardVisible) {
-        _isCustomKeyboardVisible = false;
-        setState(() {});
-      }
+      FocusScope.of(context).unfocus();
     },
     //滑动回收
     child: NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification _event) {
-        if (_isCustomKeyboardVisible) {
-          setState(() {
-            _isCustomKeyboardVisible = false;
-          });
-        }
+        FocusScope.of(context).unfocus();
         return true;
       },
       child: CustomScrollView(),
@@ -72,11 +65,18 @@ Widget build(BuildContext context) {
 void initState() {
   // TODO: implement initState
   super.initState();
+  
+  _focusNode.addListener(() {
+    if (_amountFocusNode.hasFocus) {
+      _keyboardKey.currentState?.showKeyboard();
+    } else {
+      _keyboardKey.currentState?.hiddenKeyboard();
+    }
+  });
+  
   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //弹出系统
+    //请求焦点
     FocusScope.of(context).requestFocus(firstFocusNode);
-    //弹出自定义键盘
-    showMyKeyboard();
   });
 }
 ```
