@@ -126,3 +126,14 @@ controller.value = TextEditingValue(
   TextSelection(baseOffset: newOffset, extentOffset: newOffset),
 ); // 起始位置和结束位置相同就是光标位置
 ```
+
+## 设置焦点
+
+```dart
+// 在设置TextField的text属性后，将焦点移动到文本的末尾
+_textEditingController.text = "你的文本内容";
+_textEditingController.selection = TextSelection.fromPosition(
+  TextPosition(offset: _textEditingController.text.length),
+);
+```
+

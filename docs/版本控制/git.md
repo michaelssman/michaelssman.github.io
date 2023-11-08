@@ -10,7 +10,7 @@
 
 ### clone某一次commit
 
-克隆Git仓库的特定提交，你需要先克隆整个仓库，然后使用`checkout`命令切换到特定的提交。以下是步骤：
+克隆Git仓库的特定提交，需要先克隆整个仓库，然后使用`checkout`命令切换到特定的提交。以下是步骤：
 
 1. 克隆整个仓库：
 
@@ -30,15 +30,13 @@ cd <repository-name>
 git checkout <commit-hash>
 ```
 
-在这里，`<repository-url>`是Git仓库的URL，`<repository-name>`是仓库的名称，`<commit-hash>`是想要切换到的提交的哈希值。
+注意，当切换到一个特定的提交时，你会处于一个"DETACHED HEAD"状态。这意味着任何你做的改变都不会影响任何分支。如果你想要保存你的改变，你可以创建一个新的分支。
 
-请注意，当切换到一个特定的提交时，你会处于一个"DETACHED HEAD"状态。这意味着任何你做的改变都不会影响任何分支。如果你想要保存你的改变，你可以创建一个新的分支：
+如果你想要创建一个新的分支来保存你所做的提交，你可以使用`git switch -c <new-branch-name>`命令来创建。你也可以随时使用这个命令。
 
-```bash
-git checkout -b <new-branch-name>
-```
+如果你想撤销这个操作，你可以使用 `git switch -` 命令来回到你之前的状态。
 
-在这里，`<new-branch-name>`是你新分支的名称。
+如果你不想再看到这个提示，你可以通过设置配置变量`advice.detachedHead`为`false`来关闭它。例如，运行 `git config --global advice.detachedHead false`。
 
 ## git add .
 
