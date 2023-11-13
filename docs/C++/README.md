@@ -1,7 +1,5 @@
 # README
 
-typedef int Object;
-
 如果类使用它下面的其它类，需要前置声明。
 
 泛型

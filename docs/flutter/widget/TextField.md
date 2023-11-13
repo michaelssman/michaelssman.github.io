@@ -67,7 +67,7 @@ void initState() {
   super.initState();
   
   _focusNode.addListener(() {
-    if (_amountFocusNode.hasFocus) {
+    if (_focusNode.hasFocus) {
       _keyboardKey.currentState?.showKeyboard();
     } else {
       _keyboardKey.currentState?.hiddenKeyboard();
@@ -76,7 +76,7 @@ void initState() {
   
   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
     //请求焦点
-    FocusScope.of(context).requestFocus(firstFocusNode);
+    FocusScope.of(context).requestFocus(_focusNode);
   });
 }
 ```

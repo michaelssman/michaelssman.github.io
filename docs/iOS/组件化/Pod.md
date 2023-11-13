@@ -27,7 +27,7 @@ pod install 命令功能：
    命令执行完毕后，新增的库会绿色显示，删除的话会红色显示。
 2. 显示项目中安装的第三方库对应的名字和版本号。如果之前已经安装过了某个第三方库，则只显示库的名字和版本号，不进行更新操作。
 
-注意：从CocoaPods 1.0开始，默认情况下`pod install`不会发生`pod repo update`。
+默认情况下`pod install`不会发生`pod repo update`。
 
 ### pod install --no-repo-update
 
