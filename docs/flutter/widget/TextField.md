@@ -127,7 +127,7 @@ controller.value = TextEditingValue(
 ); // 起始位置和结束位置相同就是光标位置
 ```
 
-## 设置焦点
+## 设置光标位置
 
 ```dart
 // 在设置TextField的text属性后，将焦点移动到文本的末尾

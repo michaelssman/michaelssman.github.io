@@ -73,13 +73,13 @@ INSERT OR REPLACE INTO TABLENAME ('articleID','editDate') VALUES ('1001','202201
 delete from Students where stu_id = 5 and stu_id = 18;
 ```
 
-删除整个表
+## 删除表
 
 ```sql
 drop Table Students;
 ```
 
-删除数据库
+## 删除数据库
 
 ```sql
 drop Database Students;
@@ -94,8 +94,6 @@ UPDATE ${TABLENAME} SET stu_name = '隔壁老王', stu_age = 25 WHERE stu_id = 7
 ## 查找SELECT
 
 ```sql
-SELECT * FROM TABLENAME ORDER BY <#字段名#> DESC;
-
 SELECT * FROM TABLENAME WHERE 字段1 = '<#值#>' AND showtime < '1517904068.1524' ORDER BY 字段2 DESC LIMIT 10 OFFSET %d ;
 
 根据字段2倒序排序 查找字段1等于某个值 并且showtime小于1517904068.1524 的数据，并且分页，每页10个。
