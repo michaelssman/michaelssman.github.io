@@ -32,7 +32,7 @@ flutter工程使用的，类似iOS中的pod第三方库。
 
 使用的第三方的话需要在XCode中pod install。原生中也会有代码。
 
-## 包和插件（plugin）区别
+## package和plugin区别
 
 是否包含原生代码
 

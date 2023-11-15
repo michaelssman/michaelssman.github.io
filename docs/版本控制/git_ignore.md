@@ -90,7 +90,7 @@ fastlane/test_output
 iOSInjectionProject/
 ```
 
-Flutter 
+## Flutter 
 
 ```
 # Miscellaneous
