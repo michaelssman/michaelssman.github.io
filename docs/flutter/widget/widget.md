@@ -28,7 +28,7 @@ x和y是从-1.0到1.0。原点在中间位置。
 
 ### margin
 
-边距
+外边距
 
 ```dart
 margin: const EdgeInsets.only(top: 20, bottom: 20, left: 20, right: 10),
@@ -39,7 +39,11 @@ margin: const EdgeInsets.all(10),//上下左右都往里面缩10
 
 ### padding
 
-` padding: const EdgeInsets.all(20),`
+内边距
+
+```dart
+padding: const EdgeInsets.all(20),
+```
 
 ### decoration圆角和color
 
