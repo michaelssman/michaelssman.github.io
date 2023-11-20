@@ -91,6 +91,17 @@ drop Database Students;
 UPDATE ${TABLENAME} SET stu_name = '隔壁老王', stu_age = 25 WHERE stu_id = 7;
 ```
 
+为了避免SQL注入攻击，最好使用**参数化查**询，而不是直接将变量插入到SQL语句中。
+
+```dart
+txn.rawUpdate(
+  'UPDATE $_tableName SET ${AccountModel.acNameKey} = ?, ${AccountModel.acTypeKey} = ? WHERE id = ?',
+  [model.name, model.type, model.id]
+);
+```
+
+在上面的代码中，`?` 是参数的占位符。`rawUpdate` 方法的第二个参数是一个数组，包含了要插入到SQL语句中的值，这些值将按照顺序替换掉占位符。这种方式不仅安全，还可以防止因不正确的引号使用而导致的语法错误。
+
 ## 查找SELECT
 
 ```sql
