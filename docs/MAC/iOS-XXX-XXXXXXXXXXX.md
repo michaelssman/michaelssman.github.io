@@ -73,11 +73,11 @@
 
 - 常用widget：MaterialApp、PageView、Scaffold、ListView、Image、Container、SizeBox等。
 - 布局
-- StatelessWidget和StatefulWidget生命周期
 - 状态管理。Mixin混入保存部件的数据状态不被刷新
+- StatelessWidget和StatefulWidget生命周期
+- Provider页面传值通讯、InheritedWidget数据共享、利用泛型实现Provider功能。
 - json和map转模型model
 - 异步Future，多线程Isolate和compute
-- Provider页面传值通讯、InheritedWidget数据共享、利用泛型实现Provider功能。
 - GestureDetector手势的使用
 - 数据本地持久化存储（sqflite）
 - 仿微信demo和记账app（底部弹窗）。
@@ -102,7 +102,7 @@
 #### 音视频
 - AVFoundation的简单使用
   - 音视频的采集
-  - 人脸识别、二维码、条形码扫描。设置有效的扫描区域(扫描框内的区域)。
+  - 静态图片捕捉、视频录制、人脸识别、二维码和条形码扫描。设置有效的扫描区域(扫描框内的区域)。
 - H.264视频编码原理
 
 ### 思享无限（北京）科技有限公司 （ 2021年11月 ~ 2022年3月）
