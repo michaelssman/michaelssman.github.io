@@ -299,11 +299,9 @@ void testFuture1() {
 ///flutter: 任务1任务2任务3结束
 ```
 
-### 多个任务结果回来之后统一处理
+### 多任务返回
 
-使用`Future.wait(futures)`， futures任务执行顺序同样是添加顺序
-
-任务A任务B任务C同时处理，ABC任务顺序执行，同步处理。
+使用`Future.wait([futures])`， `Future.wait`接收一个`Future`对象的列表，并且返回一个新的`Future`。该`Future`将在列表中所有`Future`对象完成后完成。
 
 ```dart
 //多个future结束之后 处理
@@ -329,6 +327,12 @@ void testFuture2() {
 ///flutter: 任务C 执行
 ///flutter: 任务B任务A任务C
 ```
+
+每个异步任务都是独立执行的，`Future.wait`将在它们都完成后继续执行。`Future.wait`返回的是一个包含所有结果的列表，这个列表中的**结果顺序和传入`Future.wait`的`Future`列表顺序相同**。
+
+所有的异步任务都是并行执行的，而不是顺序执行。这意味着总的等待时间将不会超过最长的那个任务所需的时间，除非其中一个任务抛出了异常。
+
+如果想要处理可能发生的异常，可以给`Future.wait`添加`onError`回调或者使用`try-catch`块。
 
 ## 队列
 

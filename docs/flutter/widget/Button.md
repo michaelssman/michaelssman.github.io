@@ -54,3 +54,18 @@ GestureDetector(
 ),
 ```
 
+## InkWell
+
+`InkWell`是一个专门为水波纹效果设计的小部件。
+
+```dart
+InkWell(
+  onTap: () {
+    print('Tap!');
+  },
+  splashColor: Colors.blue, // 水波纹颜色
+  child: Container(
+    // ...
+  ),
+)
+```
