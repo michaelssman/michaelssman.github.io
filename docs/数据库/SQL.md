@@ -212,7 +212,55 @@ GROUP BY
 
 请注意，这个查询语句假定`ac_detail_date`是一个日期类型的字段，`ac_detail_amount`是一个数值类型的字段，`ac_detail_type`是一个文本类型的字段，且"收入"和"支出"是表示收入类型和支出类型的准确值。如果你的数据库中的设置不同，可能需要对查询语句进行适当的修改。
 
+### 连接两个表
 
+数据库有两个表：
+账户表：MC_TEXT，该表中的字段：id, type, name, balance
+明细表：MC_DETAIL_TEXT，该表中的字段：id, from_ac_id, to_ac_id, ac_detail_date, ac_detail_type, ac_detail_amount
+明细表中的from_ac_id和to_ac_id对应账户表中的id
+应该如何设计表，查询明细表的时候，返回id, from_ac_id, to_ac_id, ac_detail_date, ac_detail_type这些字段的信息，并且加上from_ac_id和to_ac_id对应的账户的信息。
+
+#### 方法
+
+为了在查询明细表时同时获取`from_ac_id`和`to_ac_id`对应的账户信息，需要在查询时进行两次连接（JOIN）操作，一次是将明细表的`from_ac_id`与账户表的`id`连接，另一次是将明细表的`to_ac_id`与账户表的`id`连接。这样可以确保能够获取每个账户ID对应的账户信息。
+
+以下是一个SQL查询示例，展示了如何实现这种连接，并从两个表中检索所需的信息：
+
+```sql
+SELECT
+    d.id,
+    d.from_ac_id,
+    f.type AS from_ac_type,
+    f.name AS from_ac_name,
+    f.balance AS from_ac_balance,
+    d.to_ac_id,
+    t.type AS to_ac_type,
+    t.name AS to_ac_name,
+    t.balance AS to_ac_balance,
+    d.ac_detail_date,
+    d.ac_detail_type,
+    d.ac_detail_amount
+FROM
+    MC_DETAIL_TEXT AS d
+INNER JOIN
+    MC_TEXT AS f
+ON
+    d.from_ac_id = f.id
+INNER JOIN
+    MC_TEXT AS t
+ON
+    d.to_ac_id = t.id;
+```
+
+在这个查询中：
+
+- `MC_DETAIL_TEXT` 表被别名为 `d`。
+- `MC_TEXT` 表被别名为 `f` 当它与 `from_ac_id` 关联时。
+- `MC_TEXT` 表也被别名为 `t` 当它与 `to_ac_id` 关联时。
+- `INNER JOIN` 用于连接表，确保只有当账户ID在账户表中存在时，明细表的记录才会被返回。
+- 为了避免列名冲突并清晰表达列的含义，使用 `AS` 关键字为每列提供了别名，如 `from_ac_type`, `from_ac_name`, `from_ac_balance`, `to_ac_type`, `to_ac_name`, `to_ac_balance`。
+
+如果数据库中存在`from_ac_id`或`to_ac_id`没有对应账户记录的情况，可能需要使用`LEFT JOIN`来代替`INNER JOIN`，以确保即使某些账户信息不存在也能返回明细记录。
 
 
 
