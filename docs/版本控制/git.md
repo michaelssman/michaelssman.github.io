@@ -102,15 +102,15 @@ $ git branch
 
 现在我们可以看到，有了一个新分支 **testing**。
 
-### 切换分支
+### 切换分支checkout
 
 git checkout (branch) 切换到我们要修改的分支。
 
-### 合并分支
+### 合并分支merge
 
 本地合并，解决冲突，提交，推送。
 
-`git merge --no-ff '3.3.0'`。
+`git merge --no-ff '3.3.0'`：将3.3.0分支合并到当前分支。
 
 #### 在本地检出、审核和合并
 
