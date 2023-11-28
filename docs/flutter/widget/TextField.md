@@ -43,9 +43,7 @@ TextField(
 Widget build(BuildContext context) {
   return GestureDetector(
     //点击回收
-    onTap: () {
-      FocusScope.of(context).unfocus();
-    },
+    onTap: () => FocusScope.of(context).unfocus(),
     //滑动回收
     child: NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification _event) {
