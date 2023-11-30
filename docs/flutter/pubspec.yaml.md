@@ -16,7 +16,7 @@ version: 1.0.0+1
 
 # dart版本
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=3.1.3 <4.0.0"
 
 # 三方SDK
 dependencies:
@@ -34,6 +34,9 @@ dependencies:
   # dio: any 任意版本
   # dio: '>3.0.1' 大于3.0.1（不包含3.0.1）注意：需要加引号
   http: ^0.13.4
+  # 本地的包package
+  flutter_package:
+    path: ../flutter_package
 
 # 开发环境依赖库 调试用的 打包时不会打包进去
 dev_dependencies:
@@ -45,7 +48,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^1.0.0
+  flutter_lints: ^2.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -58,6 +61,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
      - images/
+     - acc/
 
   # example:
   # fonts:
@@ -76,7 +80,7 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 ```
 
-# flutter引用外部包
+## flutter引用外部包
 
 Flutter外部包网站：https://pub.dev/
 Flutter使用pubspec文件管理应用程序的assets(资源，如图片、package等)。
@@ -98,7 +102,7 @@ dependencies:
 
 `^`后面表示框架的版本
 
-# 关于import
+## 关于import
 
 在您输入时，Android Studio会为您提供有关库导入的建议。然后它将呈现灰色的导入字符串，让您知道导入的库尚未使用（到目前为止）
 
@@ -116,7 +120,7 @@ dependencies:
 
 ​		hide：需要隐藏的内容，不导的内容。
 
-# 整个项目iOS Android都使用的图片
+## 整个项目iOS Android都使用的图片
 
 直接把文件夹复制粘贴到项目
 
@@ -129,7 +133,7 @@ dependencies:
 
 注意：格式不能错，assets前面多一个空格都不可以。
 
-# dart版本兼容
+## dart版本兼容
 
 项目/wechat_demo/pubspec.yaml
 
@@ -141,16 +145,16 @@ environment:
 
 然后`Pub get`
 
-# Put get
+## Put get
 
-安装依赖，载入进来使用`pub get`
-
-在Android Studio的编辑器视图中查看pubspec.yaml时，单击右上角的 `Pub get`，这会将依赖包安装到您的项目。
-
-或者直接在项目根目录下，执行命令：
+安装依赖，在项目根目录下，执行命令：
 
 ```
 flutter pub get
 ```
 
 在`External Libraries`下的` Dart Packages`里面就能看到新导入的包。
+
+
+
+iOS还需要`pod install`。
