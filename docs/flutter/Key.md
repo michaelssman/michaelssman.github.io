@@ -102,7 +102,7 @@ class ChildPage extends StatefulWidget {
   const ChildPage({Key? key}) : super(key: key);
 
   @override
-  _ChildPageState createState() => _ChildPageState();
+  State<ChildPage> createState() => _ChildPageState();
 }
 
 class _ChildPageState extends State<ChildPage> {
@@ -156,7 +156,7 @@ class KeyDemo extends StatefulWidget {
   const KeyDemo({Key? key}) : super(key: key);
 
   @override
-  _KeyDemoState createState() => _KeyDemoState();
+  State<KeyDemo> createState() => _KeyDemoState();
 }
 
 class _KeyDemoState extends State<KeyDemo> {
@@ -203,7 +203,7 @@ class StfulItem extends StatefulWidget {
   const StfulItem(this.title, {Key? key}) : super(key: key);
 
   @override
-  _StfulItemState createState() => _StfulItemState();
+  State<StfulItem> createState() => _StfulItemState();
 }
 
 class _StfulItemState extends State<StfulItem> {

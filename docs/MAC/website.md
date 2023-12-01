@@ -25,3 +25,18 @@ https://juejin.cn/user/1802854800567390/posts
 ## bookmarking
 
 http://wsxfdt.xfj.henan.gov.cn:8080/ldxx/indexszxx.jsp#
+
+
+
+### 图标设计
+
+Canva
+
+### 生成App图标包
+
+使用App图标生成器（如AppIconMaker.co, MakeAppIcon.com等）来创建适用于iOS和Android的图标包。
+
+### app渠道
+
+| App Store | 华为 | VIVO | OPPO | 小米 | 应用宝 | 三星 |
+| --------- | ---- | ---- | ---- | ---- | ------ | ---- |

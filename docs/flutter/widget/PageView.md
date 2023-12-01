@@ -4,7 +4,7 @@
 class RootPage extends StatefulWidget {
   const RootPage({Key? key}) : super(key: key);
   @override
-  _RootPageState createState() => _RootPageState();
+  State<RootPage> createState() => _RootPageState();
 }
 
 class _RootPageState extends State<RootPage> {
@@ -118,7 +118,7 @@ class RootPage extends StatefulWidget {
   const RootPage({Key? key}) : super(key: key);
 
   @override
-  _RootPageState createState() => _RootPageState();
+  State<RootPage> createState() => _RootPageState();
 }
 
 class _RootPageState extends State<RootPage> {
