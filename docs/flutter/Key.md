@@ -1,6 +1,6 @@
 # Key
 
-只要继承Widget的都有一个key，Key是用来标识小部件。
+只要继承Widget的都有一个key，Key是用来标识小部件。区分widget。
 
 StatefulWidget的Widget和State是分开的。
 
@@ -129,7 +129,7 @@ class _ChildPageState extends State<ChildPage> {
 
 - ValueKey以值作为参数（数字，字符串）
 - ObjectKey以对象作为参数
-- UniqueKey创建唯一标识，整个项目只有一个，不会被复用。
+- UniqueKey()创建唯一标识，整个项目只有一个，不会被复用。
 
 增量渲染对比的是Widget树和Element树。
 

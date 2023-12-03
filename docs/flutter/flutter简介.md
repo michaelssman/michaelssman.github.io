@@ -112,7 +112,7 @@ https://github.com/flutter/flutter/issues/119927#issuecomment-1415858226
            //mavenCentral()
            maven { url 'https://maven.aliyun.com/repository/google' }
            maven { url 'https://maven.aliyun.com/repository/jcenter' }
-           maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+           maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
    
        }
        dependencies {
@@ -227,16 +227,10 @@ Running Gradle task 'assembleDebug'
   ```
   maven { url 'https://maven.aliyun.com/repository/google' }
   maven { url 'https://maven.aliyun.com/repository/jcenter' }
-  maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+  maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
   ```
 
   ![9C38D932-1246-4E24-B16D-875A50B2E3F4.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0f852b4735f64c83b350c6bf0480545e~tplv-k3u1fbpfcp-watermark.awebp?)
-
-## 闪电按钮⚡️
-
-热重载，加载修改的。
-
-有状态的widget，数据改变的时候就需要重新启动项目。树发生改变了时候就需要重新运行。
 
 ## Windows
 
