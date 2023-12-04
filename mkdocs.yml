@@ -191,6 +191,7 @@ nav:
     - 计算机基础/联合体和位域.md
     - 计算机基础/typedef.md
     - 计算机基础/Enum.md
+    - 计算机基础/缓存.md
   - C++: 
     - C++/README.md
     - C++/字符串和头文件.md
@@ -231,7 +232,7 @@ nav:
       - flutter/Dart/方法.md
     - flutter/flutter简介.md
     - flutter/AS快捷键.md
-    - flutter/pubspec.yaml文件管理.md
+    - flutter/pubspec.yaml.md
     - flutter/本地资源和工程配置.md
     - flutter/生命周期.md
     - flutter/状态管理.md
@@ -261,6 +262,7 @@ nav:
     - flutter/渲染原理.md
     - flutter/热重载.md
     - flutter/网络.md
+    - flutter/动画.md
     - 异步和多线程:
       - flutter/异步和多线程/异步Future.md
       - flutter/异步和多线程/异步和多线程.md
