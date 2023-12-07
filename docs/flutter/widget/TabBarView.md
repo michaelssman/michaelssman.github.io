@@ -33,16 +33,16 @@ const TabBar({
   this.controller,
   this.isScrollable = false, // 是否可以滑动
   this.padding,
-  this.indicatorColor,// 指示器颜色，默认是高度为2的一条下划线
+  this.indicatorColor,// 指示器颜色
   this.automaticIndicatorColorAdjustment = true,
   this.indicatorWeight = 2.0,// 指示器高度
   this.indicatorPadding = EdgeInsets.zero, //指示器padding
   this.indicator, // 指示器
   this.indicatorSize, // 指示器长度，有两个可选值，一个tab的长度，一个是label长度
-  this.labelColor, 
+  this.labelColor, //选中时的字体颜色
   this.labelStyle,
   this.labelPadding,
-  this.unselectedLabelColor,
+  this.unselectedLabelColor,//未选中时的字体颜色
   this.unselectedLabelStyle,
   this.mouseCursor,
   this.onTap,

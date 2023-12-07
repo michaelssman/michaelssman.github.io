@@ -71,7 +71,7 @@
 
 记账app
 
-- 常用widget：MaterialApp、PageView、Scaffold、ListView、Image、Container、SizeBox等。
+- 常用widget：PageView、Scaffold、ListView、Image、Container、SizeBox等。
 - 布局
 - 状态管理。Mixin混入保存部件的数据状态不被刷新
 - StatelessWidget和StatefulWidget生命周期
@@ -83,6 +83,7 @@
 - 仿微信demo和记账app（底部弹窗）。
 - 自定义数字键盘。使用GlobalKey查找state控制显示和隐藏，自动弹出和回收键盘功能。
 - 封装点击效果的item，左滑显示删除和编辑功能按钮。
+- MaterialApp设置深色模式切换
 
 打卡本
 
