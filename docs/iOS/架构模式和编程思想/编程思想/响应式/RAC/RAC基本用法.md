@@ -157,10 +157,9 @@ static RACSignal *NSObjectRACSignalForSelector(NSObject *self, SEL selector, Pro
 ```
 
 里面最关键的代码就是`[self addTarget:subscriber action:@selector(sendNext:) forControlEvents:controlEvents];`
- `self` 就是`btn`本身，因为是`btn`调用的方法
- `target`是`subscriber`订阅者
-`action`是 ：`sendNext:`
- 事件是传入的事件，
+ `self` ：`btn`本身，因为是`btn`调用的方法
+`target`：`subscriber`订阅者
+`action`：`sendNext:` 事件是传入的事件，
  所以现在按钮的点击方法会通过`subscriber`去调用`sendNext方法`,我们之前有提到过，`RACSignal`，所以这个时候我们订阅他就可以拿到`sendNext`的值。
 
 ## 手势
@@ -181,7 +180,7 @@ UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
 }];
 ```
 
-这样处理事件非常的内聚，并且管理起来也很方便。但是内部是怎么样处理的呢？
+这样处理事件非常的内聚，管理起来也方便。但是内部是怎么样处理的呢？
 一起来揭开他的面纱
 
 ```objective-c

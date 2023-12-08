@@ -10,22 +10,7 @@ MaterialApp(
   debugShowCheckedModeBanner: false, //是否是调试
   //浅色模式
   theme: ThemeData(
-    // This is the theme of your application.
-    //
-    // TRY THIS: Try running your application with "flutter run". You'll see
-    // the application has a blue toolbar. Then, without quitting the app,
-    // try changing the seedColor in the colorScheme below to Colors.green
-    // and then invoke "hot reload" (save your changes or press the "hot
-    // reload" button in a Flutter-supported IDE, or press "r" if you used
-    // the command line to start the app).
-    //
-    // Notice that the counter didn't reset back to zero; the application
-    // state is not lost during the reload. To reset the state, use hot
-    // restart instead.
-    //
-    // This works for code too, not just values: Most code changes can be
-    // tested with just a hot reload.
-    colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+    colorScheme: ColorScheme.fromSeed(seedColor: _themeColor),
     useMaterial3: true,
     brightness: Brightness.light, // 明确指定为亮色主题
     primaryColor: const Color(0xFF0cb2f1),//主题色
@@ -39,9 +24,31 @@ MaterialApp(
       titleLarge: TextStyle(color: Colors.black, fontSize: 20.0),
       titleSmall: TextStyle(fontSize: 12.0, color: Colors.black26),
     ),
+    //统一定义TabBar的样式，包括指示器的大小、标签的颜色、标签之间的间距等。
+    tabBarTheme: const TabBarTheme(
+      labelColor: Color(0xFF0cb2f1), // 选中的标签颜色
+      // unselectedLabelColor: Colors.grey, // 未选中的标签颜色
+      // 选中标签的样式
+      labelStyle: TextStyle(
+        fontSize: 16.0,
+      ),
+      // 未选中标签的样式
+      unselectedLabelStyle: TextStyle(
+        fontSize: 14.0,
+      ),
+      indicator: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Color(0xFF0cb2f1), // 指示器颜色
+            width: 2.0, // 指示器厚度
+          ),
+        ),
+      ),
+    ),
   ),
   //深色模式
   darkTheme: ThemeData(
+    colorScheme: ColorScheme.fromSeed(seedColor: _themeColor),
     brightness: Brightness.dark, // 明确指定为深色主题
     primaryColor: const Color(0xFF0cb2f1),//主题色
     //背景色
@@ -60,6 +67,27 @@ MaterialApp(
     textTheme: const TextTheme(
       titleLarge: TextStyle(color: Colors.white, fontSize: 20.0),
       titleSmall: TextStyle(fontSize: 12.0, color: Color(0xFFB0B4BB)),
+    ),
+    //统一定义TabBar的样式，包括指示器的大小、标签的颜色、标签之间的间距等。
+    tabBarTheme: const TabBarTheme(
+      labelColor: Color(0xFF0cb2f1), // 选中的标签颜色
+      // unselectedLabelColor: Colors.grey, // 未选中的标签颜色
+      // 选中标签的样式
+      labelStyle: TextStyle(
+        fontSize: 16.0,
+      ),
+      // 未选中标签的样式
+      unselectedLabelStyle: TextStyle(
+        fontSize: 14.0,
+      ),
+      indicator: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Color(0xFF0cb2f1), // 指示器颜色
+            width: 2.0, // 指示器厚度
+          ),
+        ),
+      ),
     ),
     hintColor: const Color(0xFF5E5E66),//占位文字颜色
   ),

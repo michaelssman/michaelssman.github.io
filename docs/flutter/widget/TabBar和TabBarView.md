@@ -1,4 +1,4 @@
-# TabBarView
+# TabBar和TabBarView
 
 TabBarView 是 Material 组件库中提供了 Tab 布局组件，通常和 TabBar 配合使用。
 
