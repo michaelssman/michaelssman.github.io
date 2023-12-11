@@ -4,23 +4,23 @@
 
 ```dart
 CustomScrollView(
-    //视窗
-    slivers: [
-      SliverToBoxAdapter(
-        child: FlutterLogo(),
+  //视窗
+  slivers: [
+    SliverToBoxAdapter(
+      child: FlutterLogo(),
+    ),
+    SliverToBoxAdapter(
+      child: Text("hello sliver"),
+    ),
+    SliverToBoxAdapter(
+      child: Column(
+        children: [
+          FlutterLogo(),
+          Text("hello sliver"),
+        ],
       ),
-      SliverToBoxAdapter(
-        child: Text("hello sliver"),
-      ),
-      SliverToBoxAdapter(
-        child: Column(
-          children: [
-            FlutterLogo(),
-            Text("hello sliver"),
-          ],
-        ),
-      ),
-    ],
-  )
+    ),
+  ],
+)
 ```
 
