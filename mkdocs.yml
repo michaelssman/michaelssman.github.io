@@ -240,13 +240,14 @@ nav:
     - flutter/json和map转model.md
     - flutter/手势.md
     - flutter/package和plugin.md
+    - flutter/绘画.md
     - widget:
       - flutter/widget/widget.md
       - flutter/widget/Material.md
       - flutter/widget/MaterialApp.md
       - flutter/widget/Scaffold.md
       - flutter/widget/PageView.md
-      - flutter/widget/TabBarView.md
+      - flutter/widget/TabBar和TabBarView.md
       - flutter/widget/滚动.md
       - flutter/widget/TextField.md
       - flutter/widget/showModelBottomSheet.md
@@ -276,8 +277,7 @@ nav:
         - 数据结构与算法/数据结构/链表/链表.md
         - 数据结构与算法/数据结构/链表/STL中的list.md
       - 栈:
-        - 数据结构与算法/数据结构/02栈/000栈Stack.md
-        - 数据结构与算法/数据结构/02栈/03栈Stack.md
+        - 数据结构与算法/数据结构/栈/栈Stack.md
       - 队列:
         - 数据结构与算法/数据结构/03队列/队列.md
       - 树:
