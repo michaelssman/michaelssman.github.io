@@ -19,7 +19,7 @@ enum Season {
 
 在这个例子中，`Season` 是一个枚举，它有四个值：`spring`、`summer`、`autumn` 和 `winter`。
 
-要使用枚举，你可以这样做：
+使用枚举：
 
 ```dart
 void main() {

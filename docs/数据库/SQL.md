@@ -133,7 +133,7 @@ LIMIT 100 -- 限制结果集的数量为100
 
 ### 根据日期查找的数据，按年 按月 按日倒序分组。
 
-要按年、月和日对数据库表中的日期字段进行分组，您可以使用SQL查询语句。以下是一些示例SQL查询，可以帮助您实现这一目标，假设您有一个名为"your_table"的表，其中包含日期字段"date_field"。
+按年、月和日对数据库表中的日期字段进行分组，同时计算每个组中的记录数。假设有一个名为"your_table"的表，其中包含日期字段"date_field"。
 
 按年分组：
 ```sql
@@ -166,8 +166,6 @@ ORDER BY YEAR(date_field) DESC, MONTH(date_field) DESC, DAY(date_field) DESC;
 
 在大多数关系型数据库管理系统中，日期类型的字段通常被定义为"DATE"，"DATETIME"，"TIMESTAMP"等，具体的命名可能会因数据库系统而异。确保在创建数据库表时，将日期字段指定为适当的日期类型，以便能够正确地存储和处理日期数据。
 
-这些查询将从"your_table"表中选择日期数据，并将其按年、月和日进行分组，同时计算每个组中的记录数。
-
 ### GROUP BY
 
 根据某个字段分组数据。
@@ -175,7 +173,7 @@ ORDER BY YEAR(date_field) DESC, MONTH(date_field) DESC, DAY(date_field) DESC;
 数据库有一个记账明细表MC_DETAIL_TEXT，里面的字段是id、from_ac_id、to_ac_id、ac_detail_date（日期）、ac_detail_type（类型）、ac_detail_amount（金额）。
 要求写一个sql语句，取出每个月类型为收入的总金额。
 
-你可以使用SQL的`SUM`函数和`GROUP BY`子句来实现这个需求。以下是一个可能的SQL查询语句：
+可以使用SQL的`SUM`函数和`GROUP BY`子句来实现这个需求。以下是一个可能的SQL查询语句：
 
 ```sql
 SELECT 
@@ -189,13 +187,17 @@ GROUP BY
     Month;
 ```
 
-这个查询语句将首先筛选出类型为"收入"的记录，然后按照月份（年-月）对金额进行求和。`DATE_FORMAT`函数用于将日期字段`ac_detail_date`格式化为"年-月"的形式。`SUM`函数用于计算每个月的总收入，`GROUP BY`子句用于按月份进行分组。
+这个查询语句将首先筛选出类型为"收入"的记录，然后按照月份（年-月）对金额进行求和。
 
+**`DATE_FORMAT`函数用于将日期字段`ac_detail_date`格式化为"年-月"的形式。**
 
+**`SUM`函数用于计算每个月的总收入（或总支出）。**
 
-上面的例子，如果想要知道每一个月类型为收入的总金额和支出的总金额。应该怎么写。
+**`GROUP BY`子句用于按月份进行分组。**
 
-你可以使用条件求和（conditional aggregation）的方式来实现这个需求。以下是一个可能的SQL查询语句：
+#### 每个月的总收入和总支出
+
+可以使用条件求和（conditional aggregation）的方式来实现这个需求。
 
 ```sql
 SELECT 
@@ -208,21 +210,23 @@ GROUP BY
     Month;
 ```
 
-这个查询语句将首先筛选出类型为"收入"或"支出"的记录，然后按照月份（年-月）对金额进行求和。`CASE`语句用于根据`ac_detail_type`的值决定是否将`ac_detail_amount`加入到总和中。如果`ac_detail_type`的值为"收入"，则将`ac_detail_amount`加入到收入的总和中；如果`ac_detail_type`的值为"支出"，则将`ac_detail_amount`加入到支出的总和中。如果`ac_detail_type`的值既不是"收入"也不是"支出"，则将0加入到相应的总和中。`SUM`函数用于计算每个月的总收入和总支出，`GROUP BY`子句用于按月份进行分组。
+这个查询语句将首先筛选出类型为"收入"或"支出"的记录，然后按照月份（年-月）对金额进行求和。
 
-请注意，这个查询语句假定`ac_detail_date`是一个日期类型的字段，`ac_detail_amount`是一个数值类型的字段，`ac_detail_type`是一个文本类型的字段，且"收入"和"支出"是表示收入类型和支出类型的准确值。如果你的数据库中的设置不同，可能需要对查询语句进行适当的修改。
+`CASE`语句：根据`ac_detail_type`的值决定是否将`ac_detail_amount`加入到总和中。如果`ac_detail_type`的值为"收入"，则将`ac_detail_amount`加入到收入的总和中；如果`ac_detail_type`的值为"支出"，则将`ac_detail_amount`加入到支出的总和中。如果`ac_detail_type`的值既不是"收入"也不是"支出"，则将0加入到相应的总和中。
 
-### 连接两个表
+注意：`ac_detail_date`是一个日期类型的字段，`ac_detail_amount`是一个数值类型的字段，`ac_detail_type`是一个文本类型的字段，且"收入"和"支出"是表示收入类型和支出类型的准确值。
+
+### JOIN连接两个表
 
 数据库有两个表：
-账户表：MC_TEXT，该表中的字段：id, type, name, balance
-明细表：MC_DETAIL_TEXT，该表中的字段：id, from_ac_id, to_ac_id, ac_detail_date, ac_detail_type, ac_detail_amount
-明细表中的from_ac_id和to_ac_id对应账户表中的id
+账户表：MC_TEXT，该表中的字段：id, type, name, balance。
+明细表：MC_DETAIL_TEXT，该表中的字段：id, from_ac_id, to_ac_id, ac_detail_date, ac_detail_type, ac_detail_amount。
+明细表中的from_ac_id和to_ac_id对应账户表中的id。
 应该如何设计表，查询明细表的时候，返回id, from_ac_id, to_ac_id, ac_detail_date, ac_detail_type这些字段的信息，并且加上from_ac_id和to_ac_id对应的账户的信息。
 
 #### 方法
 
-为了在查询明细表时同时获取`from_ac_id`和`to_ac_id`对应的账户信息，需要在查询时进行两次连接（JOIN）操作，一次是将明细表的`from_ac_id`与账户表的`id`连接，另一次是将明细表的`to_ac_id`与账户表的`id`连接。这样可以确保能够获取每个账户ID对应的账户信息。
+为了在查询明细表时同时获取`from_ac_id`和`to_ac_id`对应的账户信息，需要在查询时进行两次连接（JOIN）操作，一次是将明细表的`from_ac_id`与账户表的`id`连接，另一次是将明细表的`to_ac_id`与账户表的`id`连接。
 
 以下是一个SQL查询示例，展示了如何实现这种连接，并从两个表中检索所需的信息：
 
