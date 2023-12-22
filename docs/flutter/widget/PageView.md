@@ -140,6 +140,17 @@ onPageChanged: (int index) {
 ## 无限滑动
 
 ```dart
+late PageController _pageController; //创建一个pageController，控制页面的切换
+
+@override
+void initState() {
+  super.initState();
+  _pageController = PageController(
+    initialPage: 3,//默认滚动位置
+  );
+}
+
+
 PageView.builder(
   controller: _pageController,
   onPageChanged: (index) {},
@@ -147,13 +158,5 @@ PageView.builder(
     return Container();
   },
 ),
-```
-
-默认滚动位置
-
-```dart
-_pageController = PageController(
-  initialPage: 3,
-);
 ```
 
