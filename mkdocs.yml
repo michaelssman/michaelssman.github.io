@@ -252,9 +252,7 @@ nav:
       - flutter/widget/TextField.md
       - flutter/widget/showModelBottomSheet.md
       - flutter/widget/Sliver.md
-      - flutter/widget/Wrap.md
-      - flutter/widget/Button.md
-      - flutter/widget/Image.md
+      - flutter/widget/Widgets.md
       - flutter/widget/Text.md
     - flutter/布局.md
     - flutter/数据持久化.md
@@ -264,6 +262,7 @@ nav:
     - flutter/热重载.md
     - flutter/网络.md
     - flutter/动画.md
+    - flutter/app密码保护.md
     - 异步和多线程:
       - flutter/异步和多线程/异步Future.md
       - flutter/异步和多线程/异步和多线程.md
