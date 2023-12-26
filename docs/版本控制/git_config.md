@@ -50,6 +50,22 @@ The key's randomart image is:
 michael@localhost ~ % 
 ```
 
+当你在Mac上生成SSH密钥串时，系统会提示你输入一个文件名来保存新的密钥对。如下提示：
+
+```shell
+Enter file in which to save the key (/Users/michael/.ssh/id_rsa):
+```
+
+这意味着它建议你将新的密钥保存在`/Users/michael/.ssh/id_rsa`这个位置。这里的`/Users/michael`是你的主目录，`.ssh`是一个通常用来存放SSH密钥和配置文件的隐藏目录，`id_rsa`是私钥文件的默认名称。
+
+如果你只是想使用默认的文件名和位置，直接按`Enter`键即可。如果你已经有一个叫做`id_rsa`的密钥，并且不想覆盖它，你可以输入一个新的文件名，比如：
+
+```shell
+/Users/michael/.ssh/id_rsa_new
+```
+
+这样，系统就会将新的密钥保存为`id_rsa_new`。确保你记住了你保存密钥的位置，因为在建立SSH连接时你可能需要指定密钥文件的路径。
+
 ![image-20221226094158461](assets/image-20221226094158461.png)
 
 ### 后台启动ssh-agent
