@@ -143,39 +143,50 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
 
 ## Wrap
 
+`Wrap` 是一个布局widget，它可以在水平或垂直方向上排列其子widget，并且会**在主轴上的空间不足时，将超出空间的子widget换行或换列到下一个运行**。这使得`Wrap`非常适合用于创建流式布局，如标签组或者按钮组。
+
+`Wrap`的基本用法非常简单。你只需要将一个widget列表传递给`Wrap`的`children`属性，并且可以设置一些其他属性来控制间距和对齐方式。
+
+下面是`Wrap`的一个基本示例：
+
 ```dart
 Wrap(
-  spacing: 8.0,
-  runSpacing: 4.0,
-  alignment: WrapAlignment.center,
-  children: const [
+  spacing: 8.0, // 主轴(水平)方向间距
+  runSpacing: 4.0, // 纵轴（垂直）方向间距
+  alignment: WrapAlignment.center, // 沿主轴方向居中
+  children: <Widget>[
     Chip(
-      avatar: CircleAvatar(
-        backgroundColor: Colors.blue,
-        child: Text('A'),
-      ),
-      label: Text('张三三')),
+      avatar: CircleAvatar(backgroundColor: Colors.blue, child: Text('A')),
+      label: Text('Hamilton'),
+    ),
     Chip(
-      avatar: CircleAvatar(
-        backgroundColor: Colors.blue,
-        child: Text('B'),
-      ),
-      label: Text('李思思')),
+      avatar: CircleAvatar(backgroundColor: Colors.blue, child: Text('M')),
+      label: Text('Lafayette'),
+    ),
     Chip(
-      avatar: CircleAvatar(
-        backgroundColor: Colors.blue,
-        child: Text('C'),
-      ),
-      label: Text('王呜呜')),
+      avatar: CircleAvatar(backgroundColor: Colors.blue, child: Text('H')),
+      label: Text('Mulligan'),
+    ),
     Chip(
-      avatar: CircleAvatar(
-        backgroundColor: Colors.blue,
-        child: Text('D'),
-      ),
-      label: Text('赵溜溜')),
+      avatar: CircleAvatar(backgroundColor: Colors.blue, child: Text('J')),
+      label: Text('Laurens'),
+    ),
   ],
 )
 ```
+
+在这个例子中，`Wrap`包含了几个`Chip`widget，每个`Chip`都有一个头像和一个标签。如果水平空间不足以容纳所有的`Chip`，`Wrap`会将多出的`Chip`移到下一行。
+
+`Wrap`的一些重要属性包括：
+
+- `direction`: 主轴方向，默认是`Axis.horizontal`，也可以设置为`Axis.vertical`。
+- `alignment`: 主轴方向上如何对齐子widget，默认是`WrapAlignment.start`。
+- `spacing`: 主轴方向上子widget之间的间隔。
+- `runAlignment`: 交叉轴方向上如何对齐运行，默认是`WrapAlignment.start`。
+- `runSpacing`: 交叉轴方向之间的间隔。
+- `crossAxisAlignment`: 交叉轴方向上子widget如何对齐，默认是`WrapCrossAlignment.start`。
+
+使用`Wrap`时，你可以通过调整这些属性来精确控制布局的表现。
 
 ## Card卡片
 
