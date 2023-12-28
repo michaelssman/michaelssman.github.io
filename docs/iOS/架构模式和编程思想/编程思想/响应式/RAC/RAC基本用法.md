@@ -1,3 +1,5 @@
+# RAC基本用法
+
 ## 监听方法
 
 rac_signalForSelector
@@ -121,7 +123,7 @@ static RACSignal *NSObjectRACSignalForSelector(NSObject *self, SEL selector, Pro
 
 注意：写法二、写法三需要在程序运行的时候就会监听到，通过log就可以看出区别。
 
-## 监听事件
+## 监听UIControl事件
 
 ```objective-c
 [[button rac_signalForControlEvents:UIControlEventTouchUpInside] subscribeNext:^(__kindof UIControl * _Nullable x) {
@@ -129,7 +131,7 @@ static RACSignal *NSObjectRACSignalForSelector(NSObject *self, SEL selector, Pro
 }];
 ```
 
-内部实现
+### UIControl分类内部实现
 
 ```objective-c
 - (RACSignal *)rac_signalForControlEvents:(UIControlEvents)controlEvents {
@@ -138,7 +140,12 @@ static RACSignal *NSObjectRACSignalForSelector(NSObject *self, SEL selector, Pro
 	return [[RACSignal
 		createSignal:^(id<RACSubscriber> subscriber) {
 			@strongify(self);
-
+			
+      /// 关键代码
+      /// self：btn本身，因为是btn调用的方法
+      /// target：subscriber订阅者
+      /// action：传入的block事件。sendNext: 方法会触发订阅者的subscribeNext
+      /// 按钮的点击方法会通过`subscriber`去调用`sendNext方法`,我们之前有提到过，`RACSignal`，所以这个时候我们订阅他就可以拿到`sendNext`的值。
 			[self addTarget:subscriber action:@selector(sendNext:) forControlEvents:controlEvents];
 
 			RACDisposable *disposable = [RACDisposable disposableWithBlock:^{
@@ -155,12 +162,6 @@ static RACSignal *NSObjectRACSignalForSelector(NSObject *self, SEL selector, Pro
 		setNameWithFormat:@"%@ -rac_signalForControlEvents: %lx", RACDescription(self), (unsigned long)controlEvents];
 }
 ```
-
-里面最关键的代码就是`[self addTarget:subscriber action:@selector(sendNext:) forControlEvents:controlEvents];`
- `self` ：`btn`本身，因为是`btn`调用的方法
-`target`：`subscriber`订阅者
-`action`：`sendNext:` 事件是传入的事件，
- 所以现在按钮的点击方法会通过`subscriber`去调用`sendNext方法`,我们之前有提到过，`RACSignal`，所以这个时候我们订阅他就可以拿到`sendNext`的值。
 
 ## 手势
 
@@ -180,8 +181,7 @@ UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
 }];
 ```
 
-这样处理事件非常的内聚，管理起来也方便。但是内部是怎么样处理的呢？
-一起来揭开他的面纱
+内部是怎么样处理：
 
 ```objective-c
 - (RACSignal *)rac_addObserverForName:(NSString *)notificationName object:(id)object {
@@ -275,4 +275,4 @@ RAC(对象，对象的属性) = (一个信号);
 }
 ```
 
-比传统的代理更简单、内聚。
+这样处理事件更简单和内聚，管理起来也方便。

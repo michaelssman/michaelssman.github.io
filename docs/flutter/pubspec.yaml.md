@@ -60,7 +60,9 @@ flutter:
   # 设置资源image 字体
   # To add assets to your application, add an assets section, like this:
   assets:
+  	 #注意：格式不能错，assets前面多一个空格都不可以。
      - images/
+     - images/account_icon/
      - acc/
 
   # example:
@@ -119,19 +121,6 @@ dependencies:
 ​		show：执行需要导入的内容
 
 ​		hide：需要隐藏的内容，不导的内容。
-
-## 整个项目iOS Android都使用的图片
-
-直接把文件夹复制粘贴到项目
-
-配置flutter工程的文件`项目/wechat_demo/pubspec.yaml`。不只是图片，包括用的一些三方的包。
-
-```
-  assets:
-     - images/
-```
-
-注意：格式不能错，assets前面多一个空格都不可以。
 
 ## dart版本兼容
 
