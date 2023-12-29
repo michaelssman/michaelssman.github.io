@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS student (
 ALTER TABLE %@ ADD COLUMN %@ %@
 ```
 
-## 插入数据insert
+## insert插入数据
 
 ```sql
 INSERT INTO Students(stu_name, stu_gender, stu_age) VALUES ('哇哈哈','男',23);
@@ -51,9 +51,7 @@ INSERT INTO Students(stu_name, stu_gender, stu_age) VALUES ('哇哈哈','男',23
 
 ### 防止重复插入数据
 
-#### 可以使用主键
-
-每个存储的数据结构都有一个唯一的主键，主键可以自己指定，比如用户的uid 不会重复，就可以作为一个主键，如果不指定主键，则会自动给你配置自增主键。
+**可以使用主键**，每个存储的数据结构都有一个唯一的主键，主键可以自己指定，比如用户的uid 不会重复，就可以作为一个主键，如果不指定主键，则会自动给你配置自增主键。
 
 覆盖数据的依据 一般是根据主键来，速度快，这是一种覆盖方法，可以update 可以replace 主要看你业务需求
 
@@ -67,7 +65,11 @@ INSERT INTO Students(stu_name, stu_gender, stu_age) VALUES ('哇哈哈','男',23
 INSERT OR REPLACE INTO TABLENAME ('articleID','editDate') VALUES ('1001','20220101')
 ```
 
-## 删除数据delete
+## delete删除数据
+
+`and`：和
+
+`or`：或
 
 ```sql
 delete from Students where stu_id = 5 and stu_id = 18;
@@ -85,7 +87,7 @@ drop Table Students;
 drop Database Students;
 ```
 
-## 更新某一条指定的数据update
+## update更新数据
 
 ```sql
 UPDATE ${TABLENAME} SET stu_name = '隔壁老王', stu_age = 25 WHERE stu_id = 7;
@@ -96,7 +98,7 @@ UPDATE ${TABLENAME} SET stu_name = '隔壁老王', stu_age = 25 WHERE stu_id = 7
 ```dart
 txn.rawUpdate(
   'UPDATE $_tableName SET ${AccountModel.acNameKey} = ?, ${AccountModel.acTypeKey} = ? WHERE id = ?',
-  [model.name, model.type, model.id]
+  ["haha", "sz", 22]
 );
 ```
 

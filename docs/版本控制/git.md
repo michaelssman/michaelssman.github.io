@@ -102,7 +102,7 @@ $ git branch
 
 现在我们可以看到，有了一个新分支 **testing**。
 
-### 切换分支checkout
+### checkout切换分支
 
 git checkout (branch) 切换到我们要修改的分支。
 
@@ -127,7 +127,9 @@ git checkout -b '3.3.2费用改造' 'origin/3.3.2费用改造'
 
 ```
 git fetch origin
+//先切换到主分支
 git checkout 'main'
+//然后合并'3.3.2费用改造'分支到main分支
 git merge --no-ff '3.3.2费用改造'
 ```
 
