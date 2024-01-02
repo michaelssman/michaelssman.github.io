@@ -16,8 +16,6 @@
 
 `cd ~/.ssh`
 
-`open .`
-
 ⽣成⼀对新的公钥、私钥。
 
 `ssh-keygen`
@@ -66,8 +64,6 @@ Enter file in which to save the key (/Users/michael/.ssh/id_rsa):
 
 这样，系统就会将新的密钥保存为`id_rsa_new`。确保你记住了你保存密钥的位置，因为在建立SSH连接时你可能需要指定密钥文件的路径。
 
-![image-20221226094158461](assets/image-20221226094158461.png)
-
 ### 后台启动ssh-agent
 
 ```bash
@@ -84,13 +80,11 @@ ssh-add ~/.ssh/id_rsa
 
 如果你使用的是非默认的密钥文件名或路径，请相应地修改命令。
 
-### `~/.ssh/config`
+### `vim ~/.ssh/config`
 
-`vi ~/.ssh/config`
+在config文件中，添加或编辑SSH连接的配置项。每个配置项应该以`Host`开头，后面跟着SSH连接的别名或主机名。
 
-然后编辑内容，私钥的名字和路径。
-
-在文件中，你可以添加或编辑SSH连接的配置项。每个配置项应该以`Host`开头，后面跟着SSH连接的别名或主机名。例如：
+例如：
 
 ```bash
 Host		git.nmy.cn
@@ -112,7 +106,13 @@ Host myserver
     IdentityFile ~/.ssh/private_key
 ```
 
-在上面的例子中，`myserver`是连接的别名，`HostName`指定了服务器的IP地址或域名，`User`指定了登录用户名，`Port`指定了SSH连接的端口号，`IdentityFile`指定了私钥文件的路径。
+在上面的例子中：
+
+- `Host`是连接的别名
+- `HostName`指定了服务器的IP地址或域名
+- `User`指定了登录用户名
+- `Port`指定了SSH连接的端口号
+- `IdentityFile`指定了私钥文件的路径。
 
 ### 验证是否可以连接
 
