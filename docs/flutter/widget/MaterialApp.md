@@ -45,6 +45,10 @@ MaterialApp(
         ),
       ),
     ),
+    //光标颜色
+    textSelectionTheme: TextSelectionThemeData(
+    	cursorColor: _themeColor,
+    ),
   ),
   //深色模式
   darkTheme: ThemeData(
@@ -90,6 +94,10 @@ MaterialApp(
       ),
     ),
     hintColor: const Color(0xFF5E5E66),//占位文字颜色
+    //光标颜色
+    textSelectionTheme: TextSelectionThemeData(
+        cursorColor: _themeColor,
+    ),
   ),
   themeMode: ThemeMode.system,
   home: const Account(),
