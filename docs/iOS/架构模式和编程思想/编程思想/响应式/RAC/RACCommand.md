@@ -13,6 +13,7 @@
 - (RACCommand *)fetchListCommand {
     if (!_fetchListCommand) {
         //创建command，init方法传block，block返回一个RACSignal
+	      //block实现传过去：网络请求
         _fetchListCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
             NSLog(@"%@",input);//input打印出：起飞～～～～～
             //返回一个信号
