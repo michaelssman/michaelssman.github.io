@@ -28,3 +28,8 @@ array1 = [[NSMutableArray alloc]initWithArray:array0 copyItems:**YES**];
 
 通过对象的**序列化跟反序列化**，实现一个对象的**深克隆**。
 
+## 对于Model
+
+model.copy浅拷贝
+
+model.mutableCopy需要实现copy协议，model里面的子model也会拷贝。属于深拷贝。
