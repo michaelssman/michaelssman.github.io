@@ -18,7 +18,7 @@ MaterialApp(
     highlightColor: const Color.fromRGBO(1, 0, 0, 0), //点击
     splashColor: const Color.fromRGBO(1, 0, 0, 0.0), //弹开
     //背景色
-    scaffoldBackgroundColor: const Color.fromRGBO(220, 220, 220, 1.0),
+    scaffoldBackgroundColor: const Color(0xFFF7F7F8),
     dividerColor: Colors.black12,//分割线
     textTheme: const TextTheme(
       titleLarge: TextStyle(color: Colors.black, fontSize: 20.0),
@@ -103,3 +103,41 @@ MaterialApp(
   home: const Account(),
 );
 ```
+
+## 自定义颜色
+
+在Flutter中，`ColorScheme`是一个持有一组颜色的类，这些颜色旨在用于构建Material组件库的颜色主题。`ColorScheme`生成了一组可以在应用程序的许多不同部分中使用的颜色，以保持视觉的一致性。这些颜色被设计为在浅色和深色主题中都有良好的对比度，使得它们可以在不同的主题模式下使用。
+
+`ColorScheme`包含以下颜色：
+
+- `primary`：应用程序主要部分的颜色（例如，应用栏、按钮、文本选择手柄）。
+- `primaryVariant`：`primary`的一个较深或较浅的版本，用于需要对比度的地方。
+- `secondary`：用于强调和区分UI元素（如浮动操作按钮、链接文本）的颜色。
+- `secondaryVariant`：`secondary`的一个较深或较浅的版本，同样用于需要对比度的地方。
+- `surface`：UI元素的背景色，如卡片和抽屉。
+- `background`：页面的背景色。
+- `error`：用于指示错误的颜色。
+- `onPrimary`、`onSecondary`、`onSurface`、`onBackground`和`onError`：分别对应于`primary`、`secondary`、`surface`、`background`和`error`颜色上的文本和图标的颜色。
+- `brightness`：整体主题的亮度，可以是`Brightness.light`或`Brightness.dark`。
+
+你可以通过在`MaterialApp`的`theme`和`darkTheme`属性中设置`ColorScheme`来为你的应用定义一组颜色。例如：
+
+```dart
+MaterialApp(
+  theme: ThemeData.from(
+    colorScheme: ColorScheme.light(
+      primary: Colors.blue, // 用于浅色主题的主要颜色
+      secondary: Colors.blueAccent, // 用于浅色主题的次要颜色
+    ),
+  ),
+  darkTheme: ThemeData.from(
+    colorScheme: ColorScheme.dark(
+      primary: Colors.blue.shade200, // 用于深色主题的主要颜色
+      secondary: Colors.blueAccent.shade700, // 用于深色主题的次要颜色
+    ),
+  ),
+  // ...
+);
+```
+
+在这个例子中，我们使用`ColorScheme.light()`和`ColorScheme.dark()`来创建适用于浅色和深色主题的颜色方案，并将这些颜色方案应用到`ThemeData`中。这样，当用户的设备在浅色模式和深色模式之间切换时，Flutter应用也会自动切换到相应的颜色主题。
