@@ -93,7 +93,9 @@ drop Database Students;
 UPDATE ${TABLENAME} SET stu_name = '隔壁老王', stu_age = 25 WHERE stu_id = 7;
 ```
 
-为了避免SQL注入攻击，最好使用**参数化查**询，而不是直接将变量插入到SQL语句中。
+### 参数化查询
+
+为了避免SQL注入攻击，最好使用**参数化查询**，而不是直接将变量插入到SQL语句中。
 
 ```dart
 txn.rawUpdate(
