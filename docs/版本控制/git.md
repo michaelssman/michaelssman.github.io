@@ -24,7 +24,7 @@ git clone <repository-url>
 cd <repository-name>
 ```
 
-3. 使用`checkout`命令切换到特定的提交。你需要知道你想要切换的提交的哈希值：
+3. 使用`checkout`命令切换到特定的提交。你需要知道想要切换的提交的哈希值：
 
 ```bash
 git checkout <commit-hash>
