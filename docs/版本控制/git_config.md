@@ -16,7 +16,7 @@
 
 `cd ~/.ssh`
 
-⽣成⼀对新的公钥、私钥。
+生成 SSH 密钥对：一旦安装了 OpenSSH 客户端，你可以使用以下命令在 Windows/Mac 上生成 SSH 密钥对：
 
 `ssh-keygen`
 
@@ -63,6 +63,8 @@ Enter file in which to save the key (/Users/michael/.ssh/id_rsa):
 ```
 
 这样，系统就会将新的密钥保存为`id_rsa_new`。确保你记住了你保存密钥的位置，因为在建立SSH连接时你可能需要指定密钥文件的路径。
+
+接下来，你将被要求输入一个密码来保护你的私钥。
 
 ### 后台启动ssh-agent
 
@@ -147,39 +149,6 @@ github.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAA
 前面是git服务器ip地址或者域名，ssh-rsa后面是公钥的base64编码。
 
 ## Windows配置SSH
-
-生成 SSH 密钥对：一旦安装了 OpenSSH 客户端，你可以使用以下命令在 Windows 上生成 SSH 密钥对：
-
-```bash
-PS C:\Users\micha> ssh-keygen
-Generating public/private rsa key pair.
-Enter file in which to save the key (C:\Users\micha/.ssh/id_rsa):
-```
-
-按照提示输入密钥文件保存的路径和名称，或者直接按 Enter 使用默认路径和名称。接下来，你将被要求输入一个密码来保护你的私钥。
-
-```bash
-Created directory 'C:\\Users\\micha/.ssh'.
-Enter passphrase (empty for no passphrase):
-Enter same passphrase again:
-Your identification has been saved in C:\Users\micha/.ssh/id_rsa
-Your public key has been saved in C:\Users\micha/.ssh/id_rsa.pub
-The key fingerprint is:
-SHA256:q7Pe7tzvVMBNRHjVMiOPO+NJwFLl/dasO1BSnJXxJ/0 micha@Michael
-The key's randomart image is:
-+---[RSA 3072]----+
-|           ..=+=*|
-|          .oo+Ooo|
-|         o  +*+++|
-|        . o o.o++|
-|        S. . +. E|
-|         .  *. o |
-|        .  o.=.  |
-|      .+ . .o .. |
-|     .+== .oo .. |
-+----[SHA256]-----+
-PS C:\Users\micha>
-```
 
 将公钥添加到 GitHub 帐户：使用以下命令来显示你的公钥：
 
