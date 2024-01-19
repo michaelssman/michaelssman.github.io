@@ -6,20 +6,28 @@
 
 ```dart
 MaterialApp(
-  title: 'Flutter Demo', //安卓使用，切换应用显示
-  debugShowCheckedModeBanner: false, //是否是调试
+  title: 'Flutter Demo',
+  //安卓使用，切换应用显示
+  debugShowCheckedModeBanner: false,
+  //是否是调试
   //浅色模式
   theme: ThemeData(
     colorScheme: ColorScheme.fromSeed(seedColor: _themeColor),
     useMaterial3: true,
-    brightness: Brightness.light, // 明确指定为亮色主题
-    primaryColor: const Color(0xFF0cb2f1),//主题色
-    primarySwatch: Colors.grey, //主题色 影响整个app
-    highlightColor: const Color.fromRGBO(1, 0, 0, 0), //点击
-    splashColor: const Color.fromRGBO(1, 0, 0, 0.0), //弹开
+    // 明确指定为亮色主题
+    brightness: Brightness.light,
+    //主题色
+    primaryColor: const Color(0xFF0cb2f1),
+    //主题色 影响整个app
+    primarySwatch: Colors.grey,
+    //点击
+    highlightColor: const Color.fromRGBO(1, 0, 0, 0),
+    //弹开
+    splashColor: const Color.fromRGBO(1, 0, 0, 0.0),
     //背景色
     scaffoldBackgroundColor: const Color(0xFFF7F7F8),
-    dividerColor: Colors.black12,//分割线
+    //分割线
+    dividerColor: Colors.black12,
     textTheme: const TextTheme(
       titleLarge: TextStyle(color: Colors.black, fontSize: 20.0),
       titleSmall: TextStyle(fontSize: 12.0, color: Colors.black26),
@@ -47,14 +55,18 @@ MaterialApp(
     ),
     //光标颜色
     textSelectionTheme: TextSelectionThemeData(
-    	cursorColor: _themeColor,
+      cursorColor: _themeColor,
     ),
+    hintColor: const Color.fromRGBO(155, 155, 155, 1.0),
   ),
   //深色模式
   darkTheme: ThemeData(
+    useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(seedColor: _themeColor),
-    brightness: Brightness.dark, // 明确指定为深色主题
-    primaryColor: const Color(0xFF0cb2f1),//主题色
+    // 明确指定为深色主题
+    brightness: Brightness.dark,
+    //主题色
+    primaryColor: const Color(0xFF0cb2f1),
     //背景色
     scaffoldBackgroundColor: const Color(0xFF1A1A1C),
     //底部导航tab
@@ -66,7 +78,8 @@ MaterialApp(
     appBarTheme: const AppBarTheme(
       backgroundColor: Color(0xFF1B1B21), // AppBar背景色
     ),
-    dividerColor: Colors.black,//分割线
+    //分割线
+    dividerColor: Colors.black,
     //字体
     textTheme: const TextTheme(
       titleLarge: TextStyle(color: Colors.white, fontSize: 20.0),
@@ -93,14 +106,14 @@ MaterialApp(
         ),
       ),
     ),
-    hintColor: const Color(0xFF5E5E66),//占位文字颜色
     //光标颜色
     textSelectionTheme: TextSelectionThemeData(
-        cursorColor: _themeColor,
+      cursorColor: _themeColor,
     ),
+    hintColor: const Color(0xFF5E5E66), //占位文字颜色
   ),
   themeMode: ThemeMode.system,
-  home: const Account(),
+  home: const RootPage(), //主页面
 );
 ```
 

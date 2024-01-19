@@ -23,6 +23,25 @@ Podfile.lock
 ## User settings
 xcuserdata/
 
+## Build generated
+build/
+DerivedData/
+
+## Various settings
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+## Other
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
+
 ## Obj-C/Swift specific
 *.hmap
 
@@ -86,6 +105,8 @@ fastlane/test_output
 #
 # After new code Injection tools there's a generated folder /iOSInjectionProject
 # https://github.com/johnno1962/injectionforxcode
+
+injected_container
 
 iOSInjectionProject/
 ```

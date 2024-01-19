@@ -1,3 +1,5 @@
+# 属性关键字
+
 ## MRC和ARC
 
 retain 、assign 是 MRC 时的关键字，到 ARC 时，换成了 strong 和 weak 。
