@@ -137,6 +137,7 @@ nav:
     - 架构模式和编程思想:
       - iOS/架构模式和编程思想/架构模式/MVX.md
       - iOS/架构模式和编程思想/编程思想/编程思想.md
+      - iOS/架构模式和编程思想/编程思想/RXSwift.md
       - iOS/架构模式和编程思想/编程思想/函数式/funtional_programming.md
       - iOS/架构模式和编程思想/编程思想/响应式/响应式编程.md
       - iOS/架构模式和编程思想/编程思想/响应式/RAC/RACSignal.md
@@ -262,6 +263,8 @@ nav:
     - flutter/热重载.md
     - flutter/网络.md
     - flutter/动画.md
+    - flutter/Navigator.md
+    - flutter/widget/NotificationListener.md
     - flutter/app密码保护.md
     - 异步和多线程:
       - flutter/异步和多线程/异步Future.md
