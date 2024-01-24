@@ -17,7 +17,7 @@ xxxx  github.global.ssl.fastly.net
 xxxx  github.com
 ```
 
-例如：Ubuntu上在`/etc/hosts`中添加：
+在`/etc/hosts`中添加：
 
 ```
 151.101.72.249 github.http://global.ssl.fastly.net
