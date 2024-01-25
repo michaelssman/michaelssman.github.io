@@ -387,6 +387,8 @@ nav:
     - MAC/清理Xcode.md
     - MAC/software.md
     - MAC/vscode.md
+  - app:
+    - app/aijizhang.md
 
 # [Extensions]
 plugins:
