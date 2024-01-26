@@ -142,14 +142,12 @@ static Boolean __CFRunLoopDoTimers(CFRunLoopRef rl, CFRunLoopModeRef rlm, uint64
 }
 ```
 
-（1）NSTimer相关代码
+### NSTimer相关代码
 
 ```objective-c
 /*
-说明：
 （1）runloop一启动就会选中一种模式，当选中了一种模式之后其它的模式就都不管了。一个mode里面可以添加多个NSTimer,也就是说以后当创建NSTimer的时候，可以指定它是在什么模式下运行的。
 （2）它是基于时间的触发器，说直白点那就是时间到了就触发一个事件，触发一个操作。基本上说的就是NSTimer
-（3）相关代码
 */
 - (void)timer2
 {
@@ -176,42 +174,23 @@ NSLog(@"---run---%@",[NSRunLoop currentRunLoop].currentMode);
 }
 ```
 
-（2）GCD中的定时器
+### DispatchSourceTimer
 
-```objective-c
-//0.创建一个队列
-dispatch_queue_t queue = dispatch_get_global_queue(0, 0);
-//1.创建一个GCD的定时器
-/*
-第一个参数：说明这是一个定时器
-第四个参数：GCD的回调任务添加到那个队列中执行，如果是主队列则在主线程执行
-*/
-dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
-//2.设置定时器的开始时间，间隔时间以及精准度
-//设置开始时间，三秒钟之后调用
-dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW,3.0 *NSEC_PER_SEC);
-//设置定时器工作的间隔时间
-uint64_t intevel = 1.0 * NSEC_PER_SEC;
-/*
-第一个参数：要给哪个定时器设置
-第二个参数：定时器的开始时间DISPATCH_TIME_NOW表示从当前开始
-第三个参数：定时器调用方法的间隔时间
-第四个参数：定时器的精准度，如果传0则表示采用最精准的方式计算，如果传大于0的数值，则表示该定时切换i可以接收该值范围内的误差，通常传0
-该参数的意义：可以适当的提高程序的性能
-注意点：GCD定时器中的时间以纳秒为单位（面试）
-*/
-dispatch_source_set_timer(timer, start, intevel, 0 * NSEC_PER_SEC);
-//3.设置定时器开启后回调的方法
-/*
-第一个参数：要给哪个定时器设置
-第二个参数：回调block
-*/
-dispatch_source_set_event_handler(timer, ^{
-NSLog(@"------%@",[NSThread currentThread]);
-});
-//4.执行定时器
-dispatch_resume(timer);
-//注意：dispatch_source_t本质上是OC类，在这里是个局部变量，需要强引用
-self.timer = timer;
+```swift
+let queue = DispatchQueue(label: "com.example.timer")
+let timer = DispatchSource.makeTimerSource(queue: queue)
+
+timer.schedule(deadline: .now(), repeating: 1.0)
+
+timer.setEventHandler {
+    print("Timer fired!")
+    // 你的代码...
+}
+
+// 启动定时器
+timer.resume()
+
+// 当完成时，取消定时器，释放资源。
+timer.cancel()
 ```
 

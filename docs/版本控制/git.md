@@ -106,7 +106,7 @@ $ git branch
 
 git checkout (branch) 切换到我们要修改的分支。
 
-### 合并分支merge
+### merge
 
 本地合并，解决冲突，提交，推送。
 
@@ -123,7 +123,7 @@ git checkout -b '3.3.2费用改造' 'origin/3.3.2费用改造'
 
 **第 2 步.** 在本地查看更改。
 
-**第 3 步.** 将功能分支合并到目标分支并修复任何冲突。 [我该如何修复它们？](http://192.168.1.66/help/user/project/merge_requests/conflicts#resolve-conflicts-from-the-command-line)
+**第 3 步.** 将功能分支合并到目标分支并修复任何冲突。
 
 ```
 git fetch origin
