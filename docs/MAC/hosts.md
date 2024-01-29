@@ -24,5 +24,9 @@ xxxx  github.com
 140.82.113.4 github.com
 ```
 
+### Windows清除DNS缓存：
+
+修改hosts文件后，你可能需要清除DNS缓存才能让更改生效。打开命令提示符（以管理员身份）并输入`ipconfig /flushdns`。
+
  
 
