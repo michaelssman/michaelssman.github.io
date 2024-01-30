@@ -18,6 +18,7 @@ Scaffold(
   appBar: AppBar(
     //导航栏 不写就不显示导航栏
     backgroundColor: themeColor, //导航栏背景色
+    foregroundColor: Colors.black, // 文字颜色
     title: const Text('导航栏标题'), //导航栏标题
     centerTitle: true, //安卓 切换应用时显示
     elevation: 0.0, //去除导航栏底部的条
