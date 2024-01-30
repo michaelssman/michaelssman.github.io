@@ -188,7 +188,7 @@ Wrap(
 - `runSpacing`: 交叉轴方向之间的间隔。
 - `crossAxisAlignment`: 交叉轴方向上子widget如何对齐，默认是`WrapCrossAlignment.start`。
 
-使用`Wrap`时，你可以通过调整这些属性来精确控制布局的表现。
+使用`Wrap`时，可以通过调整这些属性来精确控制布局的表现。
 
 ## Card卡片
 
