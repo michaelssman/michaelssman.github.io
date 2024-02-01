@@ -246,6 +246,7 @@ nav:
       - flutter/widget/widget.md
       - flutter/widget/Material.md
       - flutter/widget/MaterialApp.md
+      - flutter/widget/状态栏.md
       - flutter/widget/Scaffold.md
       - flutter/widget/PageView.md
       - flutter/widget/TabBar和TabBarView.md

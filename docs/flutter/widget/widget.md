@@ -76,6 +76,12 @@ Container(
     //背景图片
     image: const DecorationImage(
       image: NetworkImage('https://www.hh.imageurl.png')),
+    //渐变背景色
+    gradient: LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [Colors.blue, Colors.purple],
+    ),
   ),
   // color: Colors.red, //设置了decoration就不能设置color属性了
   child: const Text(),
