@@ -85,6 +85,25 @@ const Image(
 ),
 ```
 
+### 图片添加圆角
+
+```dart
+Container(
+  margin: const EdgeInsets.all(10),
+  width: 34,
+  height: 34,
+  //圆角
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(6.0),
+    image: DecorationImage(
+      image: imageUrl != null
+      ? NetworkImage(imageUrl!) as ImageProvider
+      : AssetImage(imageAssets!),
+    ),
+  ),
+),
+```
+
 ### 选择相册Package
 
 ```dart
