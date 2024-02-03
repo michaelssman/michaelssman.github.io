@@ -389,7 +389,8 @@ nav:
     - MAC/software.md
     - MAC/vscode.md
   - app:
-    - app/aijizhang.md
+    - app/aijizhanghelp.md
+    - app/aijizhangpp.md
 
 # [Extensions]
 plugins:
