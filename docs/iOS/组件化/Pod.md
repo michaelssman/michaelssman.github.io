@@ -94,7 +94,7 @@ pod repo add scienjoyspecs http://192.168.84.67/ios/github/scienjoyspecs.git
 
 **在Podfile开头处添加源：**
 
-```
+```ruby
 source 'https://github.com/CocoaPods/Specs.git'
 source 'https://github.com/huicuihui/HHSpecs.git'
 

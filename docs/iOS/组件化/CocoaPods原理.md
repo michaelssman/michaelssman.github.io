@@ -45,7 +45,7 @@ Configuring GroupShadowTableView template. 下面就是一些配置。
 - What platform do you want to use?? [ iOS / macOS ] 选择iOS
 - What language do you want to use?? [ Swift / ObjC ] 输入语言swift/Objc 
 - Would you like to include a demo application with your library? [ Yes / No ]是否包含demo 选择Yes
-- Which testing frameworks will you use? [ Specta / Kiwi / None ] 测试framework 选None 选其它的会创建其它的模版
+- Which testing frameworks will you use? [ Quick / None ] 测试framework 选None 选其它的会创建其它的模版，和测试框架有关
 - Would you like to do view based testing? [ Yes / No ] 基础测试文件 选No
 - What is your class prefix? 选择文件前缀  自己定义HH
 
@@ -53,9 +53,9 @@ Configuring GroupShadowTableView template. 下面就是一些配置。
 
 ### 3、拖入文件 `Pod install` 安装
 
-Pods里面的Development Pods的文件夹下有一个GroupShadowTableView文件夹，也就是`ReplaceMe.m`文件所在的位置，在/Lib/GroupShadowTableView/GroupShadowTableView/Classes该文件夹中放自己抽取的代码，以及自己写的代码。再把ReplaceMe.m文件删除。
+Xcode项目中Pods里面的Development Pods的文件夹下有一个GroupShadowTableView文件夹，也就是`ReplaceMe.m`文件所在的位置，在/Lib/GroupShadowTableView/GroupShadowTableView/Classes该文件夹中放自己抽取的代码，以及自己写的代码。再把ReplaceMe.m文件删除。
 
-然后 在终端cd Podfile文件路径cd /Users/cuihuihui/Documents/github/Lib/GroupShadowTableView/Example 然后pod install安装。
+然后 在终端cd Podfile文件路径cd /Users/当前用户/Documents/Lib/GroupShadowTableView/Example 然后pod install安装。
 
 **一定要记得pod install** 不然Development Pods文件夹下没有文件，本地无法使用。
 
@@ -143,7 +143,7 @@ end
 cd本地仓库文件夹
 
 git remote add origin https://github.com/huicuihui/GroupShadowTableView.git 后面的https地址是github当前仓库地址。
-git push -u origin master。提交到远程。
+git push -u origin master。提交到远程master（分支名称）。
 
 ## .spec
 
@@ -168,7 +168,7 @@ Pod::Spec.new do |s|
 	# 可以修改也可以不改
   s.description      = '封装tableView基类 刷新自动加载更多'
 
-	# 主页地址，远程库的地址。是github就写github地址，是码云就写gitee地址。（如果是私有的，地址只需要写到自己的github地址，不需要写项目具体地址）
+	# 主页地址，远程库的地址。（如果是私有的，地址只需要写到自己的github地址，不需要写项目具体地址）
   s.homepage         = 'https://github.com/huicuihui/HHTableListViewController'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
@@ -180,12 +180,13 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '8.0'
 
-	# 资源的文件（哪些文件是需要的，根据这个去找）。/**/* 代表 ：所有文件，文件夹中的所有文件。
+	# 源代码文件（哪些文件是需要的，根据这个去找）。/**/* 代表 ：所有文件，文件夹中的所有文件。
   s.source_files = 'HHTableListViewController/Classes/**/*' # 找的Classes下的文件
   
-  # s.resource_bundles = {
-  #   'HHTableListViewController' => ['HHTableListViewController/Assets/*.png']
-  # }
+  # 资源文件位置
+  s.resource_bundles = {
+    'HHTableListViewController' => ['HHTableListViewController/Assets/*.{png,jpeg,jpg,imageset}']
+  }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
@@ -232,7 +233,7 @@ pod trunk push HHGroupShadowTableView.podspec --allow-warnings。如果有警告
 
 pod master push HHGroupShadowTableView.podspec --allow-warnings
 
-### 3、提交到自己的仓库
+### 3、提交到自己的私有仓库
 
 在github上创建一个仓库HHSpecs 来管理自己的共有和私有库。
 
@@ -241,6 +242,9 @@ pod repo add HHSpecs https://github.com/huicuihui/HHGroupShadowTableView.git
 pod repo push HHSpecs HHGroupShadowTableView.podspec --allow-warnings
 
 提交 pod repo push HHSpec HHTools.podspec，提交的时候会验证.spec本地索引库是否写对。
+
+`/Users/michael/Documents/HHLib/HHUtils/Example/Pods/Local Podspecs/HHUtils.podspec.json`
+
 如果引用其它第三方可能提交不上去，就不使用pod repo push这个指令提交，改为直接复制一个其它的本地索引库文件，然后改一下名字，版本，描述等等，修改.podspec文件。
 
 ## 移除本版本
