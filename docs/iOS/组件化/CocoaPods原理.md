@@ -51,7 +51,7 @@ Configuring GroupShadowTableView template. 下面就是一些配置。
 
 然后就创建好了，项目会自动打开。里面自动有一个.podspec文件。因为前面选择 了Yes，所以里面 有Delegate和 Viewcontroller 方便测试。
 
-### 3、拖入文件 `Pod install` 安装
+### 3、拖入文件，修改文件
 
 Xcode项目中Pods里面的Development Pods的文件夹下有一个GroupShadowTableView文件夹，也就是`ReplaceMe.m`文件所在的位置，在/Lib/GroupShadowTableView/GroupShadowTableView/Classes该文件夹中放自己抽取的代码，以及自己写的代码。再把ReplaceMe.m文件删除。
 
@@ -75,9 +75,13 @@ Pods/Development Pods/自己代码文件夹/Pod/.podspec。里面有一个Pod文
 
 把依赖的第三方在.podspec文件中添加上，然后pod install安装。
 
-每次修改都要进行`pod install`。
+### 5、 `Pod install` 安装
 
-### 5、编译成功，本地的库就已经完成了。
+每次修改都**需要`pod install`**。
+
+### 6、创建HHSpecs
+
+创建https://github.com/michaelssman/HHSpecs.git管理库，创建库文件夹HHUtils，里面创建文件夹0.1.0（tag标签），复制`/Users/michael/Documents/HHLib/HHUtils/Example/Pods/Local Podspecs/HHUtils.podspec.json`文件到文件夹。
 
 ### 注
 
@@ -85,7 +89,7 @@ Developer Pods放本地库文件，还未提交远程之前，提交远程之后
 
 ## Podfile
 
-```
+```ruby
 use_frameworks!
 
 platform :ios, '9.0'
@@ -124,8 +128,6 @@ end
      'LGModuleTest' => ['LGModuleTest/Assets/*']
    }
 ```
-
-每次修改最后都**需要pod install**。
 
 同样json文件一样 需要配置bundle。xib也需要配置bundle
 
@@ -242,8 +244,6 @@ pod repo add HHSpecs https://github.com/huicuihui/HHGroupShadowTableView.git
 pod repo push HHSpecs HHGroupShadowTableView.podspec --allow-warnings
 
 提交 pod repo push HHSpec HHTools.podspec，提交的时候会验证.spec本地索引库是否写对。
-
-`/Users/michael/Documents/HHLib/HHUtils/Example/Pods/Local Podspecs/HHUtils.podspec.json`
 
 如果引用其它第三方可能提交不上去，就不使用pod repo push这个指令提交，改为直接复制一个其它的本地索引库文件，然后改一下名字，版本，描述等等，修改.podspec文件。
 
