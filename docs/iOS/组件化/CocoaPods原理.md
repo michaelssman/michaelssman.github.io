@@ -108,25 +108,26 @@ end
 
 `../`是上级文件夹路径。路径是相对于Podfile的路径。
 
-#### 找不到资源文件
+#### 图片资源文件
 
-代码放在Classes文件夹中，图片Images.xcassets放在Assets文件夹中
+代码放在Classes文件夹中，图片放在Assets文件夹中
 
-加载图片需要换bundle
-
-```objective-c
-    NSString *bundlePath = [[NSBundle bundleForClass:[self class]].resourcePath stringByAppendingPathComponent:@"/LGModuleTest.bundle"];
-    NSBundle *resoure_bundle = [NSBundle bundleWithPath:bundlePath];
-    
-    self.imageView.image = [UIImage imageNamed:@"share_wechat" inBundle:resoure_bundle compatibleWithTraitCollection:nil];
+```swift
+// 如果你使用了 resource_bundles，加载图片需要使用bundle
+@inline(__always)
+public func bundleImage(_ imageName: String) -> UIImage {
+    let bundleURL = Bundle(for: HHAssetCell.self).url(forResource: "HHSelectPhoto", withExtension: "bundle")!
+    let resourceBundle = Bundle(url: bundleURL)!
+    return UIImage(named: imageName, in: resourceBundle, compatibleWith: nil) ?? UIImage()
+}
 ```
 
 同时还需要修改Pods/Development Pods/自己代码文件夹/Pod/.podspec文件下的resource_bundles
 
 ```
-   s.resource_bundles = {
-     'LGModuleTest' => ['LGModuleTest/Assets/*']
-   }
+  s.resource_bundles = {
+      'HHSelectPhoto' => ['HHSelectPhoto/Assets/*.{png,jpeg,jpg,imageset}']
+  }
 ```
 
 同样json文件一样 需要配置bundle。xib也需要配置bundle

@@ -60,7 +60,6 @@ nav:
       - iOS/Swift/源码.md
       - iOS/Swift/运算符重载.md
       - iOS/Swift/高阶函数.md
-      - iOS/Swift/访问权限.md
       - iOS/Swift/Optional.md
       - iOS/Swift/方法调度.md
       - iOS/Swift/流程控制.md
@@ -193,6 +192,7 @@ nav:
     - 计算机基础/typedef.md
     - 计算机基础/Enum和OPTIONS.md
     - 计算机基础/缓存.md
+    - 计算机基础/访问权限.md
   - C++: 
     - C++/README.md
     - C++/字符串和头文件.md
