@@ -82,8 +82,6 @@ git clone https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git ~/.cocoap
 
 ```
 pod repo add showself-spec http://192.168.84.67/ios/lib/showself_pods_spec.git
-
-pod repo add scienjoyspecs http://192.168.84.67/ios/github/scienjoyspecs.git
 ```
 
 注意：
