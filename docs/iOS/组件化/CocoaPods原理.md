@@ -251,3 +251,81 @@ pod repo push HHSpecs HHGroupShadowTableView.podspec --allow-warnings
 ## 移除本版本
 
 pod trunk delete HHGroupShadowTableView 0.1.0（即：pod trunk delete 库名 版本号）
+
+## Objective-C项目使用Swift库
+
+在Objective-C项目中使用Swift编写的库，如Alamofire，需要确保项目已经配置为支持Swift和Objective-C的混合编程。以下是使用Alamofire这样的Swift库的步骤：
+
+1. **使用CocoaPods安装Alamofire**：
+   
+   - 如果你还没有安装CocoaPods，请先安装它。
+   - 在你的Objective-C项目的根目录下创建一个`Podfile`（如果还没有的话）。
+   - 在`Podfile`中添加Alamofire作为依赖项。
+   - 运行`pod install`命令来安装Alamofire。
+   
+   例如，你的Podfile可能看起来像这样：
+   
+   ```ruby
+   platform :ios, '10.0'
+   
+   target 'YourTargetName' do
+     use_frameworks!
+     pod 'Alamofire', '~> 5.0'
+   end
+   ```
+   
+2. **打开生成的`.xcworkspace`文件**：
+   - `pod install`命令将会创建一个`.xcworkspace`文件，你应该使用这个文件来打开你的项目。
+
+3. **创建Objective-C和Swift的桥接文件**（如果你的项目中还没有）：
+   - 在Xcode中，尝试创建一个新的Swift文件，Xcode会询问你是否要创建一个桥接头文件。
+   - 点击“Create Bridging Header”。
+   - 在桥接头文件中，你不需要导入Alamofire，因为它是通过模块导入的。
+
+4. **在Objective-C文件中导入Alamofire**：
+   - 由于Alamofire是一个模块，你可以在Objective-C文件中使用`@import`语句来导入Swift模块。
+
+   例如：
+
+   ```objc
+   @import Alamofire;
+   ```
+
+   或者，如果你在项目设置中关闭了模块支持，你可以使用生成的Swift头文件：
+
+   ```objc
+   #import <YourProjectName-Swift.h>
+   ```
+
+   其中`YourProjectName`是你的项目名称。如果你的项目名称包含空格或其他特殊字符，它们会被下划线替换。
+
+5. **调用Alamofire**：
+   - 由于Alamofire是纯Swift编写的，你不能直接在Objective-C代码中使用它的所有功能，因为Swift的某些特性并不与Objective-C兼容。
+   - 为了在Objective-C中使用Alamofire，你可能需要编写一些Swift代码来封装你想要使用的Alamofire功能，然后将这个封装暴露给Objective-C。这通常是通过在Swift类中使用`@objc`标记来实现的。
+
+例如，你可能需要创建一个Swift类来处理网络请求，然后在这个类中使用`@objc`标记来暴露给Objective-C可以理解的方法。
+
+```swift
+import Alamofire
+
+@objc class NetworkManager: NSObject {
+    @objc func fetchURL(url: String, completion: @escaping (String) -> Void) {
+        AF.request(url).response { response in
+            if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                completion(utf8Text)
+            }
+        }
+    }
+}
+```
+
+然后在Objective-C中使用这个封装：
+
+```objc
+NetworkManager *manager = [[NetworkManager alloc] init];
+[manager fetchURL:@"https://api.example.com" completion:^(NSString *result) {
+    NSLog(@"Result: %@", result);
+}];
+```
+
+请注意，这是一个简化的例子，实际的网络请求处理应包括错误处理和更复杂的逻辑。
