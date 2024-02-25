@@ -254,54 +254,57 @@ pod trunk delete HHGroupShadowTableView 0.1.0（即：pod trunk delete 库名 �
 
 ## Objective-C项目使用Swift库
 
-在Objective-C项目中使用Swift编写的库，如Alamofire，需要确保项目已经配置为支持Swift和Objective-C的混合编程。以下是使用Alamofire这样的Swift库的步骤：
+在 Swift 语言创建的 Pod 库要在 Objective-C 项目中使用时，需要确保几个步骤已经正确完成：
 
-1. **使用CocoaPods安装Alamofire**：
-   
-   - 如果你还没有安装CocoaPods，请先安装它。
-   - 在你的Objective-C项目的根目录下创建一个`Podfile`（如果还没有的话）。
-   - 在`Podfile`中添加Alamofire作为依赖项。
-   - 运行`pod install`命令来安装Alamofire。
-   
-   例如，你的Podfile可能看起来像这样：
-   
-   ```ruby
-   platform :ios, '10.0'
-   
-   target 'YourTargetName' do
-     use_frameworks!
-     pod 'Alamofire', '~> 5.0'
-   end
-   ```
-   
-2. **打开生成的`.xcworkspace`文件**：
-   - `pod install`命令将会创建一个`.xcworkspace`文件，你应该使用这个文件来打开你的项目。
+### 1、确保 Pod 支持 Objective-C
 
-3. **创建Objective-C和Swift的桥接文件**（如果你的项目中还没有）：
-   - 在Xcode中，尝试创建一个新的Swift文件，Xcode会询问你是否要创建一个桥接头文件。
-   - 点击“Create Bridging Header”。
-   - 在桥接头文件中，你不需要导入Alamofire，因为它是通过模块导入的。
+首先，你的 Swift Pod 库需要被设计为支持 Objective-C。这意味着你需要使用 `@objc` 关键字来标记那些需要在 Objective-C 中使用的类和方法。
 
-4. **在Objective-C文件中导入Alamofire**：
-   - 由于Alamofire是一个模块，你可以在Objective-C文件中使用`@import`语句来导入Swift模块。
+### 2、创建Objective-C和Swift的桥接文件（如果你的项目中还没有）
 
-   例如：
+Swift 项目在构建时会自动生成一个名为 `YourProjectName-Swift.h` 的桥接头文件，用于在 Objective-C 中暴露 Swift 代码。在 Objective-C 项目中，你需要导入这个桥接头文件才能使用 Swift 代码。
 
-   ```objc
-   @import Alamofire;
-   ```
+- 在Xcode中，尝试创建一个新的Swift文件，Xcode会询问你是否要创建一个桥接头文件。
+- 点击“Create Bridging Header”。
+- 在桥接头文件中，你不需要导入Alamofire，因为它是通过模块导入的。
 
-   或者，如果你在项目设置中关闭了模块支持，你可以使用生成的Swift头文件：
+### 3、更新 Podspec 文件
 
-   ```objc
-   #import <YourProjectName-Swift.h>
-   ```
+确保你的 `.podspec` 文件正确配置了 `s.public_header_files`，以便在安装 Pod 时，能够将 Swift 生成的头文件包含在内。
 
-   其中`YourProjectName`是你的项目名称。如果你的项目名称包含空格或其他特殊字符，它们会被下划线替换。
+### 4、使用 use_frameworks!
 
-5. **调用Alamofire**：
-   - 由于Alamofire是纯Swift编写的，你不能直接在Objective-C代码中使用它的所有功能，因为Swift的某些特性并不与Objective-C兼容。
-   - 为了在Objective-C中使用Alamofire，你可能需要编写一些Swift代码来封装你想要使用的Alamofire功能，然后将这个封装暴露给Objective-C。这通常是通过在Swift类中使用`@objc`标记来实现的。
+在你的 Objective-C 项目的 Podfile 中，确保你使用了 `use_frameworks!` 选项，因为 Swift 库需要作为框架来被集成。
+
+```ruby
+platform :ios, '10.0'
+
+target 'YourTargetName' do
+  use_frameworks!
+  pod 'Alamofire', '~> 5.0'
+end
+```
+
+### 5、在Objective-C中导入
+
+由于Alamofire是一个模块，你可以在Objective-C文件中使用`@import`语句来导入Swift**模块**。
+
+```objc
+@import Alamofire;
+```
+
+或者，如果你在项目设置中关闭了模块支持，你可以使用生成的Swift头文件：
+
+```objc
+#import <YourProjectName-Swift.h>
+```
+
+其中`YourProjectName`是你的项目名称。如果你的项目名称包含空格或其他特殊字符，它们会被下划线替换。
+
+### 6、调用Alamofire
+
+- 由于Alamofire是纯Swift编写的，你不能直接在Objective-C代码中使用它的所有功能，因为Swift的某些特性并不与Objective-C兼容。
+- 为了在Objective-C中使用Alamofire，你可能需要编写一些Swift代码来封装你想要使用的Alamofire功能，然后将这个封装暴露给Objective-C。这通常是通过在Swift类中使用`@objc`标记来实现的。
 
 例如，你可能需要创建一个Swift类来处理网络请求，然后在这个类中使用`@objc`标记来暴露给Objective-C可以理解的方法。
 
@@ -327,5 +330,3 @@ NetworkManager *manager = [[NetworkManager alloc] init];
     NSLog(@"Result: %@", result);
 }];
 ```
-
-请注意，这是一个简化的例子，实际的网络请求处理应包括错误处理和更复杂的逻辑。
