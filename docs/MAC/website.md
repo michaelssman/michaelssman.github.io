@@ -44,8 +44,6 @@ http://wsxfdt.xfj.henan.gov.cn:8080/ldxx/indexszxx.jsp#
    - 这个网站提供了一个在线的应用截图和启动图生成器，支持多种设备和屏幕尺寸。
 2. **App Icon Maker** (https://appiconmaker.co/)
    - 虽然主要用于生成应用图标，但这个网站也可以用来创建适合不同iOS和Android设备的启动屏幕。
-3. **LaunchImage** (https://launchimage.com/)
-   - 专门为iOS和Android应用生成启动屏幕的网站。
 4. **DaVinci Apps** (https://davinciapps.com/)
    - 提供应用截图和启动屏幕设计服务，支持自定义设计。
 
