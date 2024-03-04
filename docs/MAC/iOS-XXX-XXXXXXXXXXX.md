@@ -6,8 +6,6 @@
   <tr><td>电话：1XX-XXXX-XXXX</td><td>邮箱：michaelss_work@outlook.com</td></tr>
   <tr><td colspan=2>个人博客：https://michaelssman.github.io/</td></tr>
 </table>
-
-
 ---
 
 ## 教育背景（2011.09-2015.07）
