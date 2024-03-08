@@ -193,12 +193,13 @@ curl -k "http://api.bugly.qq.com/openapi/file/upload/symbol?app_id=你的AppID&a
 ## bugly使用上传工具上传
 
 ```bash
+KJXY：
 java -jar buglyqq-upload-symbol.jar -appid bb45d2001f -appkey 12b7e14e-09b2-4d58-abc8-7f4145fe93be -bundleid com.ningmengyun.AccCollegeTest -version 5.1.5 -buildNo 21 -platform IOS -inputSymbol /Users/michael/Downloads/柠檬会计学院测试.app.dSYM
-```
 
-云财务
-
-```bash
+YCW：
 java -jar buglyqq-upload-symbol.jar -appid 90785b8889 -appkey 7d14b9a7-0790-44f4-bca6-e9dc02ea4593 -bundleid com.ningmengyun.lemonacc -version 5.1.10 -buildNo 1 -platform IOS -inputSymbol /Users/michael/Downloads/bugly_dsym/柠檬云财务.app.dSYM
+
+SCM：
+java -jar buglyqq-upload-symbol.jar -appid 497a888cf2 -appkey 057b79a8-2200-4742-b8bf-17381f46fd6d -bundleid com.ningmengyun.SCM -version 3.3.7 -buildNo 4 -platform IOS -inputSymbol /Users/michael/Downloads/bugly_dsym/柠檬云进销存.app.dSYM
 ```
 
