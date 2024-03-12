@@ -2,7 +2,7 @@
 
 ## image镜像文件
 
-底层基础库。并不是所有的都是从0开始写的。例如：UIKit，Foundation，libObjc，libDispath，libSystem等等，都是镜像文件。
+底层基础库。并不是所有的都是从0开始写的。例如：UIKit，Foundation，libObjc，libDispath，libSystem等，都是image镜像文件。
 
 库 映射到 内存中 就叫镜像images。
 
@@ -20,27 +20,28 @@
 
 早期启动一个应用程序是将整块加载进内存里。
 
-好处：
+#### 优点
 
-代码在当前程序中的偏移地址确定，物理地址不知道。只有运行之后才知道。代码的访问：基地址加偏移地址。比较安全。
+- 代码在当前程序中的偏移地址确定，物理地址不知道。只有运行之后才知道。代码的访问：基地址加偏移地址。比较安全。
 
-安全问题：早期应用程序之间是可以访问的，因为用的物理地址进行的数据读写，所以当前应用可以读取别的应用的数据。
+#### 缺点
 
-内存不足：早期操作系统，有一个内存条，将整个应用程序加载到内存中，是物理地址，加载应用程序多的时候会内存不够用。每一个应用在内存中的位置不确定，随机的。
+- 安全问题：早期应用程序之间是可以访问的，因为用的物理地址进行的数据读写，所以**当前应用可以读取别的应用的数据**。
+- 内存不足：将整个应用程序加载到内存中，是物理地址，加载应用程序多的时候会内存不够用。每一个应用在内存中的位置不确定，随机的。
 
 ### 虚拟内存
 
-出现虚拟地址之后
+出现虚拟地址之后，虚拟地址固定，应用程序访问数据永远都是从0x000fcc（举例）开始。所以只要知道偏移地址，通过内存地址访问，安全系数降低了。因为安全漏洞所以出现了ASLR。
 
-虚拟地址固定，应用程序访问数据永远都是从0x000fcc（举例）开始。所以只要知道偏移地址 通过内存地址访问，安全系数降低了。因为安全漏洞所以出现了ASLR。
-
-在每次启动程序的时候在地址前加ASLR。ASLR值是随机的。虚拟内存加一个偏移值，为了保证像早期模拟物理地址有一个随机的开始位置。
+在每次启动程序的时候在地址前加ASLR。ASLR值是随机的。虚拟内存加一个偏移值，像早期物理地址有一个随机的开始位置。
 
 虚拟地址映射到物理地址。
 
 程序访问的是虚拟地址。CPU访问的是物理地址。
 
-好处：解决安全问题（app之间隔离）
+#### 优点
+
+解决安全问题（app之间隔离）
 
 #### 虚拟内存的分段管理
 
@@ -50,9 +51,9 @@
 
 大型软件，用户使用的时候，如果一次把软件加载进去不划算，用户使用的时候不会使用应用的所有功能，将整个应用程序放到内存里浪费。
 
-应用程序加载到内存的时候 使用**懒加载**。不是将整个应用程序一次加载进去，将应用程序分成一小块一小块。启动应用的时候，把启动时候需要的代码载入内存中，用到新的功能的时候再把新的功能代码载入内存。用户用到哪一块就加载哪一块儿。
+应用程序加载到内存的时候 使用**懒加载**。不是将整个应用程序一次加载进去，将应用程序分成一小块一小块。启动应用的时候，把启动时候需要的代码载入内存中，用到新的功能的时候再把新的功能代码载入内存。
 
-用到哪里就加载哪里的内存，分段就会造成不连续的问题：
+用户用到哪一块就加载哪一块儿，分段就会造成不连续的问题：
 
 用户打开一个应用，会将用到的载入到内存。不会整个的载入。用户打开另一个应用，同理将用到的载入内存。用户来回切换不同的应用，不同应用不同模块就会载入到内存。内存地址不连续。不知道分配到内存的哪个地方。
 
@@ -76,7 +77,7 @@ CPU有一个硬件MMU（内存管理单元），作用是翻译地址。
 
 ### 共享缓存区
 
-保证进程数据独立，iOS的共享缓存库UIKit foundation 是共有的，每个进程都可以访问。共享缓存 也是放内存中的。在内存的一个位置。
+保证进程数据独立，iOS的共享缓存库UIKit foundation 是共有的，每个进程都可以访问。共享缓存也是放内存中的。在内存的一个位置。
 
 不同app访问共享缓存区的物理地址一样，虚拟地址不一样（因为ASLR）。
 
@@ -86,11 +87,9 @@ CPU有一个硬件MMU（内存管理单元），作用是翻译地址。
 
 ### ASLR（随机偏移地址）
 
-Address Space Layout Random （ASLR：随机偏移地址），地址空间布局随机化 , 是一种针对缓冲区溢出的安全保护技术，通过对堆、栈、共享库映射等线性区布局的随机化，通过增加攻击者预测目的地址的难度，防止攻击者指针定位攻击代码位置，达到阻止溢出攻击的一种技术。
+内存有一个PAGEZERO的区域，这是苹果的ASLR（Address Space Layout Random：随机偏移地址）技术，也就是**地址空间布局随机化**。是一种针对缓冲区溢出的安全保护技术，通过对堆、栈、共享库映射等线性区布局的随机化，增加攻击者预测目的地址的难度，防止攻击者指针定位攻击代码位置，达到阻止溢出攻击的一种技术。
 
-注意图中有一个PAGEZERO的区域，这个是苹果的ASLR技术，也就是地址空间布局**随机化**。
-
-当编译出一个App的时候，生成的Mach-O文件的内容地址是固定的。ASLR技术在每次Ap运行在内存中的时候，都会加上一个PAGEZERO，PAGEZERO的大小都是随机的。加上PAGEZERO以后，Mach-O里面的地址都会需要加上相对的偏移，在内存的首地址都会发生变化，基地址不一样。在虚拟地址前面加一个偏移量（ASLR），这样可以增加App的攻击难度。
+当编译出一个App的时候，生成的Mach-O文件的内容地址是固定的。ASLR技术在每次App运行在内存中的时候，都会加上一个PAGEZERO，PAGEZERO的大小都是随机的。加上PAGEZERO以后，Mach-O里面的地址都会需要加上相对的偏移，在内存的首地址都会发生变化，基地址不一样。在虚拟地址前面加一个偏移量（ASLR），增加App的攻击难度。
 
 在虚拟内存地址出现之后就出现了ASLR。
 
@@ -128,7 +127,7 @@ void _objc_init(void)
     
     // fixme defer initialization until an objc-using image is found?
     environ_init();		//环境变量初始化
-    tls_init();				//创建线程的析构函数
+	tls_init();			//创建线程的析构函数
     static_init();		//运⾏C++静态构造函数
     runtime_init();		//分类表初始化，类表初始化
     exception_init();	//异常处理的初始化(数组越界，方法找不到的报错)
@@ -136,7 +135,8 @@ void _objc_init(void)
     cache_t::init();	//缓存的初始化
 #endif
     _imp_implementationWithBlock_init();//Mac OS的
-		//&map_images引用传递，load_images值传递，加载load方法
+    
+    //&map_images引用传递，load_images值传递，加载load方法
     _dyld_objc_notify_register(&map_images, load_images, unmap_image);//3个函数
 
 #if __OBJC2__
@@ -150,9 +150,9 @@ void _objc_init(void)
 ```c++
 void runtime_init(void)
 {
-  //初始化两张表
+  	//初始化两张表
     objc::unattachedCategories.init(32);//分类表的初始化
-    objc::allocatedClasses.init();//类表的初始化，类表里面存的所有的类
+    objc::allocatedClasses.init();		//类表的初始化，类表里面存的所有的类
 }
 ```
 
@@ -194,7 +194,7 @@ void prepare_load_methods(const headerType *mhdr)
     size_t count, i;
 
     runtimeLock.assertLocked();
-		//找所有的非懒加载类（重写了load就是非懒加载类）
+    //找所有的非懒加载类（重写了load就是非懒加载类）
     classref_t const *classlist = 
         _getObjc2NonlazyClassList(mhdr, &count);
     for (i = 0; i < count; i++) {
@@ -223,14 +223,14 @@ void prepare_load_methods(const headerType *mhdr)
 ```c++
 static void schedule_class_load(Class cls)
 {
-  //不需要super load，父类的load优先子类的load
+    //不需要super load，父类的load优先子类的load
     if (!cls) return;
     ASSERT(cls->isRealized());  // _read_images should realize
 
     if (cls->data()->flags & RW_LOADED) return;
 
     // Ensure superclass-first ordering
-  //递归，会先找父类的load
+    //递归，会先找父类的load
     schedule_class_load(cls->getSuperclass());
 
     add_class_to_loadable_list(cls);
@@ -284,13 +284,13 @@ void call_load_methods(void)
 2. +load方法是在加载类和分类时系统调用，一般不手动调用，如果想要在类或分类加载时做一些事情，可以重写类或分类的+load方法。
 3. 不需要[super load]，因为会自动的找superClass的load。
 4. 类、分类的加载和+load方法有关，在程序运行过程只调用一次。
-5. load是线程安全的，上面都有加锁操作。
+5. load是线程安全的，都有加锁操作。
 
 ##### load和initialize
 
 想在类加载进内存的时候调用，就用load方法
 
-如果想在第一次加载使用类的时候调用，就用initialized方法，也是只会调用一次。
+想在第一次加载使用类的时候调用，就用initialized方法，也是只会调用一次。
 
 #### 2、map_images
 
@@ -337,7 +337,7 @@ map_images_nolock(unsigned mhCount, const char * const mhPaths[],
         uint32_t i = mhCount;
         while (i--) {//找到所有的类
             const headerType *mhdr = (const headerType *)mhdrs[i];
-						//从头部文件读
+            //从头部文件读
             auto hi = addHeader(mhdr, mhPaths[i], totalClasses, unoptimizedTotalClasses);
             if (!hi) {
                 // no objc data in this entry
@@ -432,8 +432,8 @@ map_images_nolock(unsigned mhCount, const char * const mhPaths[],
 void arr_init(void) 
 {
     AutoreleasePoolPage::init();//自动释放池
-    SideTablesMap.init();//散列表
-    _objc_associations_init();//关联对象的初始化操作
+    SideTablesMap.init();		//散列表
+    _objc_associations_init();	//关联对象的初始化操作
     if (DebugScanWeakTables)
         startWeakTableScan();
 }
@@ -993,7 +993,7 @@ static Class realizeClassWithoutSwift(Class cls, Class previously)
 
 ## 3、执行main函数
 
-执行main函数，开始一个RunLoop，保持程序的不断运行，然后开始执行我们程序中AppDelegate中的代码。
+执行main函数，开始一个RunLoop，保持程序的不断运行，然后开始执行程序中AppDelegate中的代码。
 
 加载可程序后执行的总体步骤如下：
 
