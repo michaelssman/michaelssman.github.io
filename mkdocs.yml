@@ -99,11 +99,6 @@ nav:
       - iOS/应用程序加载/hmap.md
       - iOS/应用程序加载/动态库静态库.md
       - iOS/应用程序加载/多环境支持.md
-    - 内存管理:
-      - iOS/内存管理/copy.md
-      - iOS/内存管理/iOS属性关键字.md
-      - iOS/内存管理/weak原理.md
-      - iOS/内存管理/内存管理.md
     - Runloop:
       - iOS/Runloop/00RunLoop.md
       - iOS/Runloop/01CFRunLoopRef.md
@@ -184,6 +179,11 @@ nav:
       - 计算机基础/异常处理/CPP错误检查方法.md
       - 计算机基础/异常处理/Java.md
       - 计算机基础/异常处理/swift.md
+    - 内存管理:
+      - 计算机基础/内存管理/copy.md
+      - 计算机基础/内存管理/iOS属性关键字.md
+      - 计算机基础/内存管理/weak原理.md
+      - 计算机基础/内存管理/内存管理.md
     - 计算机基础/XML.md
     - 计算机基础/注解.md
     - 计算机基础/正则.md
