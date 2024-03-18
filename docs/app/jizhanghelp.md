@@ -1,7 +1,5 @@
 # 小木记账使用说明
 
-在使用过程中，
-
 ## 1、账户
 
 ### 1.1、新增账户
@@ -12,13 +10,13 @@
 - 类别：有现金、银行卡、虚拟账户、投资理财、信用卡等，对账户进行分类管理和查看。
   - 选择银行卡类别时，还可以去选择发卡行。
 
-<img src="assets/IMG_2695.PNG" alt="IMG_2695" style="zoom:50%;" />
+![IMG_2695](assets/IMG_2695.PNG)
 
 ### 1.2、账户列表
 
 列表根据账户类别进行分区展示。
 
-<img src="assets/IMG_2701.PNG" alt="IMG_2701" style="zoom:50%;" />
+![IMG_2701](assets/IMG_2701.PNG)
 
 #### 1.2.1、点击账户
 
@@ -33,7 +31,7 @@
 
 包含支出、收入、转账和余额4种类型。
 
-<img src="assets/IMG_2699.PNG" alt="IMG_2699" style="zoom:50%;" />
+![IMG_2699](assets/IMG_2699.PNG)
 
 ### 2.1、支出和收入
 
@@ -63,7 +61,7 @@
 
 ### 3.1、明细列表
 
-<img src="assets/IMG_2697.PNG" alt="IMG_2697" style="zoom:50%;" />
+![IMG_2697](assets/IMG_2697.PNG)
 
 整个列表按照年、月、日分块展示。
 
@@ -79,7 +77,7 @@
 
 ## 4、报表
 
-<img src="assets/IMG_2698.PNG" alt="IMG_2698" style="zoom:50%;" />
+![assets/IMG_2698.PNG](assets/IMG_2698.PNG)
 
 ### 4.1、账户余额
 
@@ -107,4 +105,4 @@
 
 ### 电子邮件支持
 
-对于任何支持请求，请发送电子邮件至：[michaelstrongself@outlook.com](michaelstrongself@outlook.com)。
+对于任何支持请求，请发送电子邮件至：michaelstrongself@outlook.com。
