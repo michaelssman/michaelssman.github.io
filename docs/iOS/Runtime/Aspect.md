@@ -1,6 +1,6 @@
 # Aspects
 
-在日常开发过程中有这样的需求：不修改原来的函数，但是又想在函数的执行前后插入一些代码。这个方式就是面向切面（AOP），在iOS开发中比较知名的框架就是Aspects，饿了么新出的Stinger框架。
+不修改原来的函数，在函数的执行前后插入一些代码。就是面向切面（AOP）。Aspects和饿了么的Stinger框架。
 
 AOP：切面编程。业务逻辑隔离，代码耦合度降低。
 
@@ -8,7 +8,9 @@ AOP：切面编程。业务逻辑隔离，代码耦合度降低。
 
 通过预编译的方式或者运行时期动态代理
 
-继承 耦合程度高。
+## 继承 
+
+耦合程度高。
 
 例：
 
@@ -16,7 +18,7 @@ AOP：切面编程。业务逻辑隔离，代码耦合度降低。
 
 鸟 2条腿，就需要对基类修改。
 
-AOP
+## AOP
 
 腿
 
@@ -57,12 +59,16 @@ typedef NS_OPTIONS(NSUInteger, AspectOptions) {
 };
 ```
 
+### AspectInfo
+
+1. NSInvocation sign target 信息
+
 ### AspectIdentifier
 
 1. runtime的封装 记录hook方法 **block签名信息**
 2. 每次hook都记录在了AspectIdentifier
 
-简单理解话就是一个存储model，主要用来存储hook方法的相关信息，如原有方法、切面block、切面时机等
+就是一个model用来存储hook方法的相关信息，如原有方法、切面block、切面时机等
 
 ```objective-c
 @interface AspectIdentifier : NSObject
@@ -72,7 +78,7 @@ typedef NS_OPTIONS(NSUInteger, AspectOptions) {
 @property (nonatomic, strong) id block;//保存要执行的切面block，即原方法执行前后要调用的方法
 @property (nonatomic, strong) NSMethodSignature *blockSignature;//block的方法签名
 @property (nonatomic, weak) id object;//target，即保存当前对象
-@property (nonatomic, assign) AspectOptions options;//是个枚举，标示切面执行时机
+@property (nonatomic, assign) AspectOptions options;//是个枚举，切面执行时机
 @end
 ```
 
@@ -96,67 +102,50 @@ typedef NS_OPTIONS(NSUInteger, AspectOptions) {
 
 ### AspectTracker
 
-1. 追踪类 对象所有hook操作。
-2. 作用：方便撤销。
+追踪类 对象所有hook操作。
 
-### AspectInfo
-
-1. NSInvocation sign target 信息
+作用：方便撤销。
 
 ## 调用流程
 
 ### 对外暴露的核心API
 
 ```objective-c
-/**
-
-作用域：针对所有对象生效
-
-selector: 需要hook的方法
-
-options：是个枚举，主要定义了切面的时机（调用前、替换、调用后）
-
-block: 需要在selector前后插入执行的代码块
-
-error: 错误信息
-
-*/
+/// 作用域：针对所有对象生效
+/// @param selector 需要hook的方法
+/// @param options 是个枚举，主要定义了切面的时机（调用前、替换、调用后）
+/// @param block 需要在selector前后插入执行的代码块
+/// @param error 错误信息
 + (id<AspectToken>)aspect_hookSelector:(SEL)selector
                            withOptions:(AspectOptions)options
                             usingBlock:(id)block
                                  error:(NSError **)error;
-```
 
-```objective-c
-/**
-
-作用域：针对当前对象生效
-
-*/
+/// 作用域：针对当前对象生效
 - (id<AspectToken>)aspect_hookSelector:(SEL)selector
                            withOptions:(AspectOptions)options
                             usingBlock:(id)block
                                  error:(NSError **)error;
 ```
 
-Aspects 利用消息转发机制，通过hook第三层的转发方法 forwardInvocation: ，然后根据切面的时机来动态调用block。接下来详细分析巧妙的设计
+Aspects 利用消息转发机制，通过hook第三层的转发方法`forwardInvocation: `，然后根据切面的时机来动态调用block。接下来详细分析巧妙的设计
 
-1. 类A的方法m被添加切面方法
-2. 创建一个类A的子类B，并hook子类B的 forwardInvocation: 方法拦截消息转发，使 forwardInvocation: 的 IMP 指向事先准备好的 ASPECTS_ARE_BEING_CALLED 函数（后面简称 ABC 函数），block方法的执行就在 ABC 函数中
-3. 把类A的对象的isa指针指向B，这样就把消息的处理转发到类B上，类似 KVO 的机制，同时会更改 class 方法的IMP，把它指向类A的 class 方法，当外界调用 class 时获取的还是类A，并不知道中间类B的存在
-4. 对于方法m，类B会直接把方法m的 IMP 指向 _objc_msgForward 方法，这样当调用方法m时就会走消息转发流程，触发 ABC 函数
+1. 类A的方法m被添加切面方法。
+2. 创建一个类A的子类B，并hook子类B的`forwardInvocation: `方法拦截消息转发，使`forwardInvocation: `的 IMP 指向事先准备好的 ASPECTS_ARE_BEING_CALLED 函数（后面简称 ABC 函数），block方法的执行就在 ABC 函数中。
+3. 把类A的对象的isa指针指向B，这样就把消息的处理转发到类B上，类似 KVO 的机制，同时会更改 class 方法的IMP，把它指向类A的 class 方法，当外界调用 class 时获取的还是类A，并不知道中间类B的存在。
+4. 对于方法m，类B会直接把方法m的 IMP 指向 _objc_msgForward 方法，这样当调用方法m时就会走消息转发流程，触发 ABC 函数。
 
 ## 详细分析 执行入口
 
 ### 存储切面信息
 
-存储切面信息主要用到了上面介绍的 AspectsContainer 、 AspectIdentifier 这两个类
+存储切面信息主要用到了上面介绍的AspectIdentifier、AspectsContainer两个类
 
 1. 获取当前类的容器对象 aspectContainer ，如果没有则创建一个
 2. 创建一个标识符对象 identifier ，用来存储原方法信息、block、切面时机等信息
 3. 把标识符对象 identifier 添加到容器中
 
-aspect_add  类方法 对象方法都调用了aspect_add
+类方法 对象方法都调用了aspect_add
 
 - 初始化AspectIdentifier这个类。
   - IMP
@@ -168,15 +157,6 @@ aspect_add  类方法 对象方法都调用了aspect_add
   - 从第二位开始 一一比较，通过for循环遍历。
 - 添加到容器中 
   - 通过options添加到对应的数组中。
-
-```objective-c
-- (id<AspectToken>)aspect_hookSelector:(SEL)selector
-                      withOptions:(AspectOptions)options
-                       usingBlock:(id)block
-                            error:(NSError **)error {
-    return aspect_add(self, selector, options, block, error);
-}
-```
 
 ### aspect_add
 
@@ -199,8 +179,9 @@ static id aspect_add(id self, SEL selector, AspectOptions options, id block, NSE
             if (identifier) {
                 //把identifier添加到容器中
                 [aspectContainer addAspect:identifier withOptions:options];
-
+								
                 // Modify the class to allow message interception.
+              	// 修改类以允许消息拦截
                 aspect_prepareClassAndHookSelector(self, selector, error);
             }
         }
@@ -309,11 +290,9 @@ static BOOL aspect_isSelectorAllowedAndTrack(NSObject *self, SEL selector, Aspec
 
 ### aspect_prepareClassAndHookSelector
 
-Aspects 的核心原理是消息转发，那么必要出的就是怎么自动触发消息转发机制
+Aspects 的核心原理是消息转发，runtime中有个方法 `_objc_msgForward`，直接调用可以触发消息转发机制。
 
-runtime中有个方法 _objc_msgForward ，直接调用可以触发消息转发机制。
-
-假如要hook的方法叫 m1 ，那么把 m1 的 IMP 指向 _objc_msgForward ，这样当调用方法 m1 时就自动触发消息转发机制了，详细实现如下
+假如要hook的方法叫 m1 ，那么把 m1 的 IMP 指向 _objc_msgForward ，这样当调用方法 m1 时就自动触发消息转发机制，详细实现如下
 
 ```objective-c
 static void aspect_prepareClassAndHookSelector(NSObject *self, SEL selector, NSError **error) {
@@ -330,7 +309,8 @@ static void aspect_prepareClassAndHookSelector(NSObject *self, SEL selector, NSE
             NSCAssert(addedAlias, @"Original implementation for %@ is already copied to %@ on %@", NSStringFromSelector(selector), NSStringFromSelector(aliasSelector), klass);
         }
 
-        // We use forwardInvocation to hook in.把函数的调用直接触发消息转发函数，转发函数已经被hook，所以在转发函数时进行hook的调用
+        // We use forwardInvocation to hook in.
+      	// 把函数的调用直接触发消息转发函数，转发函数已经被hook，所以在转发函数时进行hook的调用
         class_replaceMethod(klass, selector, aspect_getMsgForwardIMP(self, selector), typeEncoding);
         AspectLog(@"Aspects: Installed hook for -[%@ %@].", klass, NSStringFromSelector(selector));
     }
@@ -390,10 +370,10 @@ static Class aspect_hookClass(NSObject *self, NSError **error) {
         //生成一个类
 		subclass = objc_allocateClassPair(baseClass, subclassName, 0);
 		if (subclass == nil) {
-            NSString *errrorDesc = [NSString stringWithFormat:@"objc_allocateClassPair failed to allocate class %s.", subclassName];
-            AspectError(AspectErrorFailedToAllocateClassPair, errrorDesc);
-            return nil;
-        }
+      NSString *errrorDesc = [NSString stringWithFormat:@"objc_allocateClassPair failed to allocate class %s.", subclassName];
+      AspectError(AspectErrorFailedToAllocateClassPair, errrorDesc);
+      return nil;
+    }
 
 		aspect_swizzleForwardInvocation(subclass);
         //hook class方法，把子类的class方法的IMP指向父类，这样外界并不知道内部创建了子类

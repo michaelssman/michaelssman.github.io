@@ -330,3 +330,23 @@ NetworkManager *manager = [[NetworkManager alloc] init];
     NSLog(@"Result: %@", result);
 }];
 ```
+
+### Swift编写的pod库 依赖于 `MJRefresh`，但是 `MJRefresh` 并没有定义模块。
+
+在Swift中，为了能够从静态库中导入没有模块定义的依赖项，需要生成模块映射（module maps）。模块映射是Swift和Objective-C之间互操作的一种机制，它允许Swift代码导入并使用Objective-C代码。
+
+有两种方法可以解决这个问题：
+
+1. 全局设置 `use_modular_headers!` 在你的Podfile中：
+   这将为所有的依赖项启用模块化头文件。你可以在Podfile的顶部添加这一行来实现。
+
+   ```ruby
+   use_modular_headers!
+   ```
+
+2. 为特定的依赖项设置 `:modular_headers => true`：
+   如果你不想对所有的依赖项使用模块化头文件，你可以只为特定的依赖项设置。在Podfile中，找到相关的依赖项，然后添加 `:modular_headers => true` 选项。
+
+   ```ruby
+   pod 'MJRefresh', :modular_headers => true
+   ```
