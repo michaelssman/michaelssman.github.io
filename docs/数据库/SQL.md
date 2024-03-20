@@ -37,7 +37,9 @@ CREATE TABLE IF NOT EXISTS student (
 
 ### 新增字段ALTER
 
-在建表后增加新字段
+想要在已有的表中新增字段而不影响现有数据，可以通过执行一个`ALTER TABLE` SQL命令来添加新的列。这通常在数据库版本升级时进行。
+
+`ALTER TABLE`命令在SQLite中有限制，它只支持添加新的列，并且不能删除或修改现有列。
 
 ```sql
 ALTER TABLE %@ ADD COLUMN %@ %@

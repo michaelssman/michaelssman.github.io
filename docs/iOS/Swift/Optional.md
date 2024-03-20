@@ -1,8 +1,6 @@
 # Optional 
 
-通过在变量类型后面加`?`表示
-
-可选项没法直接使用，需要使用`!`展开后才能使用（表示这个可选项里面有值）
+在变量类型后面加`?`表示，可选项没法直接使用，需要使用`!`展开后才能使用（表示这个可选项里面有值）
 
 比如我们在代码这样定义： 
 
@@ -12,7 +10,7 @@ class LGTeacher{
 }
 ```
 
-当前的 age 我们就称之为可选值，当然可选值的写法这两者是等同的。optional语法糖
+age就称之为可选值，当然可选值的写法这两者是等同的。optional语法糖
 
 ```swift
 var age: Int? = var age: Optional<Int>
@@ -20,7 +18,7 @@ var age: Int? = var age: Optional<Int>
 
 ## Optional本质
 
-直接跳转到源码，打开 Optional.swift 文件 
+打开 Optional.swift 源码文件 
 
 ```swift
 @frozen
@@ -90,9 +88,9 @@ for element in array{
 }
 ```
 
-## Optional绑定
+## Optional binding（可选绑定）
 
-- 可以使用可选项绑定来判断可选项是否包含值，如果包含就把值赋给一个临时的常量或者变量
+- 使用可选项绑定来判断可选项是否包含值，如果包含就把值赋给一个临时的常量或者变量
 - 可选绑定可以与 if 和 while 的语句使用来检查可选项内部的值，并赋值给一个变量或常量
 - 同一个 if 语句中包含多可选项绑定，用逗号分隔即可。如果任一可选绑定结果是 nil 或者布尔值为 false ，那么整个 if 判断会被看作 false
 
@@ -104,13 +102,15 @@ if let actualStr = str {
 }
 ```
 
-除了使用 if let 来处理可选值之外，我们还可以使用 gurad let 来简化我们的代码。
+除了使用 if let 来处理可选值之外，还可以使用 gurad let 来简化代码。
 
 guard let 和 if let 刚好相反， guard let 守护一定有值。如果没有，直接返回。 
 
 通常判断是否有值之后，会做具体的逻辑实现，通常代码多 
 
 如果用 if let 凭空多了一层分支， guard let 是降低分支层次的办法 
+
+强制解包（`!`），可能造成崩溃。使用可选绑定（optional binding）来安全地解包可选值，并使用守护语句（guard statement）来提前退出，如果条件不满足。
 
 ## 隐士解析可选类型
 
@@ -150,8 +150,6 @@ class DetailViewController: BaseViewController {
     }
 }
 ```
-
-
 
 ## 可选链 
 
