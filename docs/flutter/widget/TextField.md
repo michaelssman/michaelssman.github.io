@@ -152,3 +152,53 @@ _textEditingController.selection = TextSelection.fromPosition(
 );
 ```
 
+## 边框颜色
+
+设置`TextField`的边框颜色，通过`InputDecoration`来实现。`InputDecoration`允许你定义输入框的外观，包括边框的样式和颜色。
+
+以下是一个简单的例子，展示了如何设置`TextField`的边框颜色：
+
+```dart
+TextField(
+  decoration: InputDecoration(
+    labelText: 'Enter something',
+    // 设置普通状态下的边框
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Colors.blue, // 边框颜色
+        width: 2.0, // 边框宽度
+      ),
+    ),
+    // 设置获得焦点时的边框
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Colors.green, // 边框颜色
+        width: 2.0, // 边框宽度
+      ),
+    ),
+    // 设置错误状态时的边框
+    errorBorder: OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Colors.red, // 边框颜色
+        width: 2.0, // 边框宽度
+      ),
+    ),
+    // 设置获得焦点且错误状态时的边框
+    focusedErrorBorder: OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Colors.red, // 边框颜色
+        width: 2.0, // 边框宽度
+      ),
+    ),
+  ),
+)
+```
+
+在这个例子中，我们定义了四种状态下的边框：
+
+- `enabledBorder`：当`TextField`处于正常状态（既没有错误也没有焦点）时的边框。
+- `focusedBorder`：当`TextField`获得焦点时的边框。
+- `errorBorder`：当`TextField`有错误信息显示时的边框（你需要结合`validator`函数来使用）。
+- `focusedErrorBorder`：当`TextField`有错误信息并且获得焦点时的边框。
+
+通过修改`borderSide`的`color`属性来设置颜色。同样，`width`属性设置边框的宽度。这样就可以根据UI设计来定制`TextField`的外观了。
