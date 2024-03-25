@@ -251,9 +251,7 @@ Running Gradle task 'assembleDebug'
 
 ## 强制退出AS
 
-AS强退，会lock运行环境，再次打开工程运行会出问题。
-
-为了保存数据，有一个缓存机制。需要删除缓存文件，cd/fluter/bin/cache/，cache里面有一个lockfile，删除lockfile就可以了。
+AS强退，为了保存数据，有一个缓存机制，会lock运行环境。需要删除缓存文件：`/fluter/bin/cache/lockfile`。
 
 ## flutter入口
 
