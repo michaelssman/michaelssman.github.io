@@ -1,5 +1,15 @@
 # static
 
+## 全局的静态内联函数
+
+```objective-c
+//.h头文件文件定义
+//保留两位小数
+static inline NSDecimalNumberHandler *decimalNumberHandler2(void) {
+    return [NSDecimalNumberHandler decimalNumberHandlerWithRoundingMode:NSRoundPlain scale:2 raiseOnExactness:NO raiseOnOverflow:NO raiseOnUnderflow:NO raiseOnDivideByZero:NO];
+}
+```
+
 ## 函数内部的变量
 
 ### 普通的变量
