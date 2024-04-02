@@ -61,7 +61,6 @@ nav:
       - iOS/Swift/运算符重载.md
       - iOS/Swift/高阶函数.md
       - iOS/Swift/Optional.md
-      - iOS/Swift/方法调度.md
       - iOS/Swift/流程控制.md
       - iOS/Swift/Mirror_throws_Error.md
       - iOS/Swift/Moya.md
@@ -170,11 +169,11 @@ nav:
       - 计算机基础/多线程/swift多线程.md
       - 计算机基础/多线程/Java/Java多线程.md
     - static_const_define:
-      - 计算机基础/常量_宏_静态变量/宏定义和常量.md
-      - 计算机基础/常量_宏_静态变量/static.md
-      - 计算机基础/常量_宏_静态变量/const.md
-      - 计算机基础/常量_宏_静态变量/04常量.md
-      - 计算机基础/常量_宏_静态变量/05常量.md
+      - 计算机基础/const_macro_static/宏定义和常量.md
+      - 计算机基础/const_macro_static/static.md
+      - 计算机基础/const_macro_static/const.md
+      - 计算机基础/const_macro_static/04常量.md
+      - 计算机基础/const_macro_static/05常量.md
     - 异常处理:
       - 计算机基础/异常处理/CPP错误检查方法.md
       - 计算机基础/异常处理/Java.md
@@ -193,6 +192,7 @@ nav:
     - 计算机基础/Enum和OPTIONS.md
     - 计算机基础/缓存.md
     - 计算机基础/访问权限.md
+    - 计算机基础/方法调度.md
   - C++: 
     - C++/README.md
     - C++/字符串和头文件.md
