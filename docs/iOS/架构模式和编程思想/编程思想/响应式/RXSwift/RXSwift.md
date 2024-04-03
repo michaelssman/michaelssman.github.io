@@ -2,7 +2,7 @@
 
 ## DisposeBag
 
-在RxSwift中，`disposeBag`用于管理订阅的生命周期，确保当控制器或对象被销毁时，所有订阅也被正确地取消。确保`disposeBag`在类的生命周期中被正确地初始化和维护是很重要的。
+在RxSwift中，`disposeBag`用于管理订阅的生命周期，确保当控制器或对象被销毁时，所有订阅也被正确地取消，防止内存泄漏。确保`disposeBag`在类的生命周期中被正确地初始化和维护是很重要的。
 
 在你的代码中，取消网络请求的逻辑已经实现。在`Observable.create`闭包中，你返回了一个`Disposables.create`，其中调用了`request.cancel()`。这样，当你的Observable被订阅者取消订阅时，上传请求也会随之取消。
 
