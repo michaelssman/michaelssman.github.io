@@ -1,6 +1,6 @@
-# GCD
+# GCD（Grand Central Dispatch）
 
-全称是Grand Central Dispatch，纯C语言，提供了非常多强大等函数
+纯C语言，提供了非常多强大的函数
 
 GCD是苹果公司为多核的并发运算提出的解决方案
 

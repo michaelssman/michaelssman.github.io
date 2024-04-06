@@ -81,7 +81,6 @@
         }else{
             NSLog(@"openurl");
             [[UIApplication sharedApplication] openURL:webpageURL options:nil completionHandler:nil];
-            // [[UIApplication sharedApplication] openURL:webpageURL];
         }
     }
     return YES;
