@@ -26,9 +26,7 @@ alignment: Alignment(0.0, 0.0),//中心点
 
 x和y是从-1.0到1.0。原点在中间位置。
 
-### margin
-
-外边距
+### margin外边距
 
 ```dart
 margin: const EdgeInsets.only(top: 20, bottom: 20, left: 20, right: 10),
@@ -37,9 +35,7 @@ margin: const EdgeInsets.all(10),//上下左右都往里面缩10
 
 每一个视图的widget都可以看成一个矩形
 
-### padding
-
-内边距
+### padding内边距
 
 ```dart
 padding: const EdgeInsets.all(20),
@@ -60,7 +56,7 @@ Container(
   transform: Matrix4.rotationZ(0.3),
   //child的装饰
   decoration: BoxDecoration(
-    //设置边框
+    //边框
     border: Border.all(color: Colors.amberAccent, width: 2.0),
     //背景颜色
     color: Colors.green,
