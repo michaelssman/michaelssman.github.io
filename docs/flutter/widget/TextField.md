@@ -39,9 +39,11 @@ TextField(
 
 ## 回收键盘
 
-要实现仅在手动滚动时隐藏键盘，而在自动滚动（如动画滚动或其他程序触发的滚动）时不隐藏键盘，你需要检查`ScrollNotification`的类型。在Flutter中，手动滚动通常会触发`UserScrollNotification`，而自动滚动会触发`ScrollStartNotification`和`ScrollUpdateNotification`，但不会触发`UserScrollNotification`。
+要实现仅在手动滚动时隐藏键盘，而在自动滚动（如动画滚动或其他程序触发的滚动）时不隐藏键盘，需要检查`ScrollNotification`的类型。
 
-你可以通过检查`ScrollNotification`的runtimeType来判断是否为`UserScrollNotification`，如果是，则隐藏键盘。
+在Flutter中，手动滚动通常会触发`UserScrollNotification`，而自动滚动会触发`ScrollStartNotification`和`ScrollUpdateNotification`，但不会触发`UserScrollNotification`。
+
+通过检查`ScrollNotification`的runtimeType来判断是否为`UserScrollNotification`，如果是，则隐藏键盘。
 
 ```dart
 Widget autoHiddenKeyBoardWidget(BuildContext context, Widget child) {
@@ -69,7 +71,7 @@ Widget autoHiddenKeyBoardWidget(BuildContext context, Widget child) {
 }
 ```
 
-在这个修改后的代码中，`NotificationListener`现在监听`ScrollNotification`，并且在`onNotification`回调中检查通知是否为`UserScrollNotification`。如果是，并且滚动方向是向前或向后，它会调用`FocusScope.of(context).unfocus()`来隐藏键盘。
+`NotificationListener`现在监听`ScrollNotification`，并且在`onNotification`回调中检查通知是否为`UserScrollNotification`。如果是，并且滚动方向是向前或向后，它会调用`FocusScope.of(context).unfocus()`来隐藏键盘。
 
 请注意，`ScrollDirection.idle`不会被考虑，因为它表示滚动动作已经停止，而不是用户主动滚动。这样，只有当用户实际滚动屏幕时，键盘才会被隐藏。
 
