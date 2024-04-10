@@ -38,8 +38,6 @@ http://wsxfdt.xfj.henan.gov.cn:8080/ldxx/indexszxx.jsp#
 
 ### Launch Image
 
-有一些在线工具和网站可以帮助开发者生成应用的启动图（Launch Image）或启动屏幕（Splash Screen）。这些工具通常允许你上传一个图片，然后自动调整尺寸以适应不同的设备和屏幕分辨率。以下是一些可能对你有帮助的资源：
-
 1. **App Launchpad** (https://theapplaunchpad.com/)
    - 这个网站提供了一个在线的应用截图和启动图生成器，支持多种设备和屏幕尺寸。
 2. **App Icon Maker** (https://appiconmaker.co/)
