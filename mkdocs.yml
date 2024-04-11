@@ -130,7 +130,6 @@ nav:
     - 架构模式和编程思想:
       - iOS/架构模式和编程思想/架构模式/MVX.md
       - iOS/架构模式和编程思想/编程思想/编程思想.md
-      - iOS/架构模式和编程思想/编程思想/RXSwift.md
       - iOS/架构模式和编程思想/编程思想/函数式/funtional_programming.md
       - iOS/架构模式和编程思想/编程思想/响应式/响应式编程.md
       - iOS/架构模式和编程思想/编程思想/响应式/RAC/RACSignal.md
@@ -140,8 +139,10 @@ nav:
       - iOS/架构模式和编程思想/编程思想/响应式/RAC/RACMulticastConnection.md
       - iOS/架构模式和编程思想/编程思想/响应式/RAC/RAC基本用法.md
       - iOS/架构模式和编程思想/编程思想/响应式/RAC/takeUntil过滤.md
+      - iOS/架构模式和编程思想/编程思想/响应式/RXSwift/RXSwift.md
+      - iOS/架构模式和编程思想/编程思想/响应式/RXSwift/UI.md
     - iOS/数据持久化/CoreData.md
-    - iOS/UniversalLink.md
+    - iOS/universalLink.md
     - iOS/快捷键.md
     - iOS/控制器生命周期.md
     - iOS/版本更新.md

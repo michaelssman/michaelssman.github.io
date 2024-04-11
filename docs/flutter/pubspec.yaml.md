@@ -11,7 +11,7 @@ description: A new Flutter project.
 # 包发布到哪里去 none代表不发布 可以指定发布的服务器位置 默认到pub.dev服务器
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-# 版本号 工程的版本
+# 项目的版本号+构建号
 version: 1.0.0+1
 
 # dart版本
