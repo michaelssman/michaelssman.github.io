@@ -80,7 +80,7 @@ InkWell(
 
 ```dart
 const Image(
-  image: AssetImage('images/badge.png'),
+  image: AssetImage('images/badge.png'),//本地加载图片
   width: 20,
 ),
 ```
