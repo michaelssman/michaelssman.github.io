@@ -1,6 +1,6 @@
 # Socket套接字
 
-我们开发的网络应用程序位于应用层，TCP和UDP属于传输层协议。在应用层和传输层之间，使用套接字进行分离。
+程序员开发的网络应用程序位于应用层，TCP和UDP属于传输层协议。在应用层和传输层之间，使用套接字进行分离。
 
 套接字就像传输层为应用层开的一个小口，应用程序通过这个小口向远程发送数据，或接收远程发来数据;
 
@@ -112,10 +112,12 @@ public class TestServer {
         //接收客户端发送的数据
         String str = dis.readUTF();
         System.out.println("接收到客户端：" + str);
+      
         //向客户端发送数据
         OutputStream os = s.getOutputStream();
         DataOutputStream dos = new DataOutputStream(os);
         dos.writeUTF("你好客户端，我接收到你的信息了");
+      
         //流、网络资源关闭。倒着关
         dos.close();
         os.close();
@@ -140,12 +142,14 @@ public class TestClient {
         System.out.println("客户端启动");
         //套接字
         Socket s = new Socket("192.168.0.106", 8888);//两个参数 指定服务器ip 端口
+      
         //对于程序员来说，感受利用输出流在传送数据
         OutputStream os = s.getOutputStream();
         //数据流
         DataOutputStream dos = new DataOutputStream(os);
         //传送数据
         dos.writeUTF("你好，服务器，我是客户端");
+      
         //对服务器返回的数据做处理
         InputStream is = s.getInputStream();
         DataInputStream dis = new DataInputStream(is);

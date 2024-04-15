@@ -93,6 +93,45 @@ fn是外界传进来的block。fn给了uncaught_handler回调，一发生问题�
 并不是所有的程序崩溃都是由于发生可以捕捉的异常的，有些时候引起崩溃的原因如：内存访问错误，重复释放等错误，这种错误它抛出的是Signal，所以必须要专门做Signal处理。
 当应用发生错误而产生上述Signal后，就将会进入我们自定义的回调函数SignalExceptionHandler。为了得到崩溃时的信息，还可以加入一些获取CallTrace及设备信息的代码。
 
+### `signal.h`中的`void(*signal(int, void (*)(int)))(int);`方法介绍
+
+这行代码是C语言中的一个函数声明，它定义了`signal`函数的原型。这个函数用于设置一个信号处理函数，它是UNIX、Linux系统编程中用来处理异步事件的一个标准库函数。
+
+让我们逐部分解析这个声明：
+
+- `signal`：这是函数名。
+- `int`：这是第一个参数的类型，表示信号的编号。在C语言中，不同的信号（如SIGINT, SIGTERM等）通常用整数常量来表示。
+- `void (*)(int)`：这是第二个参数的类型，它是一个函数指针，指向一个返回类型为void、接受一个int参数的函数。这个函数指针指向的函数是当信号发生时将要被调用的信号处理函数。
+- `void (*signal(int, void (*)(int)))(int)`：整个声明的返回类型是一个函数指针，这个函数指针指向的函数类型也是返回void、接受一个int参数的函数。这意味着`signal`函数返回的是另一个函数指针，这个返回的函数指针通常指向之前设置的旧的信号处理函数。
+
+简单来说，`signal`函数的作用是设置一个信号的处理函数（即当信号发生时系统自动调用的函数）。当你调用`signal`函数时，你需要提供两个参数：一个是你想要处理的信号的编号，另一个是一个指向信号处理函数的指针。然后，`signal`函数会返回一个指向之前关联到该信号的旧处理函数的指针（如果有的话）。
+
+使用`signal`函数的一个典型例子是捕获中断信号（如用户按下Ctrl+C产生的SIGINT信号），以确保程序可以以一种预定的方式响应这个信号，比如进行清理工作并优雅地退出。
+
+下面是一个使用`signal`函数的简单例子：
+
+```c
+#include <signal.h>
+#include <stdio.h>
+#include <unistd.h>
+
+// 信号处理函数
+void handle_sigint(int sig) {
+    printf("Caught signal %d\n", sig);
+}
+
+int main() {
+    // 设置SIGINT的处理函数为handle_sigint
+    signal(SIGINT, handle_sigint);
+    // 无限循环，等待信号
+    while (1) {
+        sleep(1);
+    }
+    return 0;
+}
+```
+在这个例子中，当用户按下Ctrl+C时，程序不会立即退出，而是调用`handle_sigint`函数来处理信号。
+
 ### BSD和Mach
 
 BSD和Mach是两种不同的内核，分别用于不同的操作系统。在macOS和iOS系统中，BSD是底层的网络和文件系统部分，而Mach是底层的进程管理和通信部分。
@@ -190,7 +229,7 @@ curl -k "http://api.bugly.qq.com/openapi/file/upload/symbol?app_id=你的AppID&a
 
 确保在CI流水线中正确设置所有的环境变量，并且在上传前测试脚本的有效性。此外，Bugly的API和上传方式可能会随着时间而变化，因此请参考最新的Bugly文档来获取最准确的信息。
 
-## bugly使用上传工具上传
+### bugly使用上传工具上传
 
 ```bash
 KJXY：

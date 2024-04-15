@@ -149,7 +149,7 @@
 - 利用响应者链，自动回收键盘。
 - 项目中的崩溃处理和日志收集功能。
   - 利用消息转发解决对NSNull对象操作导致的崩溃。
-  - 使用NSSetUncaughtExceptionHandler收集上传崩溃日志并分析。
+  - 使用`NSSetUncaughtExceptionHandler`和`void(*signal(int, void (*)(int)))(int)`收集上传崩溃日志并分析。
   - 使用runloop崩溃处理。runtime处理已知情况（例：数组越界和创建数组类型异常问题）。
 
 #### 柠檬云进销存 （2020.01-2020.07）
