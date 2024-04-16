@@ -110,9 +110,9 @@ widget有两大类
 
 ## 抽取widget
 
-新建.dart文件
-
 输入stl自动出来代码块。然后输入类的名字就会自动生成一个StatelessWidget类。
+
+是一个class，而非方法。比使用方法返回一个Widget功能更强。
 
 ```dart
 class ListViewDemo extends StatelessWidget {

@@ -204,3 +204,18 @@ TextField(
 - `focusedErrorBorder`：当`TextField`有错误信息并且获得焦点时的边框。
 
 通过修改`borderSide`的`color`属性来设置颜色。同样，`width`属性设置边框的宽度。这样就可以根据UI设计来定制`TextField`的外观了。
+
+## 限制字数
+
+如果限制`TextField`控件的输入长度为10个字符，可以通过设置`maxLength`属性来实现这个功能。`maxLength`属性定义了用户可以输入的字符数量的上限。
+
+这里有一个简单的示例，展示了如何设置`TextField`的`maxLength`属性：
+
+```dart
+TextField(
+  maxLength: 10,
+  decoration: InputDecoration(
+    counterText: '', // 这行可以隐藏右下角的字符计数器
+  ),
+)
+```
