@@ -164,7 +164,7 @@
 - 封装下载任务。
 - 性能优化
   - 图片和按钮圆角阴影使用贝塞尔曲线去绘制。
-  - 自动布局约束，实现tableViewCell高度自适应。tableView分类添加缓存cell高度。
+  - 自动布局约束，实现tableViewCell高度自适应。tableView分类缓存cell高度。
   - 子线程预排版和按需加载
   - layer.contents给UIView添加图片背景
 - WKWebView的使用（设置userAgent，原生与js交互开发，计算内容高度，代理方法）。
