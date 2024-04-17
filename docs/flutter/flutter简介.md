@@ -137,66 +137,9 @@ https://github.com/flutter/flutter/issues/119927#issuecomment-1415858226
 
 Engine revision：引擎版本
 
-```bash
-➜  ~ flutter doctor -v
-╔════════════════════════════════════════════════════════════════════════════╗
-║ A new version of Flutter is available!                                     ║
-║                                                                            ║
-║ To update to the latest version, run "flutter upgrade".                    ║
-╚════════════════════════════════════════════════════════════════════════════╝
-
-
-[✓] Flutter (Channel stable, 2.5.3, on macOS 12.1 21C52 darwin-x64, locale
-    zh-Hans-CN)
-    • Flutter version 2.5.3 at /opt/flutter
-    • Upstream repository https://github.com/flutter/flutter.git
-    • Framework revision 18116933e7 (4 months ago), 2021-10-15 10:46:35 -0700
-    • Engine revision d3ea636dc5
-    • Dart version 2.14.4
-    • Pub download mirror https://pub.flutter-io.cn
-    • Flutter download mirror https://storage.flutter-io.cn
-
-[✓] Android toolchain - develop for Android devices (Android SDK version 31.0.0)
-    • Android SDK at /Users/michael/Library/Android/sdk
-    • Platform android-31, build-tools 31.0.0
-    • Java binary at: /Applications/Android
-      Studio.app/Contents/jre/Contents/Home/bin/java
-    • Java version OpenJDK Runtime Environment (build 11.0.10+0-b96-7281165)
-    • All Android licenses accepted.
-
-[✓] Xcode - develop for iOS and macOS
-    • Xcode at /Applications/Xcode.app/Contents/Developer
-    • Xcode 13.2.1, Build version 13C100
-    • CocoaPods version 1.11.2
-
-[✓] Chrome - develop for the web
-    • Chrome at /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
-
-[✓] Android Studio (version 2020.3)
-    • Android Studio at /Applications/Android Studio.app/Contents
-    • Flutter plugin can be installed from:
-      🔨 https://plugins.jetbrains.com/plugin/9212-flutter
-    • Dart plugin can be installed from:
-      🔨 https://plugins.jetbrains.com/plugin/6351-dart
-    • Java version OpenJDK Runtime Environment (build 11.0.10+0-b96-7281165)
-
-[✓] VS Code (version 1.62.3)
-    • VS Code at /Applications/Visual Studio Code.app/Contents
-    • Flutter extension can be installed from:
-      🔨 https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter
-
-[✓] Connected device (1 available)
-    • Chrome (web) • chrome • web-javascript • Google Chrome 97.0.4692.99
-    ! Error: Michael的iPhone is not connected. Xcode will continue when Michael的iPhone is
-      connected. (code -13)
-
-• No issues found!
-➜  ~ 
-```
-
 ## flutter更新
 
-`flutter upgrade`或`flutter upgrade --force`更新flutter。
+终端命令：`flutter upgrade`或`flutter upgrade --force`更新flutter。
 
 ## 安卓模拟器
 
@@ -278,6 +221,8 @@ iOS控件==flutter widget，flutter万物皆Widget组件，iOS在window上创建
 ## Flutter 命令
 
 ```shell
+flutter clean
+flutter pub get
 flutter run --release		#运行在iPhone上，通过桌面图标就可以打开
 ```
 
