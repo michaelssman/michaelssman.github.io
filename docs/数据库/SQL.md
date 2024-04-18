@@ -67,7 +67,7 @@ INSERT INTO Students(stu_name, stu_gender, stu_age) VALUES ('哇哈哈','男',23
 INSERT OR REPLACE INTO TABLENAME ('articleID','editDate') VALUES ('1001','20220101')
 ```
 
-## delete删除数据
+## delete
 
 `and`：和
 
@@ -89,7 +89,7 @@ drop Table Students;
 drop Database Students;
 ```
 
-## update更新数据
+## update
 
 ```sql
 UPDATE ${TABLENAME} SET stu_name = '隔壁老王', stu_age = 25 WHERE stu_id = 7;
