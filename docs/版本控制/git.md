@@ -129,8 +129,8 @@ git checkout -b '3.3.2费用改造' 'origin/3.3.2费用改造'
 git fetch origin
 //先切换到主分支
 git checkout 'main'
-//然后合并'3.3.2费用改造'分支到main分支
-git merge --no-ff '3.3.2费用改造'
+//合并3.3.2分支到main分支
+git merge --no-ff '3.3.2'
 ```
 
 **第 4 步.** 将目标分支推送到 GitLab。
@@ -138,8 +138,6 @@ git merge --no-ff '3.3.2费用改造'
 ```
 git push origin 'main'
 ```
-
-**提示：** 您也可以在本地检出合并请求。[了解更多。](http://192.168.1.66/help/user/project/merge_requests/reviews/index.md#checkout-merge-requests-locally-through-the-head-ref)
 
 ## 冲突解决
 
