@@ -108,7 +108,7 @@ txn.rawUpdate(
 
 在上面的代码中，`?` 是参数的占位符。`rawUpdate` 方法的第二个参数是一个数组，包含了要插入到SQL语句中的值，这些值将按照顺序替换掉占位符。这种方式不仅安全，还可以防止因不正确的引号使用而导致的语法错误。
 
-## 查找SELECT
+## SELECT
 
 ```sql
 SELECT * FROM TABLENAME WHERE 字段1 = '<#值#>' AND showtime < '1517904068.1524' ORDER BY 字段2 DESC LIMIT 10 OFFSET %d ;
@@ -203,7 +203,7 @@ GROUP BY
 
 #### 每个月的总收入和总支出
 
-可以使用条件求和（conditional aggregation）的方式来实现这个需求。
+使用条件求和（conditional aggregation）的方式来实现这个需求。
 
 ```sql
 SELECT 
@@ -216,7 +216,7 @@ GROUP BY
     Month;
 ```
 
-这个查询语句将首先筛选出类型为"收入"或"支出"的记录，然后按照月份（年-月）对金额进行求和。
+首先筛选出类型为"收入"或"支出"的记录，然后按照月份（年-月）对金额进行求和。
 
 `CASE`语句：根据`ac_detail_type`的值决定是否将`ac_detail_amount`加入到总和中。如果`ac_detail_type`的值为"收入"，则将`ac_detail_amount`加入到收入的总和中；如果`ac_detail_type`的值为"支出"，则将`ac_detail_amount`加入到支出的总和中。如果`ac_detail_type`的值既不是"收入"也不是"支出"，则将0加入到相应的总和中。
 

@@ -1,16 +1,14 @@
 # const
 
-const在其他文件使用，C++用的多。
-
-不能改变内容的普通变量（常量）
+不能改变内容的普通变量（常量），C++用的多。
 
 ## C和C++
 
 ### C语言中
 
-把头文件里的const变成一个声明，`extern const int BUFSIZE;` 外部常量声明
+头文件里声明：`extern const int BUFSIZE;` 外部常量声明
 
-在源文件里`const int BUFSIZE = 100;`  
+源文件里定义：`const int BUFSIZE = 100;`  
 
 引入头文件，替换的时候都是声明。
 
