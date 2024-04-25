@@ -33,21 +33,55 @@ void test()
 }
 ```
 
+## 链表迭代器
+
+C++的链表做的还有一个迭代器，通过迭代器可以把链表中的数据一个一个的进行处理。
+
+所以自己设计的链表也应该有迭代器功能。增加一个迭代器。
+
+做一些复杂的数据结构的时候，需要自己写。
+
+```c++
+#include <list>//C++ STL中的链表
+```
+
+```c++
+    //标准C++ STL中的链表和迭代器
+		//可以往链表的前面增加数据，也可以往链表的后面增加数据
+    list<int> listIntegers;
+    listIntegers.push_front(5);//在链表前面插入数据
+    listIntegers.push_front(15);
+    listIntegers.push_front(25);
+    listIntegers.push_front(35);
+
+		//想要看链表中的数据 使用迭代器
+    list<int>::iterator i = listIntegers.begin();//迭代器 返回第一个数据
+    //迭代器是一个指针
+    cout << *i << "->";
+    while (i != listIntegers.end()) {
+        cout << *i << "->";
+        ++i;//下一个元素
+    }
+    cout << endl;
+```
+
+操作类私有的数据成员。需要做成友元类。
+
 ### 插入数据
 
-### 1、从list开头插入
+#### 1、从list开头插入
 
 ```c++
 a.push_front(9999);//每次都是从头插入，新插入的都在最前面
 ```
 
-### 2、从list末尾插入
+#### 2、从list末尾插入
 
 ```c++
 a.push_back(8989);//往链表后端插入
 ```
 
-### 3、在list中间插入
+#### 3、在list中间插入
 
 有三种方法
 
@@ -187,45 +221,7 @@ insert第一个参数是迭代器 从哪儿插入
 
 上面三个insert函数是函数重载，完成不一样的功能。
 
-## 链表迭代器
-
-C++的链表做的还有一个迭代器，通过迭代器就可以把链表中的数据一个一个的进行迭代处理。
-
-所以自己设计的链表也应该有迭代器功能。增加一个迭代器。
-
-可以在迭代过程中对数据进行处理。
-
-做一些复杂的数据结构的时候，需要自己写。
-
-```c++
-#include <list>//C++ STL中的链表
-```
-
-```c++
-    //标准C++ STL中的链表和迭代器
-//可以往链表的前面增加数据，也可以往链表的后面增加数据
-    list<int> listIntegers;
-    listIntegers.push_front(5);//在链表前面插入数据
-    listIntegers.push_front(15);
-    listIntegers.push_front(25);
-    listIntegers.push_front(35);
-
-//想要看链表中的数据 使用迭代器
-    list<int>::iterator i = listIntegers.begin();//迭代器 返回第一个数据
-    //迭代器是一个指针
-    cout << *i << "->";
-    while (i!=listIntegers.end()) {
-        cout << *i << "->";
-        ++i;//下一个元素
-    }
-    cout << endl;
-```
-
-有了迭代器 就可以把链表中的数据进行一个个的处理。
-
-操作类私有的数据成员。需要做成友元类。
-
-## 删除list中的元素
+### 删除list中的元素
 
 往list中insert的时候，就会返回一个迭代器
 
@@ -251,13 +247,11 @@ iElementValueTwo迭代器就指向2。
 
 这样就把迭代器指向的2给删了。
 
-删除的时候也可以给两个迭代器，从第一个迭代器到第二个迭代器区间到所有数据都会删除。
+删除的时候也可以给两个迭代器，从第一个迭代器到第二个迭代器区间的所有数据都删除。
 
 ```c++
     a.erase(a.begin(), iElementValueTwo);
 ```
-
-从开始到iElementValueTwo迭代器指向的2之间的都删除。
 
 左闭右开，包括a.begin()这个 但是不包括iElementValueTwo迭代器指向的2。
 
@@ -272,13 +266,13 @@ iElementValueTwo迭代器就指向2。
 
 可以通过迭代器删除迭代器指向的数据。
 
-## 反转数据 
+### 反转数据 
 
 ```c++
     a.reverse();
 ```
 
-## 排序数据
+### 排序数据
 
 ```c++
     a.sort();

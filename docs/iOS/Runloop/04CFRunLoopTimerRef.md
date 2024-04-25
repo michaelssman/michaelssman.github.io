@@ -4,10 +4,12 @@
 
 当Timer被加入到RunLoop时，RunLoop会注册对应的时间点，当达到时间时，RunLoop会被唤醒，执行创建Timer时的回调。
 
-```objective-c
-    [NSTimer scheduledTimerWithTimeInterval:1 repeats:YES block:^(NSTimer * _Nonnull timer) {
-        NSLog(@"天王盖地虎");//在这行打断点
-    }];
+```swift
+// 创建一个每秒触发一次的定时器
+let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+    print("Timer fired!")
+    // 你的代码...
+}
 ```
 
 控制台`bt`可以看到堆栈流程

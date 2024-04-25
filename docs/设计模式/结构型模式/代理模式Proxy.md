@@ -1,13 +1,8 @@
 # 代理模式
 
-A类包含B  去执行B的功能
-A代替B去做事情
-A类中有个属性B
-A和B都从统一接口继承
-
 ## 概念
 
-Proxy模式又叫做代理模式，是构造型的设计模式之一，它可以为其他对象提供一种代理（Proxy）以控制对这个对象的访问。	
+代理模式（Proxy模式），是构造型的设计模式之一，它可以为其他对象提供一种代理（Proxy）以控制对这个对象的访问。	
 所谓代理，是指具有与代理元（被代理的对象）具有相同的接口的类，客户端必须通过代理与被代理的目标类交互，而代理一般在交互的过程中（交互前后），进行某些特别的处理。
 
 #### 适合于
@@ -39,7 +34,7 @@ a包含了一个类b，类b实现了某一个协议（一套接口）
 #include "iostream"
 using namespace std;
 
-//a包含了一个类b，类b实现了某一个协议（一套接口）
+//接口
 class AppProtocol
 {
 public:
@@ -52,10 +47,7 @@ private:
 class AppDelegate : public AppProtocol
 {
 public:
-	AppDelegate()
-	{
-		;
-	}
+	AppDelegate() { }
 	virtual int ApplicationDidFinsh()  //cocos2dx函数的入口点
 	{
 		cout<<"ApplicationDidFinsh do...\n";
@@ -84,7 +76,7 @@ private:
 };
 
 //好处：main函数不需要修改了。只需要修改协议实现类
-void main31()
+void main()
 {
 	Application *app = new Application();
 	app->run();
@@ -105,31 +97,44 @@ void main31()
 
 实质就是找人替你做事  事情的完成由别人去做。
 
-
-
 ## iOS中的代理模式
 
-委托人                               		 		          被委托人
-1 指定协议                    		        		      2 遵循协议
-3 设置delegate变量 存储代理	 			 4 设置代理人
-6 调用代理去干活     			   				   5 实现协议方法
+要使协议中的方法是可选的，需要使用`@objc`属性标记协议，并且协议必须继承自`NSObjectProtocol`。因为可选协议要求是Objective-C的特性。这样，如果`ViewController`没有实现`didCompleteTask`方法，程序就不会编译通过，除非你将该方法标记为可选。
 
+下面是如何声明一个可选代理方法的例子：
 
-调target去执行action
+首先，将协议标记为`@objc`并使方法可选：
 
-1. 定义协议
+```swift
+@objc protocol TaskDelegate: AnyObject {
+    @objc optional func didCompleteTask(_ sender: TaskManager)
+}
+```
 
-2. 协议方法
+`TaskManager`类：
 
-3. 定义代理属性
+```swift
+class TaskManager {
+    weak var delegate: TaskDelegate?
 
-4. 当我发生事情，看看代理属性有没有值，有没有响应方法
+    func completeTask() {
+        print("Task completed.")
+        delegate?.didCompleteTask?(self)
+    }
+}
+```
 
-### 总结
+注意，在调用可选方法时，你需要在方法名后面添加`?`来表明这是一个可选的调用。
+
+## 总结
 
 接口：定义一套接口 造火箭
 
 A类delegate：遵循协议，实现接口 造火箭
 
-B类：调A（delegate）实现造火箭接口的方法 
+B类delegate：遵循协议，实现接口 造火箭
+
+C类delegate：遵循协议，实现接口 造火箭
+
+D类：可以调A（delegate）实现造火箭接口的方法，可以调B实现的方法。
 

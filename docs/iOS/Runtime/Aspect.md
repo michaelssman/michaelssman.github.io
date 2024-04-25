@@ -12,15 +12,9 @@ AOP：切面编程。业务逻辑隔离，代码耦合度降低。
 
 耦合程度高。
 
-例：
-
-动物：4条腿 cat dog
-
-鸟 2条腿，就需要对基类修改。
+需要对基类修改。
 
 ## AOP
-
-腿
 
 分类：具体业务逻辑拆分
 
@@ -32,13 +26,25 @@ SDWebImage。 Manager	downloader和cache。下载功能逻辑。
 
 ## 原理
 
-runtime 消息转发
+Hook person的test方法，不是交换imp，而是先交换person中的ForwardInvocation，指向自定义的函数。
 
-切片 block
+允许开发者在不修改原有代码结构的情况下，为程序添加额外的行为，比如日志记录、性能监控、事务处理、异常处理等。在 iOS 开发中，这通常是通过运行时(Runtime)方法交换(Method Swizzling)来实现的。
 
-Hook person的test方法
+Aspects 库简化了面向切面编程的实现。Aspects 库通过 Objective-C 的动态特性，允许开发者在运行时拦截消息，并为其添加前置、后置或替换执行的代码。这里是它的基本原理：
 
-不是交换imp，而是先交换person中的ForwardInvocation，指向自定义的函数。
+1. **消息发送机制**：Objective-C 是一门动态语言，它的方法调用是通过消息发送（message sending）实现的。当你对一个对象发送消息时（即调用一个方法），Objective-C 的运行时系统会寻找这个消息对应的方法实现，并执行它。
+
+2. **Method Swizzling**：这是 Objective-C 运行时的一个特性，允许开发者在运行时交换两个方法的实现。这意味着你可以将一个方法的实现动态地替换为另一个方法的实现。
+
+3. **Block（闭包）**：Aspects 使用了 Objective-C 的 block 语法来允许开发者定义在原方法执行前、执行后或替换原方法时要执行的代码块。
+
+4. **动态方法解析**：Aspects 可能会使用 Objective-C 的动态方法解析来动态地添加方法实现，或者在某个方法被调用时进行拦截。
+
+5. **关联对象**：Aspects 可能会使用 Objective-C 的关联对象（associated objects）功能来在运行时给现有类添加存储属性，这样可以存储需要在方法拦截中使用的信息。
+
+当使用 Aspects 库时，你会指定一个切点（pointcut），这是你想要插入自定义行为的方法。然后，你会提供一个 block，当原始方法被调用时，这个 block 会被执行。Aspects 库会处理所有的运行时逻辑，确保当你的方法被调用时，你的自定义代码会被执行。
+
+这种方式非常强大，但也需要谨慎使用，因为它改变了对象的正常行为，可能会导致难以追踪的问题。此外，由于它依赖于 Objective-C 的运行时特性，它可能不适用于纯 Swift 代码，或者在 Swift 代码中可能需要特别的桥接处理。
 
 ## 类
 

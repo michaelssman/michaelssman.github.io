@@ -227,17 +227,21 @@ dispatch source是一个监视某些类型事件的对象。当这些事件发�
 
 ```swift
 var seconds = 10
-let timer : DispatchSourceTimer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.global())
+let queue = DispatchQueue(label: "com.example.timer")
+let timer : DispatchSourceTimer = DispatchSource.makeTimerSource(flags: [], queue: queue)
 
 timer.schedule(deadline: .now(), repeating: 1.0)
 timer.setEventHandler {
   seconds -= 1
   if seconds < 0 {
+    // 当你完成时，取消定时器，释放资源
     timer.cancel()
   } else {
     print(seconds)
   }
 }
+
+// 启动定时器
 timer.resume()
 
 //        9
