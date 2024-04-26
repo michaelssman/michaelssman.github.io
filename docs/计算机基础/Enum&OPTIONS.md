@@ -1,14 +1,14 @@
-# Enum和OPTIONS
+# Enum&OPTIONS
 
 ## Enum
 
 ### dart
 
-在 Dart 和 Flutter 中，枚举（Enums）是一种特殊的类，定义**一组固定的常量**。枚举可以用来表示一组相互关联的值，例如星期的天数、月份、方向等。
+枚举（Enums）是一种特殊的类，定义**一组固定的常量**。
+
+枚举可以用来表示一组相互关联的值，例如星期的天数、月份、方向等。
 
 使用枚举可以帮助代码变得更加清晰和易于维护，因为限制了变量可以赋予的值。
-
-下面是一个简单的 Dart 枚举的例子：
 
 ```dart
 enum Season {
@@ -19,7 +19,7 @@ enum Season {
 }
 ```
 
-在这个例子中，`Season` 是一个枚举，它有四个值：`spring`、`summer`、`autumn` 和 `winter`。
+`Season` 是一个枚举，它有四个值：`spring`、`summer`、`autumn` 和 `winter`。
 
 使用枚举：
 

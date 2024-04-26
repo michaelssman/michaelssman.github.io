@@ -24,7 +24,7 @@ Person s = new Person();
 
 如果有几十处的话，都需要修改。耦合性太大。
 
-Java代码不再new创建对象，程序中用一个xml文件，里面配置对象名和类。使用反射。耦合性低。
+Java代码不再new创建对象，程序中用一个xml文件，里面配置对象名和类。**使用反射**。耦合性低。
 
 spring容器里面放各种对象。
 
@@ -45,8 +45,6 @@ Spring是框架的框架。
 A公司用a框架，B公司用b框架、C公司用c框架。3个框架的作用是完全一样的，用法也差不多。原有的技术加Spring的整合就可以很简单。不过后来Spring违背了这一原则，自己又出了新轮子。
 
 使用Spring所需jar包比较多，通过maven导包就方便。
-
-发明者：Rod Johnson(罗宾·约翰逊)--Java世界的传奇大师，神级人物；Spring FrameWork的缔造者;旷世奇书"葵花宝典"《Expert one on one [J2EE](https://so.csdn.net/so/search?q=J2EE&spm=1001.2101.3001.7020) Design and Development》作者；Servlet2.4和JDO2.0的规范专家;Java Development Community杰出人物。
 
 Spring官网：https://spring.io/ 
 

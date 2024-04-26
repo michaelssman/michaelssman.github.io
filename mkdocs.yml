@@ -176,7 +176,7 @@ nav:
       - 计算机基础/const_macro_static/04常量.md
       - 计算机基础/const_macro_static/05常量.md
     - 异常处理:
-      - 计算机基础/异常处理/CPP错误检查方法.md
+      - 计算机基础/异常处理/C++.md
       - 计算机基础/异常处理/Java.md
       - 计算机基础/异常处理/swift.md
     - 内存管理:
@@ -190,11 +190,12 @@ nav:
     - 计算机基础/继承多态接口/继承多态接口.md
     - 计算机基础/联合体和位域.md
     - 计算机基础/typedef.md
-    - 计算机基础/Enum和OPTIONS.md
+    - 计算机基础/Enum&OPTIONS.md
     - 计算机基础/缓存.md
     - 计算机基础/访问权限.md
     - 计算机基础/方法调度.md
     - 计算机基础/token.md
+    - 计算机基础/数据处理.md
   - C++: 
     - C++/README.md
     - C++/字符串和头文件.md
@@ -330,7 +331,7 @@ nav:
       - 设计模式/创建型模式/04创建者模式和工厂模式的区别.md
       - 设计模式/创建型模式/05原型模式Prototype.md
     - 结构型模式:
-      - 设计模式/结构型模式/06代理模式Proxy.md
+      - 设计模式/结构型模式/代理模式Proxy.md
       - 设计模式/结构型模式/07装饰模式Decorator Pattern.md
       - 设计模式/结构型模式/08适配器模式 Adapter.md
       - 设计模式/结构型模式/09组合模式Composite.md
