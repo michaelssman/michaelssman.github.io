@@ -174,7 +174,6 @@ public interface BookMapper {
 
     public abstract int insertBook(Book book);
 }
-
 ```
 
 ### 7、创建映射文件，在核心配置文件中进行扫描

@@ -4,7 +4,15 @@ JDBC（Java DataBase Connectivity - Java数据库连接），是SUN公司定义�
 
 ![image-20230416185209410](assets/image-20230416185209410.png)
 
-在程序中加入驱动jar包：Project|Module|lib|mysql-connector-java-8.0.11.jar|然后右键jar包|Add as Library|
+## 在程序中加入驱动jar包
+
+Project项目下创建Module，Module相当于一个个小项目，Module下创建lib文件夹。
+
+删除的时候右键`Remove Module`。
+
+- `Project\Module\lib\mysql-connector-java-8.0.11.jar`
+- `ProjectName\ModuleName\lib\dom4j-2.1.3.jar`
+- 然后右键jar包->`Add as Library`
 
 ## JDBC访问数据库编码步骤
 
@@ -37,7 +45,7 @@ public class Test {
         //获取连接：
         String url = "jdbc:mysql://127.0.0.1:3306/msb?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true";
         String username = "root";
-        String password = "root";
+        String password = "asdf123456";
         Connection conn = DriverManager.getConnection(url, username, password);
         
         //创建会话：
