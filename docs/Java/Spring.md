@@ -58,7 +58,7 @@ IoC(Inversion of Control)中文名称：控制反转，也被称为DI(dependency
 
 ![IOCDI原理](assets/IOCDI原理.png)
 
-### Java程序分层处理
+## Java程序分层处理
 
 从前端获取的数据到从数据库处理之前，所有的逻辑都在java里面，各种功能在一起，程序臃肿，需要划分。
 
@@ -93,7 +93,9 @@ IoC(Inversion of Control)中文名称：控制反转，也被称为DI(dependency
 
 创建对象在Spring容器，Spring容器看不到，在底层完成的。
 
-在程序中会多一个配置文件`applicationContext.xml`，名字可以自己定义。在xml中可以配置bean标签，例：`<bean id="s" class="Student">`，这行代码底层做的就是`Student s = new Student();`，构建是Spring底层通过反射技能做的。构建的对象放在一个地方：Spring容器，底层是map集合。Spring容器中放各种对象。
+在程序中会多一个配置文件`applicationContext.xml`，名字可以自己定义。
+
+在xml中可以配置bean标签，例：`<bean id="s" class="Student">`，这行代码底层做的就是`Student s = new Student();`。构建是Spring底层通过反射技能做的。构建的对象放在一个地方：Spring容器，底层是map集合。Spring容器中放各种对象。
 
 applicationContext.xml通过反射创建对象，所有对象放在容器中，java程序从容器中取对象。
 
@@ -120,13 +122,25 @@ Spring项目想要运行起来必须包含:
   所以在Maven中想要使用Spring框架只需要在项目中导入spring-context就可以了，其他的jar包根据Maven依赖传递性都可以导入进来。
 
 ```xml
-<dependencies>
-    <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-context</artifactId>
-        <version>5.3.23</version>
-    </dependency>
-</dependencies>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.hh</groupId>
+    <artifactId>TestSpring01</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.3.23</version>
+        </dependency>
+    </dependencies>
+
+</project>
 ```
 
 ### 2、创建一个Book类

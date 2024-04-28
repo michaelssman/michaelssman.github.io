@@ -12,11 +12,36 @@ Java项目中每一层都有自己的作用。不同的层创建不同的类，�
 
 ## MyBatis是ORM框架
 
-**ORM**(Object Relation Mapping)，中文名称：对象关系映射。是一种解决数据库发展和面向对象编程语言发展不匹配问题而出现的技术。
+**ORM**(Object Relation Mapping)，中文名称：**对象关系映射**。是一种解决数据库发展和面向对象编程语言发展不匹配问题而出现的技术。
 
 ![image-20230420215343107](assets/image-20230420215343107.png)
 
 ## 搭建MyBatis框架
+
+### 整体框架：
+
+Project
+
+- Module
+  - src
+    - main
+      - java
+        - com.hh
+          - mapper
+            - BookMapper.java（接口类）
+          - pojo
+            - Book.java（实体类）
+      - resources
+        - com.hh.mapper
+          - BookMapper.xml（映射文件）
+        - db.properties
+        - log4j.properties
+        - mybatis.xml
+    - test
+      - java
+        - com.hh.test
+          - test.java
+  - pom.xml
 
 ### 1、创建数据库表
 
@@ -29,27 +54,128 @@ Java项目中每一层都有自己的作用。不同的层创建不同的类，�
 ### 3、pom.xml文件中添加依赖
 
 ```xml
-<dependencies>
-    <!--MySQL依赖，mybatis链接数据库需要mysql驱动-->
-    <dependency>
-        <groupId>mysql</groupId>
-        <artifactId>mysql-connector-java</artifactId>
-        <version>8.0.28</version>
-    </dependency>
-    <!--Mybatis依赖-->
-    <dependency>
-        <groupId>org.mybatis</groupId>
-        <artifactId>mybatis</artifactId>
-        <version>3.5.6</version>
-    </dependency>
-</dependencies>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.hh</groupId>
+    <artifactId>TestMyBatis</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <!--MySQL依赖，mybatis链接数据库需要mysql驱动-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.28</version>
+        </dependency>
+        <!--Mybatis依赖-->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.5.6</version>
+        </dependency>
+        <!--log4j的依赖-->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+    </dependencies>
+  
+</project>
 ```
 
-### 4、创建MyBatis全局配置文件
+### 4、实体类
+
+`java_demo/TestMyBatis02/src/main/java/com/hh/pojo/Book.java`创建Book实体类。
+
+Mybatis查询到的数据要封装成对象，对象要依托于类。
+
+### 5、映射文件
+
+对数据库做操作的sq信息。增删改查在这个配置文件里。
+
+在`项目|module|src|main|resources`下创建com文件夹->hh文件夹->mapper文件夹，然后在mapper文件夹中创建`BookMapper.xml`。
+
+sql和业务代码解耦。直接在xml中操作。
+
+创建映射文件：要求：namespace取值必须是接口的全限定路径、标签中的id属性值必须和接口中的方法名对应。
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--约束 根标签是mapper-->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace：防止其它文件也有同样的名字的sql，所以定义一个命名空间。下面的id方法就是接口对应的实现类-->
+<mapper namespace="com.hh.mapper.BookMapper">
+    <!--    查询操作-->
+    <!--    id类似方法名，resultType是返回值-->
+    <!--    id方法名要与接口对应的名字一样-->
+    <select id="selectAllBooks" resultType="b">
+        select * from t_book
+    </select>
+    <select id="selectOneBook" resultType="Book">
+        select * from t_book where name =#{param1} and author = #{param2}
+    </select>
+    <select id="selectOneBook2" resultType="Book">
+        select * from t_book where name =#{name} and author = #{author}
+    </select>
+    <select id="selectOneBook3" resultType="Book">
+        select * from t_book where name =#{param1} and author = #{param2.author}
+    </select>
+    <!--    插入操作-->
+    <insert id="insertBook">
+        insert into t_book (id,name,author,price) values (#{id},#{name},#{author},#{price})
+    </insert>
+</mapper>
+```
+
+**映射文件默认不会被程序加载，如果想要被项目加载，需要配置到核心配置文件mybatis.xml中`<mappers>`。** 
+
+### 6、接口类
+
+项目不写接口类也可以正常使用，但是会存在下面的问题：
+
+- **方法不能直接调用**
+- 多个参数问题处理麻烦
+- 项目没有规范可言，不利于面向接口编程思想。
+
+BookMapper.xml里面的sql不能作为方法调用。
+
+`java_demo/TestMyBatis02/src/main/java/com/hh/mapper/BookMapper.java`
+
+在`项目|module|src|main|java|package（com.hh.mapper）`创建BookMapper接口文件。
+
+```java
+package com.msb.mapper;
+
+import com.msb.pojo.Book;
+
+import java.util.List;
+
+public interface BookMapper {
+    //    定义规则，抽放方法。主要定义方法名，参数，返回值
+    /*public abstract */List selectAllBooks();
+
+    public abstract Book selectOneBook(String name, String author);
+
+    public abstract Book selectOneBook2(Book book);
+
+    public abstract Book selectOneBook3(String name, Book book);
+
+    public abstract int insertBook(Book book);
+}
+```
+
+### 7、创建MyBatis全局配置文件
 
 （mybaits中文网址：https://mybatis.org/mybatis-3/zh/getting-started.html）
 
-4.1、配置数据库属性文件
+7.1、配置数据库属性文件
 
 在`项目|模块|src|main|resources`中创建`db.properties`文件，后缀名必须是`.properties`。
 
@@ -64,7 +190,7 @@ username=数据库名字
 password=数据库密码
 ```
 
-4.2、在`项目|模块|src|main|resources`中创建`mybatis.xml`文件
+7.2、在`项目|模块|src|main|resources`中创建`mybatis.xml`文件
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -138,87 +264,7 @@ MyBatis框架中内置了一些常见类型的别名。这些别名不需要配�
 
 ![img](assets/a603e8dbde504442b6e06ee08d592cbd.png)
 
-### 5、创建实体类
-
-创建Book实体类。
-
-Mybatis查询到的数据要封装成对象，对象要依托于类。
-
-### 6、创建接口类
-
-**之前的项目存在的问题**
-
-- **方法不能直接调用**
-- 多个参数问题处理麻烦
-- 项目没有规范可言，不利于面向接口编程思想。
-
-BookMapper.xml里面的sql不能作为方法调用。
-
-在`项目|module|src|main|java|package（com.hh.mapper）`创建BookMapper接口文件。
-
-```java
-package com.msb.mapper;
-
-import com.msb.pojo.Book;
-
-import java.util.List;
-
-public interface BookMapper {
-    /*public abstract */List selectAllBooks();
-
-    public abstract Book selectOneBook(String name, String author);
-
-    public abstract Book selectOneBook2(Book book);
-
-    public abstract Book selectOneBook3(String name, Book book);
-
-    public abstract int insertBook(Book book);
-}
-```
-
-### 7、创建映射文件，在核心配置文件中进行扫描
-
-对数据库做操作的sq信息。增删改查在这个配置文件里。
-
-在`项目|module|src|main|resources`下创建com文件夹->hh文件夹->mapper文件夹，然后在mapper文件夹中创建`BookMapper.xml`。
-
-sql和业务代码解耦。直接在xml中操作。
-
-创建映射文件：要求：namespace取值必须是接口的全限定路径、标签中的id属性值必须和接口中的方法名对应。
-
-```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<!--约束 根标签是mapper-->
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!--namespace：防止其它文件也有同样的名字的sql，所以定义一个命名空间。下面的id方法就是接口对应的实现类-->
-<mapper namespace="com.hh.mapper.BookMapper">
-    <!--    查询操作-->
-    <!--    id类似方法名，resultType是返回值-->
-    <!--    id方法名要与接口对应的名字一样-->
-    <select id="selectAllBooks" resultType="b">
-        select * from t_book
-    </select>
-    <select id="selectOneBook" resultType="Book">
-        select * from t_book where name =#{param1} and author = #{param2}
-    </select>
-    <select id="selectOneBook2" resultType="Book">
-        select * from t_book where name =#{name} and author = #{author}
-    </select>
-    <select id="selectOneBook3" resultType="Book">
-        select * from t_book where name =#{param1} and author = #{param2.author}
-    </select>
-    <!--    插入操作-->
-    <insert id="insertBook">
-        insert into t_book (id,name,author,price) values (#{id},#{name},#{author},#{price})
-    </insert>
-</mapper>
-```
-
-映射文件默认不会被程序加载，如果想要被项目加载，需要配置到上面的核心配置文件mybatis.xml中`<mappers>`。 
-
-### 8、编写测试类，启动项目
+### 8、测试类，启动项目
 
 ```java
 package com.hh.test;
@@ -244,6 +290,18 @@ public class test {
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
         //通过工厂类获取一个会话：
         SqlSession sqlSession = sqlSessionFactory.openSession();
+      
+      
+	      /// 1、不使用接口类的情况：
+        //执行查询：
+        List list0 = sqlSession.selectList("com.hh.mapper.BookMapper.selectAllBooks");
+			  //遍历：
+        for (int i = 0; i <= list0.size() - 1 ; i++) {
+            Book b = (Book)list0.get(i);
+            System.out.println(b.getName() + "---" + b.getAuthor());
+        }
+      
+        /// 2、使用接口类的情况：
         //动态代理模式：通过接口找到接口对应的实现类 BookMapper mapper = BookMapper实现类BookMapper.xml
         BookMapper mapper = sqlSession.getMapper(BookMapper.class);
         List list = mapper.selectAllBooks();
@@ -284,7 +342,7 @@ public class test {
 }
 ```
 
-### MyBatis启动日志功能
+### 日志功能
 
 MyBatis框架内置日志工厂。日志工厂负责自动加载项目中配置的日志。MyBatis支持以下日志：
 
@@ -307,7 +365,11 @@ MyBatis框架内置日志工厂。日志工厂负责自动加载项目中配置�
 
 在resources中新建`log4j.properties`配置文件。名称必须叫这个名字，扩展名必须是.properties。
 
-如果说你只是想看sql执行过程，那么可以整体调高，局部降低：将整个日志级别调为ERROR，然后mapper.xml涉及的内容级别降低为TRACE。这样整体的多余信息不会输出，然后mapper.xml中的涉及内容会详细打印，log4j.properties加入：
+如果只是想看sql执行过程，那么可以整体调高，局部降低：
+
+将整个日志级别调为ERROR，然后mapper.xml涉及的内容级别降低为TRACE。这样整体的多余信息不会输出，然后mapper.xml中的涉及内容会详细打印。
+
+log4j.properties加入：
 
 ```properties
 # log4j中定义的级别：fatal(致命错误) > error(错误) >warn(警告) >info(普通信息) >debug(调试信息)>trace(跟踪信息)
