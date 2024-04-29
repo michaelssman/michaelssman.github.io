@@ -4,7 +4,7 @@ Spring Boot是Spring公司的一个顶级项目，和Spring Framework是一个�
 
 Spring Boot实际上是利用Spring Framework 4 自动配置特性完成。编写项目时不需要编写xml文件，简化配置。
 
-发展到现在，Spring Boot已经具有很很大的生态圈，各种主流技术已经都提供了Spring Boot的启动器。
+发展到现在，Spring Boot已经具有很很大的生态圈，各种主流技术已经都提供了Spring Boot的**启动器**。
 
 Boot：启动的意思
 
@@ -18,7 +18,9 @@ springBoot不止可以整合SSM，还可以整合其它框架。
 
 ## 启动器
 
-Spring框架在项目中作用是Spring整合各种其他技术，让其他技术使用更加方便。Spring Boot的启动器实际上就是一个依赖。**这个依赖中包含了整个这个技术的相关jar包，还包含了这个技术的自动配置**，以前绝大多数XML配置都不需要配置了。以后每次使用Spring Boot整合其他技术时首先需要考虑导入启动器。
+Spring框架在项目中作用是Spring整合各种其他技术，让其他技术使用更加方便。
+
+Spring Boot的启动器实际上就是一个依赖。**这个依赖中包含了整个这个技术的相关jar包，还包含了这个技术的自动配置**，以前绝大多数XML配置都不需要配置了。以后每次使用Spring Boot整合其他技术时首先需要考虑导入启动器。
 
 ## 启动类
 

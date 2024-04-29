@@ -85,7 +85,7 @@ IoC(Inversion of Control)中文名称：控制反转，也被称为DI(dependency
 
 每一层都分为接口+实现类两部分。接口不会变，只需要替换实现类，就可以实现修改。
 
-通过接口=实现类的方式调用，更规范和扩展性更强。
+通过接口=实现类的方式调用，更规范、扩展性更强。
 
 ### IoC/DI原理
 
@@ -95,7 +95,11 @@ IoC(Inversion of Control)中文名称：控制反转，也被称为DI(dependency
 
 在程序中会多一个配置文件`applicationContext.xml`，名字可以自己定义。
 
-在xml中可以配置bean标签，例：`<bean id="s" class="Student">`，这行代码底层做的就是`Student s = new Student();`。构建是Spring底层通过反射技能做的。构建的对象放在一个地方：Spring容器，底层是map集合。Spring容器中放各种对象。
+在xml中可以配置bean标签，例：`<bean id="s" class="Student">`，这行代码底层做的就是`Student s = new Student();`。
+
+构建是Spring底层通过反射技能做的。
+
+构建的对象放在一个地方：Spring容器，底层是map集合。Spring容器中放各种对象。
 
 applicationContext.xml通过反射创建对象，所有对象放在容器中，java程序从容器中取对象。
 
@@ -119,7 +123,8 @@ Spring项目想要运行起来必须包含:
 
 - spring-jcl.jar
 
-  所以在Maven中想要使用Spring框架只需要在项目中导入spring-context就可以了，其他的jar包根据Maven依赖传递性都可以导入进来。
+
+所以在Maven中想要使用Spring框架只需要在项目中导入`spring-context`就可以了，其他的jar包根据Maven依赖传递性都可以导入进来。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -143,11 +148,11 @@ Spring项目想要运行起来必须包含:
 </project>
 ```
 
-### 2、创建一个Book类
+### 2、实体类
 
 Project\Maven\src\main\java\com.hh.pojo包\Book.java
 
-### 3、创建Spring配置文件
+### 3、Spring配置文件
 
 在src/main/resources下新建`applicationContext.xml`文件。在这个文件中创建对象。
 
@@ -257,9 +262,9 @@ Book b = new Book(1，"项目驱动零起点学Java");
 
 设置属性的值：
 
-方式1：value：简单数据类型（基本数据类型+String）直接设置:
+- value：简单数据类型（基本数据类型+String）直接设置:
 
-方式2：ref：需要引用另一个bean的id。也就是说这个参数是一个类类型，且这个类的对象也被Spring容器管理。
+- ref：需要引用另一个bean的id。也就是说这个参数是一个类类型，且这个类的对象也被Spring容器管理。
 
 ## IoC/DI相关的注解
 
@@ -290,7 +295,7 @@ Book b = new Book(1，"项目驱动零起点学Java");
 </beans>
 ```
 
-前五个注解作用一样，只所以搞出这么多，就是在语义上给你区别，放入不同层用不同的注解，但是作用都是创建对象。
+前五个注解作用都是创建对象。只所以搞出这么多，就是在语义上给你区别，放入不同层用不同的注解。
 
 ### 属性注入的注解
 

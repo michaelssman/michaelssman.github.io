@@ -20,28 +20,28 @@ Java项目中每一层都有自己的作用。不同的层创建不同的类，�
 
 ### 整体框架：
 
-Project
-
-- Module
-  - src
-    - main
-      - java
-        - com.hh
-          - mapper
-            - BookMapper.java（接口类）
-          - pojo
-            - Book.java（实体类）
-      - resources
-        - com.hh.mapper
-          - BookMapper.xml（映射文件）
-        - db.properties
-        - log4j.properties
-        - mybatis.xml
-    - test
-      - java
-        - com.hh.test
-          - test.java
-  - pom.xml
+> Project
+>
+> - Module
+>   - src
+>     - main
+>       - java
+>         - com.hh
+>           - mapper
+>             - BookMapper.java（接口类）
+>           - pojo
+>             - Book.java（实体类）
+>       - resources
+>         - com.hh.mapper
+>           - BookMapper.xml（映射文件）
+>         - db.properties
+>         - log4j.properties
+>         - mybatis.xml
+>     - test
+>       - java
+>         - com.hh.test
+>           - test.java
+>   - pom.xml
 
 ### 1、创建数据库表
 

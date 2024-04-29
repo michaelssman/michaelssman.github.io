@@ -1,4 +1,4 @@
-# SSM
+# SpringMVC&SSM
 
 Spring、SpringMVC、Mybatis就是SSM。
 
@@ -8,7 +8,7 @@ Java项目（jar项目）是由main()方法来开始的，直接依赖JVM虚拟�
 
 Web项目（war项目）中的Java文件是tomcat服务器来触发的，脱离了web服务器就无法启动。Web项目需要服务器。Web项目部署到服务器上，任何用户都可以通过浏览器来访问。将本地资源共享给外部访问。入口是`web.xml`。
 
-## 使用服务器
+## Tomcat服务器
 
 Tomcat服务器对Servlet，Jsp，JNDI，JavaMail有很好的的支持，并且这个Web容器是开源免费的。（Tomcat服务器是Apache下的）
 
@@ -24,23 +24,20 @@ Spring是框架，SpringMVC也是框架。
 
 前端和后端的交互。
 
-SpringMVC是对servlet的封装。servlet底层需要依赖tomcat运行。
+**SpringMVC是对servlet的封装，servlet底层需要依赖tomcat运行。**
 
 ## SpringMVC环境搭建（通过Maven构建项目）
 
 ### 1、创建maven-web项目
 
-SpringMVC依赖servlet，servlet依赖tomcat。
+Maven构建项目类型：
 
-1.Maven构建项目类型：
+- Java项目：jar项目
+- Web项目：war项目
 
-Java项目——>jar项目
+创建Maven-war项目步骤：
 
-Web项目——>war项目
-
-2.创建Maven-war项目步骤：
-
-（1）创建Maven项目，添加webapp模板
+创建Maven项目，添加webapp模板
 
 先勾选`create from archetype`前面的复选框。
 
@@ -58,13 +55,21 @@ Web项目——>war项目
 
 观察目录结构与jar项目不同之处，设置java目录为资源目录。
 
-项目|src|main|java
-
-项目|src|main|resources
-
-项目|src|test
-
-项目|src|test|java
+> Project
+>
+> - Module
+>   - src
+>     - main
+>       - java
+>         - com.hh
+>           - controller
+>           - pojo
+>       - resources
+>         - springmvc.xml
+>       - webapp
+>     - test
+>       - java
+>   - pom.xml
 
 创建完文件夹directory之后，需要右键`Mark Directory as`选择`Sources Root`、`Resources Root`、`Test Sources Root`。文件夹图标会变颜色，然后就可以在文件夹下创建各种文件。
 
@@ -72,13 +77,13 @@ Web项目——>war项目
 
 #### 3.1、添加依赖
 
-1. mybatis的依赖
-2. 连接mysql的依赖
-3. log4j的依赖
-4. spring的核心依赖
-5. springjdbc依赖
-6. spring整合mybatis的依赖
-7. springwebmvc的依赖
+- mybatis的依赖
+- 连接mysql的依赖
+- log4j的依赖
+- spring的核心依赖
+- springjdbc依赖
+- spring整合mybatis的依赖
+- springwebmvc的依赖
 
 #### 3.2、tomcat插件
 
@@ -94,7 +99,7 @@ Web项目——>war项目
 
 #### maven中使用tomcat插件
 
-tomcat和maven都是apache下的。同一个公司的。maven自带tomcat。
+tomcat和maven都是apache下的，同一个公司的。maven自带tomcat。
 
 在项目的`pom.xml`中配置Tomcat插件，在`<build>`中添加Tomcat7插件。
 
@@ -181,11 +186,9 @@ tomcat和maven都是apache下的。同一个公司的。maven自带tomcat。
 
 ### 4、spring整合mybatis
 
-以前用mybatis先搞配置文件mybatis.xml
-
 #### applicationContext.xml
 
-SSM整合后：mybatis.xml要发生翻天覆地的变化了，都交由spring来管理，创建`applicationContext.xml`。
+以前用mybatis先搞配置文件mybatis.xml，SSM整合后mybatis.xml都交由spring来管理，创建`applicationContext.xml`。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
