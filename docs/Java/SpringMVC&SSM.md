@@ -65,8 +65,14 @@ Maven构建项目类型：
 >           - controller
 >           - pojo
 >       - resources
+>         - applicationContext.xml
+>         - log4j.properties
+>         - mybatis.xml
 >         - springmvc.xml
 >       - webapp
+>         - WEB-INF
+>           - web.xml
+>         - index.jsp
 >     - test
 >       - java
 >   - pom.xml
@@ -153,9 +159,10 @@ tomcat和maven都是apache下的，同一个公司的。maven自带tomcat。
             <version>2.0.7</version>
         </dependency>
         <!-- 【7】springwebmvc的依赖 -->
+        <!-- 依赖了Spring框架核心功能的5个依赖以及Spring整合Web的依赖spring-web -->
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
+            <artifactId>spring-webmvc</artifactId>	<!--SpringMVC-->
             <version>5.3.16</version>
         </dependency>
     </dependencies>
@@ -167,15 +174,17 @@ tomcat和maven都是apache下的，同一个公司的。maven自带tomcat。
             <url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
         </pluginRepository>
     </pluginRepositories>
+    
     <build>
         <plugins>
+            <!-- Tomcat插件 -->
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat8-maven-plugin</artifactId>
                 <version>3.0-r1756463</version>
                 <configuration>
-                    <port>8888</port>
-                    <path>/ssm</path>
+                    <port>8888</port>	<!-- 端口-->
+                    <path>/ssm</path>	<!--指定项目的上下文路径-->
                 </configuration>
             </plugin>
         </plugins>
@@ -213,15 +222,15 @@ tomcat和maven都是apache下的，同一个公司的。maven自带tomcat。
     <!-- 【2】获取SqlSessionFactory对象  -->
     <!-- 以前SqlSessionFactory都是在测试代码中我们自己创建的，但是现在不用了，整合包中提供的对于SqlSessionFactory的封装。里面提供了MyBatis全局配置文件所有配置的属性 -->
     <bean id="factory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <!-- 注入数据源       -->
+        <!-- 注入数据源-->
         <property name="dataSource" ref="dataSource"/>
-        <!-- 给包下类起别名       -->
+        <!-- 给包下类起别名-->
         <property name="typeAliasesPackage" value="com.hh.pojo"></property>
-        <!--        解析mybatis.xml-->
+        <!--解析mybatis.xml-->
         <property name="configLocation" value="classpath:mybatis.xml"></property>
     </bean>
 
-    <!-- 【3】扫描mapper文件   -->
+    <!-- 【3】扫描mapper文件-->
     <!-- 设置扫描哪个包，进行接口绑定-->
     <!-- 所有Mapper接口代理对象都能创建出来，可以直接从容器中获取出来。 -->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
@@ -238,8 +247,6 @@ tomcat和maven都是apache下的，同一个公司的。maven自带tomcat。
 
 </beans>
 ```
-
-扫描包 接口对应的实现类
 
 #### mybatis.xml
 
@@ -334,7 +341,7 @@ web项目的入口`web.xml`。tomcat启动的时候走到这里。
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
 
-    <!--  servlet配置-->
+    <!--servlet配置-->
     <!--对SpringMVC解析-->
     <servlet>
         <servlet-name>springmvc</servlet-name>
@@ -342,13 +349,14 @@ web项目的入口`web.xml`。tomcat启动的时候走到这里。
         <init-param>
             <!-- 参数名称必须叫做：contextConfigLocation。单词和大小写错误都导致配置文件无法正确加载 -->
             <param-name>contextConfigLocation</param-name>
-            <!-- springmvc.xml 名称自定义，只要和我们创建的配置文件的名称对应就可以了。 -->
+            <!-- springmvc.xml 名称自定义，只要和我们上面创建的配置文件的名称对应就可以了。 -->
             <param-value>classpath:springmvc.xml</param-value>
         </init-param>
         <!-- Tomcat启动立即加载Servlet，而不是等到访问Servlet才去实例化DispatcherServlet -->
         <!-- 配置上的效果：Tomcat启动立即加载Spring MVC框架的配置文件-->
         <load-on-startup>1</load-on-startup>
     </servlet>
+    
     <servlet-mapping>
         <servlet-name>springmvc</servlet-name>
         <!-- /表示除了.jsp结尾的uri，其他的uri都会触发DispatcherServlet。此处前往不要写成 /* -->
@@ -473,7 +481,7 @@ public interface BookMapper {
 </mapper>
 ```
 
-#### 6.3、创建service业务层内
+#### 6.3、创建service业务层
 
 业务层链接数据库层
 
