@@ -89,3 +89,4 @@ String url="jdbc:mysql://127.0.0.1:3306/数据库名称?useSSL=false&useUnicode=
 - `characterEncoding=UTF-8`：使用unicode 的utf-8策略
 - `serverTimezone=Asia/Shanghai`：时区参数-东八区
 - `allowPublicKeyRetrieval=true`：允许客户端从服务器获取公钥
+

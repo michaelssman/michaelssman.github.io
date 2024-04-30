@@ -2,7 +2,7 @@
 
 Spring、SpringMVC、Mybatis就是SSM。
 
-## Java项目和web项目的区别
+## Java项目和web项目
 
 Java项目（jar项目）是由main()方法来开始的，直接依赖JVM虚拟机就能被编译执行。Java项目不需要服务器。
 
@@ -51,7 +51,7 @@ Maven构建项目类型：
 
 新建项目的剩余步骤都点击Next按钮即可，和不使用原型时创建Maven项目类似。
 
-### 2、补全目录
+### 2、补全war项目目录
 
 观察目录结构与jar项目不同之处，设置java目录为资源目录。
 
@@ -62,9 +62,16 @@ Maven构建项目类型：
 >     - main
 >       - java
 >         - com.hh
->           - controller
->           - pojo
+>           - controller：接受前端的请求，调用service去操作数据库，将数据返回给前端。
+>           - mapper
+>           - pojo：实体类
+>           - service
+>             - BookService接口
+>             - impl	
+>               - BookServiceImpl接口实现类，里面调BookMapper查询数据库
 >       - resources
+>         - com.hh.mapper
+>           - BookMapper.xml
 >         - applicationContext.xml
 >         - log4j.properties
 >         - mybatis.xml
@@ -93,7 +100,7 @@ Maven构建项目类型：
 
 #### 3.2、tomcat插件
 
-使用本地tomcat（很少使用）
+#### 3.2.1、使用本地tomcat（很少使用）
 
 ![image-20230815232921156](assets/image-20230815232921156.png)
 
@@ -103,11 +110,11 @@ Maven构建项目类型：
 
 ![image-20230815234736298](assets/image-20230815234736298.png)
 
-#### maven中使用tomcat插件
+#### 3.2.2、maven中使用tomcat插件
 
 tomcat和maven都是apache下的，同一个公司的。maven自带tomcat。
 
-在项目的`pom.xml`中配置Tomcat插件，在`<build>`中添加Tomcat7插件。
+在`pom.xml`的`<build>`中添加Tomcat插件。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -221,6 +228,7 @@ tomcat和maven都是apache下的，同一个公司的。maven自带tomcat。
 
     <!-- 【2】获取SqlSessionFactory对象  -->
     <!-- 以前SqlSessionFactory都是在测试代码中我们自己创建的，但是现在不用了，整合包中提供的对于SqlSessionFactory的封装。里面提供了MyBatis全局配置文件所有配置的属性 -->
+  	<!--在applicationContext.xml中加入mybatis.xml解析-->
     <bean id="factory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <!-- 注入数据源-->
         <property name="dataSource" ref="dataSource"/>
@@ -289,17 +297,6 @@ log4j.appender.D.layout=org.apache.log4j.PatternLayout
 log4j.appender.D.layout.ConversionPattern=[%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %
 ```
 
-在applicationContext.xml中加入mybatis.xml解析
-
-```xml
-<bean id="factory" class="org.mybatis.spring.SqlSessionFactoryBean">
-    <property name="dataSource" ref="dataSource"/>
-    <property name="typeAliasesPackage" value="com.zss.pojo"></property>
-    <!-- 解析mybatis.xml -->
-    <property name="configLocation" value="classpath:mybatis.xml"></property>
-</bean>
-```
-
 ### 5、整合springmvc
 
 #### 5.1、springmvc.xml
@@ -332,7 +329,7 @@ log4j.appender.D.layout.ConversionPattern=[%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %
 
 web项目的入口`web.xml`。tomcat启动的时候走到这里。
 
-在`项目\TestSpringMVC\src\main\webapp\WEB-INF\web.xml`中加入了`springmvc.xml`配置文件的解析和`applicationContext.xml`的解析：
+在`web.xml`中加入`springmvc.xml`和`applicationContext.xml`两个配置文件的解析：
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -379,76 +376,21 @@ web项目的入口`web.xml`。tomcat启动的时候走到这里。
 
 ### 6、项目分层
 
-**创建项目目录结构**
+上面将整合的配置内容已经配置好了，接下来开始创建项目的目录结构。项目要分层，有controller控制层、service业务层、dao层（有数据库连接层（Mybits接口绑定），mapper层）、实体类层。
 
-上面将整合的配置内容已经配置好了，接下来开始创建项目的目录结构，项目要分层，有controller控制层、service业务层、dao层（有数据库连接层（Mybits接口绑定），mapper层）、实体类层。
+#### 6.1、实体类
 
-#### 6.1、构建实体类：
+参考：[实体类.md](实体类.md) 
 
-属性的名称和数据库字段名对应
+#### 6.2、mapper数据库连接层
 
-```java
-package com.hh.pojo;
-
-public class Book {
-    private int id;
-    private String name;
-    private String author;
-    private double price;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public Book() {
-    }
-
-    public Book(int id, String name, String author, double price) {
-        this.id = id;
-        this.name = name;
-        this.author = author;
-        this.price = price;
-    }
-}
-```
-
-#### 6.2、创建mapper数据库连接层
-
-##### 创建接口interface文件BookMapper
+##### interface接口文件
 
 创建接口绑定的接口BookMapper的interface文件
 
 构建mapper接口和mapper.xml映射文件:
 
-com.zss.mapper.BookMapper接口：抽象方法
+com.hh.mapper.BookMapper接口：抽象方法
 
 ```java
 package com.hh.mapper;
@@ -462,11 +404,11 @@ public interface BookMapper {
 }
 ```
 
-##### 创建接口的映射文件BookMapper.xml
+##### 接口的映射文件BookMapper.xml
 
 接口构建好之后，构建具体的映射文件：接口的实现类
 
-在`项目\TestSSM\src\main\resources`文件夹下，创建com文件夹、com下创建hh文件夹、hh下创建mapper文件夹。然后再创建和接口同名的`BookMapper.xml`文件。
+在`项目\TestSSM\src\main\resources`文件夹下，创建com文件夹、com下创建hh文件夹、hh下创建mapper文件夹。然后创建和接口同名的`BookMapper.xml`文件。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -481,11 +423,11 @@ public interface BookMapper {
 </mapper>
 ```
 
-#### 6.3、创建service业务层
+#### 6.3、service业务层
 
 业务层链接数据库层
 
-##### 创建接口：
+##### 接口：
 
 ```java
 package com.hh.service;
@@ -523,33 +465,13 @@ public class BookServiceImpl implements BookService {
 }
 ```
 
-#### 6.4、创建controller控制层
+#### 6.4、controller控制层
 
 前端请求到这个类里的具体方法
 
 ##### 6.4.1、响应数据
 
 从前端、服务端、数据库一层一层的查找数据，然后再从数据库、服务端一层一层返还到前端。
-
-响应页面
-
-```java
-package com.hh.controller;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-//注解 自动构建对象
-@Controller
-public class TestController {//控制器类
-    //注解，请求路径。浏览器访问/test1就会进到方法
-    @RequestMapping("/test1")
-    public String test1() {
-        //响应给浏览器index.jsp页面
-        return "index.jsp";
-    }
-}
-```
 
 响应页面或者响应数据，响应数据需要加注解`@ResponseBody`，数据就可以return出去。
 
@@ -619,16 +541,37 @@ tomcat7对@ResponseBody数据响应的注解支持的不是特别好，升级为
 请求路径`http://localhost:8888/testspringmvc/testParam?name=zhan8gsan&age=99`
 
 ```java
-@RequestMapping("/testParam")  
-public String testParam(String name,int age){    
-    System.out.println(name+","+age); 
-    return "/index.jsp"; 
+package com.hh.controller;
+
+import com.hh.pojo.Person;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+//注解 自动构建对象
+@Controller
+public class TestController {//控制器类
+    //注解，请求路径。浏览器访问/test1就会进到方法
+    @RequestMapping("/test1")
+    public String test1() {
+        //响应给浏览器index.jsp页面
+        return "index.jsp";
+    }
+    @RequestMapping("/testParam")
+    public String testParam(String name, int age){
+        System.out.println(name + "-------" + age);
+        return "index.jsp";
+    }
+    @RequestMapping("/testParam2")
+    public String testParam2(Person p){
+        System.out.println(p.getAge() + "====" + p.getName());
+        return "index.jsp";
+    }
 }
 ```
 
 ### 2、使用类对象作为控制单元参数
 
-如果前台参数比较多，就可以使用一个类对象进行接收。之后再传到其它层比较方便。
+如果前台参数比较多，可以使用一个类对象进行接收。之后再传到其它层比较方便。
 
 #### JavaBean
 

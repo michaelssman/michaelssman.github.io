@@ -368,13 +368,14 @@ nav:
   - Java:
     - Java/Java.md
     - Java/数据类型.md
+    - Java/实体类.md
     - Java/IO.md
     - Java/JDBC数据库连接.md
     - Java/Maven.md
     - Java/框架.md
     - Java/MyBatis.md
     - Java/Spring.md
-    - Java/SSM.md
+    - Java/SpringMVC&SSM.md
     - Java/SpringBoot.md
   - 数据库:
     - 数据库/SQL.md
