@@ -66,24 +66,21 @@
 
 #### iOS底层
 
-#### flutter
+#### flutter - 小木记账
 
-##### 小木记账
-
-- 常用widget：PageView、Scaffold、ListView、Image、Container、SizeBox等。
-- 布局。
-- 状态管理。Mixin混入保存部件的数据状态不被刷新。
-- StatelessWidget和StatefulWidget生命周期。
-- Provider页面传值通讯、InheritedWidget数据共享、利用泛型实现Provider功能。
-- json和map转模型model。
-- 异步Future，多线程Isolate和compute。
-- GestureDetector手势的使用。
-- 数据本地持久化存储（sqflite）。
-- 仿微信demo和记账app（底部弹窗）。
-- 自定义数字键盘。使用GlobalKey查找state控制显示和隐藏，自动弹出和回收键盘功能。
-- 封装点击效果的item，左滑显示删除和编辑功能按钮。
-- MaterialApp统一定义深色模式样式。
-- 动画和画柱状图折线图功能。
+- **项目简介**：开发了一款个人财务管理应用，允许用户跟踪和规划日常开销，提供直观的数据可视化和简单易用的交互界面。
+- **技术亮点**：
+  - 设计并实现了包括PageView、Scaffold、ListView等在内的常用Flutter Widget，以提供流畅的用户体验和响应式布局。
+  - 应用了Mixin混入技术优化状态管理，确保组件状态在生命周期内正确保持，提高应用稳定性。
+  - 利用Provider和InheritedWidget实现了跨页面的数据传递和状态共享，减少了状态管理的复杂性。
+  - 实现了异步操作处理和线程隔离，通过Future、Isolate和compute提高了应用的性能和用户响应速度。
+  - 开发了自定义数字键盘组件，优化了用户输入体验，并通过GlobalKey实现了键盘状态控制。
+  - 集成了sqflite进行数据持久化存储，保障了用户数据的安全性和可靠性。
+  - 定制了动画效果和图表绘制功能，提升了应用的交互性和视觉表现。
+  - 封装点击效果的item，左滑显示删除和编辑功能按钮。
+- **业务成果**：
+  - 实现了深色模式的自定义设置，满足了不同用户的视觉偏好，提升了用户满意度。
+  - 优化了数据入口的操作流程，通过左滑快捷按钮减少了用户操作步骤，提高了整体的使用效率。
 
 ##### 打卡本
 
