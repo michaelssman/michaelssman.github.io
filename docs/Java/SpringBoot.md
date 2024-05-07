@@ -2,11 +2,9 @@
 
 Spring Boot是Spring公司的一个顶级项目，和Spring Framework是一个级别的。
 
-Spring Boot实际上是利用Spring Framework 4 自动配置特性完成。编写项目时不需要编写xml文件，简化配置。
+Spring Boot利用Spring Framework 4 自动配置特性完成。编写项目时不需要编写xml文件，简化配置。
 
 发展到现在，Spring Boot已经具有很很大的生态圈，各种主流技术已经都提供了Spring Boot的**启动器**。
-
-Boot：启动的意思
 
 **为什么使用springBoot**
 
@@ -24,7 +22,7 @@ Spring Boot的启动器实际上就是一个依赖。**这个依赖中包含了�
 
 ## 启动类
 
-Spring Boot的启动类的作用是启动Spring Boot项目，是基于Main方法来运行的。
+Spring Boot的启动类的作用是启动Spring Boot项目，基于Main方法来运行的。
 
 **启动类与启动器区别**
 
@@ -105,15 +103,16 @@ springBoot会自动找到这个配置文件。
 
 ```properties
 server.port=8080
+server.servlet.context-path=/springboot01
 ```
 
 #### yml
 
 springboot官方推荐的配置文件是yml文件，yml是用**层级来表示关系**的一种配置文件。
 
-yml中没有标签，而是通过两个空格的缩进来表示层级结构。注意冒号后有一个空格。
+yml中没有标签，而是通过两个空格的缩进来表示层级结构。注意**冒号后有一个空格**。
 
-创建`项目\maven项目文件\src\main\resources\application.yml`，`application.yml`名字固定。
+创建`项目\maven项目文件\src\main\resources\application.yml`，`application.yml`文件名字application开头，不能随意动。
 
 连数据库，把数据源信息写到配置文件里。
 
@@ -125,29 +124,29 @@ server:
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/msb?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver	#驱动
     username: root
     password: asdf123456
 mybatis:
   type-aliases-package: com.hh.pojo
-  mapper-locations: classpath:mybatis/*.xml
+  mapper-locations: classpath:mybatis/*.xml	#加入映射文件位置
 ```
-
-driver-class-name：驱动
 
 **层级结构怎么找（SpringBoot常见配置，查看官网文档）：**
 
 https://docs.spring.io/spring-boot/docs/2.7.6/reference/html/application-properties.html#appendix.application-properties
 
-注意：文件名字为：`application.yml`，文件名字application开头，不能随意动。
-
 yml配置文件和properties配置文件可以并存。
 
-### 4、编写实体类，配置文件中加入别名
+### 4、实体类
 
 项目|src|main|java|创建com.hh.pojo包里面放实体类
 
-在application.yml文件加入别名配置：`mybatis: type-aliases-package: com.hh.pojo`。
+#### 4.1、yml配置文件加入别名配置
+
+```yaml
+mybatis: type-aliases-package: com.hh.pojo
+```
 
 对数据库表操作的话，代码需要实体类与数据库表对应。
 
@@ -181,11 +180,13 @@ public interface BookMapper {
 </mapper>
 ```
 
-### 6、配置文件中加入映射文件位置：
+#### 5.3、yml配置文件中加入映射文件位置：
 
+```yaml
 mybatis:  mapper-locations: classpath:mybatis/*.xml
+```
 
-### 7、定义启动类，在启动类加入mapper的包扫描
+### 6、定义启动类，在启动类加入mapper的包扫描
 
 启动类基于mian方法来运行的。
 
@@ -208,7 +209,7 @@ public class TestSpringBootApplication {
 }
 ```
 
-### 8、service层代码编写
+### 7、service层代码编写
 
 创建包`com.hh.service`，包下面创建文件Interface接口
 
@@ -247,7 +248,7 @@ public class BookServiceImpl implements BookService {
 }
 ```
 
-### 9、controller层
+### 8、controller层
 
 ```java
 package com.hh.controller;
@@ -266,9 +267,9 @@ public class BookController {
     @Autowired//注入对象
     private BookService bookService;
 
-    //访问路径
+    //注解，访问路径
     @RequestMapping(value = "/findBooks", produces = "text/html;charset=utf-8")
-    @ResponseBody
+    @ResponseBody//注解，响应数据
     public String findBooks() {//控制单元
         List list = bookService.findAllBooks();
         System.out.println("一共有几本书籍：" + list.size());
@@ -284,5 +285,5 @@ public class BookController {
 }
 ```
 
-运行，浏览器访问`http://localhost:9999/firstController`测试
+运行，浏览器访问`http://localhost:9999/findBooks`测试
 
