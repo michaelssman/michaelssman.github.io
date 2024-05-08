@@ -20,7 +20,9 @@ token过期的话就可以拿这个过期时间长的refreshtoken去重新换，
 
 #### refreshtoken也过期的情况
 
-如果还是调用刷新token方法，则会一直报401无权限，无穷尽。在调用刷新token方法的时候header里面加上isRefreshToken: true。如果是刷新token的请求，则不走普通请求保护的接口逻辑。
+如果还是调用刷新token方法，则会一直报401无权限，无穷尽。
+
+在调用刷新token方法的时候header里面加上isRefreshToken: true。如果是刷新token的请求，则不走普通请求保护的接口逻辑。
 
 #### 如果不是刷新token的方法，并且报401无权限
 
