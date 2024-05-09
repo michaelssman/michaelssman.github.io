@@ -157,11 +157,13 @@ getter读操作：`dispatch_sync`同步。
 
 每次dispatch_group_leave会wakeup-->dispatch_group_notify判断是否等于0，等于0就会callout唤醒notify的block任务。
 
-## dispatch_semaphore_t
+## semaphore信号量
 
-信号量
+作用：
 
-作用：同步->当锁，控制GCD最大并发数，也可以控制流程。
+- 同步->当锁。
+- 控制GCD最大并发数。
+- 控制流程。
 
 ```
 dispatch_semaphore_create		创建信号量
@@ -169,7 +171,40 @@ dispatch_semaphore_wait			信号量等待 -- do while死循环 等待信号量�
 dispatch_semaphore_signal		信号量释放 ++
 ```
 
-信号量是几，就可以执行几个任务。
+`dispatch_semaphore_create(0);` 它创建了一个调度信号量（dispatch semaphore）。信号量用于同步访问资源或者协调线程间的操作。
+
+这行代码的作用是创建一个初始计数值为 0 的信号量。
+
+**信号量的计数值表示可以并发访问的资源数量。当计数值为 0 时，任何试图减少信号量的线程（通过 `dispatch_semaphore_wait` 函数）都会阻塞，直到信号量的计数值增加。**
+
+这是一个同步工具，可以用来控制线程间的同步，例如，当你需要一个线程等待另一个线程完成某项工作时。在这个例子中，`dispatch_semaphore_create(0)` 创建的信号量可以被用来阻塞一个线程，直到某个条件被满足，此时其他线程会增加信号量的计数值（通过 `dispatch_semaphore_signal` 函数），解除阻塞。
+
+这里是一个简单的例子，展示了如何使用信号量来同步线程：
+
+```objective-c
+// 创建一个初始计数值为 0 的信号量
+dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    // 异步执行的任务
+    NSLog(@"Doing some work in background...");
+    
+    // 模拟一个异步任务，比如网络请求
+    sleep(2); // 模拟耗时操作
+    
+    // 发送信号量，增加信号量的计数值
+    dispatch_semaphore_signal(sema);
+    NSLog(@"Background work done.");
+});
+
+// 等待信号量（如果计数值为0则等待，否则继续执行并将计数值减1）
+dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+
+// 一旦信号量的计数值被增加，这行代码就会执行
+NSLog(@"Continue with the main thread tasks...");
+```
+
+在上面的代码中，主线程将会在 `dispatch_semaphore_wait` 处阻塞，直到后台线程完成工作并通过 `dispatch_semaphore_signal` 发送信号量。这确保了主线程会等待后台任务完成后才继续执行。
 
 ```objective-c
 - (void)semaphoreDemo {

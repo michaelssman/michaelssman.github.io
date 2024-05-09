@@ -159,43 +159,44 @@ nav:
     - 音视频/视频编解码.md
     - 音视频/音频.md
     - 音视频/倒放视频.md
-  - 计算机基础: 
-    - 计算机基础/位运算.md
-    - 多线程:
-      - 计算机基础/多线程/多线程.md
-      - 计算机基础/多线程/线程同步.md
-      - 计算机基础/多线程/锁.md
-      - 计算机基础/多线程/队列和函数.md
-      - 计算机基础/多线程/GCD.md
-      - 计算机基础/多线程/swift多线程.md
-      - 计算机基础/多线程/Java/Java多线程.md
-    - static_const_define:
-      - 计算机基础/const_macro_static/宏定义和常量.md
-      - 计算机基础/const_macro_static/static.md
-      - 计算机基础/const_macro_static/const.md
-      - 计算机基础/const_macro_static/04常量.md
-      - 计算机基础/const_macro_static/05常量.md
-    - 异常处理:
-      - 计算机基础/异常处理/C++.md
-      - 计算机基础/异常处理/Java.md
-      - 计算机基础/异常处理/swift.md
+  - 操作系统:
     - 内存管理:
-      - 计算机基础/内存管理/copy.md
-      - 计算机基础/内存管理/iOS属性关键字.md
-      - 计算机基础/内存管理/weak原理.md
-      - 计算机基础/内存管理/内存管理.md
-    - 计算机基础/XML.md
-    - 计算机基础/注解.md
-    - 计算机基础/正则.md
-    - 计算机基础/继承多态接口/继承多态接口.md
-    - 计算机基础/联合体和位域.md
-    - 计算机基础/typedef.md
-    - 计算机基础/Enum&OPTIONS.md
-    - 计算机基础/缓存.md
-    - 计算机基础/访问权限.md
-    - 计算机基础/方法调度.md
-    - 计算机基础/token.md
-    - 计算机基础/数据处理.md
+      - 操作系统/内存管理/copy.md
+      - 操作系统/内存管理/iOS属性关键字.md
+      - 操作系统/内存管理/weak原理.md
+      - 操作系统/内存管理/内存管理.md
+    - 多线程:
+      - 操作系统/多线程/GCD.md
+      - 操作系统/多线程/swift多线程.md
+      - 操作系统/多线程/多线程.md
+      - 操作系统/多线程/线程同步.md
+      - 操作系统/多线程/锁.md
+      - 操作系统/多线程/队列和函数.md
+      - 操作系统/多线程/Java/Java多线程.md
+    - 操作系统/位运算.md
+    - 操作系统/数据处理.md
+    - 操作系统/正则.md
+    - 操作系统/缓存.md
+    - 操作系统/联合体和位域.md
+  - 编程:
+    - const_macro_static:
+      - 编程/const_macro_static/04常量.md
+      - 编程/const_macro_static/05常量.md
+      - 编程/const_macro_static/const.md
+      - 编程/const_macro_static/static.md
+      - 编程/const_macro_static/宏定义和常量.md
+    - 异常处理:
+      - 编程/异常处理/C++.md
+      - 编程/异常处理/Java.md
+      - 编程/异常处理/swift.md
+    - 编程/Enum&OPTIONS.md
+    - 编程/XML.md
+    - 编程/token.md
+    - 编程/typedef.md
+    - 编程/方法调度.md
+    - 编程/注解.md
+    - 编程/继承多态接口.md
+    - 编程/模块和访问权限/访问权限.md
   - C++: 
     - C++/README.md
     - C++/字符串和头文件.md
@@ -394,6 +395,7 @@ nav:
   - app:
     - app/jizhanghelp.md
     - app/jizhangpp.md
+    - app/jizhangversion.md
 
 # [Extensions]
 plugins:
