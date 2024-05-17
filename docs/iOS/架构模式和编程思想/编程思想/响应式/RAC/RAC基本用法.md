@@ -204,11 +204,10 @@ UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
 ## 监听textfield输入
 
 ```objective-c
-    UITextField *textField = [[UITextField alloc]init];
-    [textField.rac_textSignal subscribeNext:^(NSString * _Nullable x) {
-        NSLog(@"%@",x);
-      label.text = x;
-    }];
+[textField.rac_textSignal subscribeNext:^(NSString * _Nullable x) {
+  NSLog(@"%@",x);
+  label.text = x;
+}];
 ```
 
 textField的文字改变，同时修改label的文字。
