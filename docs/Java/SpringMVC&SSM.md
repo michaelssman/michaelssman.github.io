@@ -54,35 +54,7 @@ Maven构建项目类型：
 ### 2、补全war项目目录
 
 观察目录结构与jar项目不同之处，设置java目录为资源目录。
-
-> Project
->
-> - Module
->   - src
->     - main
->       - java
->         - com.hh
->           - controller：接受前端的请求，调用service去操作数据库，将数据返回给前端。
->           - mapper
->           - pojo：实体类
->           - service
->             - BookService接口
->             - impl	
->               - BookServiceImpl接口实现类，里面调BookMapper查询数据库
->       - resources
->         - com.hh.mapper
->           - BookMapper.xml
->         - applicationContext.xml
->         - log4j.properties
->         - mybatis.xml
->         - springmvc.xml
->       - webapp
->         - WEB-INF
->           - web.xml
->         - index.jsp
->     - test
->       - java
->   - pom.xml
+整体框架： [目录结构](目录结构.md) 
 
 创建完文件夹directory之后，需要右键`Mark Directory as`选择`Sources Root`、`Resources Root`、`Test Sources Root`。文件夹图标会变颜色，然后就可以在文件夹下创建各种文件。
 
@@ -275,27 +247,7 @@ tomcat和maven都是apache下的，同一个公司的。maven自带tomcat。
 
 #### log4j.properties
 
-log4j程序会自动去找log4j.properties，log4j.properties还是需要的。
-
-```properties
-# log4j中定义的级别：fatal(致命错误) > error(错误) >warn(警告) >info(普通信息) >debug(调试信息)>trace(跟踪信息)
-log4j.rootLogger=ERROR , console , D 
-# log4j.logger是固定的，a.b.c是命名空间的名字可以只写一部分。
-log4j.logger.a.b=TRACE
-### console ###
-log4j.appender.console=org.apache.log4j.ConsoleAppender
-log4j.appender.console.Target=System.out
-log4j.appender.console.layout=org.apache.log4j.PatternLayout
-log4j.appender.console.layout.ConversionPattern=[%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %C.%M(%L) | %m%n
-### log file ###
-log4j.appender.D=org.apache.log4j.DailyRollingFileAppender
-log4j.appender.D.File=D:/log4j.log
-log4j.appender.D.Append=true
-# 只能生级别，不能降
-log4j.appender.D.Threshold=INFO
-log4j.appender.D.layout=org.apache.log4j.PatternLayout
-log4j.appender.D.layout.ConversionPattern=[%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %
-```
+log4j程序会自动去找log4j.properties，log4j.properties还是需要的。 [log4j.properties](log4j.properties.md) 
 
 ### 5、整合springmvc
 

@@ -13,7 +13,7 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 
 ## Maven的仓库
 
-中央仓库(Central Repository)：Maven官方服务器。里面存放了绝大多数市面上流行的jar。允许用户注册后，上传自己的项目到官方服务器。网址在国外。https://mvnrepository.com/
+中央仓库(Central Repository)：Maven官方服务器，里面存放了绝大多数市面上流行的jar。允许用户注册后，上传自己的项目到官方服务器，网址在国外。https://mvnrepository.com/
 
 本地仓库(Local Repository)：本机的文件夹作为本地仓库，本地仓库指本机的一份拷贝，用来缓存远程下载，包含你尚未发布的临时构件。
 
@@ -35,9 +35,9 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 
 ## Maven的资源坐标
 
-将坐标复制到项目的配置文件中。通过坐标就可以找到jar包。
+将坐标复制到项目的配置文件中，通过坐标就可以找到jar包。
 
-- GroupId：一般是逆向公司域名 com.hh。同一个公司的GroupId都是相同的。
+- GroupId：一般是逆向公司域名 com.hh，同一个公司的GroupId都是相同的。
 - ArtifactId：一般是项目(jar)名 mysql-connector-java。
 - Version：版本号 8.0.28。
 
@@ -51,9 +51,8 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 
 ### 1、本地仓库
 
-1.随便选择一个目录作为本地仓库，可以使用我提供的本地仓库
-
-2.指定本地仓库位置`<localRepository>C:/Users/micha/Documents/Repository</localRepository>`
+1. 随便选择一个目录作为本地仓库，可以使用我提供的本地仓库
+2. 指定本地仓库位置`<localRepository>C:/Users/micha/Documents/Repository</localRepository>`
 
 ### 2、镜像仓库
 
@@ -101,7 +100,7 @@ IEDA：2019版本
 
 ## 创建Maven项目
 
-#### IDEA集成Maven的处理
+### IDEA集成Maven的处理
 
 `File | Settings | Build, Execution, Deployment | Build Tools | Maven`
 
@@ -110,14 +109,6 @@ IEDA：2019版本
 新建Module模块，ModuleSDK选择1.8版本的。
 
 ![image-20230419215721836](assets/image-20230419215721836.png)
-
-给3个坐标：
-
-- GroupId: 一般是逆向公司域名 com.hh。同一个公司的GroupId都是相同的。
-- ArtifactId: 一般是项目(jar)名 TestJarProject。
-- Version: 版本号 8.0.28。
-
-然后手动导入`Import Changes`
 
 ![image-20230420220415684](assets/image-20230420220415684.png)
 
@@ -146,5 +137,4 @@ IEDA：2019版本
 </project>
 ```
 
-选择`import change`
-
+选择手动导入`Import Changes`

@@ -11,7 +11,7 @@ Project项目下创建Module，Module相当于一个个小项目，Module下创�
 删除的时候右键`Remove Module`。
 
 - `Project\Module\lib\mysql-connector-java-8.0.11.jar`
-- `ProjectName\ModuleName\lib\dom4j-2.1.3.jar`
+- `Project\Module\lib\dom4j-2.1.3.jar`
 - 然后右键jar包->`Add as Library`
 
 ## JDBC访问数据库编码步骤

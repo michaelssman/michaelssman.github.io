@@ -209,7 +209,7 @@ public class TestSpringBootApplication {
 }
 ```
 
-### 7、service层代码编写
+### 7、service层
 
 创建包`com.hh.service`，包下面创建文件Interface接口
 

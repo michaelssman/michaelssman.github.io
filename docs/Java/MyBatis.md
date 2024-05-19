@@ -18,31 +18,6 @@ Java项目中每一层都有自己的作用。不同的层创建不同的类，�
 
 ## 搭建MyBatis框架
 
-### 整体框架：
-
-> Project
->
-> - Module
->   - src
->     - main
->       - java
->         - com.hh
->           - mapper
->             - BookMapper.java（接口类）
->           - pojo
->             - Book.java（实体类）
->       - resources
->         - com.hh.mapper
->           - BookMapper.xml（映射文件）
->         - db.properties
->         - log4j.properties
->         - mybatis.xml
->     - test
->       - java
->         - com.hh.test
->           - test.java
->   - pom.xml
-
 ### 1、创建数据库表
 
 直接在MySQL中，创建表和数据。
@@ -369,21 +344,7 @@ MyBatis框架内置日志工厂。日志工厂负责自动加载项目中配置�
 
 将整个日志级别调为ERROR，然后mapper.xml涉及的内容级别降低为TRACE。这样整体的多余信息不会输出，然后mapper.xml中的涉及内容会详细打印。
 
-log4j.properties加入：
-
-```properties
-# log4j中定义的级别：fatal(致命错误) > error(错误) >warn(警告) >info(普通信息) >debug(调试信息)>trace(跟踪信息)
-log4j.rootLogger = error , console
-
-# log4f.logger是固定的，com.hh.mapper.BookMapper是命名空间的名字。
-log4j.logger.com.hh.mapper.BookMapper=TRACE
-
-### console ###
-log4j.appender.console = org.apache.log4j.ConsoleAppender
-log4j.appender.console.Target = System.out
-log4j.appender.console.layout = org.apache.log4j.PatternLayout
-log4j.appender.console.layout.ConversionPattern = [%p] [%-d{yyyy-MM-dd HH\:mm\:ss}] %C.%M(%L) | %m%n
-```
+ [log4j.properties](log4j.properties.md) 
 
 ### 参数传递
 
