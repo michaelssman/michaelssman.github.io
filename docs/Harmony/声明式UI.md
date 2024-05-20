@@ -55,19 +55,6 @@ ToDoListPage {...}
 
 在struct自定义组件内需要使用build方法来进行**UI描述**。
 
-UI描述中采用大括号和缩进来区分组件及内部的内容。
-
-```typescript
-@Entry
-@Component
-struct ToDoListPage { 
-    //...  
-    build() {   
-        //... 
-    }
-}
-```
-
 build方法内可以容纳内置组件和其他自定义组件，如Column和Text都是内置组件，由ArkUI框架提供，ToDoItem为自定义组件，需要开发者使用ArkTS自行声明。
 
 ```typescript
@@ -330,7 +317,3 @@ struct ToDoListPage {
    }
  }
 ```
-
-**图8** ToDoList页面
-
-![点击放大](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20240506144606.16256383444056975630204142554297:50001231000000:2800:DC41587E80DA8626E6CD48D7913F6C134D972E4582F707CA8BC0272E5A9A011F.png?needInitFileName=true?needInitFileName=true)
