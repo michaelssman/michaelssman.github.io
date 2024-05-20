@@ -173,6 +173,7 @@ nav:
       - 操作系统/多线程/锁.md
       - 操作系统/多线程/队列和函数.md
       - 操作系统/多线程/Java/Java多线程.md
+    - 操作系统/IO.md
     - 操作系统/位运算.md
     - 操作系统/数据处理.md
     - 操作系统/正则.md
@@ -196,7 +197,9 @@ nav:
     - 编程/方法调度.md
     - 编程/注解.md
     - 编程/继承多态接口.md
-    - 编程/模块和访问权限/访问权限.md
+    - 模块和访问权限:
+      - 编程/模块和访问权限/访问权限.md
+      - 编程/模块和访问权限/模块.md
   - C++: 
     - C++/README.md
     - C++/字符串和头文件.md
@@ -374,10 +377,17 @@ nav:
     - Java/JDBC数据库连接.md
     - Java/Maven.md
     - Java/框架.md
+    - Java/Java分层.md
+    - Java/log4j.properties.md
+    - Java/目录结构.md
     - Java/MyBatis.md
     - Java/Spring.md
     - Java/SpringMVC&SSM.md
     - Java/SpringBoot.md
+  - HarmonyOS:
+    - Harmony/class.md
+    - Harmony/啊啊啊.md
+    - Harmony/声明式UI.md
   - 数据库:
     - 数据库/SQL.md
     - 数据库/MySQL.md
