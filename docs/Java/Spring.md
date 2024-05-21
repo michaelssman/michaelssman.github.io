@@ -54,15 +54,13 @@ IoC(Inversion of Control)中文名称：控制反转，也被称为DI(dependency
 
 创建对象的权利（控制的位置）,**由JAVA代码转移到spring容器,由spring的容器控制对象的创建,就是控制反转**。
 
-由于控制反转概念比较含糊，所以又给出了一个新的名字:“依赖注入”，相对loC而言，“依赖注入”明确描述了“被注入对象依赖loC容器来配置依赖对象”，Dl(英文全称为Dependency Injection，中文译名依赖注入）是loC的别名。
+由于控制反转概念比较含糊，所以又给出了一个新的名字:“依赖注入”，相对loC而言，“依赖注入”明确描述了“被注入对象依赖loC容器来配置依赖对象”，Dl是loC的别名。
 
 ![IOCDI原理](assets/IOCDI原理.png)
 
 ### IoC/DI原理
 
-如果每次创建对象的位置特别多，创建对象的代码和Java代码耦合性高，层和层之间的耦合性也高。所以把创建对象的代码交由Spring管理，不再在Java代码里创建对象。这就是Ioc/DI。
-
-创建对象在Spring容器，Spring容器看不到，在底层完成的。
+如果每次创建对象的位置特别多，创建对象的代码和Java代码耦合性高，层和层之间的耦合性也高。所以把创建对象的代码交由Spring管理，不再在Java代码里创建对象。这就是IoC/DI。
 
 在程序中会多一个配置文件`applicationContext.xml`，名字可以自己定义。
 
@@ -70,7 +68,7 @@ IoC(Inversion of Control)中文名称：控制反转，也被称为DI(dependency
 
 构建是Spring底层通过反射技能做的。
 
-构建的对象放在一个地方：Spring容器，底层是map集合。Spring容器中放各种对象。
+构建的对象放在**Spring容器**，底层是map集合。Spring容器中放各种对象。
 
 applicationContext.xml通过反射创建对象，所有对象放在容器中，java程序从容器中取对象。
 
@@ -188,7 +186,6 @@ public class Test {
         Book book = (Book)context.getBean("b2");
         //打印对象的信息：
         System.out.println(book.getName() + "---" + book.getId());
-
     }
 }
 ```
@@ -251,7 +248,7 @@ Book b = new Book(1，"项目驱动零起点学Java");
 | @Autowired     | 自动注入。默认byType，如果多个同类型bean，使用byName |
 | @ Value        | 给普通数据类型属性赋值                               |
 
-前五个注解作用都是创建对象。只所以搞出这么多，就是在语义上给你区别，放入不同层用不同的注解。
+前五个注解作用都是创建对象。只所以搞出这么多，就是在语义上给你区别，不同层用不同的注解。
 
 ### @Component的使用
 

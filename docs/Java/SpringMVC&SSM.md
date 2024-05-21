@@ -4,6 +4,8 @@ Spring、SpringMVC、Mybatis就是SSM。
 
 ## Java项目和web项目
 
+Maven构建项目类型：
+
 Java项目（jar项目）是由main()方法来开始的，直接依赖JVM虚拟机就能被编译执行。Java项目不需要服务器。
 
 Web项目（war项目）中的Java文件是tomcat服务器来触发的，脱离了web服务器就无法启动。Web项目需要服务器。Web项目部署到服务器上，任何用户都可以通过浏览器来访问。将本地资源共享给外部访问。入口是`web.xml`。
@@ -29,11 +31,6 @@ Spring是框架，SpringMVC也是框架。
 ## SpringMVC环境搭建（通过Maven构建项目）
 
 ### 1、创建maven-web项目
-
-Maven构建项目类型：
-
-- Java项目：jar项目
-- Web项目：war项目
 
 创建Maven-war项目步骤：
 
@@ -247,7 +244,7 @@ tomcat和maven都是apache下的，同一个公司的。maven自带tomcat。
 
 #### log4j.properties
 
-log4j程序会自动去找log4j.properties，log4j.properties还是需要的。 [log4j.properties](log4j.properties.md) 
+log4j程序会自动去找log4j.properties，log4j.properties还是需要的。 [log4j.properties](日志功能.md) 
 
 ### 5、整合springmvc
 
@@ -508,11 +505,13 @@ public class TestController {//控制器类
         //响应给浏览器index.jsp页面
         return "index.jsp";
     }
+    
     @RequestMapping("/testParam")
     public String testParam(String name, int age){
         System.out.println(name + "-------" + age);
         return "index.jsp";
     }
+    
     @RequestMapping("/testParam2")
     public String testParam2(Person p){
         System.out.println(p.getAge() + "====" + p.getName());

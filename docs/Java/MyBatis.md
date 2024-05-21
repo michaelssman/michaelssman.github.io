@@ -8,8 +8,6 @@
 
 把访问数据源的代码和业务逻辑代码分离开，有利于后期维护和团队分工开发。同时也增加了数据访问代码的复用性。
 
-Java项目中每一层都有自己的作用。不同的层创建不同的类，不同的类功能不一样。
-
 ## MyBatis是ORM框架
 
 **ORM**(Object Relation Mapping)，中文名称：**对象关系映射**。是一种解决数据库发展和面向对象编程语言发展不匹配问题而出现的技术。
@@ -73,11 +71,11 @@ Mybatis查询到的数据要封装成对象，对象要依托于类。
 
 对数据库做操作的sq信息。增删改查在这个配置文件里。
 
-在`项目|module|src|main|resources`下创建com文件夹->hh文件夹->mapper文件夹，然后在mapper文件夹中创建`BookMapper.xml`。
+在`项目|module|src|main|resources`下创建com文件夹->hh文件夹->mapper文件夹，然后在mapper文件夹中创建**映射文件**`BookMapper.xml`。
 
-sql和业务代码解耦。直接在xml中操作。
+sql和业务代码解耦，直接在xml中操作。
 
-创建映射文件：要求：namespace取值必须是接口的全限定路径、标签中的id属性值必须和接口中的方法名对应。
+要求：namespace取值必须是接口的全限定路径、标签中的id属性值必须和接口中的方法名对应。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -217,7 +215,7 @@ MyBatis提供了别名机制可以对某个类起别名或给某个包下所有�
 
 ```xml
 <typeAliases>  
-    <typeAlias type="com.msb.pojo.People" alias="p"></typeAlias>
+    <typeAlias type="com.hh.pojo.Book" alias="b"></typeAlias>
 </typeAliases>
 ```
 
@@ -267,15 +265,9 @@ public class test {
         SqlSession sqlSession = sqlSessionFactory.openSession();
       
       
-	      /// 1、不使用接口类的情况：
+	    /// 1、不使用接口类的情况：
         //执行查询：
         List list0 = sqlSession.selectList("com.hh.mapper.BookMapper.selectAllBooks");
-			  //遍历：
-        for (int i = 0; i <= list0.size() - 1 ; i++) {
-            Book b = (Book)list0.get(i);
-            System.out.println(b.getName() + "---" + b.getAuthor());
-        }
-      
         /// 2、使用接口类的情况：
         //动态代理模式：通过接口找到接口对应的实现类 BookMapper mapper = BookMapper实现类BookMapper.xml
         BookMapper mapper = sqlSession.getMapper(BookMapper.class);
@@ -319,32 +311,7 @@ public class test {
 
 ### 日志功能
 
-MyBatis框架内置日志工厂。日志工厂负责自动加载项目中配置的日志。MyBatis支持以下日志：
-
-- SLF4J
-- Apache Commons Logging
-- Log4j 2
-- **Log4j** (deprecated since 3.5.9)
-- JDK logging
-
-`pom.xml`增加log4j的依赖：
-
-```xml
-<!--log4j的依赖-->
-<dependency>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-    <version>1.2.17</version>
-</dependency>
-```
-
-在resources中新建`log4j.properties`配置文件。名称必须叫这个名字，扩展名必须是.properties。
-
-如果只是想看sql执行过程，那么可以整体调高，局部降低：
-
-将整个日志级别调为ERROR，然后mapper.xml涉及的内容级别降低为TRACE。这样整体的多余信息不会输出，然后mapper.xml中的涉及内容会详细打印。
-
- [log4j.properties](log4j.properties.md) 
+ [log4j.properties](日志功能.md) 
 
 ### 参数传递
 
@@ -362,9 +329,9 @@ MyBatis框架内置日志工厂。日志工厂负责自动加载项目中配置�
 
 **获取数据方式-使用内置名称进行调用**
 
-使用符号： **#{}**进行获取
+使用符号： `#{}`进行获取
 
-{}中名字使用**规则**：
+{}中名字使用规则：
 
 - arg0、arg1、argM(M为从0开始的数字，和方法参数顺序对应)
 - param1、param2、paramN（N为从1开始的数字，和方法参数顺序对应）。
@@ -382,6 +349,6 @@ MyBatis框架内置日志工厂。日志工厂负责自动加载项目中配置�
 - argM.属性名
 - paramN.属性名
 
-PS：argM. 或者 paramN. 不可以省略不写
+PS：`argM.`或者`paramN.`不可以省略不写
 
 先接口、再映射文件。

@@ -52,7 +52,11 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 ### 1、本地仓库
 
 1. 随便选择一个目录作为本地仓库，可以使用我提供的本地仓库
-2. 指定本地仓库位置`<localRepository>C:/Users/micha/Documents/Repository</localRepository>`
+2. 指定本地仓库位置
+
+```xml
+<localRepository>C:/Users/micha/Documents/Repository</localRepository>
+```
 
 ### 2、镜像仓库
 
