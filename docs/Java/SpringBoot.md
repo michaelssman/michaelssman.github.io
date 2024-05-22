@@ -152,33 +152,13 @@ mybatis: type-aliases-package: com.hh.pojo
 
 ### 5、mapper层
 
+ [Mapper数据库连接层.md](Mapper数据库连接层.md) 
+
 #### 5.1、定义mapper接口
-
-```java
-package com.hh.mapper;
-
-import java.util.List;
-
-public interface BookMapper {
-    List selectAllBooks();
-}
-```
 
 #### 5.2、定义mapper.xml映射文件
 
-在resource下新建mybatis文件夹，mapper.xml文件名没有要求了，不需要和接口名完全对应了，是根据namespace去找接口。但是最好还是和接口名字保持一致
-
-```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.hh.mapper.BookMapper">
-    <select id="selectAllBooks" resultType="book">
-        select * from t_book
-    </select>
-</mapper>
-```
+在resource下新建mybatis文件夹，mapper.xml文件名没有要求了，不需要和接口名完全对应了，是根据namespace去找接口。但是最好还是和接口名字保持一致。
 
 #### 5.3、yml配置文件中加入映射文件位置：
 
@@ -211,42 +191,7 @@ public class TestSpringBootApplication {
 
 ### 7、service层
 
-创建包`com.hh.service`，包下面创建文件Interface接口
-
-```java
-package com.hh.service;
-
-import java.util.List;
-
-public interface BookService {
-    List findAllBooks();
-}
-```
-
-编写上面接口的实现类
-
-创建包`com.hh.service.impl`，包下面创建接口的实现类
-
-```java
-package com.hh.service.impl;
-
-import com.hh.mapper.BookMapper;
-import com.hh.service.BookService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-@Service    //注解 构建对象
-public class BookServiceImpl implements BookService {
-    @Autowired  //注解 自动注入
-    private BookMapper bookMapper;
-
-    public List findAllBooks() {
-        return bookMapper.selectAllBooks();
-    }
-}
-```
+ [service业务层](service业务层.md) 
 
 ### 8、controller层
 

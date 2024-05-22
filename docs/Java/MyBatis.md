@@ -67,88 +67,15 @@
 
 Mybatis查询到的数据要封装成对象，对象要依托于类。
 
-### 5、映射文件
+### 5、Mapper数据库连接层
 
-对数据库做操作的sq信息。增删改查在这个配置文件里。
+ [Mapper数据库连接层.md](Mapper数据库连接层.md) 
 
-在`项目|module|src|main|resources`下创建com文件夹->hh文件夹->mapper文件夹，然后在mapper文件夹中创建**映射文件**`BookMapper.xml`。
-
-sql和业务代码解耦，直接在xml中操作。
-
-要求：namespace取值必须是接口的全限定路径、标签中的id属性值必须和接口中的方法名对应。
-
-```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<!--约束 根标签是mapper-->
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!--namespace：防止其它文件也有同样的名字的sql，所以定义一个命名空间。下面的id方法就是接口对应的实现类-->
-<mapper namespace="com.hh.mapper.BookMapper">
-    <!--    查询操作-->
-    <!--    id类似方法名，resultType是返回值-->
-    <!--    id方法名要与接口对应的名字一样-->
-    <select id="selectAllBooks" resultType="b">
-        select * from t_book
-    </select>
-    <select id="selectOneBook" resultType="Book">
-        select * from t_book where name =#{param1} and author = #{param2}
-    </select>
-    <select id="selectOneBook2" resultType="Book">
-        select * from t_book where name =#{name} and author = #{author}
-    </select>
-    <select id="selectOneBook3" resultType="Book">
-        select * from t_book where name =#{param1} and author = #{param2.author}
-    </select>
-    <!--    插入操作-->
-    <insert id="insertBook">
-        insert into t_book (id,name,author,price) values (#{id},#{name},#{author},#{price})
-    </insert>
-</mapper>
-```
-
-**映射文件默认不会被程序加载，如果想要被项目加载，需要配置到核心配置文件mybatis.xml中`<mappers>`。** 
-
-### 6、接口类
-
-项目不写接口类也可以正常使用，但是会存在下面的问题：
-
-- **方法不能直接调用**
-- 多个参数问题处理麻烦
-- 项目没有规范可言，不利于面向接口编程思想。
-
-BookMapper.xml里面的sql不能作为方法调用。
-
-`java_demo/TestMyBatis02/src/main/java/com/hh/mapper/BookMapper.java`
-
-在`项目|module|src|main|java|package（com.hh.mapper）`创建BookMapper接口文件。
-
-```java
-package com.msb.mapper;
-
-import com.msb.pojo.Book;
-
-import java.util.List;
-
-public interface BookMapper {
-    //    定义规则，抽放方法。主要定义方法名，参数，返回值
-    /*public abstract */List selectAllBooks();
-
-    public abstract Book selectOneBook(String name, String author);
-
-    public abstract Book selectOneBook2(Book book);
-
-    public abstract Book selectOneBook3(String name, Book book);
-
-    public abstract int insertBook(Book book);
-}
-```
-
-### 7、创建MyBatis全局配置文件
+### 6、创建MyBatis全局配置文件
 
 （mybaits中文网址：https://mybatis.org/mybatis-3/zh/getting-started.html）
 
-7.1、配置数据库属性文件
+6.1、配置数据库属性文件
 
 在`项目|模块|src|main|resources`中创建`db.properties`文件，后缀名必须是`.properties`。
 
@@ -163,7 +90,7 @@ username=数据库名字
 password=数据库密码
 ```
 
-7.2、在`项目|模块|src|main|resources`中创建`mybatis.xml`文件
+6.2、在`项目|模块|src|main|resources`中创建`mybatis.xml`文件
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -237,7 +164,7 @@ MyBatis框架中内置了一些常见类型的别名。这些别名不需要配�
 
 ![img](assets/a603e8dbde504442b6e06ee08d592cbd.png)
 
-### 8、测试类，启动项目
+### 7、测试类，启动项目
 
 ```java
 package com.hh.test;

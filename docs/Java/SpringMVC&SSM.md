@@ -329,90 +329,15 @@ web项目的入口`web.xml`。tomcat启动的时候走到这里。
 
 #### 6.1、实体类
 
-参考：[实体类.md](实体类.md) 
+参考：[实体类](实体类.md) 
 
 #### 6.2、mapper数据库连接层
 
-##### interface接口文件
-
-创建接口绑定的接口BookMapper的interface文件
-
-构建mapper接口和mapper.xml映射文件:
-
-com.hh.mapper.BookMapper接口：抽象方法
-
-```java
-package com.hh.mapper;
-
-import java.util.List;
-
-public interface BookMapper {
-    //定义抽象方法
-    //查询所有书籍
-    public abstract List selectAll();
-}
-```
-
-##### 接口的映射文件BookMapper.xml
-
-接口构建好之后，构建具体的映射文件：接口的实现类
-
-在`项目\TestSSM\src\main\resources`文件夹下，创建com文件夹、com下创建hh文件夹、hh下创建mapper文件夹。然后创建和接口同名的`BookMapper.xml`文件。
-
-```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
-<mapper namespace="com.hh.mapper.BookMapper"><!--上面接口的命名空间-->
-    <select id="selectAll" resultType="book">
-        select * from t_book
-    </select>
-</mapper>
-```
+ [Mapper数据库连接层](Mapper数据库连接层.md) 
 
 #### 6.3、service业务层
 
-业务层链接数据库层
-
-##### 接口：
-
-```java
-package com.hh.service;
-
-import java.util.List;
-
-public interface BookService {
-    public abstract List findAll();
-}
-```
-
-##### 实现类：
-
-在com.hh.service包下再new一个包com.hh.service.impl
-
-在包下创建实现类BookServiceImpl。
-
-```java
-package com.hh.service.impl;
-
-import com.hh.mapper.BookMapper;
-import com.hh.service.BookService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-@Service//注解 自动创建对象
-public class BookServiceImpl implements BookService {
-    @Autowired    //注解  注入对象
-    private BookMapper bookMapper;
-    public List findAll() {
-        return bookMapper.selectAll();
-    }
-}
-```
+ [service业务层](service业务层.md) 
 
 #### 6.4、controller控制层
 
