@@ -38,56 +38,7 @@ Spring Boot的启动类的作用是启动Spring Boot项目，基于Main方法来
 
 ### 2、pom.xml导入依赖
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.hh</groupId>
-    <artifactId>TestSpringBoot</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    
-    <!--选择springboot的版本-->
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.7.6</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <!--整合springmvc用到的包，添加启动器-->
-    <dependencies>
-
-        <!--添加springmvc的启动器-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>2.7.6</version>
-        </dependency>
-
-        <!--依赖 添加mybatis的启动器-->
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>2.1.3</version>
-        </dependency>
-        <!--mybatis链接数据库需要mysql驱动-->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.21</version>
-        </dependency>
-    </dependencies>
-
-</project>
-```
+ [pom.xml](pom.xml.md) 
 
 ### 3、编写YML配置文件
 
@@ -152,7 +103,7 @@ mybatis: type-aliases-package: com.hh.pojo
 
 ### 5、mapper层
 
- [Mapper数据库连接层.md](Mapper数据库连接层.md) 
+ [Mapper数据库连接层](Java分层\Mapper数据库连接层.md) 
 
 #### 5.1、定义mapper接口
 
@@ -191,44 +142,13 @@ public class TestSpringBootApplication {
 
 ### 7、service层
 
- [service业务层](service业务层.md) 
+ [Service业务层](Java分层\Service业务层.md) 
 
 ### 8、controller层
 
-```java
-package com.hh.controller;
+ [Controller控制层](Java分层\Controller控制层.md) 
 
-import com.hh.pojo.Book;
-import com.hh.service.BookService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+### 9、运行
 
-import java.util.List;
-
-@Controller //通过注解 创建对象
-public class BookController {
-    @Autowired//注入对象
-    private BookService bookService;
-
-    //注解，访问路径
-    @RequestMapping(value = "/findBooks", produces = "text/html;charset=utf-8")
-    @ResponseBody//注解，响应数据
-    public String findBooks() {//控制单元
-        List list = bookService.findAllBooks();
-        System.out.println("一共有几本书籍：" + list.size());
-        //定义一个字符串用来接收响应的字符串：
-        String s = "";
-        for (int i = 0; i < list.size(); i++) {
-            Book book = (Book) list.get(i);
-            s += book.getName();
-            s += book.getAuthor();
-        }
-        return s;
-    }
-}
-```
-
-运行，浏览器访问`http://localhost:9999/findBooks`测试
+浏览器访问`http://localhost:9999/findBooks`测试
 
