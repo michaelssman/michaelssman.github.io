@@ -225,3 +225,7 @@ git config --global pull.rebase false
   ```
 
 选择一个策略后，运行相应的命令，然后你应该能够成功地拉取和合并远程分支的更改。
+
+## git reset
+
+`git reset --hard efa965834671bd20a19c049b572b647fc07613c4`会回退到`efa965834671bd20a19c049b572b647fc07613c4`这次提交，后面的提交在本地没有了，但是可以拉取。

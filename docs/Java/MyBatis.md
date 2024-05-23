@@ -69,7 +69,7 @@ Mybatis查询到的数据要封装成对象，对象要依托于类。
 
 ### 5、Mapper数据库连接层
 
- [Mapper数据库连接层.md](Mapper数据库连接层.md) 
+ [Mapper数据库连接层](Java分层/Mapper数据库连接层.md) 
 
 ### 6、创建MyBatis全局配置文件
 

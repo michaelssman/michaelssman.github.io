@@ -333,11 +333,11 @@ web项目的入口`web.xml`。tomcat启动的时候走到这里。
 
 #### 6.2、mapper数据库连接层
 
- [Mapper数据库连接层](Mapper数据库连接层.md) 
+ [Mapper数据库连接层](Java分层/Mapper数据库连接层.md) 
 
 #### 6.3、service业务层
 
- [service业务层](service业务层.md) 
+ [Service业务层](Java分层/Service业务层.md) 
 
 #### 6.4、controller控制层
 

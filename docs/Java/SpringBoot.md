@@ -152,7 +152,7 @@ mybatis: type-aliases-package: com.hh.pojo
 
 ### 5、mapper层
 
- [Mapper数据库连接层.md](Mapper数据库连接层.md) 
+ [Mapper数据库连接层](Java分层/Mapper数据库连接层.md) 
 
 #### 5.1、定义mapper接口
 
@@ -191,7 +191,7 @@ public class TestSpringBootApplication {
 
 ### 7、service层
 
- [service业务层](service业务层.md) 
+ [Service业务层](Java分层/Service业务层.md) 
 
 ### 8、controller层
 
