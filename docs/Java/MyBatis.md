@@ -63,8 +63,6 @@
 
 ### 4、实体类
 
-`java_demo/TestMyBatis02/src/main/java/com/hh/pojo/Book.java`创建Book实体类。
-
 Mybatis查询到的数据要封装成对象，对象要依托于类。
 
 ### 5、Mapper数据库连接层

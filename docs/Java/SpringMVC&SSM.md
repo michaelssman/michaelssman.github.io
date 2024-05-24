@@ -83,91 +83,7 @@ Spring是框架，SpringMVC也是框架。
 
 tomcat和maven都是apache下的，同一个公司的。maven自带tomcat。
 
-在`pom.xml`的`<build>`中添加Tomcat插件。
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.hh</groupId>
-    <artifactId>TestSSM</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>war</packaging>
-
-    <dependencies>
-        <!-- 【1】mybatis的依赖 -->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.5.9</version>
-        </dependency>
-        <!-- 【2】连接mysql的依赖 -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.28</version>
-        </dependency>
-        <!-- 【3】log4j的依赖 -->
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
-        <!-- 【4】spring的核心依赖 -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>5.3.16</version>
-        </dependency>
-        <!-- 【5】springjdbc依赖-->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <version>5.3.16</version>
-        </dependency>
-        <!-- 【6】spring整合mybatis的依赖 -->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis-spring</artifactId>
-            <version>2.0.7</version>
-        </dependency>
-        <!-- 【7】springwebmvc的依赖 -->
-        <!-- 依赖了Spring框架核心功能的5个依赖以及Spring整合Web的依赖spring-web -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>	<!--SpringMVC-->
-            <version>5.3.16</version>
-        </dependency>
-    </dependencies>
-    
-    <!-- 加入tomcat插件 -->
-    <pluginRepositories>
-        <pluginRepository>
-            <id>mvnrepository</id>
-            <url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
-    
-    <build>
-        <plugins>
-            <!-- Tomcat插件 -->
-            <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat8-maven-plugin</artifactId>
-                <version>3.0-r1756463</version>
-                <configuration>
-                    <port>8888</port>	<!-- 端口-->
-                    <path>/ssm</path>	<!--指定项目的上下文路径-->
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-</project>
-```
+ [pom.xml](Maven/pom.xml.md) 
 
 ### 4、spring整合mybatis
 
@@ -329,7 +245,7 @@ web项目的入口`web.xml`。tomcat启动的时候走到这里。
 
 #### 6.1、实体类
 
-参考：[实体类](实体类.md) 
+[实体类](实体类.md) 
 
 #### 6.2、mapper数据库连接层
 
@@ -341,17 +257,13 @@ web项目的入口`web.xml`。tomcat启动的时候走到这里。
 
 #### 6.4、controller控制层
 
- [Controller控制层](Java分层\Controller控制层.md) 
+ [Controller控制层](Java分层/Controller控制层.md) 
 
 ### 7、启动项目tomcat
 
 点击IDEA右侧Maven面板。
 
-tomcat7：选择要`运行的项目（配置插件的项目） -> Plugins -> tomcat7 -> tomcat7:run`双击启动。
-
-tomcat8：选择要`运行的项目（配置插件的项目） -> Plugins -> tomcat8 -> tomcat8:run-war`双击启动。
-
-tomcat7对@ResponseBody数据响应的注解支持的不是特别好，升级为tomcat8。双击tomcat8:run-war启动。
+选择要`运行的项目（配置插件的项目） -> Plugins -> tomcat8 -> tomcat8:run-war`，双击tomcat8:run-war启动。
 
 #### 乱码问题解决：
 

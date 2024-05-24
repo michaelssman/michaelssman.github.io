@@ -375,10 +375,15 @@ nav:
     - Java/实体类.md
     - Java/IO.md
     - Java/JDBC.md
-    - Java/Maven.md
+    - Maven:
+      - Java/Maven/Maven.md
+      - Java/Maven/pom.xml.md
     - Java/框架.md
-    - Java/Java分层.md
-    - Java/Mapper数据库连接层.md
+    - Java分层:
+      - Java/Java分层/Controller控制层.md
+      - Java/Java分层/Java分层.md
+      - Java/Java分层/Mapper数据库连接层.md
+      - Java/Java分层/Service业务层.md
     - Java/日志功能.md
     - Java/目录结构.md
     - Java/MyBatis.md

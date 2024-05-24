@@ -17,7 +17,7 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 
 本地仓库(Local Repository)：本机的文件夹作为本地仓库，本地仓库指本机的一份拷贝，用来缓存远程下载，包含你尚未发布的临时构件。
 
-镜像仓库(Mirror Repository)：对于国内来说，访问国外的Maven仓库会特别慢。镜像仓库就是另一台备份/复制了中央仓库的服务器。平时使用时国内开发者多使用阿里云镜像或华为云镜像，这样可以大大提升从中央仓库下载资源的速度。但它的角色仍然是一个远程库。
+镜像仓库(Mirror Repository)：访问国外的Maven仓库特别慢。镜像仓库就是另一台备份/复制了中央仓库的服务器。平时使用时国内开发者多使用阿里云镜像或华为云镜像，这样可以大大提升从中央仓库下载资源的速度。但它的角色仍然是一个远程库。
 
 ### 查找依赖流程
 
@@ -75,7 +75,7 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 
 ### 3、配置JDK
 
-在使用Maven后，项目由Maven来完成编译和打包运行，需要指定使用的JDK版本。
+在使用Maven后，项目由Maven编译和打包运行，需要指定使用的JDK版本。
 
 17换成1.8。
 
@@ -108,37 +108,16 @@ IEDA：2019版本
 
 `File | Settings | Build, Execution, Deployment | Build Tools | Maven`
 
-![image-20230419215252262](assets/image-20230419215252262.png)
+![image-20230419215252262](../assets/image-20230419215252262.png)
 
 新建Module模块，ModuleSDK选择1.8版本的。
 
-![image-20230419215721836](assets/image-20230419215721836.png)
+![image-20230419215721836](../assets/image-20230419215721836.png)
 
-![image-20230420220415684](assets/image-20230420220415684.png)
+![image-20230420220415684](../assets/image-20230420220415684.png)
 
 ## pom.xml文件中添加依赖包
 
-引入各种jar包的坐标都在这里面写。
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.hh</groupId>
-    <artifactId>TestJarProject</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
-    <dependencies>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.28</version>
-        </dependency>
-    </dependencies>
-</project>
-```
+ [pom.xml](pom.xml.md) 
 
 选择手动导入`Import Changes`

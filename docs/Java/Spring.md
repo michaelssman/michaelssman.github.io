@@ -74,7 +74,7 @@ applicationContext.xml通过反射创建对象，所有对象放在容器中，j
 
 ## 第一个Spring项目-完成IoC/DI代码的实现
 
-### 1、创建Maven项目，添加依赖
+### 1、创建Maven项目，pom.xml添加依赖
 
 在项目的pom.xml中添加Spring项目的最基本依赖。
 
@@ -92,34 +92,11 @@ Spring项目想要运行起来必须包含:
 
 - spring-jcl.jar
 
-
 所以在Maven中想要使用Spring框架只需要在项目中导入`spring-context`就可以了，其他的jar包根据Maven依赖传递性都可以导入进来。
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.hh</groupId>
-    <artifactId>TestSpring01</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>5.3.23</version>
-        </dependency>
-    </dependencies>
-
-</project>
-```
+ [pom.xml](Maven/pom.xml.md) 
 
 ### 2、实体类
-
-Project\Maven\src\main\java\com.hh.pojo包\Book.java
 
 ### 3、Spring配置文件
 
