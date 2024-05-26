@@ -140,8 +140,6 @@ yml配置文件和properties配置文件可以并存。
 
 ### 4、实体类
 
-项目|src|main|java|创建com.hh.pojo包里面放实体类
-
 #### 4.1、yml配置文件加入别名配置
 
 ```yaml

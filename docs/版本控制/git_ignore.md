@@ -1,4 +1,4 @@
-## .gitignore_global
+# .gitignore_global
 
 全局ignore，文件路径：`/Users/michael/.gitignore_global`。
 
