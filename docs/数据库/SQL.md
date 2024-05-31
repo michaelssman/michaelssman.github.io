@@ -272,9 +272,15 @@ ON
 
 如果数据库中存在`from_ac_id`或`to_ac_id`没有对应账户记录的情况，可能需要使用`LEFT JOIN`来代替`INNER JOIN`，以确保即使某些账户信息不存在也能返回明细记录。
 
+### SUM
 
+```sql
+SELECT SUM(${AccountModel.balanceKey}) as total FROM $_tableName
+```
 
+使用SQL的SUM函数来计算所有账户的总余额，结果是一个列表。
 
+## 总结
 
 删除、修改、查找都可以使用where条件
 

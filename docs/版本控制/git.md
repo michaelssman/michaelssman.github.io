@@ -48,9 +48,11 @@ git checkout <commit-hash>
 
 ## git status
 
+可以查看哪些文件修改了或者冲突了。
+
 命令的输出十分详细
 
-git status --short或git status -s 格式更为紧凑的输出
+git status --short或git status -s 格式更为紧凑的输出。
 
 ## git commit -m "注释"
 
