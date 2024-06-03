@@ -21,6 +21,7 @@ Podfile.lock
 # gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
 
 ## User settings
+*.xcuserstate
 xcuserdata/
 
 ## Build generated

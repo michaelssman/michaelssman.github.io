@@ -24,6 +24,8 @@ dartpad.dev 在线编程
 
 https://flutter.dev/ 下载flutter
 
+https://book.flutterchina.club/ flutter实战第二版
+
 ## flutter安装
 
 可以放到家目录里：只能自己访问。
