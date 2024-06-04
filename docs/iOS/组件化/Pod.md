@@ -35,7 +35,7 @@ pod install 命令功能：
 
 ### pod install --repo-update
 
-`pod install --repo-update`安装并更新库。本地仓库repo里面可能没有想要安装的库，需要从远端更新这个库。
+安装并更新库。本地仓库repo里面可能没有想要安装的库，需要从远端更新这个库。
 
 ## pod update
 
