@@ -80,6 +80,8 @@ git push <远程主机名> <分支名>
 
 ## 分支
 
+![git](assets/git.png)
+
 列出分支基本命令：`git branch`。
 
 没有参数时，**git branch** 会列出你在本地的分支。
