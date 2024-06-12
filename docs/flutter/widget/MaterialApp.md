@@ -30,6 +30,7 @@ MaterialApp(
     dividerColor: Colors.black12,
     textTheme: const TextTheme(
       titleLarge: TextStyle(color: Colors.black, fontSize: 20.0),
+      titleMedium: TextStyle(fontSize: 16.0, color: Color(0xFF333333)),
       titleSmall: TextStyle(fontSize: 12.0, color: Colors.black26),
     ),
     //统一定义TabBar的样式，包括指示器的大小、标签的颜色、标签之间的间距等。
@@ -83,6 +84,7 @@ MaterialApp(
     //字体
     textTheme: const TextTheme(
       titleLarge: TextStyle(color: Colors.white, fontSize: 20.0),
+      titleMedium: TextStyle(fontSize: 16.0, color: Color(0xFF333333)),
       titleSmall: TextStyle(fontSize: 12.0, color: Color(0xFFB0B4BB)),
     ),
     //统一定义TabBar的样式，包括指示器的大小、标签的颜色、标签之间的间距等。
