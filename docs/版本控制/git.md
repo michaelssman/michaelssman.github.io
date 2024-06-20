@@ -72,7 +72,7 @@ git push <远程主机名> <分支名>
 
 ## git tag
 
-`git tag`：查看当前tag
+`git tag`：查看所有tag。
 
 `git tag 0.1.0`：打tag。
 

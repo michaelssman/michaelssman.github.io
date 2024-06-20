@@ -3,7 +3,16 @@
 TODO
 
 - [ ] 明细列表的头部和List分开，都根据model刷新。
-- [ ] 账户列表数据应该在账户列表页请求。
+- [ ] report改为stateless widget
+
+version1.2.2
+
+- 修改报表页UI。
+
+### version1.2.1
+
+- 设置字体比例。
+- 账户列表数据懒加载。
 
 ### version1.2.0
 

@@ -72,15 +72,31 @@ object_setClass(self, class);
 
 ## swift - KVO
 
+### 观察系统控件属性
+
+```swift
+textLab.addObserver(self, forKeyPath: "text", options: [.new], context: nil)
+
+// 回调
+override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+  if keyPath == "text" {
+    if let newText = change?[.newKey] as? String {
+      print("lllllll:\(newText)")
+    }
+  }
+}
+
+//
+deinit {
+  textLab.removeObserver(self, forKeyPath: "text")
+}
+```
+
 - 只有 NSObject 才能支持 KVO。
 - 要观察的属性必须使用 @objc dynamic 修饰。
 
-iOS 11和Swift 4为KVO带来了重大变化.
-
 - 这些类应该采用`@objcMembers`注释,以使KVO或KVO无声地失败.
 - 必须声明要观察的变量`dynamic`.
-
-这是更新的实现,
 
 ```swift
 @objcMembers
