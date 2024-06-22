@@ -3,11 +3,11 @@
 TODO
 
 - [ ] 明细列表的头部和List分开，都根据model刷新。
-- [ ] report改为stateless widget
 
 version1.2.2
 
 - 修改报表页UI。
+- report改为stateless widget
 
 ### version1.2.1
 
