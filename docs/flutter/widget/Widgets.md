@@ -6,11 +6,8 @@
 ElevatedButton(
   //去除ElevatedButton的背景色
   style: ButtonStyle(
-    backgroundColor:
-    MaterialStateProperty.all<
-    Color>(Colors.transparent),
-    shadowColor: MaterialStateProperty
-    .all<Color>(Colors.transparent),
+    backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent),
+    shadowColor: WidgetStateProperty.all<Color>(Colors.transparent),
   ),
   onPressed: () {
     print("点击按钮");

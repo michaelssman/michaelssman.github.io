@@ -7,7 +7,8 @@ TODO
 version1.2.2
 
 - 修改报表页UI。
-- report改为stateless widget
+- report改为stateless widget。
+- 明细添加搜索功能。
 
 ### version1.2.1
 

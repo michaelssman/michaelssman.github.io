@@ -57,7 +57,10 @@ Container(
   //child的装饰
   decoration: BoxDecoration(
     //边框
-    border: Border.all(color: Colors.amberAccent, width: 2.0),
+    border: Border.all(
+      color: Colors.amberAccent, 
+      width: 2.0,
+    ),
     //背景颜色
     color: Colors.green,
     //圆角
