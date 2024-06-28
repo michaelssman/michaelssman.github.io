@@ -78,7 +78,7 @@ git push <远程主机名> <分支名>
 
 `git push --tags`：提交tag到远程。
 
-## 分支
+## branch
 
 ![git](assets/git.png)
 
@@ -116,25 +116,14 @@ git checkout (BranchName) 切换到我们要修改的分支。
 
 `git merge --no-ff '3.3.0'`：将3.3.0分支合并到当前分支。
 
-#### 在本地检出、审核和合并
-
-**第 1 步.** 获取并检出这个合并请求的功能分支：
-
-```
-git fetch origin
-git checkout -b '3.3.2费用改造' 'origin/3.3.2费用改造'
-```
-
-**第 2 步.** 在本地查看更改。
-
-**第 3 步.** 将功能分支合并到目标分支并修复任何冲突。
-
 ```
 git fetch origin
 //先切换到主分支
 git checkout 'main'
-//合并3.3.2分支到main分支
+//将3.3.2分支合并到main分支，并且会创建一个新的合并提交，即使可以进行快速前进合并。
 git merge --no-ff '3.3.2'
+//将目标分支推送到 GitLab。
+git push origin 'main'
 ```
 
 其中 `--no-ff` 选项的作用是强制执行非快速前进（non-fast-forward）合并。
@@ -176,22 +165,7 @@ A---B---C (main)
             D---E
     ```
 
-**命令示例**
-
-```sh
-git checkout main
-git merge --no-ff feature
-```
-
-在这个例子中，`feature` 分支将被合并到 `main` 分支，并且会创建一个新的合并提交，即使可以进行快速前进合并。
-
 使用 `--no-ff` 可以更清晰地记录分支合并的历史，尤其在团队协作或复杂项目中，这种记录方式可以帮助更好地理解代码的演变过程。
-
-**第 4 步.** 将目标分支推送到 GitLab。
-
-```
-git push origin 'main'
-```
 
 ## 冲突解决
 

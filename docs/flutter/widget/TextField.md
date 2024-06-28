@@ -46,28 +46,34 @@ TextField(
 通过检查`ScrollNotification`的runtimeType来判断是否为`UserScrollNotification`，如果是，则隐藏键盘。
 
 ```dart
-Widget autoHiddenKeyBoardWidget(BuildContext context, Widget child) {
-  return GestureDetector(
-    //点击回收
-    onTap: () => FocusScope.of(context).unfocus(),
-    //滑动回收
-    child: NotificationListener<ScrollNotification>(
-      onNotification: (ScrollNotification notification) {
-        // Check if the notification is specifically a UserScrollNotification
-        if (notification is UserScrollNotification) {
-          // Check the direction of the scroll to determine if it's a forward scroll
-          if (notification.direction == ScrollDirection.forward ||
-              notification.direction == ScrollDirection.reverse) {
-            // Hide the keyboard
-            FocusScope.of(context).unfocus();
+class AutoHiddenKeyBoardWidget extends StatelessWidget {
+  final Widget child;
+  const AutoHiddenKeyBoardWidget({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      //点击回收
+      onTap: () => FocusScope.of(context).unfocus(),
+      //滑动回收
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification notification) {
+          // Check if the notification is specifically a UserScrollNotification
+          if (notification is UserScrollNotification) {
+            // Check the direction of the scroll to determine if it's a forward scroll
+            if (notification.direction == ScrollDirection.forward ||
+                notification.direction == ScrollDirection.reverse) {
+              // Hide the keyboard
+              FocusScope.of(context).unfocus();
+            }
           }
-        }
-        // Return true to stop the notification from propagating further
-        return true;
-      },
-      child: child,
-    ),
-  );
+          // Return true to stop the notification from propagating further
+          return true;
+        },
+        child: child,
+      ),
+    );
+  }
 }
 ```
 
