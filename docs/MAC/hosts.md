@@ -28,5 +28,12 @@ xxxx  github.com
 
 修改hosts文件后，你可能需要清除DNS缓存才能让更改生效。打开命令提示符（以管理员身份）并输入`ipconfig /flushdns`。
 
- 
+###  设置终端代理
+
+```sh
+PS C:\Users\micha> git config --global https.proxy http://127.0.0.1:10809
+PS C:\Users\micha> git config --global http.proxy http://127.0.0.1:10809
+```
+
+
 
