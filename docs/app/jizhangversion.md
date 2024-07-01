@@ -4,12 +4,12 @@ TODO
 
 - [ ] 明细列表的头部和List分开，都根据model刷新。
 
-version1.3.0
+### version1.3.0
 
 - 修改报表页UI。
 - report改为stateless widget。
 - 明细添加搜索功能。
-- 图片适配深色模式。
+- 收支类别图片适配深色模式。
 
 ### version1.2.1
 
