@@ -1,6 +1,7 @@
 # Java
 
-PPT：https://cloud.fynote.com/share/s/z9JGaVu6
+课件PPT地址：https://cloud.fynote.com/share/s/z9JGaVu6
+补充文档：https://cloud.fynote.com/share/s/V9JIaVwAC
 
 ## JDK
 
