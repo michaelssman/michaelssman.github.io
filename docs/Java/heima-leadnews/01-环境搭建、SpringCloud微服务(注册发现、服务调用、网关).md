@@ -150,6 +150,284 @@ IDEA开发工具配置
 
 不可预知异常：系统异常，500、404、空指针等。
 
+## heima-leadnews-gateway
+
+右键AppGatewayApplication.java启动某一个网关。
+
+## heima-leadnews-service
+
+每一个微服务都有一个UserApplication引导类，左键引导类debug启动工程。
+
+## heima-leadnews-model
+
+### AppHttpCodeEnum
+
+AppHttpCodeEnum.java里面给code和errorMessage赋值。一般结合ResponseResult使用。
+
+### ResponseResult
+
+ResponseResult是接口开发统一的返回，开发规范，可以表示所有接口返回的规范。
+
+```java
+package com.heima.model.common.dtos;
+
+import com.alibaba.fastjson.JSON;
+import com.heima.model.common.enums.AppHttpCodeEnum;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 通用的结果返回类
+ *
+ * @param <T>
+ */
+public class ResponseResult<T> implements Serializable {
+
+    private String host;
+
+    private Integer code;
+
+    private String errorMessage;
+	//一个是对象，多个是列表
+    private T data;
+
+    public ResponseResult() {
+        this.code = 200;
+    }
+
+    public ResponseResult(Integer code, T data) {
+        this.code = code;
+        this.data = data;
+    }
+
+    public ResponseResult(Integer code, String msg, T data) {
+        this.code = code;
+        this.errorMessage = msg;
+        this.data = data;
+    }
+
+    public ResponseResult(Integer code, String msg) {
+        this.code = code;
+        this.errorMessage = msg;
+    }
+
+    public static ResponseResult errorResult(int code, String msg) {
+        ResponseResult result = new ResponseResult();
+        return result.error(code, msg);
+    }
+
+    public static ResponseResult okResult(int code, String msg) {
+        ResponseResult result = new ResponseResult();
+        return result.ok(code, null, msg);
+    }
+
+    public static ResponseResult okResult(Object data) {
+        ResponseResult result = setAppHttpCodeEnum(AppHttpCodeEnum.SUCCESS, AppHttpCodeEnum.SUCCESS.getErrorMessage());
+        if (data != null) {
+            result.setData(data);
+        }
+        return result;
+    }
+
+    public static ResponseResult errorResult(AppHttpCodeEnum enums) {
+        return setAppHttpCodeEnum(enums, enums.getErrorMessage());
+    }
+
+    public static ResponseResult errorResult(AppHttpCodeEnum enums, String errorMessage) {
+        return setAppHttpCodeEnum(enums, errorMessage);
+    }
+
+    public static ResponseResult setAppHttpCodeEnum(AppHttpCodeEnum enums) {
+        return okResult(enums.getCode(), enums.getErrorMessage());
+    }
+
+    private static ResponseResult setAppHttpCodeEnum(AppHttpCodeEnum enums, String errorMessage) {
+        return okResult(enums.getCode(), errorMessage);
+    }
+
+    public ResponseResult<?> error(Integer code, String msg) {
+        this.code = code;
+        this.errorMessage = msg;
+        return this;
+    }
+
+    public ResponseResult<?> ok(Integer code, T data) {
+        this.code = code;
+        this.data = data;
+        return this;
+    }
+
+    public ResponseResult<?> ok(Integer code, T data, String msg) {
+        this.code = code;
+        this.data = data;
+        this.errorMessage = msg;
+        return this;
+    }
+
+    public ResponseResult<?> ok(T data) {
+        this.data = data;
+        return this;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public static void main(String[] args) {
+        //前置
+        /*AppHttpCodeEnum success = AppHttpCodeEnum.SUCCESS;
+        System.out.println(success.getCode());
+        System.out.println(success.getErrorMessage());*/
+
+        //查询一个对象
+        /*Map map = new HashMap();
+        map.put("name","zhangsan");
+        map.put("age",18);
+        ResponseResult result = ResponseResult.okResult(map);
+        System.out.println(JSON.toJSONString(result));*/
+
+        //新增，修改，删除  在项目中统一返回成功即可
+        /*ResponseResult result = ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+        System.out.println(JSON.toJSONString(result));*/
+
+        //根据不用的业务返回不同的提示信息  比如：当前操作需要登录、参数错误
+        /*ResponseResult result = ResponseResult.errorResult(AppHttpCodeEnum.NEED_LOGIN,"自定义提示信息");
+        System.out.println(JSON.toJSONString(result));*/
+
+        //查询分页信息
+        PageResponseResult responseResult = new PageResponseResult(1, 5, 50);
+        List list = new ArrayList();
+        list.add("itcast");
+        list.add("itheima");
+        responseResult.setData(list);
+        System.out.println(JSON.toJSONString(responseResult));
+
+    }
+
+}
+```
+
+失败1
+
+```java
+{
+    "host": null,
+    "code": 2,
+    "errorMessage": "密码错误",
+    "data": null
+}
+```
+
+失败2
+
+```java
+{
+    "host": null,
+    "code": 1002,
+    "errorMessage": "用户不存在",
+    "data": null
+}
+```
+
+成功
+
+```java
+{
+    "host": null,
+    "code": 200,
+    "errorMessage": "操作成功",
+    "data": {
+        "user": {
+            "id": 4,
+            "name": "admin",
+            "phone": "13511223456"
+        },
+        "token": "eyJhbGciOiJIUzUxMiIsInppcCI6IkdaSVAifQ.H4sIAAAAAAAAAC2L0QrDIAwA_yXPFaqxavs3SQ3MQkGIhY2xf28Ke7vjuC8co8EGKLjvdanOoxQXQ57dmhkdcw6ccSGqESZoNGDzyZc5leRxAr3Ybv3okPPpqqYvaSeZ0VXNqHdjeff_mUN4zmYt_m786DRJgAAAAA.RcSqR7Ii6sNkB-OUSTu6-BgMO5qw5Xu2pVq9s1L2CVe727goJZjp0PdaFUEbWavGu3JhZg-plTuIOGRzZcEVnw"
+    }
+}
+```
+
+#### PageResponseResult
+
+PageResponseResult继承了ResponseResult。
+
+```java
+package com.heima.model.common.dtos;
+
+import java.io.Serializable;
+
+public class PageResponseResult extends ResponseResult implements Serializable {
+    private Integer currentPage;
+    private Integer size;
+    private Integer total;
+
+    public PageResponseResult(Integer currentPage, Integer size, Integer total) {
+        this.currentPage = currentPage;
+        this.size = size;
+        this.total = total;
+    }
+
+    public PageResponseResult() {
+
+    }
+
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
+    }
+}
+```
+
 ## 登录
 
 ### 需求分析
@@ -321,13 +599,6 @@ md5是不可逆加密，md5相同的密码每次加密都一样，不太安全�
 手动加密（md5+随机字符串）
 
 ![image-20240705145624516](assets/image-20240705145624516.png)
-
-### 思路分析
-
-![image-20210412142536782](01-环境搭建、SpringCloud微服务(注册发现、服务调用、网关).assets\image-20210412142536782.png)
-
-- 用户输入了用户名和密码进行登录，校验成功后返回jwt(基于当前用户的id生成)
-- 用户游客登录，生成jwt返回(基于默认值0生成)
 
 ### **用户端微服务搭建**
 
@@ -518,15 +789,33 @@ logback.xml
 
 #### 1、接口定义
 
+接口路径：/api/v1/login/login_auth
+
 ```java
 @RestController
-@RequestMapping("/api/v1/login")
+@RequestMapping("/api/v1/login")//接口路径
 public class ApUserLoginController {
 
-    @PostMapping("/login_auth")
-    public ResponseResult login(@RequestBody LoginDto dto) {
+    @PostMapping("/login_auth")//接口路径，请求方式POST
+    public ResponseResult login(@RequestBody LoginDto dto) {//参数：LoginDto，响应结果：ResponseResult
         return null;
     }
+}
+```
+
+LoginDto里面包含phone手机号和password密码
+
+```java
+@Data
+public class LoginDto  {
+    /**
+    * 手机号
+    */
+    private String phone;
+    /**
+    * 密码
+    */
+    private String password;
 }
 ```
 
@@ -568,6 +857,13 @@ public interface ApUserService extends IService<ApUser>{
 
 #### 3.1、实现类
 
+#### 思路分析
+
+![image-20210412142536782](01-环境搭建、SpringCloud微服务(注册发现、服务调用、网关).assets\image-20210412142536782.png)
+
+- 用户输入了用户名和密码进行登录，校验成功后返回jwt（**基于当前用户的id生成**）
+- 用户游客登录，生成jwt返回（**基于默认值0生成**）
+
 ```java
 package com.heima.user.service.impl;
 
@@ -580,46 +876,55 @@ import com.heima.model.user.pojos.ApUser;
 import com.heima.user.mapper.ApUserMapper;
 import com.heima.user.service.ApUserService;
 import com.heima.utils.common.AppJwtUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
-@Service
+@Service//注解
+@Transactional//事务
+@Slf4j//打印日志
 public class ApUserServiceImpl extends ServiceImpl<ApUserMapper, ApUser> implements ApUserService {
-
+    /**
+     * app端登录功能
+     *
+     * @param dto
+     * @return
+     */
     @Override
     public ResponseResult login(LoginDto dto) {
-
-        //1.正常登录（手机号+密码登录）
-        if (!StringUtils.isBlank(dto.getPhone()) && !StringUtils.isBlank(dto.getPassword())) {
-            //1.1查询用户
-            ApUser apUser = getOne(Wrappers.<ApUser>lambdaQuery().eq(ApUser::getPhone, dto.getPhone()));
-            if (apUser == null) {
-                return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST,"用户不存在");
+        //1.正常登录 用户名和密码都不为空
+        if (StringUtils.isNotBlank(dto.getPhone()) && StringUtils.isNotBlank(dto.getPassword())) {
+            //1.1 根据手机号查询用户信息
+            ApUser dbUser = getOne(Wrappers.<ApUser>lambdaQuery().eq(ApUser::getPhone, dto.getPhone()));
+            if (dbUser == null) {
+                return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST, "用户信息不存在");
             }
-
             //1.2 比对密码
-            String salt = apUser.getSalt();
-            String pswd = dto.getPassword();
-            pswd = DigestUtils.md5DigestAsHex((pswd + salt).getBytes());
-            if (!pswd.equals(apUser.getPassword())) {
+            String salt = dbUser.getSalt();//从数据库中获取盐
+            String password = dto.getPassword();//前端传过来的密码
+            String pswd = DigestUtils.md5DigestAsHex((password + salt).getBytes());
+            if (!pswd.equals(dbUser.getPassword())) {//是否和数据库中的密码一样
                 return ResponseResult.errorResult(AppHttpCodeEnum.LOGIN_PASSWORD_ERROR);
             }
-            //1.3 返回数据  jwt
+            //1.3 返回数据  jwt（token）  user
+            //AppJwtUtil是项目中写的工具类，getToken是AppJwtUtil的静态方法
+            String token = AppJwtUtil.getToken(dbUser.getId().longValue());
             Map<String, Object> map = new HashMap<>();
-            map.put("token", AppJwtUtil.getToken(apUser.getId().longValue()));
-            apUser.setSalt("");
-            apUser.setPassword("");
-            map.put("user", apUser);
+            map.put("token", token);
+            dbUser.setSalt("");//盐不需要返回给前端
+            dbUser.setPassword("");//密码不返回给前端
+            map.put("user", dbUser);
             return ResponseResult.okResult(map);
         } else {
-            //2.游客  同样返回token  id = 0
+            //2.游客登录
             Map<String, Object> map = new HashMap<>();
-            map.put("token", AppJwtUtil.getToken(0l));
+            map.put("token", AppJwtUtil.getToken(0L));
             return ResponseResult.okResult(map);
         }
     }
@@ -644,6 +949,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/login")
 public class ApUserLoginController {
 
+    //注入service
     @Autowired
     private ApUserService apUserService;
 
@@ -654,11 +960,11 @@ public class ApUserLoginController {
 }
 ```
 
-## 接口工具postman、swagger、knife4j
+## 接口测试工具
 
 ### postman
 
-Postman是一款功能强大的网页调试与发送网页HTTP请求的Chrome插件。postman被500万开发者和超100,000家公司用于每月访问1.3亿个API。
+Postman是一款功能强大的网页调试与发送网页HTTP请求的Chrome插件。
 
 官方网址：https://www.postman.com/
 
@@ -668,7 +974,7 @@ Swagger 是一个规范和完整的框架，用于生成、描述、调用和可
 
 1. 使得前后端分离开发更加方便，有利于团队协作
 
-2. 接口的文档在线自动生成，降低后端开发人员编写接口文档的负担
+2. 接口的文档**在线**自动生成，降低后端开发人员编写接口文档的负担
 
 3. 功能测试 
 
@@ -678,6 +984,10 @@ Swagger 是一个规范和完整的框架，用于生成、描述、调用和可
 
 - 引入依赖,在heima-leadnews-model和heima-leadnews-common模块中引入该依赖
 
+  heima-leadnews-common：所有的微服务会引用common
+  
+  heima-leadnews-model：参数的描述
+  
   ```xml
   <dependency>
       <groupId>io.springfox</groupId>
@@ -794,6 +1104,9 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 
 我们在ApUserLoginController中添加Swagger注解，代码如下所示：
 
+> @Api(value = "app端用户登录", tags = "ap_user", description = "app端用户登录API")//在类上面描述
+> @ApiOperation("用户登录")//在某一个方法上面描述
+
 ```java
 @RestController
 @RequestMapping("/api/v1/login")
@@ -812,6 +1125,8 @@ public class ApUserLoginController {
 ```
 
 LoginDto
+
+参数的注解` @ApiModelProperty`
 
 ```java
 @Data
@@ -835,7 +1150,7 @@ public class LoginDto {
 
 ### knife4j
 
-knife4j是为Java MVC框架集成Swagger生成Api文档的增强解决方案,前身是swagger-bootstrap-ui,取名kni4j是希望它能像一把匕首一样小巧,轻量,并且功能强悍!
+knife4j是为Java MVC框架集成Swagger生成Api文档的增强解决方案，前身是swagger-bootstrap-ui，取名kni4j是希望它能像一把匕首一样小巧，轻量，并且功能强悍！
 
 gitee地址：https://gitee.com/xiaoym/knife4j
 
@@ -920,7 +1235,7 @@ public class Swagger2Configuration {
 | 注解              | 说明                                                         |
 | ----------------- | ------------------------------------------------------------ |
 | `@EnableSwagger2` | 该注解是Springfox-swagger框架提供的使用Swagger注解，该注解必须加 |
-| `@EnableKnife4j`  | 该注解是`knife4j`提供的增强注解,Ui提供了例如动态参数、参数过滤、接口排序等增强功能,如果你想使用这些增强功能就必须加该注解，否则可以不用加 |
+| `@EnableKnife4j`  | 该注解是`knife4j`提供的增强注解，Ui提供了例如动态参数、参数过滤、接口排序等增强功能，如果你想使用这些增强功能就必须加该注解，否则可以不用加 |
 
 - 添加配置
 
@@ -940,6 +1255,10 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 
 **网关概述**
 
+一个前端请求首先会经过网关，之后再路由到一个个的微服务。
+
+网关里面还可以做授权、限流、登录、日志的收集等。
+
 ![image-20240705151511998](assets/image-20240705151511998.png)
 
 在heima-leadnews-gateway导入以下依赖
@@ -958,10 +1277,11 @@ pom文件
         <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
     </dependency>
     <!--        nacos配置-->
-     <dependency>
+ 	<dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-        </dependency>
+    </dependency>
+    <!--        jwt解析的jar包-->
     <dependency>
         <groupId>io.jsonwebtoken</groupId>
         <artifactId>jjwt</artifactId>
@@ -969,9 +1289,9 @@ pom文件
 </dependencies>
 ```
 
-在heima-leadnews-gateway下创建heima-leadnews-app-gateway微服务
+在heima-leadnews-gateway下创建heima-leadnews-app-gateway微服务Module
 
-引导类：
+在heima-leadnews-app-gateway|src|main|java|heima-leadnews-app-gateway包下创建引导类：
 
 ```java
 package com.heima.app.gateway;
@@ -989,7 +1309,7 @@ public class AppGatewayApplication {
 }
 ```
 
-bootstrap.yml
+在heima-leadnews-app-gateway|src|main|java|resource中创建bootstrap.yml配置文件
 
 ```yaml
 server:
@@ -1000,8 +1320,10 @@ spring:
   cloud:
     nacos:
       discovery:
+      	#注册中心的地址
         server-addr: 192.168.200.130:8848
       config:
+        #配置中心的地址
         server-addr: 192.168.200.130:8848
         file-extension: yml
 ```
@@ -1017,10 +1339,10 @@ spring:
       globalcors:
         add-to-simple-url-handler-mapping: true
         corsConfigurations:
-          '[/**]':
-            allowedHeaders: "*"
-            allowedOrigins: "*"
-            allowedMethods:
+          '[/**]': #匹配所有的请求
+            allowedHeaders: "*" 
+            allowedOrigins: "*" #跨域处理 允许所有的域
+            allowedMethods:		#支持的方法
               - GET
               - POST
               - DELETE
@@ -1043,6 +1365,8 @@ spring:
 ### 认证过滤器
 
 **全局过滤器实现jwt校验**
+
+校验token。
 
 ![image-20210705110434492](01-环境搭建、SpringCloud微服务(注册发现、服务调用、网关).assets\image-20210705110434492.png)
 
@@ -1081,9 +1405,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-@Component
-@Slf4j
-public class AuthorizeFilter implements Ordered, GlobalFilter {
+@Component//被spring管理的注解
+@Slf4j//打印日志的注解
+public class AuthorizeFilter implements Ordered, GlobalFilter {//需要实现Ordered, GlobalFilter
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         //1.获取request和response对象
@@ -1101,9 +1425,9 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
         String token = request.getHeaders().getFirst("token");
 
         //4.判断token是否存在
-        if(StringUtils.isBlank(token)){
+        if(StringUtils.isBlank(token)){//token为空
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
-            return response.setComplete();
+            return response.setComplete();//结束请求
         }
 
         //5.判断token是否有效
@@ -1115,8 +1439,8 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();
             }
-        }catch (Exception e){
-            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();//打印失败日志
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
         }

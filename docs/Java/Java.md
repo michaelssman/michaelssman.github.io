@@ -23,6 +23,7 @@ https://www.jetbrains.com/
 - ctrl+y：删除一行
 - sout：System.*out*.println();
 - alt+Insert：类构造器，可以选择多个属性
+- ctrl+i：service的imp类中，实现接口方法。
 
 ## 方法重载
 
