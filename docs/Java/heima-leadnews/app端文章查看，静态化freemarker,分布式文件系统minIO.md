@@ -6,7 +6,7 @@
 
 文章布局展示
 
-![image-20210419151801252](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210419151801252.png)
+![image-20210419151801252](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210419151801252.png)
 
 
 
@@ -14,19 +14,19 @@
 
 ap_article  文章基本信息表
 
-![image-20210419151839634](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210419151839634.png)
+![image-20210419151839634](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210419151839634.png)
 
 ap_article_config  文章配置表
 
-![image-20210419151854868](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210419151854868.png)
+![image-20210419151854868](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210419151854868.png)
 
 ap_article_content 文章内容表
 
-![image-20210419151912063](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210419151912063.png)
+![image-20210419151912063](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210419151912063.png)
 
 三张表关系分析
 
-![image-20210419151938103](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210419151938103.png)
+![image-20210419151938103](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210419151938103.png)
 
 
 
@@ -289,7 +289,7 @@ public class ApArticleContent implements Serializable {
 
 ### 1.4)实现思路
 
-![image-20210419152011931](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210419152011931.png)
+![image-20210419152011931](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210419152011931.png)
 
 1,在默认频道展示10条文章信息
 
@@ -341,7 +341,7 @@ public class ArticleHomeDto {
 
 #### 1.6.1)：导入heima-leadnews-article微服务，资料在当天的文件夹中
 
-![image-20210420000326669](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210420000326669.png)
+![image-20210420000326669](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210420000326669.png)
 
 <font color='red'>注意：需要在heima-leadnews-service的pom文件夹中添加子模块信息，如下：</font>
 
@@ -354,7 +354,7 @@ public class ArticleHomeDto {
 
 在idea中的maven中更新一下，如果工程还是灰色的，需要在重新添加文章微服务的pom文件，操作步骤如下：
 
-![image-20210420001037992](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210420001037992.png)
+![image-20210420001037992](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210420001037992.png)
 
 
 
@@ -687,7 +687,7 @@ spring:
 
 ​	模板编写为FreeMarker Template Language (FTL)。它是简单的，专用的语言， *不是* 像PHP那样成熟的编程语言。 那就意味着要准备数据在真实编程语言中来显示，比如数据库查询和业务运算， 之后模板显示已经准备好的数据。在模板中，你可以专注于如何展现数据， 而在模板之外可以专注于要展示什么数据。 
 
-![1528820943975](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\1528820943975.png)
+![1528820943975](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/1528820943975.png)
 
 
 
@@ -913,7 +913,7 @@ public class FreemarkerDemotApplication {
 
 请求：http://localhost:8881/basic
 
-![1576129529361](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\1576129529361.png)
+![1576129529361](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/1576129529361.png)
 
 
 
@@ -1201,7 +1201,7 @@ ${k_index}：
 
 姓名为“小强”则字体颜色显示为红色。
 
-![1539947776259](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\1539947776259.png)
+![1539947776259](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/1539947776259.png)
 
 
 
@@ -1577,7 +1577,7 @@ public String testInnerFunc(Model model) {
 
 使用freemarker原生Api将页面生成html文件，本节测试html文件生成的方法：
 
-![image-20210422163843108](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210422163843108.png)
+![image-20210422163843108](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210422163843108.png)
 
 #### 2.4.2) 静态化测试 
 
@@ -1747,15 +1747,15 @@ docker run -p 9000:9000 --name minio -d --restart=always -e "MINIO_ACCESS_KEY=mi
 
 假设我们的服务器地址为http://192.168.200.130:9000，我们在地址栏输入：http://http://192.168.200.130:9000/ 即可进入登录界面。
 
-![image-20210417102204739](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210417102204739.png)
+![image-20210417102204739](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210417102204739.png)
 
 Access Key为minio   Secret_key 为minio123    进入系统后可以看到主界面
 
-![image-20210417102356582](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210417102356582.png)
+![image-20210417102356582](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210417102356582.png)
 
 点击右下角的“+”号 ，点击下面的图标，创建一个桶
 
-![image-20210417102435088](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210417102435088.png)
+![image-20210417102435088](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210417102435088.png)
 
 ### 3.4 快速入门
 
@@ -2244,7 +2244,7 @@ public class MinioTest {
 
 ### 4.1)需求分析
 
-![image-20210602180753705](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210602180753705.png)
+![image-20210602180753705](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210602180753705.png)
 
 
 
@@ -2254,11 +2254,11 @@ public class MinioTest {
 
 用户某一条文章，根据文章的id去查询文章内容表，返回渲染页面
 
-![image-20210602180824202](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210602180824202.png)
+![image-20210602180824202](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210602180824202.png)
 
 方案二
 
-![image-20210602180856833](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210602180856833.png)
+![image-20210602180856833](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210602180856833.png)
 
 
 
@@ -2268,11 +2268,11 @@ public class MinioTest {
 
 2.资料中找到模板文件（article.ftl）拷贝到article微服务下
 
-![image-20210602180931839](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210602180931839.png)
+![image-20210602180931839](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210602180931839.png)
 
 3.资料中找到index.js和index.css两个文件手动上传到MinIO中
 
-![image-20210602180957787](app端文章查看，静态化freemarker,分布式文件系统minIO.assets\image-20210602180957787.png)
+![image-20210602180957787](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210602180957787.png)
 
 4.在文章微服务中导入依赖
 
