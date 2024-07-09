@@ -356,10 +356,6 @@ public class ArticleHomeDto {
 
 ![image-20210420001037992](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210420001037992.png)
 
-
-
-
-
 需要在nacos中添加对应的配置
 
 ```yaml
