@@ -6,7 +6,7 @@
 
 ## 技术栈
 
-![img](01-环境搭建、SpringCloud微服务(注册发现、服务调用、网关).assets\f3accd2ba01c41b0a9ac98370241eba3.png)
+![img](assets/f3accd2ba01c41b0a9ac98370241eba3.png)
 
 - Spring-Cloud-Gateway : 微服务之前架设的网关服务，实现服务注册中的API请求路由，以及控制流速控制和熔断处理都是常用的架构手段，而这些功能Gateway天然支持。
 - 运用Spring Boot快速开发框架，构建项目工程；并结合Spring Cloud全家桶技术，实现后端个人中心、自媒体、管理中心等微服务。
@@ -35,12 +35,12 @@
 
 5. 修改虚拟机的网络模式为NAT
 
-​	![image-20210407205431849](01-环境搭建、SpringCloud微服务(注册发现、服务调用、网关).assets\image-20210407205431849.png)
+​	![image-20210407205431849](assets/image-20210407205431849.png)
 
 6. 启动虚拟机，**用户名：root  密码：itcast**，当前虚拟机的ip已手动固定（静态IP), 地址为：**192.168.200.130**
 7. 使用FinalShell客户端链接
 
-​	![image-20210407205502305](01-环境搭建、SpringCloud微服务(注册发现、服务调用、网关).assets\image-20210407205502305.png)
+​	![image-20210407205502305](assets/image-20210407205502305.png)
 
 ## Nacos环境搭建
 
@@ -119,13 +119,13 @@ docker ps
 
 IDEA开发工具配置
 
-![image-20210412141601018](01-环境搭建、SpringCloud微服务(注册发现、服务调用、网关).assets\image-20210412141601018.png)
+![image-20210412141601018](assets/image-20210412141601018.png)
 
 设置本地仓库，建议使用资料中提供好的仓库
 
 设置项目编码格式
 
-![image-20210412141631441](01-环境搭建、SpringCloud微服务(注册发现、服务调用、网关).assets\image-20210412141631441.png)
+![image-20210412141631441](assets/image-20210412141631441.png)
 
 ## 工程主体结构
 
@@ -716,7 +716,7 @@ spring:
 
 在nacos中创建配置文件
 
-![image-20210412143121648](01-环境搭建、SpringCloud微服务(注册发现、服务调用、网关).assets\image-20210412143121648.png)
+![image-20210412143121648](assets/image-20210412143121648.png)
 
 ```yaml
 spring:
@@ -859,7 +859,7 @@ public interface ApUserService extends IService<ApUser>{
 
 #### 思路分析
 
-![image-20210412142536782](01-环境搭建、SpringCloud微服务(注册发现、服务调用、网关).assets\image-20210412142536782.png)
+![image-20210412142536782](assets/image-20210412142536782.png)
 
 - 用户输入了用户名和密码进行登录，校验成功后返回jwt（**基于当前用户的id生成**）
 - 用户游客登录，生成jwt返回（**基于默认值0生成**）
@@ -1330,7 +1330,7 @@ spring:
 
 在nacos的配置中心创建dataid为leadnews-app-gateway的yml配置
 
-![image-20210728140447647](01-环境搭建、SpringCloud微服务(注册发现、服务调用、网关).assets\image-20210728140447647.png)
+![image-20210728140447647](assets/image-20210728140447647.png)
 
 ```yaml
 spring:
@@ -1368,7 +1368,7 @@ spring:
 
 校验token。
 
-![image-20210705110434492](01-环境搭建、SpringCloud微服务(注册发现、服务调用、网关).assets\image-20210705110434492.png)
+![image-20210705110434492](assets/image-20210705110434492.png)
 
 思路分析：
 
@@ -1472,7 +1472,7 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {//需要实现Ord
 
 ### 前端项目部署思路
 
-![image-20210416095950485](01-环境搭建、SpringCloud微服务(注册发现、服务调用、网关).assets\image-20210416095950485.png)
+![image-20210416095950485](assets/image-20210416095950485.png)
 
 通过nginx来进行配置，功能如下
 
