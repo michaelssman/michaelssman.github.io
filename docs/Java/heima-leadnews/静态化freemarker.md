@@ -203,7 +203,7 @@ Hello ${name} <br>
 
 ### 创建启动类
 
-引导类
+引导类，右键文件debug启动。
 
 ```java
 package com.heima.freemarker;
@@ -245,7 +245,7 @@ Hello ${name}
 <# >FTL指令</#> 
 ```
 
-  4、文本，仅文本信息，这些不是freemarker的注释、插值、FTL指令的内容会被freemarker忽略解析，直接输出内容。
+  4、文本，仅文本信息，这些不是freemarker的注释、插值、FTL指令的内容会被freemarker忽略解析，**直接输出内容**。
 
 ```velocity
 <#--freemarker中的普通文本-->
@@ -253,6 +253,27 @@ Hello ${name}
 ```
 
 ### 集合指令（List和Map）
+
+指令格式
+
+```html
+<#list></#list>
+```
+
+例子
+
+```html
+<#list stus as stu>
+    <tr>
+        <td>${stu_index+1}</td>
+        <td>${stu.name}</td>
+        <td>${stu.age}</td>
+        <td>${stu.money}</td>
+    </tr>
+</#list>
+```
+
+${k_index}：得到循环的下标，使用方法是在stu后边加"_index"，它的值是从0开始
 
 1、数据模型：
 
@@ -300,58 +321,6 @@ public String list(Model model){
 
 在templates中新增`02-list.ftl`文件
 
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Hello World!</title>
-</head>
-<body>
-    
-<#-- list 数据的展示 -->
-<b>展示list中的stu数据:</b>
-<br>
-<br>
-<table>
-    <tr>
-        <td>序号</td>
-        <td>姓名</td>
-        <td>年龄</td>
-        <td>钱包</td>
-    </tr>
-</table>
-<hr>
-    
-<#-- Map 数据的展示 -->
-<b>map数据的展示：</b>
-<br/><br/>
-<a href="###">方式一：通过map['keyname'].property</a><br/>
-输出stu1的学生信息：<br/>
-姓名：<br/>
-年龄：<br/>
-<br/>
-<a href="###">方式二：通过map.keyname.property</a><br/>
-输出stu2的学生信息：<br/>
-姓名：<br/>
-年龄：<br/>
-
-<br/>
-<a href="###">遍历map中两个学生信息：</a><br/>
-<table>
-    <tr>
-        <td>序号</td>
-        <td>姓名</td>
-        <td>年龄</td>
-        <td>钱包</td> 
-    </tr>
-</table>
-<hr>
- 
-</body>
-</html>
-```
-
 实例代码：
 
 ```html
@@ -374,6 +343,7 @@ public String list(Model model){
         <td>年龄</td>
         <td>钱包</td>
     </tr>
+    <#-- 下面是遍历list -->
     <#list stus as stu>
         <tr>
             <td>${stu_index+1}</td>
@@ -410,7 +380,7 @@ public String list(Model model){
     </tr>
     <#list stuMap?keys as key >
         <tr>
-            <td>${key_index}</td>
+            <td>${key_index+1}</td>
             <td>${stuMap[key].name}</td>
             <td>${stuMap[key].age}</td>
             <td>${stuMap[key].money}</td>
@@ -423,19 +393,34 @@ public String list(Model model){
 </html>
 ```
 
-👆上面代码解释：
+1.获取map中的值
 
-${k_index}：
-	index：得到循环的下标，使用方法是在stu后边加"_index"，它的值是从0开始
+```html
+map['keyname'].property
+```
+
+```html
+map.keyname.property
+```
+
+2.遍历map
+
+```html
+<#list userMap?keys as key>
+    key:${key}--value:${userMap["${key}"]}
+</#list>
+```
 
 ### if指令
 
 if 指令即判断指令，是常用的FTL指令，freemarker在解析时遇到if会进行判断，条件为真则输出if中间的内容，否则跳过内容不再输出。
 
-- 指令格式
+指令格式
 
 ```html
-<#if ></if>
+<#if expression>
+<#else>
+</#if>
 ```
 
 1、数据模型：
@@ -444,29 +429,9 @@ if 指令即判断指令，是常用的FTL指令，freemarker在解析时遇到i
 
 2、模板：
 
-```velocity
-<table>
-    <tr>
-        <td>姓名</td>
-        <td>年龄</td>
-        <td>钱包</td>
-    </tr>
-    <#list stus as stu>
-        <tr>
-            <td >${stu.name}</td>
-            <td>${stu.age}</td>
-            <td >${stu.mondy}</td>
-        </tr>
-    </#list>
-
-</table>
-```
-
-
-
 实例代码：
 
-```velocity
+```html
 <table>
     <tr>
         <td>姓名</td>
@@ -481,7 +446,7 @@ if 指令即判断指令，是常用的FTL指令，freemarker在解析时遇到i
                 <td>${stu.age}</td>
                 <td>${stu.money}</td>
             </tr>
-            <#else >
+        <#else >
             <tr>
                 <td>${stu_index}</td>
                 <td>${stu.name}</td>
@@ -493,31 +458,19 @@ if 指令即判断指令，是常用的FTL指令，freemarker在解析时遇到i
 </table>
 ```
 
+在freemarker中，判断是否相等，=与==是一样的
 
+### 运算符
 
+#### 1、算数运算符
 
-
-3、输出：
-
-姓名为“小强”则字体颜色显示为红色。
-
-![1539947776259](assets/1539947776259.png)
-
-
-
-### 2.3.4)  运算符
-
-**1、算数运算符**
-
-FreeMarker表达式中完全支持算术运算,FreeMarker支持的算术运算符包括:
+FreeMarker表达式中完全支持算术运算，FreeMarker支持的算术运算符包括:
 
 - 加法： `+`
 - 减法： `-`
 - 乘法： `*`
 - 除法： `/`
 - 求模 (求余)： `%`
-
-
 
 模板代码
 
@@ -533,13 +486,7 @@ FreeMarker表达式中完全支持算术运算,FreeMarker支持的算术运算�
 
 除了 + 运算以外，其他的运算只能和 number 数字类型的计算。
 
-
-
-
-
-
-
-**2、比较运算符**
+#### 2、比较运算符
 
 - **`=`**或者**`==`**:判断两个值是否相等. 
 - **`!=`**:判断两个值是否不等. 
@@ -547,8 +494,6 @@ FreeMarker表达式中完全支持算术运算,FreeMarker支持的算术运算�
 - **`>=`**或者**`gte`**:判断左边值是否大于等于右边值 
 - **`<`**或者**`lt`**:判断左边值是否小于右边值 
 - **`<=`**或者**`lte`**:判断左边值是否小于等于右边值 
-
-
 
 = 和 == 模板代码
 
@@ -616,30 +561,21 @@ public String testOperation(Model model) {
 }
 ```
 
-
-
 **比较运算符注意**
 
-- **`=`**和**`!=`**可以用于字符串、数值和日期来比较是否相等
-- **`=`**和**`!=`**两边必须是相同类型的值,否则会产生错误
-- 字符串 **`"x"`** 、**`"x "`** 、**`"X"`**比较是不等的.因为FreeMarker是精确比较
-- 其它的运行符可以作用于数字和日期,但不能作用于字符串
-- 使用**`gt`**等字母运算符代替**`>`**会有更好的效果,因为 FreeMarker会把**`>`**解释成FTL标签的结束字符
-- 可以使用括号来避免这种情况,如:**`<#if (x>y)>`**
+- **`=`**和**`!=`**可以用于字符串、数值和日期来比较是否相等。
+- **`=`**和**`!=`**两边必须是相同类型的值,否则会产生错误。
+- 字符串 **`"x"`** 、**`"x "`** 、**`"X"`**比较是不等的，因为FreeMarker是精确比较。
+- 其它的运行符可以作用于数字和日期,但不能作用于字符串。
+- 使用**`gt`**等字母运算符代替**`>`**会有更好的效果，因为 FreeMarker会把**`>`**解释成FTL标签的结束字符，可以使用括号来避免这种情况,如:**`<#if (x>y)>`**。
 
-
-
-
-
-**3、逻辑运算符**
+#### 3、逻辑运算符
 
 - 逻辑与:&& 
 - 逻辑或:|| 
 - 逻辑非:! 
 
-逻辑运算符只能作用于布尔值,否则将产生错误 。
-
-
+逻辑运算符只能作用于布尔值，否则将产生错误 。
 
 模板代码
 
@@ -658,9 +594,7 @@ public String testOperation(Model model) {
 <hr>
 ```
 
-
-
-### 2.3.5) 空值处理
+### 空值处理
 
 **1、判断某变量是否存在使用 “??”**
 
@@ -669,14 +603,12 @@ public String testOperation(Model model) {
 例：为防止stus为空报错可以加上判断如下：
 
 ```velocity
-    <#if stus??>
+<#if stus??>
     <#list stus as stu>
-    	......
+        ......
     </#list>
-    </#if>
+</#if>
 ```
-
-
 
 **2、缺失变量默认值使用 “!”**
 
@@ -684,108 +616,50 @@ public String testOperation(Model model) {
 
   例：  ${name!''}表示如果name为空显示空字符串。
 
-
-
 - 如果是嵌套对象则建议使用（）括起来
 
   例： ${(stu.bestFriend.name)!''}表示，如果stu或bestFriend或name为空默认显示空字符串。
 
-
-
-
-
-### 2.3.6) 内建函数
+### 内建函数
 
 内建函数语法格式： **`变量+?+函数名称`**  
 
-**1、和到某个集合的大小**
+#### 1、集合的大小
 
 **`${集合名?size}`**
 
-
-
-**2、日期格式化**
+#### 2、日期格式化
 
 显示年月日: **`${today?date}`** 
 显示时分秒：**`${today?time}`**   
 显示日期+时间：**`${today?datetime}`**   
 自定义格式化：  **`${today?string("yyyy年MM月")}`**
 
-
-
-**3、内建函数`c`**
+#### 3、内建函数`c`
 
 model.addAttribute("point", 102920122);
 
 point是数字型，使用${point}会显示这个数字的值，每三位使用逗号分隔。
 
-如果不想显示为每三位分隔的数字，可以使用c函数将数字型转成字符串输出
+如果不想显示为每三位分隔的数字，可以使用**c函数将数字型转成字符串**输出
 
 **`${point?c}`**
 
+#### 4、将json字符串转成对象
 
-
-**4、将json字符串转成对象**
+主要用到eval函数
 
 一个例子：
 
 其中用到了 assign标签，assign的作用是定义一个变量。
+
+定义变量text是一个字符串，然后使用eval函数将字符串转成对象。
 
 ```velocity
 <#assign text="{'bank':'工商银行','account':'10101920201920212'}" />
 <#assign data=text?eval />
 开户行：${data.bank}  账号：${data.account}
 ```
-
-
-
-模板代码：
-
-````HTML
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>inner Function</title>
-</head>
-<body>
-
-    <b>获得集合大小</b><br>
-
-    集合大小：
-    <hr>
-
-
-    <b>获得日期</b><br>
-
-    显示年月日:      <br>
-
-    显示时分秒：<br>
-
-    显示日期+时间：<br>
-
-    自定义格式化：  <br>
-
-    <hr>
-
-    <b>内建函数C</b><br>
-    没有C函数显示的数值： <br>
-
-    有C函数显示的数值：
-
-    <hr>
-
-    <b>声明变量assign</b><br>
-
-
-<hr>
-</body>
-</html>
-````
-
-
-
-
 
 内建函数模板页面：
 
@@ -863,23 +737,17 @@ public String testInnerFunc(Model model) {
 }
 ```
 
-
-
-
-
-
-
-## 2.4) 静态化测试
+## 静态化测试
 
 之前的测试都是SpringMVC将Freemarker作为视图解析器（ViewReporter）来集成到项目中，工作中，有的时候需要使用Freemarker原生Api来生成静态内容，下面一起来学习下原生Api生成文本文件。
 
-### 2.4.1) 需求分析
+### 需求分析
 
 使用freemarker原生Api将页面生成html文件，本节测试html文件生成的方法：
 
 ![image-20210422163843108](assets/image-20210422163843108.png)
 
-### 2.4.2) 静态化测试 
+### 静态化测试 
 
 根据模板文件生成html文件
 
@@ -975,3 +843,4 @@ public class FreemarkerTest {
     }
 }
 ```
+
