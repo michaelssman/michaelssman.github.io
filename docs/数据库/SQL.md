@@ -118,9 +118,14 @@ txn.rawUpdate(
 ## SELECT
 
 ```sql
-SELECT * FROM TABLENAME WHERE 字段1 = '<#值#>' AND showtime < '1517904068.1524' ORDER BY 字段2 DESC LIMIT 10 OFFSET %d ;
+SELECT * FROM TABLENAME 
+WHERE 字段1 = '<#值#>' 
+AND name = '倒数离开' 
+AND showtime < '1517904068.1524' 
+ORDER BY 字段2 DESC 
+LIMIT 10 OFFSET %d ;
 
-根据字段2倒序排序 查找字段1等于某个值 并且showtime小于1517904068.1524 的数据，并且分页，每页10个。
+-- 根据字段2倒序排序 查找字段1等于某个值 并且showtime小于1517904068.1524 的数据，并且分页，每页10个。
 ```
 
 `*`代表所有属性列的内容，如果其中一部分的话需要特别指明 如下的这句
@@ -229,7 +234,9 @@ GROUP BY
 
 注意：`ac_detail_date`是一个日期类型的字段，`ac_detail_amount`是一个数值类型的字段，`ac_detail_type`是一个文本类型的字段，且"收入"和"支出"是表示收入类型和支出类型的准确值。
 
-### JOIN连接两个表
+### LEFT JOIN关联查询
+
+JOIN连接两个表
 
 数据库有两个表：
 账户表：MC_TEXT，该表中的字段：id, type, name, balance。
@@ -258,7 +265,7 @@ SELECT
     d.ac_detail_type,
     d.ac_detail_amount
 FROM
-    MC_DETAIL_TEXT AS d
+    MC_DETAIL_TEXT AS d --详情表别名为d
 INNER JOIN
     MC_TEXT AS f
 ON

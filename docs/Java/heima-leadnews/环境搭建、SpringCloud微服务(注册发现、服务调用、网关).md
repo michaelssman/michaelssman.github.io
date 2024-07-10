@@ -160,6 +160,9 @@ IDEA开发工具配置
 
 ## heima-leadnews-model
 
+- dtos：接口请求的参数
+- pojos：数据库实体类
+
 ### AppHttpCodeEnum
 
 AppHttpCodeEnum.java里面给code和errorMessage赋值。一般结合ResponseResult使用。
