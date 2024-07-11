@@ -733,17 +733,17 @@ spring:
 
 ### 实现步骤
 
-1.在artile微服务中添加MinIO和freemarker的支持，参考测试项目
+1、在artile微服务中添加MinIO和freemarker的支持，参考测试项目
 
-2.资料中找到模板文件（article.ftl）拷贝到article微服务下
+2、资料中找到模板文件（article.ftl）拷贝到article微服务下
 
 ![image-20210602180931839](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210602180931839.png)
 
-3.资料中找到index.js和index.css两个文件手动上传到MinIO中
+3、资料中找到index.js和index.css两个文件手动上传到MinIO中
 
 ![image-20210602180957787](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210602180957787.png)
 
-4.在文章微服务中导入依赖
+4、在文章微服务中导入依赖
 
 ```xml
 <dependencies>
