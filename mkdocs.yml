@@ -396,8 +396,12 @@ nav:
     - Java/SpringBoot.md
     - Java/JWT.md
     - heima-leadnews:
-      - Java/heima-leadnews/环境搭建、SpringCloud微服务(注册发现、服务调用、网关).md
-      - Java/heima-leadnews/app端文章查看，静态化freemarker,分布式文件系统minIO.md
+      - Java/heima-leadnews/环境搭建.md
+      - Java/heima-leadnews/工程主体结构.md
+      - Java/heima-leadnews/SpringCloud微服务(注册发现、服务调用、网关).md
+      - Java/heima-leadnews/静态化freemarker.md
+      - Java/heima-leadnews/分布式文件系统MinIO.md
+      - Java/heima-leadnews/app端文章查看.md
       - Java/heima-leadnews/自媒体文章发布.md
       - Java/heima-leadnews/自媒体文章-自动审核.md
       - Java/heima-leadnews/延迟任务精准发布文章.md

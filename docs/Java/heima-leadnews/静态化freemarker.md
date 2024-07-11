@@ -745,6 +745,8 @@ public String testInnerFunc(Model model) {
 
 使用freemarker原生Api将页面生成html文件，本节测试html文件生成的方法：
 
+模版+数据 通过freemarker整合 生成html
+
 ![image-20210422163843108](assets/image-20210422163843108.png)
 
 ### 静态化测试 
@@ -792,10 +794,11 @@ import java.util.*;
 @RunWith(SpringRunner.class)
 public class FreemarkerTest {
 
+	  //注入
     @Autowired
     private Configuration configuration;
 
-    @Test
+    @Test//注解
     public void test() throws IOException, TemplateException {
         //freemarker的模板对象，获取模板
         Template template = configuration.getTemplate("02-list.ftl");
