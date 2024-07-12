@@ -2,7 +2,7 @@
 
 文章列表从业务角度出发，如何进行分分表，分表的好处和原则。
 
-文章详情会重点分析大文本展示方案。静态化模版技术freemarker，为了更好的访问静态化页面，访问速度最快的分布式文件系统minio。
+文章详情会重点分析大文本展示方案。静态化模版技术freemarker，为了更好的访问静态化页面，访问速度最快的分布式文件系统MinIO。
 
 ## 文章列表
 
@@ -48,7 +48,7 @@ longtext：大文本类型
 **拆分规则**：
 
 1. 把不常用的字段单独放在一张表。
-2. 把text，blob等大字段拆分出来单独放在一张表。
+2. 把text，blob等**大字段**拆分出来单独放在一张表。
 3. 经常组合查询的字段单独放在一张表中。
 
 ### 导入文章数据库
@@ -759,7 +759,7 @@ spring:
 </dependencies>
 ```
 
-5.新建ApArticleContentMapper
+5、新建ApArticleContentMapper
 
 ```java
 package com.heima.article.mapper;
@@ -773,7 +773,7 @@ public interface ApArticleContentMapper extends BaseMapper<ApArticleContent> {
 }
 ```
 
-6.在artile微服务中新增测试类（后期新增文章的时候创建详情静态页，目前暂时手动生成）
+6、在artile微服务中新增测试类（后期**新增文章的时候创建详情静态页**，目前暂时手动生成）
 
 ```java
 package com.heima.article.test;
@@ -821,17 +821,18 @@ public class ArticleFreemarkerTest {
 
     @Test
     public void createStaticUrlTest() throws Exception {
-        //1.获取文章内容
+        //1.从数据库中获取文章内容
         ApArticleContent apArticleContent = apArticleContentMapper.selectOne(Wrappers.<ApArticleContent>lambdaQuery().eq(ApArticleContent::getArticleId, 1390536764510310401L));
         if(apArticleContent != null && StringUtils.isNotBlank(apArticleContent.getContent())){
             //2.文章内容通过freemarker生成html文件
-            StringWriter out = new StringWriter();
             Template template = configuration.getTemplate("article.ftl");
 
             Map<String, Object> params = new HashMap<>();
+	          //apArticleContent.getContent()：从数据库中获取的内容是字符串，遍历的话需要转成json数组。
             params.put("content", JSONArray.parseArray(apArticleContent.getContent()));
 
-            template.process(params, out);
+          	StringWriter out = new StringWriter();//输出流
+            template.process(params, out);//合成html
             InputStream is = new ByteArrayInputStream(out.toString().getBytes());
 
             //3.把html文件上传到minio中
