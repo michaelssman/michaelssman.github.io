@@ -364,9 +364,7 @@ public class ArticleHomeDto {
 
 #### 1、添加文章微服务
 
-#### 导入heima-leadnews-article微服务，资料在当天的文件夹中
-
-![image-20210420000326669](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210420000326669.png)
+在`heima-leadnews-service`导入`heima-leadnews-article`微服务，资料在当天的文件夹中。
 
 <font color='red'>注意：需要在heima-leadnews-service的pom文件夹中添加子模块信息，如下：</font>
 
