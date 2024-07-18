@@ -123,6 +123,14 @@ static RACSignal *NSObjectRACSignalForSelector(NSObject *self, SEL selector, Pro
 
 注意：写法二、写法三需要在程序运行的时候就会监听到，通过log就可以看出区别。
 
+### UISwitch
+
+```objective-c
+[[[cell.pushSwitch rac_newOnChannel] takeUntil:cell.rac_prepareForReuseSignal] subscribeNext:^(NSNumber *isOn) {
+	//方法
+}];
+```
+
 ## 监听UIControl事件
 
 ```objective-c
