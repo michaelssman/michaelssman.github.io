@@ -24,6 +24,7 @@ https://www.jetbrains.com/
 - sout：System.*out*.println();
 - alt+Insert：类构造器，可以选择多个属性
 - ctrl+i：service的imp类中，实现接口方法。
+- alt+shift+t：选中service接口类，会创建对应的测试文件。
 
 ## 方法重载
 
