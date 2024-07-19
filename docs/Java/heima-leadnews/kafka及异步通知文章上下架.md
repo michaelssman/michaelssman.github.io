@@ -1,16 +1,16 @@
-## kafka及异步通知文章上下架
+# kafka及异步通知文章上下架
 
-### 1)自媒体文章上下架
+## 自媒体文章上下架
 
 需求分析
 
-![image-20210525180731705](kafka及异步通知文章上下架.assets\image-20210525180731705.png)
+![image-20210525180731705](kafka及异步通知文章上下架.assets/image-20210525180731705.png)
 
-![image-20210525180757907](kafka及异步通知文章上下架.assets\image-20210525180757907.png)
+![image-20210525180757907](kafka及异步通知文章上下架.assets/image-20210525180757907.png)
 
 
 
-### 2)kafka概述
+## kafka概述
 
 消息中间件对比                              
 
@@ -34,11 +34,11 @@ kafka介绍
 
 Kafka 是一个分布式流媒体平台,类似于消息队列或企业消息传递系统。kafka官网：http://kafka.apache.org/  
 
-![image-20210525181028436](kafka及异步通知文章上下架.assets\image-20210525181028436.png)
+![image-20210525181028436](kafka及异步通知文章上下架.assets/image-20210525181028436.png)
 
 kafka介绍-名词解释
 
-![image-20210525181100793](kafka及异步通知文章上下架.assets\image-20210525181100793.png)
+![image-20210525181100793](kafka及异步通知文章上下架.assets/image-20210525181100793.png)
 
 - producer：发布消息的对象称之为主题生产者（Kafka topic producer）
 
@@ -48,7 +48,7 @@ kafka介绍-名词解释
 
 - broker：已发布的消息保存在一组服务器中，称之为Kafka集群。集群中的每一个服务器都是一个代理（Broker）。 消费者可以订阅一个或多个主题（topic），并从Broker拉数据，从而消费这些已发布的消息。
 
-### 3)kafka安装配置
+## kafka安装配置
 
 Kafka对于zookeeper是强依赖，保存kafka相关的节点数据，所以安装Kafka之前必须先安装zookeeper
 
@@ -86,9 +86,9 @@ docker run -d --name kafka \
 --net=host wurstmeister/kafka:2.12-2.3.1
 ```
 
-### 4)kafka入门
+## kafka入门
 
-![image-20210525181412230](kafka及异步通知文章上下架.assets\image-20210525181412230.png)
+![image-20210525181412230](kafka及异步通知文章上下架.assets/image-20210525181412230.png)
 
 - 生产者发送消息，多个消费者只能有一个消费者接收到消息
 - 生产者发送消息，多个消费者都可以接收到消息
@@ -208,19 +208,19 @@ public class ConsumerQuickStart {
 - 生产者发送消息，多个消费者订阅同一个主题，只能有一个消费者收到消息（一对一）
 - 生产者发送消息，多个消费者订阅同一个主题，所有消费者都能收到消息（一对多）
 
-### 5)kafka高可用设计
+## kafka高可用设计
 
-#### 5.1)集群
+### 集群
 
-![image-20210530223101568](kafka及异步通知文章上下架.assets\image-20210530223101568.png)
+![image-20210530223101568](kafka及异步通知文章上下架.assets/image-20210530223101568.png)
 
 - Kafka 的服务器端由被称为 Broker 的服务进程构成，即一个 Kafka 集群由多个 Broker 组成
 
 - 这样如果集群中某一台机器宕机，其他机器上的 Broker 也依然能够对外提供服务。这其实就是 Kafka 提供高可用的手段之一
 
-#### 5.2)备份机制(Replication）
+### 备份机制(Replication）
 
-![image-20210530223218580](kafka及异步通知文章上下架.assets\image-20210530223218580.png)
+![image-20210530223218580](kafka及异步通知文章上下架.assets/image-20210530223218580.png)
 
 Kafka 中消息的备份又叫做 副本（Replica）
 
@@ -232,7 +232,7 @@ Kafka 定义了两类副本：
 
 **同步方式**
 
-![image-20210530223316815](kafka及异步通知文章上下架.assets\image-20210530223316815.png)
+![image-20210530223316815](kafka及异步通知文章上下架.assets/image-20210530223316815.png)
 
 ISR（in-sync replica）需要同步复制保存的follower
 
@@ -252,9 +252,9 @@ ISR（in-sync replica）需要同步复制保存的follower
 
 第二：选择第一个活过来的Replication，不一定是ISR中的，选为leader，以最快速度恢复可用性，但数据不一定完整
 
-### 6)kafka生产者详解 
+## kafka生产者详解 
 
-#### 6.1)发送类型
+### 发送类型
 
 - 同步发送
 
@@ -282,11 +282,11 @@ producer.send(kvProducerRecord, new Callback() {
 });
 ```
 
-#### 6.2)参数详解
+### 参数详解
 
 - ack
 
-![image-20210530224302935](kafka及异步通知文章上下架.assets\image-20210530224302935.png)
+![image-20210530224302935](kafka及异步通知文章上下架.assets/image-20210530224302935.png)
 
 代码的配置方式：
 
@@ -305,7 +305,7 @@ prop.put(ProducerConfig.ACKS_CONFIG,"all");
 
 - retries
 
-![image-20210530224406689](kafka及异步通知文章上下架.assets\image-20210530224406689.png)
+![image-20210530224406689](kafka及异步通知文章上下架.assets/image-20210530224406689.png)
 
 生产者从服务器收到的错误有可能是临时性错误，在这种情况下，retries参数的值决定了生产者可以重发消息的次数，如果达到这个次数，生产者会放弃重试返回错误，默认情况下，生产者会在每次重试之间等待100ms
 
@@ -335,11 +335,11 @@ prop.put(ProducerConfig.COMPRESSION_TYPE_CONFIG,"lz4");
 
 使用压缩可以降低网络传输开销和存储开销，而这往往是向 Kafka 发送消息的瓶颈所在。
 
-### 7)kafka消费者详解
+## kafka消费者详解
 
-#### 7.1)消费者组
+### 消费者组
 
-![image-20210530224706747](kafka及异步通知文章上下架.assets\image-20210530224706747.png)
+![image-20210530224706747](kafka及异步通知文章上下架.assets/image-20210530224706747.png)
 
 - 消费者组（Consumer Group） ：指的就是由一个或多个消费者组成的群体
 
@@ -349,7 +349,7 @@ prop.put(ProducerConfig.COMPRESSION_TYPE_CONFIG,"lz4");
 
   - 所有的消费者都在不同的组中，那么就完全变成了发布-订阅模型
 
-#### 7.2)消息有序性
+### 消息有序性
 
 应用场景：
 
@@ -357,21 +357,21 @@ prop.put(ProducerConfig.COMPRESSION_TYPE_CONFIG,"lz4");
 
 - 充值转账两个渠道在同一个时间进行余额变更，短信通知必须要有顺序
 
-![image-20210530224903891](kafka及异步通知文章上下架.assets\image-20210530224903891.png)
+![image-20210530224903891](kafka及异步通知文章上下架.assets/image-20210530224903891.png)
 
 topic分区中消息只能由消费者组中的唯一一个消费者处理，所以消息肯定是按照先后顺序进行处理的。但是它也仅仅是保证Topic的一个分区顺序处理，不能保证跨分区的消息先后处理顺序。 所以，如果你想要顺序的处理Topic的所有消息，那就只提供一个分区。
 
-#### 7.3)提交和偏移量
+### 提交和偏移量
 
 kafka不会像其他JMS队列那样需要得到消费者的确认，消费者可以使用kafka来追踪消息在分区的位置（偏移量）
 
 消费者会往一个叫做_consumer_offset的特殊主题发送消息，消息里包含了每个分区的偏移量。如果消费者发生崩溃或有新的消费者加入群组，就会触发再均衡
 
-![image-20210530225021266](kafka及异步通知文章上下架.assets\image-20210530225021266.png)
+![image-20210530225021266](kafka及异步通知文章上下架.assets/image-20210530225021266.png)
 
 正常的情况
 
-![image-20210530224959350](kafka及异步通知文章上下架.assets\image-20210530224959350.png)
+![image-20210530224959350](kafka及异步通知文章上下架.assets/image-20210530224959350.png)
 
 如果消费者2挂掉以后，会发生再均衡，消费者2负责的分区会被其他消费者进行消费
 
@@ -379,7 +379,7 @@ kafka不会像其他JMS队列那样需要得到消费者的确认，消费者可
 
 问题一：
 
-![image-20210530225215337](kafka及异步通知文章上下架.assets\image-20210530225215337.png)
+![image-20210530225215337](kafka及异步通知文章上下架.assets/image-20210530225215337.png)
 
 如果提交偏移量小于客户端处理的最后一个消息的偏移量，那么处于两个偏移量之间的消息就会被重复处理。
 
@@ -387,7 +387,7 @@ kafka不会像其他JMS队列那样需要得到消费者的确认，消费者可
 
 问题二：
 
-![image-20210530225239897](kafka及异步通知文章上下架.assets\image-20210530225239897.png)
+![image-20210530225239897](kafka及异步通知文章上下架.assets/image-20210530225239897.png)
 
 如果提交的偏移量大于客户端的最后一个消息的偏移量，那么处于两个偏移量之间的消息将会丢失。
 
@@ -483,9 +483,9 @@ try {
 }
 ```
 
-### 8)springboot集成kafka
+## springboot集成kafka
 
-#### 8.1)入门
+### 入门
 
 1.导入spring-kafka依赖信息
 
@@ -583,7 +583,7 @@ public class HelloListener {
 }
 ```
 
-#### 8.2)传递消息为对象
+### 传递消息为对象
 
 目前springboot整合后的kafka，因为序列化器是StringSerializer，这个时候如果需要传递对象可以有两种方式
 
@@ -631,23 +631,23 @@ public class HelloListener {
 }
 ```
 
-### 9)自媒体文章上下架功能完成
+## 自媒体文章上下架功能完成
 
-#### 9.1)需求分析
+### 需求分析
 
-![image-20210528111736003](kafka及异步通知文章上下架.assets\image-20210528111736003.png)
+![image-20210528111736003](kafka及异步通知文章上下架.assets/image-20210528111736003.png)
 
-![image-20210528111853271](kafka及异步通知文章上下架.assets\image-20210528111853271.png)
+![image-20210528111853271](kafka及异步通知文章上下架.assets/image-20210528111853271.png)
 
 - 已发表且已上架的文章可以下架
 
 - 已发表且已下架的文章可以上架
 
-#### 9.2)流程说明
+### 流程说明
 
-![image-20210528111956504](kafka及异步通知文章上下架.assets\image-20210528111956504.png)
+![image-20210528111956504](kafka及异步通知文章上下架.assets/image-20210528111956504.png)
 
-#### 9.3)接口定义
+### 接口定义
 
 |          | **说明**                |
 | -------- | ----------------------- |
@@ -673,11 +673,11 @@ public class WmNewsDto {
 
 ResponseResult  
 
-![image-20210528112150495](kafka及异步通知文章上下架.assets\image-20210528112150495.png)
+![image-20210528112150495](kafka及异步通知文章上下架.assets/image-20210528112150495.png)
 
-#### 9.4)自媒体文章上下架-功能实现
+### 自媒体文章上下架-功能实现
 
-9.4.1)接口定义
+1、接口定义
 
 在heima-leadnews-wemedia工程下的WmNewsController新增方法
 
@@ -747,7 +747,7 @@ public class WmNewsDto {
 }
 ```
 
-9.4.2)业务层编写
+2、业务层编写
 
 在WmNewsService新增方法
 
@@ -795,7 +795,7 @@ public ResponseResult downOrUp(WmNewsDto dto) {
 }
 ```
 
-9.4.3)控制器
+3、控制器
 
 ```java
 @PostMapping("/down_or_up")
@@ -804,11 +804,11 @@ public ResponseResult downOrUp(@RequestBody WmNewsDto dto){
 }
 ```
 
-9.4.4)测试
+4、测试
 
-#### 9.5)消息通知article端文章上下架
+### 消息通知article端文章上下架
 
-9.5.1)在heima-leadnews-common模块下导入kafka依赖
+1、在heima-leadnews-common模块下导入kafka依赖
 
 ```xml
 <!-- kafkfa -->
@@ -822,7 +822,7 @@ public ResponseResult downOrUp(@RequestBody WmNewsDto dto){
 </dependency>
 ```
 
-9.5.2)在自媒体端的nacos配置中心配置kafka的生产者
+2、在自媒体端的nacos配置中心配置kafka的生产者
 
 ```yaml
 spring:
@@ -834,7 +834,7 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 ```
 
-9.5.3)在自媒体端文章上下架后发送消息
+3、在自媒体端文章上下架后发送消息
 
 ```java
 //发送消息，通知article端修改文章配置
@@ -855,7 +855,7 @@ public class WmNewsMessageConstants {
 }
 ```
 
-9.5.4)在article端的nacos配置中心配置kafka的消费者
+4、在article端的nacos配置中心配置kafka的消费者
 
 ```yaml
 spring:
@@ -867,7 +867,7 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 ```
 
-9.5.5)在article端编写监听，接收数据
+5、在article端编写监听，接收数据
 
 ```java
 package com.heima.article.listener;
@@ -900,7 +900,7 @@ public class ArtilceIsDownListener {
 }
 ```
 
-9.5.6)修改ap_article_config表的数据
+6、修改ap_article_config表的数据
 
 新建ApArticleConfigService
 

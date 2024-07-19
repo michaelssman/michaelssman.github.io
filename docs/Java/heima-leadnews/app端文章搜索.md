@@ -1,12 +1,12 @@
 # app端文章搜索
 
-## 1) 今日内容介绍
+## 今日内容介绍
 
-### 1.1)App端搜索-效果图
+### App端搜索-效果图
 
-![image-20210709140539138](app端文章搜索.assets\image-20210709140539138.png)
+![image-20210709140539138](app端文章搜索.assets/image-20210709140539138.png)
 
-### 1.2)今日内容
+### 今日内容
 
 - 文章搜索
 
@@ -34,21 +34,21 @@
 
   - 联想词功能实现
 
-## 2) 搭建ElasticSearch环境
+## 搭建ElasticSearch环境
 
-### 2.1) 拉取镜像
+### 拉取镜像
 
 ```shell
 docker pull elasticsearch:7.4.0
 ```
 
-### 2.2) 创建容器
+### 创建容器
 
 ```shell
 docker run -id --name elasticsearch -d --restart=always -p 9200:9200 -p 9300:9300 -v /usr/share/elasticsearch/plugins:/usr/share/elasticsearch/plugins -e "discovery.type=single-node" elasticsearch:7.4.0
 ```
 
-### 2.3) 配置中文分词器 ik
+### 配置中文分词器 ik
 
 因为在创建elasticsearch容器的时候，映射了目录，所以可以在宿主机上进行配置ik中文分词器
 
@@ -69,15 +69,15 @@ cd /usr/share/elasticsearch/plugins/analysis-ik
 unzip elasticsearch-analysis-ik-7.4.0.zip
 ```
 
-### 2.4) 使用postman测试
+### 使用postman测试
 
-![image-20210709140935410](app端文章搜索.assets\image-20210709140935410.png)
+![image-20210709140935410](app端文章搜索.assets/image-20210709140935410.png)
 
 
 
-## 3) app端文章搜索
+## app端文章搜索
 
-### 3.1) 需求分析
+### 需求分析
 
 - 用户输入关键可搜索文章列表
 
@@ -85,17 +85,17 @@ unzip elasticsearch-analysis-ik-7.4.0.zip
 
 - 文章列表展示与home展示一样，当用户点击某一篇文章，可查看文章详情
 
-![image-20210709141502366](app端文章搜索.assets\image-20210709141502366.png)
+![image-20210709141502366](app端文章搜索.assets/image-20210709141502366.png)
 
 
 
-### 3.2) 思路分析
+### 思路分析
 
 为了加快检索的效率，在查询的时候不会直接从数据库中查询文章，需要在elasticsearch中进行高速检索。
 
-![image-20210709141558811](app端文章搜索.assets\image-20210709141558811.png)
+![image-20210709141558811](app端文章搜索.assets/image-20210709141558811.png)
 
-### 3.3) 创建索引和映射
+### 创建索引和映射
 
 使用postman添加映射
 
@@ -141,7 +141,7 @@ put请求 ： http://192.168.200.130:9200/app_info_article
 }
 ```
 
-![1606653927638](app端文章搜索.assets\1606653927638.png)
+![1606653927638](app端文章搜索.assets/1606653927638.png)
 
 GET请求查询映射：http://192.168.200.130:9200/app_info_article
 
@@ -149,13 +149,13 @@ DELETE请求，删除索引及映射：http://192.168.200.130:9200/app_info_arti
 
 GET请求，查询所有文档：http://192.168.200.130:9200/app_info_article/_search
 
-### 3.4) 数据初始化到索引库
+### 数据初始化到索引库
 
-#### 3.4.1)导入es-init到heima-leadnews-test工程下
+#### 1、导入es-init到heima-leadnews-test工程下
 
-![image-20210709142215818](app端文章搜索.assets\image-20210709142215818.png)
+![image-20210709142215818](app端文章搜索.assets/image-20210709142215818.png)
 
-#### 3.4.1)查询所有的文章信息，批量导入到es索引库中
+#### 2、查询所有的文章信息，批量导入到es索引库中
 
 ```java
 package com.heima.es;
@@ -218,19 +218,19 @@ public class ApArticleTest {
 }
 ```
 
-#### 3.4.3)测试
+#### 3、测试
 
 postman查询所有的es中数据   GET请求： http://192.168.200.130:9200/app_info_article/_search
 
-![image-20210709142339535](app端文章搜索.assets\image-20210709142339535.png)
+![image-20210709142339535](app端文章搜索.assets/image-20210709142339535.png)
 
-### 3.5) 文章搜索功能实现
+### 文章搜索功能实现
 
-#### 3.5.1)搭建搜索微服务
+#### 1、搭建搜索微服务
 
 （1）导入  heima-leadnews-search
 
-![image-20210709142616797](app端文章搜索.assets\image-20210709142616797.png)
+![image-20210709142616797](app端文章搜索.assets/image-20210709142616797.png)
 
 （2）在heima-leadnews-service的pom中添加依赖
 
@@ -264,7 +264,7 @@ elasticsearch:
   port: 9200
 ```
 
-#### 3.5.2) 搜索接口定义
+#### 2、搜索接口定义
 
 ```java
 package com.heima.search.controller.v1;
@@ -329,7 +329,7 @@ public class UserSearchDto {
 }
 ```
 
-#### 3.5.3) 业务层实现
+#### 3、业务层实现
 
 创建业务层接口：ApArticleSearchService
 
@@ -466,7 +466,7 @@ public class ArticleSearchServiceImpl implements ArticleSearchService {
 }
 ```
 
-#### 3.5.4) 控制层实现
+#### 4、控制层实现
 
 新建控制器ArticleSearchController
 
@@ -498,7 +498,7 @@ public class ArticleSearchController {
 }
 ```
 
-#### 3.5.5) 测试
+#### 5、测试
 
 需要在app的网关中添加搜索微服务的路由配置
 
@@ -514,13 +514,13 @@ public class ArticleSearchController {
 
 启动项目进行测试，至少要启动文章微服务，用户微服务，搜索微服务，app网关微服务，app前端工程
 
-### 3.6) 文章自动审核构建索引
+### 文章自动审核构建索引
 
-#### 3.6.1)思路分析
+#### 1、思路分析
 
-![image-20210709143151781](app端文章搜索.assets\image-20210709143151781.png)
+![image-20210709143151781](app端文章搜索.assets/image-20210709143151781.png)
 
-#### 3.6.2)文章微服务发送消息
+#### 2、文章微服务发送消息
 
 1.把SearchArticleVo放到model工程下
 
@@ -702,7 +702,7 @@ kafka:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 ```
 
-#### 3.6.3)搜索微服务接收消息并创建索引
+#### 3、搜索微服务接收消息并创建索引
 
 1.搜索微服务中添加kafka的配置,nacos配置如下
 
@@ -765,25 +765,25 @@ public class SyncArticleListener {
 }
 ```
 
-## 4) app端搜索-搜索记录
+## app端搜索-搜索记录
 
-### 4.1) 需求分析
+### 需求分析
 
-![1587366878895](app端文章搜索.assets\1587366878895.png)
+![1587366878895](app端文章搜索.assets/1587366878895.png)
 
 - 展示用户的搜索记录10条，按照搜索关键词的时间倒序
 - 可以删除搜索记录
 - 保存历史记录，保存10条，多余的则删除最久的历史记录
 
-### 4.2)数据存储说明
+### 数据存储说明
 
 用户的搜索记录，需要给每一个用户都保存一份，数据量较大，要求加载速度快，通常这样的数据存储到mongodb更合适，不建议直接存储到关系型数据库中
 
-![image-20210709153428259](app端文章搜索.assets\image-20210709153428259.png)
+![image-20210709153428259](app端文章搜索.assets/image-20210709153428259.png)
 
-### 4.3)MongoDB安装及集成
+### MongoDB安装及集成
 
-#### 4.3.1)安装MongoDB
+#### 1、安装MongoDB
 
 拉取镜像
 
@@ -797,7 +797,7 @@ docker pull mongo
 docker run -di --name mongo-service --restart=always -p 27017:27017 -v ~/data/mongodata:/data mongo
 ```
 
-#### 4.3.2)导入资料中的mongo-demo项目到heima-leadnews-test中
+#### 2、导入资料中的mongo-demo项目到heima-leadnews-test中
 
 其中有三项配置比较关键：
 
@@ -862,7 +862,7 @@ public class ApAssociateWords implements Serializable {
 }
 ```
 
-#### 4.3.3)核心方法
+#### 3、核心方法
 
 ```java
 package com.itheima.mongo.test;
@@ -930,15 +930,15 @@ public class MongoTest {
 }
 ```
 
-### 4.4)保存搜索记录
+### 保存搜索记录
 
-#### 4.4.1)实现思路
+#### 1、实现思路
 
-![image-20210709153935904](app端文章搜索.assets\image-20210709153935904.png)
+![image-20210709153935904](app端文章搜索.assets/image-20210709153935904.png)
 
 用户输入关键字进行搜索的异步记录关键字
 
-![image-20210709154053892](app端文章搜索.assets\image-20210709154053892.png)
+![image-20210709154053892](app端文章搜索.assets/image-20210709154053892.png)
 
 
 
@@ -988,9 +988,7 @@ public class ApUserSearch implements Serializable {
 }
 ```
 
-
-
-#### 4.4.2)实现步骤
+#### 2、实现步骤
 
 1.搜索微服务集成mongodb
 
@@ -1213,15 +1211,13 @@ public class ArticleSearchServiceImpl implements ArticleSearchService {
 
 6.在搜索微服务引导类上开启异步调用
 
-![image-20210709154841113](app端文章搜索.assets\image-20210709154841113.png)
+![image-20210709154841113](app端文章搜索.assets/image-20210709154841113.png)
 
 7.测试，搜索后查看结果
 
+### 加载搜索记录列表
 
-
-### 4.5) 加载搜索记录列表
-
-#### 4.5.1) 思路分析
+#### 1、思路分析
 
 按照当前用户，按照时间倒序查询
 
@@ -1232,7 +1228,7 @@ public class ArticleSearchServiceImpl implements ArticleSearchService {
 | 参数     | 无                   |
 | 响应结果 | ResponseResult       |
 
-#### 4.5.2) 接口定义
+#### 2、接口定义
 
 ```java
 /**
@@ -1257,11 +1253,11 @@ public class ApUserSearchController{
 }
 ```
 
-#### 4.5.3) mapper
+#### 3、mapper
 
 已定义
 
-#### 4.5.4) 业务层
+#### 4、业务层
 
 在ApUserSearchService中新增方法
 
@@ -1295,7 +1291,7 @@ public ResponseResult findUserSearch() {
 }
 ```
 
-#### 4.5.5) 控制器
+#### 5、控制器
 
 ```java
 /**
@@ -1320,13 +1316,13 @@ public class ApUserSearchController{
 }
 ```
 
-#### 4.5.6) 测试
+#### 6、测试
 
 打开app的搜索页面，可以查看搜索记录列表
 
-### 4.6) 删除搜索记录
+### 删除搜索记录
 
-#### 4.6.1) 思路分析
+#### 1、思路分析
 
 按照搜索历史id删除
 
@@ -1337,7 +1333,7 @@ public class ApUserSearchController{
 | 参数     | HistorySearchDto    |
 | 响应结果 | ResponseResult      |
 
-#### 4.6.2) 接口定义
+#### 2、接口定义
 
 在ApUserSearchController接口新增方法
 
@@ -1360,7 +1356,7 @@ public class HistorySearchDto {
 }
 ```
 
-#### 4.6.3) 业务层
+#### 3、业务层
 
 在ApUserSearchService中新增方法
 
@@ -1401,7 +1397,7 @@ public ResponseResult delUserSearch(HistorySearchDto dto) {
 }
 ```
 
-#### 4.6.4) 控制器
+#### 4、控制器
 
 修改ApUserSearchController，补全方法
 
@@ -1412,15 +1408,15 @@ public ResponseResult delUserSearch(@RequestBody HistorySearchDto historySearchD
 }
 ```
 
-#### 4.6.5) 测试
+#### 5、测试
 
 打开app可以删除搜索记录
 
-## 5) app端搜索-关键字联想词
+## app端搜索-关键字联想词
 
-### 5.1 需求分析
+### 需求分析
 
-![1587366921085](app端文章搜索.assets\1587366921085.png)
+![1587366921085](app端文章搜索.assets/1587366921085.png)
 
 - 根据用户输入的关键字展示联想词
 
@@ -1463,7 +1459,7 @@ public class ApAssociateWords implements Serializable {
 }
 ```
 
-### 5.2)搜索词-数据来源
+### 搜索词-数据来源
 
 通常是网上搜索频率比较高的一些词，通常在企业中有两部分来源：
 
@@ -1475,13 +1471,13 @@ public class ApAssociateWords implements Serializable {
 
 关键词规划师（百度）、5118、爱站网
 
-![image-20210709160036983](app端文章搜索.assets\image-20210709160036983.png)
+![image-20210709160036983](app端文章搜索.assets/image-20210709160036983.png)
 
 导入资料中的ap_associate_words.js脚本到mongo中
 
-### 5.3 功能实现
+### 功能实现
 
-#### 5.3.1 接口定义
+#### 1、接口定义
 
 |          | **说明**                 |
 | -------- | ------------------------ |
@@ -1515,7 +1511,7 @@ public class ApAssociateWordsController {
 
 ```
 
-#### 5.3.3 业务层
+#### 3、业务层
 
 新建联想词业务层接口
 
@@ -1599,7 +1595,7 @@ public class ApAssociateWordsServiceImpl implements ApAssociateWordsService {
 }
 ```
 
-#### 5.3.4  控制器
+#### 4、控制器
 
 新建联想词控制器
 
@@ -1637,7 +1633,7 @@ public class ApAssociateWordsController{
 }
 ```
 
-#### 5.3.5 测试
+#### 5、测试
 
 同样，打开前端联调测试效果
 
