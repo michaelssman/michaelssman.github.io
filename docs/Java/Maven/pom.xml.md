@@ -128,3 +128,17 @@
     </build>
 ```
 
+### 加入子模块
+
+```xml
+    <modules>
+        <module>heima-leadnews-user</module>
+        <module>heima-leadnews-article</module>
+        <module>heima-leadnews-wemedia</module>
+        <module>heima-leadnews-schedule</module>
+        <module>heima-leadnews-search</module>
+        <module>heima-leadnews-admin</module>
+        <module>heima-leadnews-behavior</module>
+    </modules>
+```
+

@@ -93,3 +93,17 @@ mysql -hlocalhost -uroot -p 密码`刚才设置的密码`
 alter user 'root'@'localhost' identified by 'root' password expire never;
 
 alter user 'root'@'localhost' identified with mysql_native_password by '刚才设置的密码';
+
+## 数据类型
+
+MySQL中，BLOB是一个二进制大型对象，是一个可以存储大量数据的容器；LongBlob 最大存储 4G 
+
+## 数据库自身解决并发两种策略
+
+### 悲观锁(Pessimistic Lock)
+
+每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁。
+
+### 乐观锁(Optimistic Lock)
+
+每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，可以使用版本号version等机制。
