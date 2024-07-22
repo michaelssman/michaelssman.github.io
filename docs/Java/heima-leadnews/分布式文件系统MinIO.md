@@ -67,7 +67,7 @@ MinIO兼容亚马逊S3云存储服务接口，非常适合于存储大容量非�
 
 - 文件变化主动通知
 
-  存储桶（Bucket）如果发生改变,比如上传对象和删除对象，可以使用存储桶事件通知机制进行监控，并通过以下方式发布出去:AMQP、MQTT、Elasticsearch、Redis、NATS、MySQL、Kafka、Webhooks等。
+  存储桶（Bucket）如果发生改变，比如上传对象和删除对象，可以使用存储桶事件通知机制进行监控，并通过以下方式发布出去：AMQP、MQTT、Elasticsearch、Redis、NATS、MySQL、Kafka、Webhooks等。
 
 ## Docker安装MinIO
 
@@ -90,11 +90,18 @@ docker run -p 9000:9000 --name minio -d --restart=always -e "MINIO_ACCESS_KEY=mi
 - MINIO_ACCESS_KEY=minio：用户名是minio
 - MINIO_SECRET_KEY=minio123：密码是minio123
 
+问题：目前docker中拉取的minio镜像为最新的版本，安装方式不太一样，如果想要与课程中一致，
+可以使用资料文件夹中的minio.tar加载为本地镜像。
+
+步骤：
+	1.把minio.tar上传linux服务器上
+	2.执行命令：docker load -i minio.tar
+
 **3、管理控制台**   
 
-假设我们的服务器地址为http://192.168.200.130:9000，我们在地址栏输入：http://http://192.168.200.130:9000/ 即可进入登录界面。
+假设我们的服务器地址为http://192.168.200.130:9000，在地址栏输入：http://http://192.168.200.130:9000/ 即可进入登录界面。
 
-Access Key为minio   Secret_key 为minio123    进入系统后可以看到主界面
+进入系统后可以看到主界面
 
 ![image-20210417102356582](assets/image-20210417102356582.png)
 

@@ -96,7 +96,10 @@ alter user 'root'@'localhost' identified with mysql_native_password by '刚才�
 
 ## 数据类型
 
-MySQL中，BLOB是一个二进制大型对象，是一个可以存储大量数据的容器；LongBlob 最大存储 4G 
+- BLOB是一个二进制大型对象，是一个可以存储大量数据的容器；LongBlob 最大存储 4G 
+- tinyint类型：占1个字节，不指定unsigned(非负数)，值范围(-128,127)，指定了unsigned，值范围(0,255)
+
+​	tinyint通常表示小范围的数值，或者表示true或false，通常值为0表示false,值为1表示true
 
 ## 数据库自身解决并发两种策略
 

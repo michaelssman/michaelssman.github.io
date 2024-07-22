@@ -136,6 +136,40 @@ self.block = ^{
 
 使用了`__strong`在`strongSelf`变量作用域结束之前，对`weakSelf`有一个引用，防止对象(self)提前被释放。而作用域一过，`strongSelf`不存在了，对象`(self)`也会被释放。
 
+实例2：
+
+报警告：`Capturing 'vc' strongly in this block is likely to lead to a retain cycle`。
+
+```objective-c
+vc.refreshFuZhu = ^{
+[weakSelf refreshFuzhu:vc];
+};
+```
+
+警告是因为在 block 中强引用了 `vc`，可能导致 retain cycle（循环引用）。在 Objective-C 和 Swift 中，block 会捕获并持有其引用的对象。如果 block 中强引用了 `vc`，而 `vc` 又持有这个 block，就会导致 retain cycle。
+
+要解决这个问题，可以在 block 中使用弱引用（weak reference）来避免 retain cycle。可以使用 `__weak` 或 `__block` 关键字来声明一个弱引用的 `vc`。
+
+以下是如何修改你的代码来避免 retain cycle：
+
+```objc
+__weak typeof(vc) weakVC = vc;
+vc.refreshFuZhu = ^{
+    __strong typeof(weakVC) strongVC = weakVC;
+    if (strongVC) {
+        [weakSelf refreshFuzhu:strongVC];
+    }
+};
+```
+
+在这个修改后的代码中：
+
+1. 使用 `__weak` 关键字创建一个弱引用 `weakVC`。
+2. 在 block 内部，使用 `__strong` 关键字重新创建一个强引用 `strongVC`，以确保在 block 执行期间 `vc` 不会被释放。
+3. 在调用 `refreshFuzhu:` 方法时，使用 `strongVC` 作为参数。
+
+这样可以避免 retain cycle，同时确保在 block 执行期间 `vc` 不会被释放。
+
 ### 2. 局部变量
 
 手动释放

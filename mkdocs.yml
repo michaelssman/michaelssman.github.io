@@ -399,6 +399,7 @@ nav:
       - Java/heima-leadnews/环境搭建.md
       - Java/heima-leadnews/工程主体结构.md
       - Java/heima-leadnews/SpringCloud微服务(注册发现、服务调用).md
+      - Java/heima-leadnews/nginx.md
       - Java/heima-leadnews/接口测试工具.md
       - Java/heima-leadnews/网关和认证过滤器.md
       - Java/heima-leadnews/静态化freemarker.md
