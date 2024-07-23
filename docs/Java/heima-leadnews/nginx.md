@@ -83,3 +83,50 @@ http {
 5、打开前端项目进行测试  -- >  http://localhost:8801
 
 ​     用谷歌浏览器打开，调试移动端模式进行访问
+
+## 自媒体前台搭建
+
+![image-20210426110913007](assets/image-20210426110913007.png)
+
+通过nginx的虚拟主机功能，使用同一个nginx访问多个项目
+
+搭建步骤：
+
+1. 资料中找到wemedia-web.zip解压
+
+2. 在nginx中leadnews.conf目录中新增heima-leadnews-wemedia.conf文件
+
+   - 网关地址修改（localhost:51602）
+
+
+      - 前端项目目录修改（wemedia-web解压的目录）
+
+
+      - 访问端口修改(8802)
+
+
+```javascript
+upstream  heima-wemedia-gateway{
+    server localhost:51602;
+}
+
+server {
+	listen 8802;
+	location / {
+		root D:/workspace/wemedia-web/;
+		index index.html;
+	}
+	
+	location ~/wemedia/MEDIA/(.*) {
+		proxy_pass http://heima-wemedia-gateway/$1;
+		proxy_set_header HOST $host;  # 不改变源请求头的值
+		proxy_pass_request_body on;  #开启获取请求体
+		proxy_pass_request_headers on;  #开启获取请求头
+		proxy_set_header X-Real-IP $remote_addr;   # 记录真实发出请求的客户端IP
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;  #记录代理信息
+	}
+}
+```
+
+3. 启动nginx，启动自媒体微服务和对应网关
+4. 联调测试登录功能

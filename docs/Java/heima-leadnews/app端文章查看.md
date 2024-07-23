@@ -1,7 +1,5 @@
 # app端文章查看
 
-文章列表从业务角度出发，如何进行分分表，分表的好处和原则。
-
 文章详情会重点分析大文本展示方案。静态化模版技术freemarker，为了更好的访问静态化页面，访问速度最快的分布式文件系统MinIO。
 
 ## 文章列表
@@ -26,13 +24,11 @@ ap_article_content 文章内容表
 
 ![image-20210419151912063](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210419151912063.png)
 
-longtext：大文本类型
-
 三张表关系分析
 
 ![image-20210419151938103](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210419151938103.png)
 
-### 为什么要拆分成多个表
+### 为什么要分表
 
 三张表都是一对一的关系，为什么不放在一张表里面，一张表不需要做关联查询。
 
@@ -55,7 +51,7 @@ longtext：大文本类型
 
 #### 导入数据库
 
-查看当天资料文件夹，在数据库连接工具中执行leadnews_article.sql
+在数据库连接工具中执行leadnews_article.sql
 
 #### 导入对应的实体类
 
@@ -87,7 +83,6 @@ public class ApArticle implements Serializable {
 
     @TableId(value = "id",type = IdType.ID_WORKER)
     private Long id;
-
 
     /**
      * 标题
@@ -364,7 +359,7 @@ public class ArticleHomeDto {
 
 #### 1、添加文章微服务
 
-在`heima-leadnews-service`导入`heima-leadnews-article`微服务，资料在当天的文件夹中。
+在`heima-leadnews-service`导入`heima-leadnews-article`微服务。
 
 <font color='red'>注意：需要在heima-leadnews-service的pom文件夹中添加子模块信息，如下：</font>
 
@@ -379,7 +374,7 @@ public class ArticleHomeDto {
 
 ![image-20210420001037992](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210420001037992.png)
 
-需要在nacos中添加对应的配置
+在nacos中添加对应的配置
 
 ```yaml
 spring:
@@ -430,7 +425,7 @@ public class ArticleHomeController {
 }
 ```
 
-#### 3、编写mapper文件
+#### 3、mapper
 
 定义mapper的interface接口文件，继承BaseMapper因为集成了mybatisplus。
 
@@ -514,9 +509,7 @@ public interface ApArticleMapper extends BaseMapper<ApArticle> {
 
 `<![CDATA[<]]>`表示小于，`<![CDATA[>]]>`表示大于。
 
-#### 4、编写Service业务层代码
-
-##### 接口
+#### 4、Service接口
 
 继承IService集成mybatisplus
 
@@ -543,7 +536,7 @@ public interface ApArticleService extends IService<ApArticle> {
 }
 ```
 
-##### 实现类
+##### 4.1、ServiceImpl
 
 ```java
 package com.heima.article.service.impl;
@@ -617,8 +610,6 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
 
 heima-leadnews-common中定义常量类
 
-heima-leadnews/heima-leadnews-common/src/main/java/com/heima/common/constants
-
 ```java
 package com.heima.common.constants;
 
@@ -647,7 +638,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/article")
 public class ArticleHomeController {
-
 
     @Autowired
     private ApArticleService apArticleService;
@@ -775,7 +765,6 @@ public interface ApArticleContentMapper extends BaseMapper<ApArticleContent> {
 
 ```java
 package com.heima.article.test;
-
 
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;

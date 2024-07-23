@@ -19,7 +19,7 @@
 
 MinIO基于Apache License v2.0开源协议的对象存储服务，可以做为云存储的解决方案用来保存海量的图片、视频、文档。
 
-由于采用Golang实现，服务端可以工作在Windows,Linux, OS X和FreeBSD上。
+由于采用Golang实现，服务端可以工作在Windows、Linux、OS X和FreeBSD上。
 
 配置简单，基本是复制可执行程序，单行命令可以运行起来。
 
@@ -113,7 +113,7 @@ docker run -p 9000:9000 --name minio -d --restart=always -e "MINIO_ACCESS_KEY=mi
 
 ### 1、创建工程，导入pom依赖
 
-创建minio-demo,对应pom如下
+创建minio-demo，对应pom如下
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -163,10 +163,8 @@ package com.heima.minio;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-
 @SpringBootApplication
 public class MinIOApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(MinIOApplication.class,args);
     }
@@ -184,7 +182,6 @@ import io.minio.PutObjectArgs;
 import java.io.FileInputStream;
 
 public class MinIOTest {
-
 
     public static void main(String[] args) {
 
@@ -220,9 +217,7 @@ public class MinIOTest {
 
 ## 封装MinIO为starter
 
-![image-20240711143305157](assets/image-20240711143305157.png)
-
-MinIO在每一个微服务下都去集成的话，非常麻烦，所以抽出来文件服务。
+项目里面有文章微服务、自媒体微服务、评论微服务等等，如果MinIO在每一个微服务下都去集成的话，非常麻烦，所以抽出来`文件服务-starter`。
 
 ### 1、创建模块heima-file-starter
 
@@ -262,7 +257,6 @@ MinIOConfigProperties.java
 ```java
 package com.heima.file.config;
 
-
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -271,7 +265,6 @@ import java.io.Serializable;
 @Data
 @ConfigurationProperties(prefix = "minio")  // 文件上传 配置前缀file.oss
 public class MinIOConfigProperties implements Serializable {
-
     private String accessKey;
     private String secretKey;
     private String bucket;
@@ -329,7 +322,6 @@ import java.io.InputStream;
  * @author itheima
  */
 public interface FileStorageService {
-
 
     /**
      *  上传图片文件
@@ -546,7 +538,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.heima.file.service.impl.MinIOFileStorageService
 ```
 
-#### 5、其他微服务使用
+### 5、其他微服务使用
 
 第一，pom.xml文件中导入heima-file-starter的依赖
 
@@ -573,11 +565,8 @@ minio:
 
 第三，在对应使用的业务类中注入FileStorageService
 
-样例如下：
-
 ```java
 package com.heima.minio.test;
-
 
 import com.heima.file.service.FileStorageService;
 import com.heima.minio.MinioApplication;

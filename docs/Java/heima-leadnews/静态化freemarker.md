@@ -8,14 +8,12 @@ FreeMarker 是一款 **模板引擎**： 即一种基于模板和要改变的数
 
 ![1528820943975](assets/1528820943975.png)
 
-常用的java模板引擎还有哪些？
-
-Jsp、Freemarker、Thymeleaf 、Velocity 等。
+常用的java模板引擎：
 
 - Jsp 为 Servlet 专用，不能单独进行使用。
 - Thymeleaf 为新技术，功能较为强大，但是执行的效率比较低。
 - Velocity从2010年更新完 2.0 版本后，便没有在更新。Spring Boot 官方在 1.4 版本后对此也不在支持，虽然 Velocity 在 2017 年版本得到迭代，但为时已晚。 
-- freemarker 性能好，强大的模板语言、轻量。
+- Freemarker 性能好，强大的模板语言、轻量。
 
 ## 环境搭建&&快速入门
 
@@ -100,7 +98,7 @@ spring:
 
 **注意事项**
 
-freemarker模板文件通常都是以ftl作为扩展名,也可以为html、xml、jsp等
+freemarker模板文件通常都是以ftl作为扩展名，也可以为html、xml、jsp等。
 
 ### 创建模型类
 
@@ -739,11 +737,13 @@ public String testInnerFunc(Model model) {
 
 ## 静态化测试
 
-之前的测试都是SpringMVC将Freemarker作为视图解析器（ViewReporter）来集成到项目中，工作中，有的时候需要使用Freemarker原生Api来生成静态内容，下面一起来学习下原生Api生成文本文件。
+之前的测试都是SpringMVC将Freemarker作为视图解析器（ViewReporter）来集成到项目中。
+
+工作中，有的时候需要使用Freemarker原生Api来生成静态文本文件。
 
 ### 需求分析
 
-使用freemarker原生Api将页面生成html文件，本节测试html文件生成的方法：
+使用freemarker原生Api将页面生成html文件：
 
 模版+数据 通过freemarker整合 生成html
 
@@ -832,7 +832,6 @@ public class FreemarkerTest {
 
         //向map中存放List集合数据
         map.put("stus", stus);
-
 
         //创建Map数据
         HashMap<String, Student> stuMap = new HashMap<>();
