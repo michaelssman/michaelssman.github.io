@@ -4,23 +4,26 @@
 
 需求分析
 
-![image-20210525180731705](kafka及异步通知文章上下架.assets/image-20210525180731705.png)
+自媒体端操作文章上架，下架。通知文章微服务去上架，下架文章。
 
-![image-20210525180757907](kafka及异步通知文章上下架.assets/image-20210525180757907.png)
+- 通过feign的远程调用实现，但是会产生系统的耦合。
+- 采用MQ的方式实现。自媒体端发生一旦上下架，就发一个消息给MQ，文章微服务接收这个消息进行上下架。达到**系统的解耦**。
+
+点赞，不喜欢等操作原理一样。
 
 ## kafka概述
 
-消息中间件对比                              
+### **消息中间件对比**                              
 
 | 特性       | ActiveMQ                               | RabbitMQ                   | RocketMQ                 | Kafka                                    |
 | ---------- | -------------------------------------- | -------------------------- | ------------------------ | ---------------------------------------- |
 | 开发语言   | java                                   | erlang                     | java                     | scala                                    |
 | 单机吞吐量 | 万级                                   | 万级                       | 10万级                   | 100万级                                  |
-| 时效性     | ms                                     | us                         | ms                       | ms级以内                                 |
+| 时效性     | ms（毫秒）                             | us（微秒）                 | ms                       | ms级以内                                 |
 | 可用性     | 高（主从）                             | 高（主从）                 | 非常高（分布式）         | 非常高（分布式）                         |
-| 功能特性   | 成熟的产品、较全的文档、各种协议支持好 | 并发能力强、性能好、延迟低 | MQ功能比较完善，扩展性佳 | 只支持主要的MQ功能，主要应用于大数据领域 |
+| 功能特性   | 成熟的产品、较全的文档、各种协议支持好 | 并发能力强、性能好、延迟低 | MQ功能比较完善、扩展性佳 | 只支持主要的MQ功能、主要应用于大数据领域 |
 
-消息中间件对比-选择建议
+选择建议
 
 | **消息中间件** | **建议**                                                     |
 | -------------- | ------------------------------------------------------------ |
@@ -30,7 +33,9 @@
 
 kafka介绍
 
-Kafka 是一个分布式流媒体平台,类似于消息队列或企业消息传递系统。kafka官网：http://kafka.apache.org/  
+Kafka 是一个分布式流媒体平台，类似于消息队列或企业消息传递系统。
+
+kafka官网：http://kafka.apache.org/  
 
 ![image-20210525181028436](kafka及异步通知文章上下架.assets/image-20210525181028436.png)
 
@@ -46,11 +51,13 @@ kafka介绍-名词解释
 
 - broker：已发布的消息保存在一组服务器中，称之为Kafka集群。集群中的每一个服务器都是一个代理（Broker）。 消费者可以订阅一个或多个主题（topic），并从Broker拉数据，从而消费这些已发布的消息。
 
+- Kafka Cluster：Kafka集群。
+
 ## kafka安装配置
 
 Kafka对于zookeeper是强依赖，保存kafka相关的节点数据，所以安装Kafka之前必须先安装zookeeper
 
-- Docker安装zookeeper
+### Docker安装zookeeper
 
 下载镜像：
 
@@ -64,7 +71,7 @@ docker pull zookeeper:3.4.14
 docker run -d --name zookeeper -p 2181:2181 zookeeper:3.4.14
 ```
 
-- Docker安装kafka
+### Docker安装kafka
 
 下载镜像：
 
@@ -84,16 +91,16 @@ docker run -d --name kafka \
 --net=host wurstmeister/kafka:2.12-2.3.1
 ```
 
+`--net=host`：直接使用容器宿主机的网络命名空间， 即没有独立的网络环境。它使用宿主机的ip和端口
+
 ## kafka入门
 
-![image-20210525181412230](kafka及异步通知文章上下架.assets/image-20210525181412230.png)
+![image-20240725225322937](assets/image-20240725225322937.png)
 
-- 生产者发送消息，多个消费者只能有一个消费者接收到消息
-- 生产者发送消息，多个消费者都可以接收到消息
+- 生产者发送消息，多个消费者订阅同一个主题，只能有一个消费者收到消息（一对一，在同一个组）
+- 生产者发送消息，多个消费者订阅同一个主题，所有消费者都能收到消息（一对多，多个组）
 
-
-
-（1）创建kafka-demo项目，导入依赖
+1、创建kafka-demo项目，导入kafka客户端依赖
 
 ```xml
 <dependency>
@@ -102,7 +109,9 @@ docker run -d --name kafka \
 </dependency>
 ```
 
-（2）生产者发送消息
+2、编写消息生产者类ProducerQuickstart
+
+生产者发送消息
 
 ```java
 package com.heima.kafka.sample;
@@ -119,6 +128,7 @@ import java.util.Properties;
 public class ProducerQuickStart {
 
     public static void main(String[] args) {
+        
         //1.kafka的配置信息
         Properties properties = new Properties();
         //kafka的连接地址
@@ -134,21 +144,24 @@ public class ProducerQuickStart {
         KafkaProducer<String,String> producer = new KafkaProducer<String, String>(properties);
 
         //封装发送的消息
+        /**
+         * 第一个参数 ：topic
+         * 第二个参数：消息的key
+         * 第三个参数：消息的value
+         */
         ProducerRecord<String,String> record = new ProducerRecord<String, String>("itheima-topic","100001","hello kafka");
 
         //3.发送消息
         producer.send(record);
 
-        //4.关闭消息通道，必须关闭，否则消息发送不成功
+        //4.关闭消息通道，必须要关闭，否则消息发送不成功
         producer.close();
     }
 
 }
 ```
 
-
-
-（3）消费者接收消息
+3、消费者接收消息
 
 ```java
 package com.heima.kafka.sample;
@@ -181,13 +194,13 @@ public class ConsumerQuickStart {
         //2.消费者对象
         KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(properties);
 
-        //3.订阅主题
+        //3.订阅主题，从哪个主题拉取消息
         consumer.subscribe(Collections.singletonList("itheima-topic"));
 
         //当前线程一直处于监听状态
         while (true) {
             //4.获取消息
-            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
+            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));//每1秒拉取一次
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
                 System.out.println(consumerRecord.key());
                 System.out.println(consumerRecord.value());
@@ -198,13 +211,6 @@ public class ConsumerQuickStart {
 
 }
 ```
-
-
-
-总结
-
-- 生产者发送消息，多个消费者订阅同一个主题，只能有一个消费者收到消息（一对一）
-- 生产者发送消息，多个消费者订阅同一个主题，所有消费者都能收到消息（一对多）
 
 ## kafka高可用设计
 
@@ -234,15 +240,11 @@ Kafka 定义了两类副本：
 
 ISR（in-sync replica）需要同步复制保存的follower
 
-
-
 如果leader失效后，需要选出新的leader，选举的原则如下：
 
 第一：选举时优先从ISR中选定，因为这个列表中follower的数据是与leader同步的
 
 第二：如果ISR列表中的follower都不行了，就只能从其他follower中选取
-
-
 
 极端情况，就是所有副本都失效了，这时有两种方案
 
