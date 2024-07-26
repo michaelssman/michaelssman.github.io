@@ -225,3 +225,62 @@ TextField(
   ),
 )
 ```
+
+## 清空按钮
+
+```dart
+import 'package:flutter/material.dart';
+
+class ClearAbleTextField extends StatefulWidget {
+  final TextEditingController controller;
+  final String labelText; //提示文字
+  final bool obscureText; //是否是密码
+  final bool autofocus; //自动聚焦
+
+  const ClearAbleTextField({
+    super.key,
+    required this.controller,
+    required this.labelText,
+    this.obscureText = false,
+    this.autofocus = false,
+  });
+
+  @override
+  _ClearAbleTextFieldState createState() => _ClearAbleTextFieldState();
+}
+
+class _ClearAbleTextFieldState extends State<ClearAbleTextField> {
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: widget.controller,
+      decoration: InputDecoration(
+        labelText: widget.labelText,
+        suffixIcon: widget.controller.text.isNotEmpty
+            ? IconButton(
+                icon: const Icon(
+                  Icons.clear,
+                  size: 18,
+                  color: Colors.grey,
+                ),
+                onPressed: () {
+                  widget.controller.clear();
+                },
+              )
+            : null,
+      ),
+      obscureText: widget.obscureText,
+      autofocus: widget.autofocus,
+    );
+  }
+}
+```
+
