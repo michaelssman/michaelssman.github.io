@@ -1,5 +1,7 @@
 # jackson进行序列化和反序列化解决
 
+文章id是一长串数字，long类型。网络传输过程可能丢失。
+
 ![image-20210727184750641](jackson进行序列化和反序列化解决.assets/image-20210727184750641.png)
 
 - 当后端响应给前端的数据中包含了id或者特殊标识（可自定义）的时候，把当前数据进行转换为String类型
@@ -7,7 +9,9 @@
 
 特殊标识类说明：
 
-IdEncrypt 自定义注解  作用在需要转换类型的字段属性上，用于非id的属性上   在model包下
+**IdEncrypt自定义注解**  
+
+作用在需要转换类型的字段属性上，用于非id的属性上   在model包下
 
 ```java
 package com.heima.model.common.annotation;
