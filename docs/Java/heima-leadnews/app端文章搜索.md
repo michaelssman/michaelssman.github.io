@@ -1,9 +1,5 @@
 # app端文章搜索
 
-## App端搜索-效果图
-
-![image-20210709140539138](app端文章搜索.assets/image-20210709140539138.png)
-
 ## 今日内容
 
 - 文章搜索
@@ -52,7 +48,7 @@ docker run -id --name elasticsearch -d --restart=always -p 9200:9200 -p 9300:930
 
 因为在创建elasticsearch容器的时候，映射了目录，所以可以在宿主机上进行配置ik中文分词器
 
-在去选择ik分词器的时候，需要与elasticsearch的版本好对应上
+在去选择ik分词器的时候，需要与elasticsearch的版本号对应上。
 
 把资料中的`elasticsearch-analysis-ik-7.4.0.zip`上传到服务器上,放到对应目录（plugins）解压
 
@@ -77,13 +73,11 @@ unzip elasticsearch-analysis-ik-7.4.0.zip
 
 ### 需求分析
 
-- 用户输入关键可搜索文章列表
+- 用户输入关键词可搜索文章列表。
 
-- 关键词高亮显示
+- 关键词高亮显示。
 
-- 文章列表展示与home展示一样，当用户点击某一篇文章，可查看文章详情
-
-![image-20210709141502366](app端文章搜索.assets/image-20210709141502366.png)
+- 文章列表展示与home展示一样，当用户点击某一篇文章，可查看文章详情。
 
 ### 思路分析
 
@@ -95,7 +89,9 @@ unzip elasticsearch-analysis-ik-7.4.0.zip
 
 使用postman添加映射
 
-put请求 ： http://192.168.200.130:9200/app_info_article
+put请求添加映射 ： http://192.168.200.130:9200/app_info_article
+
+body如下：
 
 ```json
 {
@@ -138,8 +134,6 @@ put请求 ： http://192.168.200.130:9200/app_info_article
 ```
 
 ![1606653927638](app端文章搜索.assets/1606653927638.png)
-
-PUT映射：http://192.168.200.130:9200/app_info_article，body如上图
 
 GET请求查询映射：http://192.168.200.130:9200/app_info_article
 
@@ -193,7 +187,7 @@ public class ApArticleTest {
         //1.查询所有符合条件的文章数据
         List<SearchArticleVo> searchArticleVos = apArticleMapper.loadArticleList();
         //2.批量导入到es索引库
-		//索引库名称：app_info_article
+				//索引库名称：app_info_article
         BulkRequest bulkRequest = new BulkRequest("app_info_article");
         for (SearchArticleVo searchArticleVo : searchArticleVos) {
             IndexRequest indexRequest = new IndexRequest()
@@ -313,9 +307,7 @@ public class UserSearchDto {
 }
 ```
 
-#### 3、业务层实现
-
-创建业务层接口：ApArticleSearchService
+#### 3、ApArticleSearchService
 
 ```java
 package com.heima.search.service;
@@ -334,7 +326,7 @@ public interface ArticleSearchService {
 }
 ```
 
-实现类：
+ApArticleSearchServiceImpl
 
 ```java
 package com.heima.search.service.impl;
@@ -440,9 +432,7 @@ public class ArticleSearchServiceImpl implements ArticleSearchService {
 }
 ```
 
-#### 4、控制层实现
-
-新建控制器ArticleSearchController
+#### 4、ArticleSearchController
 
 ```java
 package com.heima.search.controller.v1;
@@ -507,7 +497,6 @@ import java.util.Date;
 
 @Data
 public class SearchArticleVo {
-
     // 文章id
     private Long id;
     // 文章标题
@@ -526,7 +515,6 @@ public class SearchArticleVo {
     private String staticUrl;
     //文章内容
     private String content;
-
 }
 ```
 
@@ -606,11 +594,9 @@ public class ArticleFreemarkerServiceImpl implements ArticleFreemarkerService {
                 e.printStackTrace();
             }
 
-
             //4.3 把html文件上传到minio中
             InputStream in = new ByteArrayInputStream(out.toString().getBytes());
             String path = fileStorageService.uploadHtmlFile("", apArticle.getId() + ".html", in);
-
 
             //4.4 修改ap_article表，保存static_url字段
             apArticleService.update(Wrappers.<ApArticle>lambdaUpdate().eq(ApArticle::getId,apArticle.getId())
@@ -636,7 +622,7 @@ public class ArticleFreemarkerServiceImpl implements ArticleFreemarkerService {
         BeanUtils.copyProperties(apArticle,vo);
         vo.setContent(content);
         vo.setStaticUrl(path);
-		//发送消息
+				//发送消息
         kafkaTemplate.send(ArticleConstants.ARTICLE_ES_SYNC_TOPIC, JSON.toJSONString(vo));
     }
 
@@ -835,7 +821,6 @@ public class ApAssociateWords implements Serializable {
      * 创建时间
      */
     private Date createdTime;
-
 }
 ```
 

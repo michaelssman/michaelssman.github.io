@@ -4,11 +4,11 @@
 
 把函数或者Block当作参数，传递过去。
 
+**block定义和调用执行在两个地方。**
+
 ## 函数式编程
 
 > 引用地址：https://beeth0ven.github.io/RxSwift-Chinese-Documentation/content/think_reactive/funtional_programming.html#
-
-
 
 ![](FunctionalReactiveProgramming/FunctionalProgrammingBanner.png)
 
