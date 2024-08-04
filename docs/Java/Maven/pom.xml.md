@@ -142,3 +142,24 @@
     </modules>
 ```
 
+### `<exclusion>`
+
+忽略的包，因为其它地方已经导入过了。
+
+```xml
+<dependency>
+    <groupId>org.apache.kafka</groupId>
+    <artifactId>kafka-streams</artifactId>
+    <exclusions>
+        <exclusion>
+            <artifactId>connect-json</artifactId>
+            <groupId>org.apache.kafka</groupId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+```
+
