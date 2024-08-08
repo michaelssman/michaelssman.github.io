@@ -160,3 +160,4 @@ known_hosts里面记录了公钥和私钥。
 2. Developer settings，创建access token
 3. 保存环境变量里，终端使用的时候直接使用环境变量里的。
 
+ip addr：查看ip地址
