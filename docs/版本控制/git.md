@@ -70,7 +70,7 @@ git push <远程主机名> <分支名>
 
 拉取/同步远程仓库的代码到本地，更新代码。
 
-## git tag
+## tag
 
 `git tag`：查看所有tag。
 
@@ -91,7 +91,7 @@ $ git branch
 * master
 ```
 
-此例的意思就是，我们有一个叫做 **master** 的分支，并且该分支是当前分支。
+此例的意思就是，有一个 **master** 分支，并且该分支是当前分支。
 
 ### 创建分支
 
@@ -104,11 +104,9 @@ $ git branch
   testing
 ```
 
-现在我们可以看到，有了一个新分支 **testing**。
-
 ### checkout切换分支
 
-git checkout (BranchName) 切换到我们要修改的分支。
+git checkout (BranchName) 切换到要修改的分支。
 
 ### merge
 

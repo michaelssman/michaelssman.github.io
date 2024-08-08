@@ -88,7 +88,7 @@ pod repo add showself-spec http://192.168.84.67/ios/lib/showself_pods_spec.git
 
 需要让运维在`gitlab`对应的仓库给自己加上权限。
 
-## 设置源
+## source
 
 **在Podfile开头处添加源：**
 
