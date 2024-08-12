@@ -4,16 +4,14 @@
 
 需求分析
 
-自媒体端操作文章上架，下架。通知文章微服务去上架，下架文章。
+自媒体端操作文章上下架。通知文章微服务去上下架文章。
 
 - 通过feign的远程调用实现，但是会产生系统的耦合。
 - 采用MQ的方式实现。自媒体端发生一旦上下架，就发一个消息给MQ，文章微服务接收这个消息进行上下架。达到**系统的解耦**。
 
 点赞，不喜欢等操作原理一样。
 
-## kafka概述
-
-### 消息中间件对比
+## 消息中间件对比
 
 | 特性       | ActiveMQ                               | RabbitMQ                   | RocketMQ                 | Kafka                                    |
 | ---------- | -------------------------------------- | -------------------------- | ------------------------ | ---------------------------------------- |
@@ -31,7 +29,7 @@
 | RocketMQ       | 可靠性要求很高的金融互联网领域,稳定性高，经历了多次阿里双11考验 |
 | RabbitMQ       | 性能较好，社区活跃度高，数据量没有那么大，优先选择功能比较完备的RabbitMQ |
 
-kafka介绍
+## kafka概述
 
 Kafka 是一个分布式流媒体平台，类似于消息队列或企业消息传递系统。
 
@@ -55,7 +53,7 @@ kafka介绍-名词解释
 
 ## kafka安装配置
 
-Kafka对于zookeeper是强依赖，保存kafka相关的节点数据，所以安装Kafka之前必须先安装zookeeper
+Kafka对zookeeper是强依赖，保存kafka相关的节点数据，所以安装Kafka之前必须先安装zookeeper
 
 ### Docker安装zookeeper
 
@@ -109,9 +107,7 @@ docker run -d --name kafka \
 </dependency>
 ```
 
-2、编写消息生产者类ProducerQuickstart
-
-生产者发送消息
+2、生产者发送消息
 
 ```java
 package com.heima.kafka.sample;
@@ -206,13 +202,11 @@ public class ConsumerQuickStart {
                 System.out.println(consumerRecord.value());
             }
         }
-
     }
-
 }
 ```
 
-### 分区机制
+### Partition分区机制
 
 ![image-20240726235846492](assets/image-20240726235846492.png)
 
