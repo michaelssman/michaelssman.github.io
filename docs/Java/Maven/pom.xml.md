@@ -16,6 +16,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
+    <!-- 里面添加各种依赖 -->	
     <dependencies>
         <!-- 【1】mybatis的依赖 -->
         <dependency>
@@ -61,7 +62,15 @@
             <version>5.3.16</version>
         </dependency>
     </dependencies>
-    
+
+</project>
+```
+
+## 加入插件
+
+在`pom.xml`的`<build>`中添加Tomcat插件。
+
+```xml
     <!-- 加入tomcat插件 -->
     <pluginRepositories>
         <pluginRepository>
@@ -69,7 +78,6 @@
             <url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
         </pluginRepository>
     </pluginRepositories>
-    
     <build>
         <plugins>
             <!-- Tomcat插件 -->
@@ -84,51 +92,9 @@
             </plugin>
         </plugins>
     </build>
-
-</project>
 ```
 
-### 加入依赖
-
-```xml
-    <dependencies>
-        <dependency>
-	          <!-- 里面添加各种依赖 -->	
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>5.3.23</version>
-        </dependency>
-    </dependencies>
-```
-
-### 加入插件
-
-在`pom.xml`的`<build>`中添加Tomcat插件。
-
-```xml
-    <!-- 加入tomcat插件 -->
-    <pluginRepositories>
-        <pluginRepository>
-            <id>mvnrepository</id>
-            <url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat8-maven-plugin</artifactId>
-                <version>3.0-r1756463</version>
-                <configuration>
-                    <port>8888</port>
-                    <path>/ssm</path>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-```
-
-### 加入子模块
+## 加入子模块
 
 ```xml
     <modules>
@@ -142,7 +108,7 @@
     </modules>
 ```
 
-### `<exclusion>`
+## `<exclusion>`
 
 忽略的包，因为其它地方已经导入过了。
 
@@ -162,4 +128,3 @@
     </exclusions>
 </dependency>
 ```
-

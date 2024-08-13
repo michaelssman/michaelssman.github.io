@@ -202,6 +202,7 @@ nav:
     - 模块和访问权限:
       - 编程/模块&访问权限/访问权限.md
       - 编程/模块&访问权限/模块.md
+    - 编程/变量名.md
   - C++: 
     - C++/README.md
     - C++/字符串和头文件.md
@@ -405,7 +406,6 @@ nav:
       - Java/heima-leadnews/静态化freemarker.md
       - Java/heima-leadnews/分布式文件系统MinIO.md
       - Java/heima-leadnews/app端文章查看.md
-      - Java/heima-leadnews/拦截器.md
       - Java/heima-leadnews/自媒体文章发布.md
       - Java/heima-leadnews/自媒体文章-自动审核.md
       - Java/heima-leadnews/序列化工具.md
