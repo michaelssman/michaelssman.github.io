@@ -45,6 +45,8 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 
 从maven官网下载Maven,官网地址:[https://maven.apache.org](https://maven.apache.org/)
 
+https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/
+
 ## Maven的配置
 
 下面三个配置都是在配置文件`C:\Users\micha\hhsoftware\apache-maven-3.9.1\conf\settings.xml`中修改。
@@ -94,21 +96,27 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 </profile>
 ```
 
+## 项目依赖环境
+
+- maven：3.8.6换为低版本3.6.3
+- JDK：17换为低版本1.8
+- Intellij IEDA：2019版本
+
 ## 在IDEA中配置Maven
-
-maven：3.8.6换为低版本3.6.3
-
-JDK：17换为低版本1.8
-
-IEDA：2019版本
-
-## 创建Maven项目
-
-### IDEA集成Maven的处理
 
 `File | Settings | Build, Execution, Deployment | Build Tools | Maven`
 
+- 设置Maven home directory
+- User settings file
+- 本地仓库地址
+
 ![image-20230419215252262](../assets/image-20230419215252262.png)
+
+设置项目编码格式
+
+![image-20240814105218793](assets/image-20240814105218793.png)
+
+## 创建Maven项目
 
 新建Module模块，ModuleSDK选择1.8版本的。
 

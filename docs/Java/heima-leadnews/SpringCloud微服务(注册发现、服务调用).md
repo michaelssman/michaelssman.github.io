@@ -1,12 +1,6 @@
 # SpringCloud微服务(注册发现、服务调用)
 
-## 项目概述
-
-黑马头条项目采用当下火热的微服务+大数据技术架构实现。本项目主要着手于获取最新最热新闻资讯，通过大数据分析用户喜好精确推送咨询新闻。
-
 ## 技术栈
-
-![img](assets/f3accd2ba01c41b0a9ac98370241eba3.png)
 
 - Spring-Cloud-Gateway : 微服务之前架设的网关服务，实现服务注册中的API请求路由，以及控制流速控制和熔断处理都是常用的架构手段，而这些功能Gateway天然支持。
 - 运用Spring Boot快速开发框架，构建项目工程；并结合Spring Cloud全家桶技术，实现后端个人中心、自媒体、管理中心等微服务。
@@ -32,7 +26,7 @@
 
 ### 表结构分析
 
-关于app端用户相关的内容较多，可以单独设置一个库`leadnews_user`。
+app端用户相关的内容较多，可以单独设置一个库`leadnews_user`。
 
 |    **表名称**    |     **说明**      |
 | :--------------: | :---------------: |
@@ -176,7 +170,7 @@ public class ApUser implements Serializable {
 
 ### 手动加密（md5+随机字符串）
 
-md5是不可逆加密，md5相同的密码每次加密都一样，不太安全。在md5的基础上手动加盐（salt）处理
+md5是不可逆加密，md5相同的密码每次加密都一样，不太安全。在md5的基础上手动加盐（salt）处理。
 
 #### 注册->生成盐
 
@@ -300,22 +294,28 @@ spring:
 
 在nacos中创建配置文件
 
-![image-20210412143121648](assets/image-20210412143121648.png)
+- Data ID：leadnews-user
 
-```yaml
-spring:
-	#mysql驱动
-  datasource:
-    driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/leadnews_user?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-    username: root
-    password: root
-# 设置Mapper接口所对应的XML文件位置，如果你在Mapper接口中有自定义方法，需要进行该配置
-mybatis-plus:
-  mapper-locations: classpath*:mapper/*.xml
-  # 设置别名包扫描路径，通过该属性可以给包中的类注册别名
-  type-aliases-package: com.heima.model.user.pojos
-```
+- Group：DEFAULT_GRUOP
+
+- 配置格式：YAML
+
+- 配置内容：
+
+  ```yaml
+  spring:
+  	#mysql驱动
+    datasource:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/leadnews_user?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+      username: root
+      password: root
+  # 设置Mapper接口所对应的XML文件位置，如果你在Mapper接口中有自定义方法，需要进行该配置
+  mybatis-plus:
+    mapper-locations: classpath*:mapper/*.xml
+    # 设置别名包扫描路径，通过该属性可以给包中的类注册别名
+    type-aliases-package: com.heima.model.user.pojos
+  ```
 
 logback.xml
 
@@ -417,7 +417,7 @@ public interface ApUserMapper extends BaseMapper<ApUser> {
 }
 ```
 
-#### 3、业务层service
+#### 3、service
 
 ```java
 package com.heima.user.service;
@@ -439,7 +439,7 @@ public interface ApUserService extends IService<ApUser>{
 }
 ```
 
-#### 3.1、实现类
+#### 3.1、ServiceImpl
 
 #### 思路分析
 

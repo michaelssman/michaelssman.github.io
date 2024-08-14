@@ -4,12 +4,6 @@
 
 ## 文章列表
 
-### 需求分析
-
-![image-20210419151801252](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210419151801252.png)
-
-
-
 ### 表结构分析
 
 ap_article  文章基本信息表
@@ -604,7 +598,6 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
         ResponseResult responseResult = ResponseResult.okResult(apArticles);
         return responseResult;
     }
-    
 }
 ```
 
@@ -700,10 +693,6 @@ spring:
 3、启动nginx，直接使用前端项目测试。
 
 ## 文章详情
-
-### 需求分析
-
-![image-20210602180753705](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210602180753705.png)
 
 ### 实现方案
 
@@ -830,7 +819,6 @@ public class ArticleFreemarkerTest {
             article.setId(apArticleContent.getArticleId());
             article.setStaticUrl(path);
             apArticleMapper.updateById(article);
-
         }
     }
 }
