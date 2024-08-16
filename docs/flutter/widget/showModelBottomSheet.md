@@ -1,6 +1,6 @@
 # showModelBottomSheet
 
-在 Flutter 中提供了一个 showModelBottomSheet 方法用于弹出底部弹窗。
+showModelBottomSheet 方法用于弹出底部弹窗。
 
 ```dart
 Future<T?> showModalBottomSheet<T>({
@@ -21,9 +21,9 @@ Future<T?> showModalBottomSheet<T>({
 })
 ```
 
-#### 代码结构
+## 代码结构
 
-点击按钮弹出底部弹窗，注意的方式是按钮的 `onPressed` 响应方法，需要使用 `async` 修饰，这是因为 `ModalBottomSheet` 的返回结果是一个 `Future` 对象，需要通过 `await` 来获取返回结果。
+点击按钮弹出底部弹窗，注意的方式是按钮的 `onPressed` 响应方法，需要使用 `async` 修饰，因为 `ModalBottomSheet` 的返回结果是一个 `Future` 对象，需要通过 `await` 来获取返回结果。
 
 ```dart
 onPressed: () async {
@@ -32,9 +32,7 @@ onPressed: () async {
 },
 ```
 
-#### 基本使用
-
-基本使用对于全屏和默认只差一个参数，演示代码中，我们使用了一组模拟的数据构建选项数据，然后再传给显示底部弹窗的方法，实际这组数据大部分是从后台获取的。
+## 基本使用
 
 ```dart
 Future<int> _showBasicModalBottomSheet(context, List<String> options) async {
@@ -60,11 +58,11 @@ Future<int> _showBasicModalBottomSheet(context, List<String> options) async {
 需要注意的有四点：
 
 - 弹窗需要上下文的 `context`，这是因为实际页面展示是通过 `Navigator` 的 `push` 方法导航的新的页面完成的。
-- 弹窗的组件构建的 `builder` 方法，这里可以返回自己自定义的组件，后面的自定义组件就是在这里做文章。
+- 弹窗的组件构建的 `builder` 方法，这里可以返回自己自定义的组件。
 - 在列表的元素的选中点击事件 `onTap` 方法中，需要使用 `Navigator`的 `pop` 方法返回上一个页面，这里可以携带选中的下标（或其他值）返回，上一个页面可以使用 `await` 的方式接收对应返回的结果。
 - 点击蒙层也可以消失，这时候实际调用的方法是 `Navigator.of(context).pop()`。因为没有携带参数，所以接收的结果是 `null`，需要特殊处理一下。
 
-#### 自定义底部弹窗
+## 自定义底部弹窗
 
 在自定义底部弹窗中，我们做了如下自定义项：
 
@@ -138,6 +136,6 @@ Future<int?> showCustomModalBottomSheet(context, List<String> options) async {
 - `Stack` 组件根据子元素的次序依次堆叠，最后面的在最顶层。`textDirection` 用于排布起始位置。
 - 由于 `Column` 下面嵌套了一个 `ListView`，因此需要使用 `Expanded` 将 `ListView` 包裹起来，以便有足够的空间供 `ListView` 的内容区滚动，否则会报布局溢出警告。
 
-#### 总结
+## 总结
 
 实际开发过程中，还可以根据需要，利用 ModalBottomSheet的 builder 方法返回不同的组件进而定制自己的底部弹层组件，能够满足绝大多数场景。同时，借 ModalBottomSheet 的启发，我们自己也可以使用 Navigator方法来实现其他形式的弹层，例如从底部弹出登录页，登录后再返回原页面。

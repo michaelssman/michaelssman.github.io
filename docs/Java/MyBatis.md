@@ -119,6 +119,7 @@ password=数据库密码
             </dataSource>
         </environment>
     </environments>
+  
     <!--资源扫描、接口对应的实现类-->
     <mappers>
         <mapper resource="com/hh/mapper/BookMapper.xml"></mapper>
