@@ -1,33 +1,5 @@
 # app端文章搜索
 
-## 今日内容
-
-- 文章搜索
-
-  - ElasticSearch环境搭建
-
-  - 索引库创建
-
-  - 文章搜索多条件复合查询
-
-  - 索引数据同步
-
-- 搜索历史记录
-
-  - Mongodb环境搭建
-
-  - 异步保存搜索历史
-
-  - 查看搜索历史列表
-
-  - 删除搜索历史
-
-- 联想词查询
-
-  - 联想词的来源
-
-  - 联想词功能实现
-
 ## 搭建ElasticSearch环境
 
 ### 拉取镜像
@@ -726,7 +698,7 @@ public class SyncArticleListener {
 }
 ```
 
-## app端搜索-搜索记录
+## 搜索记录
 
 ### 需求分析
 
@@ -1375,15 +1347,11 @@ public ResponseResult delUserSearch(@RequestBody HistorySearchDto historySearchD
 
 打开app可以删除搜索记录
 
-## app端搜索-关键字联想词
+## 关键字联想词
 
-### 需求分析
+根据用户输入的关键字展示联想词。
 
-![1587366921085](app端文章搜索.assets/1587366921085.png)
-
-- 根据用户输入的关键字展示联想词
-
-对应实体类
+实体类
 
 ```java
 package com.heima.search.pojos;

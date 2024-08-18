@@ -108,7 +108,7 @@
     </modules>
 ```
 
-## `<exclusion>`
+## `<exclusions>`
 
 忽略的包，因为其它地方已经导入过了。
 

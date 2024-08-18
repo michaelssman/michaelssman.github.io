@@ -18,8 +18,6 @@ SQL是一种非过程化语言，只需提出**做什么**，而不需要指明*
 
 每个表都是由若干行和列组成的，行被称为**记录**，列被称为这些记录的**字段**。
 
-## 创建数据库
-
 ## 创建表
 
 ```sql
@@ -52,21 +50,13 @@ CREATE TABLE IF NOT EXISTS student (
 ALTER TABLE users ADD COLUMN email TEXT DEFAULT 'example@example.com';
 ```
 
-## insert插入数据
+## insert
 
 ```sql
 INSERT INTO Students(stu_name, stu_gender, stu_age) VALUES ('哇哈哈','男',23);
 ```
 
-### 防止重复插入数据
-
-**可以使用主键**，每个存储的数据结构都有一个唯一的主键，主键可以自己指定，比如用户的uid 不会重复，就可以作为一个主键，如果不指定主键，则会自动给你配置自增主键。
-
-覆盖数据的依据 一般是根据主键来，速度快，这是一种覆盖方法，可以update 可以replace 主要看你业务需求
-
-另外一种则是可能判断虽然主键不同，但是内容相同的也需要覆盖，这种情况直接查询内容对比然后 update或者replace 
-
-#### 存在的话就更新，不存在的话就插入
+### 存在则更新，不存在则插入
 
 使用`INSERT OR REPLACE`
 
@@ -75,10 +65,6 @@ INSERT OR REPLACE INTO TABLENAME ('articleID','editDate') VALUES ('1001','202201
 ```
 
 ## delete
-
-`and`：和
-
-`or`：或
 
 ```sql
 delete from Students where stu_id = 5 and stu_id = 18;
@@ -98,10 +84,6 @@ drop Database Students;
 
 ## update
 
-```sql
-UPDATE ${TABLENAME} SET stu_name = '隔壁老王', stu_age = 25 WHERE stu_id = 7;
-```
-
 ### 参数化查询
 
 为了避免SQL注入攻击，最好使用**参数化查询**，而不是直接将变量插入到SQL语句中。
@@ -113,7 +95,9 @@ txn.rawUpdate(
 );
 ```
 
-在上面的代码中，`?` 是参数的占位符。`rawUpdate` 方法的第二个参数是一个数组，包含了要插入到SQL语句中的值，这些值将按照顺序替换掉占位符。这种方式不仅安全，还可以防止因不正确的引号使用而导致的语法错误。
+`?` 是参数的占位符。`rawUpdate` 方法的第二个参数是一个数组，包含了要插入到SQL语句中的值，这些值将按照顺序替换掉占位符。
+
+这种方式不仅安全，还可以防止因不正确的引号使用而导致的语法错误。
 
 ## SELECT
 
@@ -282,7 +266,7 @@ ON
 - `MC_TEXT` 表被别名为 `f` 当它与 `from_ac_id` 关联时。
 - `MC_TEXT` 表也被别名为 `t` 当它与 `to_ac_id` 关联时。
 - `INNER JOIN` 用于连接表，确保只有当账户ID在账户表中存在时，明细表的记录才会被返回。
-- 为了避免列名冲突并清晰表达列的含义，使用 `AS` 关键字为每列提供了别名，如 `from_ac_type`, `from_ac_name`, `from_ac_balance`, `to_ac_type`, `to_ac_name`, `to_ac_balance`。
+- 使用 `AS` 关键字为每列提供了别名，如 `from_ac_type`, `from_ac_name`, `from_ac_balance`, `to_ac_type`, `to_ac_name`, `to_ac_balance`。
 
 如果数据库中存在`from_ac_id`或`to_ac_id`没有对应账户记录的情况，可能需要使用`LEFT JOIN`来代替`INNER JOIN`，以确保即使某些账户信息不存在也能返回明细记录。
 
@@ -292,9 +276,11 @@ ON
 SELECT SUM(${AccountModel.balanceKey}) as total FROM $_tableName
 ```
 
-使用SQL的SUM函数来计算所有账户的总余额，结果是一个列表。
+SUM函数来计算所有账户的总余额，结果是一个列表。
 
 ## 总结
 
 删除、修改、查找都可以使用where条件
 
+- `and`：和
+- `or`：或

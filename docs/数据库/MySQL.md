@@ -112,3 +112,7 @@ alter user 'root'@'localhost' identified with mysql_native_password by '刚才�
 ### 乐观锁(Optimistic Lock)
 
 每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，可以使用版本号version等机制。
+
+## 建表
+
+![image-20240818165151570](assets/image-20240818165151570.png)
