@@ -99,9 +99,7 @@ alter user 'root'@'localhost' identified with mysql_native_password by '刚才�
 - longtext：大文本类型。
 
 - BLOB是一个二进制大型对象，是一个可以存储大量数据的容器；LongBlob 最大存储 4G 。
-- tinyint类型：占1个字节，不指定unsigned(非负数)，值范围(-128,127)，指定了unsigned，值范围(0,255)
-
-​	tinyint通常表示小范围的数值，或者表示true或false，通常值为0表示false,值为1表示true
+- tinyint类型：占1个字节，不指定unsigned(非负数)，值范围(-128,127)，指定了unsigned，值范围(0,255)。tinyint通常表示小范围的数值，或者表示true或false，通常值为0表示false,值为1表示true
 
 ## 数据库自身解决并发两种策略
 
@@ -113,6 +111,19 @@ alter user 'root'@'localhost' identified with mysql_native_password by '刚才�
 
 每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，可以使用版本号version等机制。
 
-## 建表
+## MySQL建表建议
 
-![image-20240818165151570](assets/image-20240818165151570.png)
+- 注意选择存储引擎，如果要支持事务需要选择`InnoDB`。
+- ﻿﻿注意字段类型的选择
+  - 对于日期类型如果要记录时分秒建议使用datetime,，只记录年月日使用date类型。
+  - 对于字符类型的选择，固定长度字段选择char，不固定长度的字段选择varchat， varchar比char节省空间但速度没有char快。
+  - 对于内容介绍类的长广文本字段使用text或longtext类型。
+  - 如果存储图片等二进制数据使用blob或longblob类型。
+  - 对金额字段建议使用DECIMAL。
+  - 对于数值类型的字段在确保取值范围足够的前提下尽量使用占用空间较小的类型。
+- ﻿﻿主键字段建议使用自然主键，不要有业务意义，建议使用int unsigned类型，特殊场景使用bigint类型。
+- ﻿﻿如果要存储text、blob字段建议单独建一张表，使用外键关联。
+- ﻿﻿尽量不要定义外键，保证表的独立性，可以存在外键意义的字段。
+- ﻿﻿设置字段默认值，比如：状态、创建时间等。
+- ﻿﻿每个字段写清楚注释。
+- ﻿﻿注意字段的约束，比如：非空、唯一、主键等。
