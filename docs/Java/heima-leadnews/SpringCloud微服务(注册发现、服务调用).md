@@ -18,8 +18,6 @@
 
 ## 登录
 
-### 需求分析
-
 - 用户登录后，用户权限较大，可以查看，也可以操作（点赞，关注，评论）
 
 - 用户不登录，游客只有查看的权限
@@ -356,7 +354,6 @@ logback.xml
         <appender-ref ref="FILE"/>
     </appender>
 
-
     <logger name="org.apache.ibatis.cache.decorators.LoggingCache" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
@@ -403,7 +400,7 @@ public class LoginDto  {
 }
 ```
 
-#### 2、持久层mapper
+#### 2、mapper
 
 ```java
 package com.heima.user.mapper;
