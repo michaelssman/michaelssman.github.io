@@ -42,18 +42,18 @@ Spring是框架，SpringMVC也是框架。
 
 ![image-20230502022807489](assets/image-20230502022807489.png)
 
-下一步确定maven版本，maven版本设置可以看前面的Maven学习
+maven版本设置
 
 ![image-20230815223443206](assets/image-20230815223443206.png)
 
-新建项目的剩余步骤都点击Next按钮即可，和不使用原型时创建Maven项目类似。
+新建项目的剩余步骤都点击Next按钮即可。
 
 ### 2、补全war项目目录
 
 观察目录结构与jar项目不同之处，设置java目录为资源目录。
 整体框架： [目录结构](目录结构.md) 
 
-创建完文件夹directory之后，需要右键`Mark Directory as`选择`Sources Root`、`Resources Root`、`Test Sources Root`。文件夹图标会变颜色，然后就可以在文件夹下创建各种文件。
+创建完文件夹directory之后，需要右键`Mark Directory as`选择`Sources Root`、`Resources Root`、`Test Sources Root`。然后就可以在文件夹下创建各种文件。
 
 ### 3、pom.xml添加依赖和tomcat插件
 
@@ -160,7 +160,7 @@ tomcat和maven都是apache下的，同一个公司的。maven自带tomcat。
 
 #### log4j.properties
 
-log4j程序会自动去找log4j.properties，log4j.properties还是需要的。 [log4j.properties](日志功能.md) 
+log4j程序会自动去找 [log4j.properties](日志功能.md)，log4j.properties还是需要的。
 
 ### 5、整合springmvc
 

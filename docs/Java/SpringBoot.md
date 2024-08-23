@@ -4,7 +4,7 @@ Spring Boot是Spring公司的一个顶级项目，和Spring Framework是一个�
 
 Spring Boot利用Spring Framework 4 自动配置特性完成。编写项目时不需要编写xml文件，简化配置。
 
-发展到现在，Spring Boot已经具有很大的生态圈，各种主流技术已经都提供了Spring Boot的**启动器**。
+Spring Boot已经具有很大的生态圈，各种主流技术已经都提供了Spring Boot的**启动器**。
 
 **为什么使用springBoot**
 
@@ -152,9 +152,9 @@ mybatis: type-aliases-package: com.hh.pojo
 
  [Mapper数据库连接层](Java分层/Mapper数据库连接层.md) 
 
-#### 5.1、定义mapper接口
+#### 5.1、mapper接口
 
-#### 5.2、定义mapper.xml映射文件
+#### 5.2、mapper.xml映射文件
 
 在resource下新建mybatis文件夹，mapper.xml文件名没有要求了，不需要和接口名完全对应了，是根据namespace去找接口。但是最好还是和接口名字保持一致。
 
