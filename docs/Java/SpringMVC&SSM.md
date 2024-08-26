@@ -51,7 +51,7 @@ maven版本设置
 ### 2、补全war项目目录
 
 观察目录结构与jar项目不同之处，设置java目录为资源目录。
-整体框架： [目录结构](目录结构.md) 
+整体框架： [工程结构](工程结构.md) 
 
 创建完文件夹directory之后，需要右键`Mark Directory as`选择`Sources Root`、`Resources Root`、`Test Sources Root`。然后就可以在文件夹下创建各种文件。
 

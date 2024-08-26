@@ -3,6 +3,7 @@
 ## Mac&Windows
 
 - Audacity：剪辑音频
+- HandBrake：压缩视频
 - Visual Studio Code
 - Sourcetree
 - Typora
@@ -17,7 +18,6 @@
 - DB Browser for SQLite
 - Postman
 - IINA
-- HandBrake：压缩视频
 - V2rayU
 
 ## win
