@@ -181,7 +181,6 @@ public class ConfusionModule extends Module {
 //        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
         return objectMapper.registerModule(new ConfusionModule());
     }
-
 }
 ```
 
@@ -192,14 +191,12 @@ public class ConfusionModule extends Module {
 ```java
 @Configuration
 public class InitJacksonConfig {
-
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper = ConfusionModule.registerModule(objectMapper);
         return objectMapper;
     }
-
 }
 ```
 
