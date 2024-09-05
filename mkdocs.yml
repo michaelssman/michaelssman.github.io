@@ -143,6 +143,7 @@ nav:
       - iOS/架构模式和编程思想/编程思想/响应式/数据同步更新.md
     - iOS/数据持久化/CoreData.md
     - iOS/universalLink.md
+    - iOS/绘制图形.md
     - iOS/快捷键.md
     - iOS/控制器生命周期.md
     - iOS/版本更新.md
@@ -246,6 +247,7 @@ nav:
     - flutter/本地资源和工程配置.md
     - flutter/生命周期.md
     - flutter/状态管理.md
+    - flutter/mixins.md
     - flutter/Key.md
     - flutter/json和map转model.md
     - flutter/手势.md
@@ -316,6 +318,7 @@ nav:
       - 数据结构与算法/算法/哈希集合.md
       - 数据结构与算法/算法/Map.md
   - 计算机网络:
+    - 计算机网络/集线器交换机和路由器.md
     - 计算机网络/网络模型.md
     - 计算机网络/网络协议.md
     - 计算机网络/TCP和UDP.md
@@ -376,6 +379,7 @@ nav:
       - Html/Vue/添加实例 property.md
   - Java:
     - Java/Java.md
+    - Java/环境搭建.md
     - Java/数据类型.md
     - Java/实体类.md
     - Java/IO.md
@@ -389,6 +393,7 @@ nav:
       - Java/Java分层/Java分层.md
       - Java/Java分层/Mapper数据库连接层.md
       - Java/Java分层/Service业务层.md
+    - Java/接口测试工具.md
     - Java/日志功能.md
     - Java/工程结构.md
     - Java/MyBatis.md
@@ -397,10 +402,8 @@ nav:
     - Java/SpringBoot.md
     - Java/JWT.md
     - heima-leadnews:
-      - Java/heima-leadnews/环境搭建.md
-      - Java/heima-leadnews/SpringCloud微服务(注册发现、服务调用).md
+      - Java/heima-leadnews/登录.md
       - Java/heima-leadnews/nginx.md
-      - Java/heima-leadnews/接口测试工具.md
       - Java/heima-leadnews/网关和认证过滤器.md
       - Java/heima-leadnews/静态化freemarker.md
       - Java/heima-leadnews/分布式文件系统MinIO.md
