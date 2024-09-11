@@ -440,6 +440,8 @@ nav:
     - MAC/清理Xcode.md
     - MAC/software.md
     - MAC/vscode.md
+  - Math:
+    - Math/Math.md
   - app:
     - app/jizhanghelp.md
     - app/jizhangpp.md
