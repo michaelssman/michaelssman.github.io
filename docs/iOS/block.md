@@ -10,17 +10,16 @@ Block的使用很像函数指针，不过与函数最大的不同是：Block可�
 
 ## block分类
 
-### 1、全局block
+### 1、NSGlobalBlock
 
-没有捕获外界变量，或者只用到全局变量、静态(static)变量的block就是全局block
+**没有捕获外界变量，或者只用到全局变量、静态(static)变量的block就是全局block。**
 
 NSGlobalBlock，类似函数，存储在程序的数据区域（text段）。
 
 对于Global的Block，我们无需多处理，不需retain和copy，即使copy，也不会copy到堆区，内存不会发生变化，操作都无效。
 
 ```objective-c
-    //1. __NSGlobalBlock__ 没有捕获任何的外界变量（除非是全局区的（静态变量））
-    void (^globalBlock)(int, int) = ^(int a, int b){
+   void (^globalBlock)(int, int) = ^(int a, int b){
         NSLog(@"%d",a+b);
     };
     NSLog(@"globalBlock:%@",globalBlock);//__NSGlobalBlock__
@@ -32,7 +31,7 @@ NSGlobalBlock，类似函数，存储在程序的数据区域（text段）。
 
 注意：如果block中没有用到外界变量，不管他是用什么修饰符修饰，都是全局block！
 
-### 2、栈block
+### 2、NSStackBlock
 
 捕获了外界变量，或者是OC的属性，并且**赋值给弱引用**
 
@@ -40,7 +39,7 @@ NSGlobalBlock，类似函数，存储在程序的数据区域（text段）。
 
 对于Stack的Block，如果不做任何操作，随栈自生自灭。
 
-而如果想让它获得比stack更久的生命，那就调用Block_copy()，或者copy修饰，让它搬家到堆内存上，这也是为什么一直用copy修饰Block的原因。
+而如果想让它获得比stack更久的生命，那就调用`Block_copy()`，或者copy修饰，让它搬家到堆内存上，这也是为什么用copy修饰Block的原因。
 
 ```objective-c
 		int a = 10;
@@ -65,7 +64,7 @@ ARC下：
 
 其实在ARC下，生成的Block默认也是NSStackBlock类型，只是在变量赋值的时候，系统默认对其进行了copy，从NSStackBlock给copy到堆区的NSMallocBlock类型。而在非arc中，则需要手动copy。
 
-### 3、堆block
+### 3、NSMallocBlock
 
 捕获了外界变量，或者是OC的属性，并且**赋值给强引用**
 
@@ -77,14 +76,16 @@ ARC下：
 
 ## block使用copy
 
-block只有引用了栈里的临时变量, 才会被创建在stack区. **没有引用临时变量的block是放在global区**, 是不会被释放的。**stack区的块只要赋值给strong类型的变量, 就会自动copy到堆里**。所以要不要写copy都没关系
+- **没有引用临时变量的block是放在global区**, 是不会被释放的。
+- block引用了栈里的临时变量, 才会被创建在stack区。
+- **stack区的块只要赋值给strong类型的变量, 就会自动copy到堆里**。所以要不要写copy都没关系
 
 **block在创建的时候，内存是分配在栈上的（内存随时可能被销毁）。**MRC使用copy的目的是将block创建默认放在栈区拷贝一份到堆区，**因为栈区中的变量管理是由它自己管理的，随时可能被销毁，一旦被销毁后续再次调用空对象就可能会造成程序崩溃问题**， block放在了堆中，block有个指针指向了栈中的block代码块，
 
 在ARC模式下，系统会默认使用copy进行修饰。
 
 1. 如果访问了外部处于栈区的变量（比如局部变量），或处于堆区的变量。都会存放在堆区，如果访问的是内部创建的变量还是存储在全局区
-2. 在ARC中做了特殊的处理，自动的做了copy操作，所以为__NSMallocBlock__在MRC中是__NSStackBlock__ 栈block
+2. 在ARC中做了特殊的处理，自动的做了copy操作，所以为`__NSMallocBlock__`在MRC中是`__NSStackBlock__`。
 
 ## 内存管理
 
@@ -109,17 +110,9 @@ self.block = ^{
 
 分析：因为Block是当前self属性，self强引用Block。当在Block内部捕获了self（使用_一样也是引用了self），Block便强引用了self，两者相互持有，无法释放。  
 
-解决方法是ARC 下`__weak`修饰self：__`weak Class *weakSelf =self;` MRC下`__weak`改为`__block`.
+解决方法是ARC 下`__weak`修饰self：__`weak Class *weakSelf = self;` MRC下`__weak`改为`__block`。
 
-**补充：**
-
-对于两个对象之间的Block回调，只有双方持有的时候才会造成循环引用，例如：
-
-ClassA 中定义了Block闭包函数，ClassB中的Block指针去回调ClassA的Block，
-
-此时如果Block中使用了ClassA的self自身对象，ClassB便强引用了ClassA，此时不会造成循环引用。
-
-只有ClassB为ClassA的属性的属性，既ClassA也持有ClassB才会造成循环引用问题。
+**只有双方持有的时候才会造成循环引用。**
 
 ### 1. 强弱共舞
 
