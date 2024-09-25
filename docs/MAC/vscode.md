@@ -11,3 +11,7 @@ vscode-icons-mac
 更改主题：command K command T
 
 Code Runner
+
+- GitHub Copilot
+- GitHub Copilot Chat
+- open in browser

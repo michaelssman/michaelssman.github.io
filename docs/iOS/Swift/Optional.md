@@ -2,8 +2,6 @@
 
 在变量类型后面加`?`表示，可选项没法直接使用，需要使用`!`展开后才能使用（表示这个可选项里面有值）
 
-比如我们在代码这样定义： 
-
 ```swift
 class LGTeacher{
   var age: Int? 
@@ -81,7 +79,7 @@ for element in array{
   }
   
   //第二种
-  //如果每一个可选值都用模式匹配的方式来获取值在代码书写上就比较繁琐，我们还可以使用 if let 的方式来进行可选值绑定 
+  //如果每一个可选值都用模式匹配的方式来获取值在代码书写上就比较繁琐，可以使用 if let 的方式来进行可选值绑定 
    if let value = value{
      array.remove(at: array.firstIndex(of: value)!)
    }

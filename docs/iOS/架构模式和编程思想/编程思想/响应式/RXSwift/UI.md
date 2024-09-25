@@ -1,4 +1,4 @@
-### UITextField
+## UITextField
 
 RxSwift 是一个用于在 Swift 中进行响应式编程的库，它提供了一种声明式的方式来处理异步事件和数据流。
 
@@ -13,10 +13,6 @@ RxSwift 是一个用于在 Swift 中进行响应式编程的库，它提供了�
 这里是一个简单的例子：
 
 ```swift
-import UIKit
-import RxSwift
-import RxCocoa
-
 class YourViewController: UIViewController {
 
     let disposeBag = DisposeBag() // 用于管理订阅的销毁
@@ -41,3 +37,20 @@ class YourViewController: UIViewController {
 使用 `rx.text.orEmpty` 来观察文本变化，会返回一个 `Observable<String>`。然后使用 `subscribe` 方法来处理这些变化。
 
 `rx.text.orEmpty`确保`text` 不会是 `nil`，因为 `.orEmpty` 将 `nil` 转换为了空字符串 `""`。
+
+## 手势
+
+```swift
+let view = UIView()
+let disposeBag = DisposeBag()
+
+let tapGesture = UITapGestureRecognizer()
+view.addGestureRecognizer(tapGesture)
+
+tapGesture.rx.event
+    .subscribe(onNext: { _ in
+        print("View tapped!")
+    })
+    .disposed(by: disposeBag)
+```
+
