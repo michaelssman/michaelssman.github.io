@@ -7,6 +7,7 @@
 - Visual Studio Code
 - Sourcetree
 - Typora
+- DB Browser for SQLite（sqlitebrowser）github可以下载
 
 ## Mac
 
@@ -15,7 +16,6 @@
 - MindNode
 - The Unarchiver：解压rar格式文件
 - Sublime Text
-- DB Browser for SQLite
 - Postman
 - IINA
 - V2rayU
