@@ -4,7 +4,7 @@
 
 ## 认证
 
-身份认证即用户去访问系统资源时系统要求验证用户的身份信息，身份合法方可继续访问。
+认证即用户去访问系统资源时系统要求验证用户的身份信息，身份合法方可继续访问。
 
 常见的用户身份认证的表现形式有：用户名密码登录，微信扫码等方式。
 
@@ -42,15 +42,17 @@ Spring cloud Security： https://spring.io/projects/spring-cloud-security
 
 Spring Security所解决的问题就是**安全访问控制**。
 
-安全访问控制功能其实就是对所有进入系统的请求进行拦截，校验每个请求是否能够访问它所期望的资源。根据前边知识的学习，可以通过Filter或AOP等技术来实现，Spring Security对Web资源的保护是靠Filter实现的，所以从这个Filter来入手，逐步深入Spring Security原理。
+对所有进入系统的请求进行拦截，校验每个请求是否能够访问它所期望的资源。
 
-当初始化Spring Security时，会创建一个名为`SpringSecurityFilterChain`的Servlet过滤器，类型为`org.springframework.security.web.FilterChainProxy`，它实现了`javax.servlet.Filter`，因此外部的请求会经过此类。
+根据前边知识的学习，可以通过Filter或AOP等技术来实现，Spring Security对Web资源的保护是靠Filter实现的。
 
-下图是Spring Security过虑器链结构图：
+初始化Spring Security时，会创建一个名为`SpringSecurityFilterChain`的Servlet过滤器，类型为`org.springframework.security.web.FilterChainProxy`，它实现了`javax.servlet.Filter`，因此外部的请求会经过此类。
+
+Spring Security过虑器链结构图：
 
 ![image-20240911164023286](assets/image-20240911164023286.png)
 
-FilterChainProxy是一个代理，真正起作用的是FilterChainProxy中SecurityFilterChain所包含的各个Filter，同时这些Filter作为Bean被Spring管理，它们是Spring Security核心，各有各的职责，但他们并不直接处理用户的**认证**，也不直接处理用户的**授权**，而是把它们交给了认证管理器（AuthenticationManager）和决策管理器（AccessDecisionManager）进行处理。
+FilterChainProxy是一个代理，真正起作用的是FilterChainProxy中SecurityFilterChain所包含的各个Filter，同时这些Filter作为Bean被Spring管理，它们是Spring Security核心，各有各的职责，但他们并不直接处理用户的**认证**和**授权**，而是把它们交给了认证管理器（AuthenticationManager）和决策管理器（AccessDecisionManager）进行处理。
 
 spring Security功能的实现主要是由一系列过滤器链相互配合完成。
 
@@ -68,11 +70,11 @@ spring Security功能的实现主要是由一系列过滤器链相互配合完�
 ![image-20240913190052291](assets/image-20240913190052291.png)
 
 1. 用户提交用户名、密码被SecurityFilterChain中的`UsernamePasswordAuthenticationFilter`过滤器获取到，封装为请求Authentication，通常情况下是UsernamePasswordAuthenticationToken这个实现类。
-2. 然后过滤器将Authentication提交至认证管理器`AuthenticationManager`进行认证。
+2. 过滤器将Authentication提交至认证管理器`AuthenticationManager`进行认证。
 3. 认证成功后，`AuthenticationManager`身份管理器返回一个被填充满了信息的（包括上面提到的权限信息，身份信息，细节信息，但密码通常会被移除）`Authentication`实例。
 4. `SecurityContextHolder`安全上下文容器将第3步填充了信息的`Authentication`，通过SecurityContextHolder.getContext().setAuthentication(…)方法，设置到其中。
 5. 可以看出AuthenticationManager接口（认证管理器）是认证相关的核心接口，也是发起认证的出发点，它的实现类为ProviderManager。而Spring Security支持多种认证方式，因此ProviderManager维护着一个`List<AuthenticationProvider>`列表，存放多种认证方式，最终实际的认证工作是由AuthenticationProvider完成的。
-   1. web表单的对应的AuthenticationProvider实现类为DaoAuthenticationProvider，它的内部又维护着一个UserDetailsService负责UserDetails的获取。最终AuthenticationProvider将UserDetails填充至Authentication。
+   1. web表单的对应的AuthenticationProvider实现类为DaoAuthenticationProvider，它的内部又维护着一个`UserDetailsService`负责UserDetails的获取。最终AuthenticationProvider将UserDetails填充至Authentication。
 
 
 
@@ -90,24 +92,13 @@ SpringBoot Security
 - 使用Spring Security实现用户登录注册
 - Jwt跨域认证
 
-Spring Security整体架构：
-
-![image-20240525202632689](assets/image-20240525202632689.png)
-
-SecurityFilter有下面几个主要的类
-
-- AuthenticationFilter
-- AuthenticationManager
-- UserDetailsService
-- SecurityContext
-
 通过AuthenticationFilter拦截用户请求并提取认证信息（用户名、密码、token），然后调用AuthenticationManager处理认证逻辑，认证逻辑会调用UserDetailsService来加载用户的详情信息（密码，用户名等），一旦认证成功，用户的信息会被设置到SecurityContext中，供后续的请求访问。
 
 整个流程确保了应用的安全性，通过对用户的身份验证和权限校验，来决定用户是否可以访问应用中特定的资源。
 
 ## OAuth2
 
-微信扫码认证，这是一种第三方认证的方式，这种认证方式是基于OAuth2协议实现，
+微信扫码认证，是一种第三方认证的方式，这种认证方式是基于OAuth2协议实现，
 
 OAUTH协议为用户资源的授权提供了一个安全的、开放而又简易的标准。同时，任何第三方都可以使用OAUTH认证服务，任何服务提供商都可以实现自身的OAUTH认证服务，因而OAUTH是开放的。业界提供了OAUTH的多种实现如PHP、JavaScript，Java，Ruby等各种语言开发包，大大节约了程序员的时间，因而OAUTH是简易的。互联网很多服务如Open API，很多大公司如Google，Yahoo，Microsoft等都提供了OAUTH认证服务，这些都足以说明OAUTH标准逐渐成为开放资源授权的标准。
 
@@ -132,9 +123,9 @@ Oauth协议：https://tools.ietf.org/html/rfc6749
    只有资源拥有者同意微信才允许黑马网站访问资源。
 
 3. 黑马程序员的网站获取到授权码
-4. 携带授权码请求微信认证服务器申请令牌（此交互过程用户看不到）。
+4. 携带授权码请求**微信认证服务器**申请令牌（此交互过程用户看不到）。
 5. 微信认证服务器向黑马程序员的网站响应令牌（此交互过程用户看不到）。
-6. 黑马程序员网站携带令牌请求微信资源服务器获取资源即用户信息。
+6. 黑马程序员网站携带令牌请求**微信资源服务器**获取资源即用户信息。
 7. 资源服务器返回受保护资源即用户信息。
 8. 黑马网站接收到用户信息，此时用户在黑马网站登录成功。
 
@@ -182,9 +173,9 @@ Spring Security支持OAuth2认证，OAuth2提供授权码模式、密码模式�
 
 ### 1、授权码模式
 
-OAuth2的几个授权模式是根据不同的应用场景以不同的方式去获取令牌，最终目的是要获取认证服务颁发的令牌，最终通过令牌去获取资源。
+OAuth2的几个授权模式是根据不同的应用场景以不同的方式去获取令牌，最终目的是要获取认证服务颁发的令牌，最终**通过令牌去获取资源**。
 
-授权码模式简单理解是使用授权码去获取令牌，要想获取令牌先要获取授权码，授权码的获取需要资源拥有者亲自授权同意才可以获取。
+授权码模式简单理解是使用授权码去获取令牌，授权码的获取需要资源拥有者亲自授权同意才可以获取。
 
 下图是授权码模式的交互图：
 
@@ -203,24 +194,6 @@ OAuth2的几个授权模式是根据不同的应用场景以不同的方式去�
 9. 客户端携带授权码向认证服务申请令牌。
 10. 认证服务向客户端颁发令牌。
 
-申请令牌成功如下所示：
-
-```JSON
-{
-  "access_token": "368b1ee7-a9ee-4e9a-aae6-0fcab243aad2",
-  "token_type": "bearer",
-  "refresh_token": "3d56e139-0ee6-4ace-8cbe-1311dfaa991f",
-  "expires_in": 7199,
-  "scope": "all"
-}
-```
-
-- access_token：访问令牌，用于访问资源使用。
-- token_type：bearer是在RFC6750中定义的一种token类型，在携带令牌访问资源时需要在head中加入bearer 空格 令牌内容。
-- refresh_token：当令牌快过期时使用刷新令牌可以再次生成令牌。
-- expires_in：过期时间（秒）。
-- scope：令牌的权限范围，服务端可以根据令牌的权限范围去对令牌授权。
-
 ### 2、密码模式
 
 密码模式相对授权码模式简单，授权码模式需要借助浏览器供用户亲自授权，密码模式不用借助浏览器，如下图：
@@ -233,7 +206,7 @@ OAuth2的几个授权模式是根据不同的应用场景以不同的方式去�
 
 这种模式十分简单，但是却意味着直接将用户敏感信息泄漏给了client，因此这就说明这种模式只能用于client是我们自己开发的情况下。
 
-**授权码模式适合客户端和认证服务非同一个系统的情况，所以本项目使用授权码模式完成微信扫码认证。本项目采用密码模式作为前端请求微服务的认证方式。**
+**授权码模式适合客户端和认证服务非同一个系统的情况，所以本项目使用授权码模式完成微信扫码认证，采用密码模式作为前端请求微服务的认证方式。**
 
 ## 普通令牌的问题
 
@@ -288,7 +261,7 @@ JWT令牌的优点：
 - jwt基于json，非常方便解析。
 - 可以在令牌中自定义丰富的内容，易扩展。
 - 通过非对称加密算法及数字签名技术，JWT防止篡改，安全性高。
-- 资源服务使用JWT可不依赖认证服务即可完成授权。
+- **资源服务**使用JWT可不依赖**认证服务**即可完成授权。
 
 缺点：
 
@@ -301,8 +274,6 @@ JWT令牌由三部分组成，每部分中间使用`.`分隔
 #### 1、Header头部
 
 头部包括令牌的类型（即JWT）及使用的哈希算法（如HMAC SHA256或RSA）
-
-下边是Header部分的内容
 
 ```JSON
  {
@@ -320,8 +291,6 @@ JWT令牌由三部分组成，每部分中间使用`.`分隔
 此部分不建议存放敏感信息，因为此部分可以解码还原原始内容。
 
 最后将第二部分负载使用Base64Url编码，得到一个字符串就是JWT令牌的第二部分。
-
-  一个例子：
 
 ```JSON
   {
@@ -346,11 +315,9 @@ JWT令牌由三部分组成，每部分中间使用`.`分隔
     secret)
 ```
 
-base64UrlEncode(header)：jwt令牌的第一部分。
-
-base64UrlEncode(payload)：jwt令牌的第二部分。
-
-secret：签名所使用的密钥。
+- base64UrlEncode(header)：jwt令牌的第一部分。
+- base64UrlEncode(payload)：jwt令牌的第二部分。
+- secret：签名所使用的密钥。
 
 为什么JWT可以防止篡改？
 
@@ -376,7 +343,7 @@ JWT还可以使用非对称加密，认证服务自己保留私钥，将公钥�
 ```
 
 - access_token：生成的jwt令牌，用于访问资源使用。
-- token_type：bearer是在RFC6750中定义的一种token类型，在携带jwt访问资源时需要在head中加入bearer jwt令牌内容
+- token_type：bearer是在RFC6750中定义的一种token类型，在携带jwt令牌访问资源时需要在head中加入`bearer 空格 令牌内容`。
 - refresh_token：当jwt令牌快过期时使用刷新令牌可以再次生成jwt令牌。
 - expires_in：过期时间（秒）
 - scope：令牌的权限范围，服务端可以根据令牌的权限范围去对令牌授权。
@@ -402,9 +369,11 @@ API网关（Gateway）是应用程序客户端的单一入口点，它位于客�
 
 网关作用：
 
+- **网站白名单维护**：针对不用认证的URL全部放行。
+- **身份验证和安全性**：进行身份验证和授权，保护后端服务。除了白名单剩下的就是需要认证的请求，网关需要验证jwt的合法性，jwt合法则说明用户身份合法，否则说明身份不合法则拒绝继续访问。
+
 - **请求路由**：将请求转发到合适的微服务。
 - **协议转换和服务发现**：处理不同协议之间的转换，例如从 HTTP 到 MQTT。
-- **身份验证和安全性**：进行身份验证和授权，保护后端服务。
 - **负载均衡**：分配请求到多个实例，以提高性能和可用性。
 - **断路**：网关应跟踪错误，并提供断路功能以防止服务过载。
 - **监控与日志记录**：收集和分析流量数据，以便于监控和故障排查。
@@ -417,17 +386,7 @@ API网关（Gateway）是应用程序客户端的单一入口点，它位于客�
 
 **网关不负责授权**，对请求的授权操作在各个微服务进行，因为微服务最清楚用户有哪些权限访问哪些接口。
 
-实现网关以下职责：
-
-1、网站白名单维护
-
-针对不用认证的URL全部放行。
-
-2、校验jwt的合法性。
-
-除了白名单剩下的就是需要认证的请求，网关需要验证jwt的合法性，jwt合法则说明用户身份合法，否则说明身份不合法则拒绝继续访问。
-
-1、在网关工程添加依赖
+在网关工程添加依赖
 
 ```XML
 <dependency>

@@ -270,11 +270,19 @@ open命令：打开文件夹、打开文件。
 
 `sudo chmod 777 /etc/squid`
 
-`sudo chmod -R 777 /Library/Ruby/Gems/2.6.0/`其中`-R`会递归下面的所有文件和文件夹 并修改权限。
+`sudo chmod -R 777 /Library/Ruby/Gems/2.6.0/`其中`-R`会递归下面的所有文件和文件夹并修改权限。
+
+#### 执行权限
+
+```sh
+chmod +x create_xcframework.sh
+```
 
 ### man
 
-在Unix-like系统中，`man`命令是用来查看用户手册的命令，它的名字来自于“manual”的缩写。当你在终端或命令行界面输入`man`后跟着一个命令或程序的名称时，它会显示那个命令或程序的手册页（man page）。手册页通常包含了如何使用命令、它的选项、以及一些例子和详细的描述。
+`man`命令是用来查看用户手册的命令，它的名字来自于“manual”的缩写。
+
+在终端或命令行界面输入`man`后跟着一个命令或程序的名称时，它会显示那个命令或程序的手册页（man page）。手册页通常包含了如何使用命令、它的选项、以及一些例子和详细的描述。
 
 ## 终端标识符
 
@@ -314,40 +322,6 @@ michael@MichaeldeMacBook-Pro ~ %
 修改了`~/.zshrc`文件需要更新
 
 `source ~/.zshrc`
-
-## 安装oh-my-zsh
-
-`sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
-
-### ZSH_DISABLE_COMPFIX 异常
-
-```
-[oh-my-zsh] Insecure completion-dependent directories detected:
-drwxrwxr-x  3 fn-116  admin  96 11  1 17:41 /usr/local/share/zsh
-drwxrwxr-x  2 fn-116  admin  64 11  1 17:41 /usr/local/share/zsh/site-functions
-
-[oh-my-zsh] For safety, we will not load completions from these directories until
-[oh-my-zsh] you fix their permissions and ownership and restart zsh.
-[oh-my-zsh] See the above list for directories with group or other writability.
-
-[oh-my-zsh] To fix your permissions you can do so by disabling
-[oh-my-zsh] the write permission of "group" and "others" and making sure that the
-[oh-my-zsh] owner of these directories is either root or your current user.
-[oh-my-zsh] The following command may help:
-[oh-my-zsh]     compaudit | xargs chmod g-w,o-w
-
-[oh-my-zsh] If the above didn't help or you want to skip the verification of
-[oh-my-zsh] insecure directories you can set the variable ZSH_DISABLE_COMPFIX to
-[oh-my-zsh] "true" before oh-my-zsh is sourced in your zshrc file.
-```
-
-处理方法
-
-`vim .zshrc`点击`i`进入编辑，在顶部加上`ZSH_DISABLE_COMPFIX=true`。
-
-### 更新oh-my-zsh
-
-`omz update`
 
 ## 环境变量
 

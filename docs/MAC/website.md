@@ -22,10 +22,6 @@ https://juejin.cn/user/35629254579047
 
 https://juejin.cn/user/1802854800567390/posts
 
-## bookmarking
-
-http://wsxfdt.xfj.henan.gov.cn:8080/ldxx/indexszxx.jsp#
-
 ### 图标设计
 
 **Canva** (https://www.canva.com/)
@@ -38,12 +34,10 @@ http://wsxfdt.xfj.henan.gov.cn:8080/ldxx/indexszxx.jsp#
 
 ### Launch Image
 
-1. **App Launchpad** (https://theapplaunchpad.com/)
-   - 这个网站提供了一个在线的应用截图和启动图生成器，支持多种设备和屏幕尺寸。
-2. **App Icon Maker** (https://appiconmaker.co/)
-   - 虽然主要用于生成应用图标，但这个网站也可以用来创建适合不同iOS和Android设备的启动屏幕。
-4. **DaVinci Apps** (https://davinciapps.com/)
-   - 提供应用截图和启动屏幕设计服务，支持自定义设计。
+- **App Launchpad** (https://theapplaunchpad.com/)
+  - 这个网站提供了一个在线的应用截图和启动图生成器，支持多种设备和屏幕尺寸。
+- **App Icon Maker** (https://appiconmaker.co/)
+  - 主要用于生成应用图标，也可以用来创建适合不同iOS和Android设备的启动屏幕。
 
 ### app渠道
 

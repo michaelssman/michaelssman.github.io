@@ -15,7 +15,7 @@
 
 ## 配置nginx
 
-1、解压资料文件夹中的压缩包nginx-1.18.0.zip
+1、解压nginx-1.18.0.zip
 
 在下面的地址中输入cmd回车，输入nginx，没报错就说明成功。
 
@@ -25,7 +25,7 @@
 
 3、配置nginx.conf文件
 
-在nginx安装的conf目录下新建一个文件夹`leadnews.conf`,在当前文件夹中新建`heima-leadnews-app.conf`文件
+在nginx安装的conf目录下新建一个文件夹`leadnews.conf`，在当前文件夹中新建`heima-leadnews-app.conf`文件
 
 heima-leadnews-app.conf配置如下：
 

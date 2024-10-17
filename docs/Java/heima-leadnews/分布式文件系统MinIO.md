@@ -77,8 +77,6 @@ MinIO兼容亚马逊S3云存储服务接口，非常适合于存储大容量非�
 docker pull minio/minio
 ```
 
-我们提供的镜像中已经有minio的环境
-
 **2、创建容器**
 
 使用docker进行环境部署和启动
@@ -90,12 +88,12 @@ docker run -p 9000:9000 --name minio -d --restart=always -e "MINIO_ACCESS_KEY=mi
 - MINIO_ACCESS_KEY=minio：用户名是minio
 - MINIO_SECRET_KEY=minio123：密码是minio123
 
-问题：目前docker中拉取的minio镜像为最新的版本，安装方式不太一样，如果想要与课程中一致，
-可以使用资料文件夹中的minio.tar加载为本地镜像。
+docker中拉取的minio镜像为最新的版本。
 
-步骤：
-	1.把minio.tar上传linux服务器上
-	2.执行命令：docker load -i minio.tar
+如果想要与课程中一致，可以使用资料文件夹中的minio.tar加载为本地镜像：
+
+1. 把minio.tar上传linux服务器上
+2. 执行命令：docker load -i minio.tar
 
 **3、管理控制台**   
 
