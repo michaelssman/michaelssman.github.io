@@ -17,7 +17,7 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 
 本地仓库(Local Repository)：本机的文件夹作为本地仓库，本地仓库指本机的一份拷贝，用来缓存远程下载，包含你尚未发布的临时构件。
 
-镜像仓库(Mirror Repository)：访问国外的Maven仓库特别慢。镜像仓库就是另一台备份/复制了中央仓库的服务器。平时使用时国内开发者多使用阿里云镜像或华为云镜像，这样可以大大提升从中央仓库下载资源的速度。但它的角色仍然是一个远程库。
+镜像仓库(Mirror Repository)：访问国外的Maven仓库特别慢。镜像仓库就是另一台备份/复制了中央仓库的服务器。平时使用阿里云镜像或华为云镜像，这样可以大大提升从中央仓库下载资源的速度。但它的角色仍然是一个远程库。
 
 ### 查找依赖流程
 
@@ -31,7 +31,9 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
   
     - 找到后放入本地仓库以备下次使用
   
-  - 找到了 直接使用
+  - 找到了
+    - 直接使用
+  
 
 ## Maven的资源坐标
 
@@ -43,7 +45,7 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 
 ## Maven的下载和安装
 
-从maven官网下载Maven,官网地址:[https://maven.apache.org](https://maven.apache.org/)
+从maven官网下载，地址:[https://maven.apache.org](https://maven.apache.org/)
 
 https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/
 
@@ -106,9 +108,9 @@ https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/
 
 `File | Settings | Build, Execution, Deployment | Build Tools | Maven`
 
-- 设置Maven home directory
+- Maven home directory
 - User settings file
-- 本地仓库地址
+- Local repository本地仓库地址
 
 ![image-20230419215252262](../assets/image-20230419215252262.png)
 

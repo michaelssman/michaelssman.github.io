@@ -128,7 +128,7 @@ spring:
     username: root
     password: asdf123456
 mybatis:
-  type-aliases-package: com.hh.pojo
+  type-aliases-package: com.hh.pojo #加入别名配置
   mapper-locations: classpath:mybatis/*.xml	#加入映射文件位置
 ```
 

@@ -14,7 +14,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # 项目的版本号+构建号
 version: 1.0.0+1
 
-# dart版本
+# dart SDK兼容版本
 environment:
   sdk: ">=3.1.3 <4.0.0"
 
@@ -122,18 +122,6 @@ dependencies:
 
 ​		hide：需要隐藏的内容，不导的内容。
 
-## dart版本兼容
-
-项目/wechat_demo/pubspec.yaml
-
-```
-# dart SDK兼容版本
-environment:
-  sdk: ">=2.12.0 <3.0.0"
-```
-
-然后`Pub get`
-
 ## Put get
 
 安装依赖，在项目根目录下，执行命令：
@@ -147,3 +135,12 @@ flutter pub get
 
 
 iOS还需要`pod install`。
+
+## 第三方库
+
+```yaml
+  # 日期格式化等国际化和本地化功能
+  intl: ^0.19.0
+  shared_preferences: ^2.3.2
+```
+

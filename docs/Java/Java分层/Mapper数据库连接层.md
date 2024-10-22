@@ -1,5 +1,40 @@
 # Mapper数据库连接层
 
+## interface接口类
+
+项目不写接口类也可以正常使用，但是会存在下面的问题：
+
+- **方法不能直接调用**
+- 多个参数问题处理麻烦
+- 项目没有规范可言，不利于面向接口编程思想。
+
+BookMapper.xml里面的sql不能作为方法调用。
+
+在`项目|module|src|main|java|package（com.hh.mapper）`创建BookMapper接口interface文件。
+
+com.hh.mapper.BookMapper接口：抽象方法
+
+```java
+package com.hh.mapper;
+
+import com.hh.pojo.Book;
+
+import java.util.List;
+
+public interface BookMapper {
+    // 定义规则，抽象方法。主要定义方法名，参数，返回值
+    /*public abstract */List selectAllBooks();
+
+    public abstract Book selectOneBook(String name, String author);
+
+    public abstract Book selectOneBook2(Book book);
+
+    public abstract Book selectOneBook3(String name, Book book);
+
+    public abstract int insertBook(Book book);
+}
+```
+
 ## 接口的映射文件BookMapper.xml
 
 对数据库做操作的sq信息。增删改查在这个配置文件里。
@@ -41,38 +76,3 @@ sql和业务代码解耦，直接在xml中操作。
 ```
 
 **映射文件默认不会被程序加载，如果想要被项目加载，需要配置到核心配置文件mybatis.xml中`<mappers>`。** 
-
-## interface接口类
-
-项目不写接口类也可以正常使用，但是会存在下面的问题：
-
-- **方法不能直接调用**
-- 多个参数问题处理麻烦
-- 项目没有规范可言，不利于面向接口编程思想。
-
-BookMapper.xml里面的sql不能作为方法调用。
-
-在`项目|module|src|main|java|package（com.hh.mapper）`创建BookMapper接口interface文件。
-
-com.hh.mapper.BookMapper接口：抽象方法
-
-```java
-package com.hh.mapper;
-
-import com.hh.pojo.Book;
-
-import java.util.List;
-
-public interface BookMapper {
-    // 定义规则，抽象方法。主要定义方法名，参数，返回值
-    /*public abstract */List selectAllBooks();
-
-    public abstract Book selectOneBook(String name, String author);
-
-    public abstract Book selectOneBook2(Book book);
-
-    public abstract Book selectOneBook3(String name, Book book);
-
-    public abstract int insertBook(Book book);
-}
-```

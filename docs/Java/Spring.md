@@ -6,7 +6,7 @@
 
 ![img](assets/56b9acd28d814147aed69e647befb156.png)
 
-## Spring优势：
+## Spring优势
 
 ### 1、方便解耦
 
@@ -24,7 +24,7 @@ Student s = new Student();
 Person s = new Person();
 ```
 
-如果有几十处的话，都需要修改。耦合性太大。
+如果有几十处的话，都需要修改，耦合性太大。
 
 Java代码不再new创建对象，程序中用一个xml文件，里面配置对象名和类。**使用反射**，耦合性低。
 

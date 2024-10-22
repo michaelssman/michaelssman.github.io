@@ -161,7 +161,18 @@ PS:明确指定别名和指定包的方式可以同时存在。
 
 MyBatis框架中内置了一些常见类型的别名。这些别名不需要配置
 
-![img](assets/a603e8dbde504442b6e06ee08d592cbd.png)
+| 别名     | 映射的类型 |      | 别名    | 映射的类型 |      | 别名       | 映射的类型 |
+| -------- | ---------- | ---- | ------- | ---------- | ---- | ---------- | ---------- |
+| _byte    | byte       |      | string  | String     |      | date       | Date       |
+| _long    | long       |      | byte    | Byte       |      | decimal    | BigDecimal |
+| _short   | short      |      | long    | Long       |      | bigdecimal | BigDecimal |
+| _int     | int        |      | short   | Short      |      | object     | Object     |
+| _Integer | int        |      | int     | Integer    |      | map        | Map        |
+| _double  | double     |      | integer | Integer    |      | hashmap    | HashMap    |
+| _float   | float      |      | double  | Double     |      | list       | List       |
+| _boolean | boolean    |      | float   | Float      |      | arraylist  | ArrayList  |
+|          |            |      | boolean | Boolean    |      | collection | Collection |
+|          |            |      |         |            |      | iterator   | Iterator   |
 
 ### 7、测试类，启动项目
 
@@ -191,7 +202,7 @@ public class test {
         SqlSession sqlSession = sqlSessionFactory.openSession();
       
       
-	    /// 1、不使用接口类的情况：
+	    	/// 1、不使用接口类的情况：
         //执行查询：
         List list0 = sqlSession.selectList("com.hh.mapper.BookMapper.selectAllBooks");
         /// 2、使用接口类的情况：
