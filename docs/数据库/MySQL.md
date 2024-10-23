@@ -88,11 +88,13 @@ B树还是有一些问题：
 
 ##### 2、终端输入下面命令
 
+```sh
 mysql -hlocalhost -uroot -p 密码`刚才设置的密码`
 
 alter user 'root'@'localhost' identified by 'root' password expire never;
 
 alter user 'root'@'localhost' identified with mysql_native_password by '刚才设置的密码';
+```
 
 ## 数据类型
 

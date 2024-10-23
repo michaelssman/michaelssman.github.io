@@ -1,4 +1,4 @@
-# flutter简介
+# flutter
 
 ## RN和flutter
 
@@ -19,8 +19,6 @@ api.flutter.dev
 dart.cn
 
 https://pub.dev 三方库，dart packages
-
-dartpad.dev 在线编程
 
 https://flutter.dev/ 下载flutter
 
@@ -53,11 +51,10 @@ export PATH=$FLUTTER:$PATH
 
 `export PATH=$FLUTTER:$PATH`
 
-`$`表示变量，FLUTTER变量是上面定义的`export FLUTTER=/opt/flutter/bin`。
+`$`表示变量
 
-变量名是：`FLUTTER`
-
-路径是：`/opt/flutter/bin`。
+- 变量名是：`FLUTTER`
+- 路径是：`/opt/flutter/bin`。
 
 `:$PATH`表示把之前的读一遍。不同路径之间用`:`隔开。
 

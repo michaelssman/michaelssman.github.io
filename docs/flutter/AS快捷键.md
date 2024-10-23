@@ -4,14 +4,6 @@
 
 `stful` ：创建一个StatefulWidget。
 
-### 自定义代码块
-
-AS中可以设置代码块。Settings -> Editor -> Live Templates
-
-我们可以参考自带的slful代码块进行设置。点击👉的 + 就可添加代码块了。
-
-![img](https://cdn.nlark.com/yuque/0/2020/png/935549/1590336186541-2a02a3d2-cfd5-4386-84e8-b0e08b4f7411.png)
-
 ## 快捷键
 
 `command -`折叠代码
@@ -35,12 +27,6 @@ AS中可以设置代码块。Settings -> Editor -> Live Templates
 `command Y` 查看选中类的属性
 
 `Ctrl + option + O` 删除未使用的import
-
-#### CMD + [  光标回到上一次编辑的位置
-
-#### CMD + ]  光标回到下一次编辑的位置
-
-#### CMD + O 快速打开（一般用于快速打开某个文件）
 
 #### 查看小部件源码 
 
