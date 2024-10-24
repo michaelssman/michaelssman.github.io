@@ -445,7 +445,6 @@ nav:
   - app:
     - app/jizhanghelp.md
     - app/jizhangpp.md
-    - app/jizhangversion.md
 
 # [Extensions]
 plugins:
