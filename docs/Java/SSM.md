@@ -1,4 +1,4 @@
-# SpringMVC&SSM
+# SSM
 
 Spring、SpringMVC、Mybatis就是SSM。
 
@@ -14,7 +14,7 @@ Web项目（war项目）中的Java文件是tomcat服务器来触发的，脱离�
 
 Tomcat服务器对Servlet，Jsp，JNDI，JavaMail有很好的的支持，并且这个Web容器是开源免费的。（Tomcat服务器是Apache下的）
 
-Tomcat就相当于一个电脑上的软件。
+Tomcat相当于电脑上的一个软件。
 
 ## 使用SpringMVC的原因
 
@@ -34,11 +34,8 @@ Spring是框架，SpringMVC也是框架。
 
 创建Maven-war项目步骤：
 
-创建Maven项目，添加webapp模板
-
-先勾选`create from archetype`前面的复选框。
-
-然后选择`org.apache.maven.archetypes:maven-archetype-webapp`
+1. 勾选`create from archetype`前面的复选框。
+2. 选择`org.apache.maven.archetypes:maven-archetype-webapp`，添加webapp模板。
 
 ![image-20230502022807489](assets/image-20230502022807489.png)
 
@@ -46,7 +43,7 @@ maven版本设置
 
 ![image-20230815223443206](assets/image-20230815223443206.png)
 
-新建项目的剩余步骤都点击Next按钮即可。
+剩余步骤都点击Next按钮即可。
 
 ### 2、补全war项目目录
 
@@ -83,7 +80,7 @@ maven版本设置
 
 tomcat和maven都是apache下的，同一个公司的。maven自带tomcat。
 
- [pom.xml](Maven/pom.xml.md) 
+[pom.xml](Maven/pom.xml.md)
 
 ### 4、spring整合mybatis
 
@@ -135,7 +132,7 @@ tomcat和maven都是apache下的，同一个公司的。maven自带tomcat。
         <property name="basePackage" value="com.hh.mapper"></property>
     </bean>
 
-    <!-- 【4】扫描com.msb.service包下注解 -->
+    <!-- 【4】扫描com.hh.service包下注解 -->
     <context:component-scan base-package="com.hh.service"></context:component-scan>
 
 </beans>

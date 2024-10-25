@@ -21,7 +21,7 @@ https://www.jetbrains.com/
 
 - ctrl+d：复制一行
 - ctrl+y：删除一行
-- sout：System.*out*.println();
+- sout：`System.out.println();`
 - alt+Insert：类构造器，可以选择多个属性
 - ctrl+i：service的imp类中，实现接口方法。
 - alt+enter：为选中的ServiceImpl类，创建测试类。

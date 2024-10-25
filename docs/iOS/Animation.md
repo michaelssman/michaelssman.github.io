@@ -23,13 +23,13 @@ keyFramA.repeatCount = MAXFLOAT;
 
 ## CABasicAnimation
 
-### 加载动画，转圈的动画
+### 旋转动画
 
 ```objective-c
 //设置动画
 CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
-rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 ];
-rotationAnimation.duration = 1;
+rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0];
+rotationAnimation.duration = 1.0f;
 rotationAnimation.cumulative = YES;
 rotationAnimation.repeatCount = MAXFLOAT;
 //开始动画

@@ -4,7 +4,7 @@ Spring Boot是Spring公司的一个顶级项目，和Spring Framework是一个�
 
 Spring Boot利用Spring Framework 4 自动配置特性完成。编写项目时不需要编写xml文件，简化配置。
 
-Spring Boot已经具有很大的生态圈，各种主流技术已经都提供了Spring Boot的**启动器**。
+Spring Boot具有很大的生态圈，各种主流技术已经都提供了Spring Boot的**启动器**。
 
 **为什么使用springBoot**
 
@@ -14,17 +14,19 @@ spring问题：编写大量xml配置。管理依赖，版本，坐标等。
 
 springBoot不止可以整合SSM，还可以整合其它框架。
 
-## 启动器
+## 启动器和启动类
+
+**启动器**
 
 Spring框架在项目中作用是Spring整合各种其他技术，让其他技术使用更加方便。
 
 Spring Boot的启动器实际上就是一个依赖。**这个依赖中包含了整个这个技术的相关jar包，还包含了这个技术的自动配置**，以前绝大多数XML配置都不需要配置了。以后每次使用Spring Boot整合其他技术时首先需要考虑导入启动器。
 
-## 启动类
+**启动类**
 
-Spring Boot的启动类的作用是启动Spring Boot项目，基于Main方法来运行的。
+Spring Boot的启动类的作用是启动Spring Boot项目。
 
-## 启动类与启动器区别
+**启动类与启动器区别**
 
 启动类表示项目的启动入口
 
@@ -64,14 +66,12 @@ Spring Boot的启动类的作用是启动Spring Boot项目，基于Main方法来
 
     <!--整合springmvc用到的包，添加启动器-->
     <dependencies>
-
         <!--添加springmvc的启动器-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>2.7.6</version>
         </dependency>
-
         <!--依赖 添加mybatis的启动器-->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
@@ -143,7 +143,8 @@ yml配置文件和properties配置文件可以并存。
 #### 4.1、yml配置文件加入别名配置
 
 ```yaml
-mybatis: type-aliases-package: com.hh.pojo
+mybatis: 
+	type-aliases-package: com.hh.pojo
 ```
 
 对数据库表操作的话，代码需要实体类与数据库表对应。
@@ -161,12 +162,13 @@ mybatis: type-aliases-package: com.hh.pojo
 #### 5.3、yml配置文件中加入映射文件位置
 
 ```yaml
-mybatis:  mapper-locations: classpath:mybatis/*.xml
+mybatis:  
+	mapper-locations: classpath:mybatis/*.xml
 ```
 
 ### 6、定义启动类，在启动类加入mapper的包扫描
 
-启动类基于mian方法来运行的。
+**启动类基于mian方法来运行的。**
 
 在`项目\TestSpringBoot\src\main\java`文件夹下创建`com.hh.TestSpringBootApplication`
 
