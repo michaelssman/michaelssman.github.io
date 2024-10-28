@@ -33,11 +33,13 @@ dependencies:
   # dio: 4.0.1 指定4.0.1
   # dio: any 任意版本
   # dio: '>3.0.1' 大于3.0.1（不包含3.0.1）注意：需要加引号
-  http: ^0.13.4
   # 本地的包package
   flutter_package:
     path: ../flutter_package
 
+dependency_overrides: #依赖覆盖
+  win32: ^5.7.1 #覆盖shared_preferences
+  
 # 开发环境依赖库 调试用的 打包时不会打包进去
 dev_dependencies:
   flutter_test:
@@ -87,22 +89,9 @@ flutter:
 Flutter外部包网站：https://pub.dev/
 Flutter使用pubspec文件管理应用程序的assets(资源，如图片、package等)。
 
-引用外部包的方法
-在**pubspec.yaml**，添加依赖项，如添加`english_words`包和`http`包
-
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  english_words: ^3.1.0
-    
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
-  http: ^0.13.4  
-```
-
 `^`后面表示框架的版本
+
+在`External Libraries`下的` Dart Packages`里面就能看到新导入的包。
 
 ## 关于import
 
@@ -121,20 +110,6 @@ dependencies:
 ​		show：执行需要导入的内容
 
 ​		hide：需要隐藏的内容，不导的内容。
-
-## Put get
-
-安装依赖，在项目根目录下，执行命令：
-
-```
-flutter pub get
-```
-
-在`External Libraries`下的` Dart Packages`里面就能看到新导入的包。
-
-
-
-iOS还需要`pod install`。
 
 ## 第三方库
 

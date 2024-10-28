@@ -136,10 +136,6 @@ https://github.com/flutter/flutter/issues/119927#issuecomment-1415858226
 
 Engine revision：引擎版本
 
-## flutter更新
-
-终端命令：`flutter upgrade`或`flutter upgrade --force`更新flutter。
-
 ## 安卓模拟器
 
 夜神NoxAPPPlayer
@@ -219,9 +215,21 @@ iOS控件==flutter widget，flutter万物皆Widget组件，iOS在window上创建
 
 ## Flutter 命令
 
-```shell
+```sh
+flutter upgrade
+flutter upgrade --force	#更新flutter
+
+flutter pub cache clean	#清除依赖包，需要重新flutter pub get
 flutter clean
-flutter pub get
-flutter run --release		#运行在iPhone上，通过桌面图标就可以打开
+flutter pub get	#安装依赖，iOS还需要pod install。
+flutter run --release	#运行在iPhone上，通过桌面图标就可以打开
 ```
+
+```sh
+flutter pub deps	#查看项目的依赖关系树
+```
+
+
+
+flutter pub outdated
 
