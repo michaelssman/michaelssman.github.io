@@ -30,7 +30,7 @@
 
 认证功能几乎是每个项目都要具备的功能，并且它与业务无关，市面上有很多认证框架，如：Apache Shiro、CAS、Spring Security等。
 
-本项目基于Spring Cloud技术构建，Spring Security是spring家族的一份子且和Spring Cloud集成的很好，所以选用Spring Security作为认证服务的技术框架。
+Spring Security是spring家族的一份子且和Spring Cloud集成的很好，所以选用Spring Security作为认证服务的技术框架。
 
 Spring Security 是一个功能强大且高度可定制的身份验证和访问控制框架，它是一个专注于为 Java 应用程序提供身份验证和授权的框架。
 
@@ -44,7 +44,7 @@ Spring Security所解决的问题就是**安全访问控制**。
 
 对所有进入系统的请求进行拦截，校验每个请求是否能够访问它所期望的资源。
 
-根据前边知识的学习，可以通过Filter或AOP等技术来实现，Spring Security对Web资源的保护是靠Filter实现的。
+Spring Security对Web资源的保护是靠Filter实现的。
 
 初始化Spring Security时，会创建一个名为`SpringSecurityFilterChain`的Servlet过滤器，类型为`org.springframework.security.web.FilterChainProxy`，它实现了`javax.servlet.Filter`，因此外部的请求会经过此类。
 
@@ -60,9 +60,12 @@ spring Security功能的实现主要是由一系列过滤器链相互配合完�
 
 下面介绍过滤器链中主要的几个过滤器及其作用：
 
-- **SecurityContextPersistenceFilter** 这个Filter是整个拦截过程的入口和出口（也就是第一个和最后一个拦截器），会在请求开始时从配置好的 SecurityContextRepository 中获取 SecurityContext，然后把它设置给 SecurityContextHolder。在请求完成后将 SecurityContextHolder 持有的 SecurityContext 再保存到配置好的 SecurityContextRepository，同时清除 securityContextHolder 所持有的 SecurityContext。
-- **UsernamePasswordAuthenticationFilter** 用于处理来自表单提交的认证。该表单必须提供对应的用户名和密码，其内部还有登录成功或失败后进行处理的 AuthenticationSuccessHandler 和 AuthenticationFailureHandler，这些都可以根据需求做相关改变。
-- **FilterSecurityInterceptor** 是用于保护web资源的，使用AccessDecisionManager对当前用户进行授权访问，前面已经详细介绍过了。
+- **SecurityContextPersistenceFilter**：这个Filter是整个拦截过程的入口和出口（也就是第一个和最后一个拦截器）
+  - 请求开始时从配置好的 SecurityContextRepository 中获取 SecurityContext，然后把它设置给 SecurityContextHolder。
+  - 在请求完成后将 SecurityContextHolder 持有的 SecurityContext 再保存到配置好的 SecurityContextRepository，同时清除 securityContextHolder 所持有的 SecurityContext。
+
+- **UsernamePasswordAuthenticationFilter**：用于处理来自表单提交的认证。该表单必须提供对应的用户名和密码，其内部还有登录成功或失败后进行处理的 AuthenticationSuccessHandler 和 AuthenticationFailureHandler，这些都可以根据需求做相关改变。
+- **FilterSecurityInterceptor**：是用于保护web资源的，使用AccessDecisionManager对当前用户进行授权访问，前面已经详细介绍过了。
 - **ExceptionTranslationFilter** 能够捕获来自 FilterChain 所有的异常，并进行处理。但是它只会处理两类异常：AuthenticationException 和 AccessDeniedException，其它的异常它会继续抛出。
 
 **Spring Security的执行流程如下：**
@@ -72,7 +75,7 @@ spring Security功能的实现主要是由一系列过滤器链相互配合完�
 1. 用户提交用户名、密码被SecurityFilterChain中的`UsernamePasswordAuthenticationFilter`过滤器获取到，封装为请求Authentication，通常情况下是UsernamePasswordAuthenticationToken这个实现类。
 2. 过滤器将Authentication提交至认证管理器`AuthenticationManager`进行认证。
 3. 认证成功后，`AuthenticationManager`身份管理器返回一个被填充满了信息的（包括上面提到的权限信息，身份信息，细节信息，但密码通常会被移除）`Authentication`实例。
-4. `SecurityContextHolder`安全上下文容器将第3步填充了信息的`Authentication`，通过SecurityContextHolder.getContext().setAuthentication(…)方法，设置到其中。
+4. `SecurityContextHolder`安全上下文容器将上面填充了信息的`Authentication`，通过`SecurityContextHolder.getContext().setAuthentication(…)`方法，设置到其中。
 5. 可以看出AuthenticationManager接口（认证管理器）是认证相关的核心接口，也是发起认证的出发点，它的实现类为ProviderManager。而Spring Security支持多种认证方式，因此ProviderManager维护着一个`List<AuthenticationProvider>`列表，存放多种认证方式，最终实际的认证工作是由AuthenticationProvider完成的。
    1. web表单的对应的AuthenticationProvider实现类为DaoAuthenticationProvider，它的内部又维护着一个`UserDetailsService`负责UserDetails的获取。最终AuthenticationProvider将UserDetails填充至Authentication。
 
@@ -118,7 +121,7 @@ Oauth协议：https://tools.ietf.org/html/rfc6749
 
    资源拥有者扫描二维码表示资源拥有者请求微信进行认证，微信认证通过向用户手机返回**授权页面**。
 
-   询问用户是否授权黑马程序员访问自己在微信的用户信息，用户点击“确认登录”表示同意授权，**微信认证服务器会颁发一个授权码给黑马程序员的网站**。
+   询问用户是否授权黑马程序员访问自己在微信的用户信息，用户点击“确认登录”表示同意授权，**微信认证服务器颁发一个授权码给黑马程序员的网站**。
 
    只有资源拥有者同意微信才允许黑马网站访问资源。
 
@@ -129,7 +132,7 @@ Oauth协议：https://tools.ietf.org/html/rfc6749
 7. 资源服务器返回受保护资源即用户信息。
 8. 黑马网站接收到用户信息，此时用户在黑马网站登录成功。
 
-理解了微信扫码登录黑马网站的流程，接下来认识Oauth2.0的认证流程，如下：
+接下来认识Oauth2.0的认证流程：
 
 引自Oauth2.0协议rfc6749 https://tools.ietf.org/html/rfc6749
 
@@ -214,7 +217,7 @@ OAuth2的几个授权模式是根据不同的应用场景以不同的方式去�
 
 资源服务器如何校验令牌的合法性？
 
-我们以OAuth2的密码模式为例进行说明：
+以OAuth2的密码模式为例进行说明：
 
 ![image-20240925140436592](assets/image-20240925140436592.png)
 

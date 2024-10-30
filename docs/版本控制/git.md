@@ -104,7 +104,7 @@ $ git branch
   testing
 ```
 
-### checkout切换分支
+### checkout
 
 git checkout (BranchName) 切换到要修改的分支。
 
