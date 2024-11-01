@@ -78,23 +78,25 @@ class MyApp extends StatelessWidget {
 
 ## RichText
 
-显示不同的样式。
-
 ```dart
 RichText(
-  // 设置字体比例
-  textScaler: MediaQuery.textScalerOf(context),
   text: TextSpan(
-    text: '《Flutter高级进阶班》',
-    style: TextStyle(fontSize: 30, color: Colors.black,),
-    children: [
+    children: <TextSpan>[
       TextSpan(
-        text: list[index]['fromAcName'],
-        style: _textStyle1,
+        text: '我们重视您的隐私，在您使用应用前请阅读我们的隐私政策。点击“同意”即表示您同意我们的',
+        style: TextStyle(color: Colors.black),
       ),
       TextSpan(
-        text: list[index]['acDetailDate'],  
-        style: _textStyle2,
+        text: '《隐私政策》',
+        style: TextStyle(color: Colors.blue),
+        recognizer: TapGestureRecognizer()
+          ..onTap = () {
+            // Navigate to the privacy policy webpage
+          },
+      ),
+      TextSpan(
+        text: '。',
+        style: TextStyle(color: Colors.black),
       ),
     ],
   ),

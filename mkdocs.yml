@@ -398,9 +398,10 @@ nav:
     - Java/工程结构.md
     - Java/MyBatis.md
     - Java/Spring.md
-    - Java/SpringMVC&SSM.md
+    - Java/SSM.md
     - Java/SpringBoot.md
     - Java/JWT.md
+    - Java/分布式id.md
     - heima-leadnews:
       - Java/heima-leadnews/登录.md
       - Java/heima-leadnews/nginx.md
@@ -412,10 +413,10 @@ nav:
       - Java/heima-leadnews/自媒体文章-自动审核.md
       - Java/heima-leadnews/序列化工具.md
       - Java/heima-leadnews/延迟任务精准发布文章.md
+      - Java/heima-leadnews/消息中间件.md
       - Java/heima-leadnews/kafka配置.md
       - Java/heima-leadnews/kafka及异步通知文章上下架.md
       - Java/heima-leadnews/app端文章搜索.md
-      - Java/heima-leadnews/用户行为.md
       - Java/heima-leadnews/jackson进行序列化和反序列化解决.md
       - Java/heima-leadnews/热点文章-定时计算.md
       - Java/heima-leadnews/新热文章-实时计算.md
