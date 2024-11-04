@@ -62,7 +62,7 @@ public class Test {
         }
         
         //查询数据
-    	//发送SQL：ResultSet结果集合 - 结果集
+    		//发送SQL：ResultSet结果集合 - 结果集
         ResultSet rs = sta.executeQuery("select * from t_book where price < 40");
         //处理结果：
         while(rs.next()){//判断是否有记录存在

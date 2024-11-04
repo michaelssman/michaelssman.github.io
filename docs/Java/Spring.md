@@ -10,8 +10,6 @@
 
 ### 1、方便解耦
 
-#### 控制反转
-
 Student类，创建对象
 
 ```java
@@ -28,27 +26,7 @@ Person s = new Person();
 
 Java代码不再new创建对象，程序中用一个xml文件，里面配置对象名和类。**使用反射**，耦合性低。
 
-spring容器里面放各种对象。
-
-### 2、简化开发
-
-对比MyBatis框架，定义接口、写映射文件，主要问题是解析mybatis.xml文件的代码，Spring就可以更简洁的处理。
-
-### 3、不改变原有代码在它的基础上扩展（AOP切面编程）
-
-### 4、声明式事务
-
-### 5、整合各种优秀的框架
-
-Spring是框架的框架。
-
-**不重复造轮子**
-
-A公司用a框架，B公司用b框架、C公司用c框架。3个框架的作用是完全一样的，用法也差不多。原有的技术加Spring的整合就可以很简单。不过后来Spring违背了这一原则，自己又出了新轮子。
-
-使用Spring所需jar包比较多，通过maven导包就方便。
-
-## Spring IoC/DI 介绍
+#### IoC/DI 介绍
 
 IoC(Inversion of Control)中文名称：控制反转，也被称为DI(dependency injection )：依赖注入。
 
@@ -58,7 +36,7 @@ IoC(Inversion of Control)中文名称：控制反转，也被称为DI(dependency
 
 ![IOCDI原理](assets/IOCDI原理.png)
 
-### IoC/DI原理
+#### IoC/DI 原理
 
 如果每次创建对象的位置特别多，创建对象的代码和Java代码耦合性高，层和层之间的耦合性也高。所以把创建对象的代码交由Spring管理，不再在Java代码里创建对象。这就是IoC/DI。
 
@@ -71,6 +49,26 @@ IoC(Inversion of Control)中文名称：控制反转，也被称为DI(dependency
 构建的对象放在**Spring容器**，底层是map集合。Spring容器中放各种对象。
 
 applicationContext.xml通过反射创建对象，所有对象放在容器中，java程序从容器中取对象。
+
+### 2、简化开发
+
+对比MyBatis框架，定义接口、写映射文件，主要问题是解析mybatis.xml文件的代码，Spring就可以更简洁的处理。
+
+### 3、AOP切面编程
+
+不改变原有代码在它的基础上扩展。
+
+### 4、声明式事务
+
+### 5、整合各种优秀的框架
+
+Spring是框架的框架。
+
+**不重复造轮子**
+
+A公司用a框架，B公司用b框架、C公司用c框架。3个框架的作用是完全一样的，用法也差不多。原有的技术加Spring的整合就可以很简单。不过后来Spring违背了这一原则，自己又出了新轮子。
+
+使用Spring所需jar包比较多，通过maven导包就方便。
 
 ## 第一个Spring项目-完成IoC/DI代码的实现
 
@@ -100,7 +98,7 @@ Spring项目想要运行起来必须包含:
 
 ### 3、Spring配置文件
 
-在src/main/resources下新建`applicationContext.xml`文件。在这个文件中创建对象。
+在src/main/resources下新建`applicationContext.xml`文件，在这个文件中通过反射创建对象。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -140,8 +138,6 @@ Spring项目想要运行起来必须包含:
 
 </beans>
 ```
-
-识别com.hh.pojo.Book这个类，通过反射创建对象。
 
 ### 4、创建容器
 
