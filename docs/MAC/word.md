@@ -1,2 +1,5 @@
 - Provider：提供者、供应商
 - parse：解析
+- environment：环境
+- alias：别名
+- closure：闭包
