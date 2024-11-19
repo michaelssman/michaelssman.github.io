@@ -1,5 +1,9 @@
-- Provider：提供者、供应商
-- parse：解析
-- environment：环境
 - alias：别名
 - closure：闭包
+- column：列
+- environment：环境
+- intercept：拦截
+- provider：提供者、供应商
+- parse：解析
+- scheme：计划、方案、系统
+- statement：报告、说明、表述、（计算机程序中的）语句

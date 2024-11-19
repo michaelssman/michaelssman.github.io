@@ -1,5 +1,7 @@
 # MyBatis
 
+https://github.com/mybatis/mybatis-3/tree/master?tab=readme-ov-file
+
 等效于对之前学习JDBC的MyBatis框架。
 
 ## MyBatis是持久层框架
