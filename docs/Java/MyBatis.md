@@ -2,6 +2,8 @@
 
 https://github.com/mybatis/mybatis-3/tree/master?tab=readme-ov-file
 
+mybaits中文网址：https://mybatis.org/mybatis-3/zh_CN/index.html
+
 等效于对之前学习JDBC的MyBatis框架。
 
 ## MyBatis是持久层框架
@@ -52,12 +54,6 @@ https://github.com/mybatis/mybatis-3/tree/master?tab=readme-ov-file
             <artifactId>mybatis</artifactId>
             <version>3.5.6</version>
         </dependency>
-        <!--log4j的依赖-->
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
     </dependencies>
   
 </project>
@@ -72,8 +68,6 @@ Mybatis查询到的数据要封装成对象，对象要依托于类。
  [Mapper数据库连接层](Java分层/Mapper数据库连接层.md) 
 
 ### 6、创建MyBatis全局配置文件
-
-（mybaits中文网址：https://mybatis.org/mybatis-3/zh/getting-started.html）
 
 6.1、配置数据库属性文件
 
@@ -247,10 +241,6 @@ public class test {
     }
 }
 ```
-
-### 日志功能
-
- [log4j.properties](日志功能.md) 
 
 ### 参数传递
 

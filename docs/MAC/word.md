@@ -1,4 +1,5 @@
 - alias：别名
+- channel：频道、管道、通道
 - closure：闭包
 - column：列
 - environment：环境
@@ -6,4 +7,6 @@
 - provider：提供者、供应商
 - parse：解析
 - scheme：计划、方案、系统
+- serialize：序列化
 - statement：报告、说明、表述、（计算机程序中的）语句
+- recommend：建议、推荐、劝告

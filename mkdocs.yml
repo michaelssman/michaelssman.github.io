@@ -393,7 +393,7 @@ nav:
       - Java/Java分层/Mapper数据库连接层.md
       - Java/Java分层/Service业务层.md
     - Java/接口测试工具.md
-    - Java/日志功能.md
+    - Java/日志.md
     - Java/工程结构.md
     - Java/MyBatis.md
     - Java/Spring.md
@@ -401,6 +401,7 @@ nav:
     - Java/SpringBoot.md
     - Java/JWT.md
     - Java/分布式id.md
+    - Java/序列化.md
     - heima-leadnews:
       - Java/heima-leadnews/登录.md
       - Java/heima-leadnews/nginx.md
@@ -410,7 +411,6 @@ nav:
       - Java/heima-leadnews/app端文章查看.md
       - Java/heima-leadnews/自媒体文章发布.md
       - Java/heima-leadnews/自媒体文章-自动审核.md
-      - Java/heima-leadnews/序列化工具.md
       - Java/heima-leadnews/延迟任务精准发布文章.md
       - Java/heima-leadnews/消息中间件.md
       - Java/heima-leadnews/kafka配置.md

@@ -157,7 +157,7 @@ tomcat和maven都是apache下的，同一个公司的。maven自带tomcat。
 
 #### log4j.properties
 
-log4j程序会自动去找 [log4j.properties](日志功能.md)，log4j.properties还是需要的。
+log4j程序会自动去找 [log4j.properties](日志.md)，log4j.properties还是需要的。
 
 ### 5、整合springmvc
 
