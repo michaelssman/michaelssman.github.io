@@ -6,7 +6,9 @@
 - intercept：拦截
 - provider：提供者、供应商
 - parse：解析
+- recommend：建议、推荐、劝告
 - scheme：计划、方案、系统
 - serialize：序列化
 - statement：报告、说明、表述、（计算机程序中的）语句
-- recommend：建议、推荐、劝告
+- Transaction：交易、业务、事务
+- varchar：变长字符型
