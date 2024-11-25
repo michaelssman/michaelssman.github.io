@@ -102,14 +102,13 @@ txn.rawUpdate(
 ## SELECT
 
 ```sql
-SELECT * FROM TABLENAME 
-WHERE 字段1 = '<#值#>' 
+SELECT * 
+FROM TABLENAME 
+WHERE editDate < 'last_edit_date' -- 选择editDate小于上次查询的最后一条数据的editDate的数据
 AND name = '倒数离开' 
 AND showtime < '1517904068.1524' 
-ORDER BY 字段2 DESC 
-LIMIT 10 OFFSET %d ;
-
--- 根据字段2倒序排序 查找字段1等于某个值 并且showtime小于1517904068.1524 的数据，并且分页，每页10个。
+ORDER BY date DESC, id DESC -- 首先根据date字段降序排序，如果date相同，那么再根据id字段降序排序
+LIMIT 10 OFFSET %d ; -- 分页，每页10个。
 ```
 
 `*`代表所有属性列的内容，如果其中一部分的话需要特别指明 如下的这句
@@ -118,42 +117,11 @@ LIMIT 10 OFFSET %d ;
 SELECT stu_name,stu_gender FROM Students
 ```
 
-### 根据条件排序查找
-
-假设你的表名是`my_table`，并且`date`和`id`是你的字段名，可以使用以下SQL语句来实现你的需求：
-
-```sql
--- 选择my_table表中的所有字段
-SELECT * 
-FROM my_table -- 从my_table表中选取数据
-WHERE editDate < 'last_edit_date' -- 选择editDate小于上次查询的最后一条数据的editDate的数据
-ORDER BY date DESC, id DESC -- 首先根据date字段降序排序，如果date相同，那么再根据id字段降序排序
-LIMIT 100 -- 限制结果集的数量为100
-```
-
 `DESC`关键字表示降序排序，升序排序使用`ASC`关键字。
 
 ### 根据日期查找的数据，按年 按月 按日倒序分组。
 
-按年、月和日对数据库表中的日期字段进行分组，同时计算每个组中的记录数。假设有一个名为"your_table"的表，其中包含日期字段"date_field"。
-
-按年分组：
-```sql
--- 通过年份分组并计算每个年份的记录数
-SELECT YEAR(date_field) AS year, COUNT(*) AS count
-FROM your_table
-GROUP BY YEAR(date_field)
-ORDER BY YEAR(date_field) DESC;
-```
-
-按月分组：
-```sql
--- 通过年份和月份分组，然后计算每个月份的记录数
-SELECT YEAR(date_field) AS year, MONTH(date_field) AS month, COUNT(*) AS count
-FROM your_table
-GROUP BY YEAR(date_field), MONTH(date_field)
-ORDER BY YEAR(date_field) DESC, MONTH(date_field) DESC;
-```
+按年、月和日对数据库表中的日期字段进行分组，同时计算每个组中的记录数。
 
 按日分组：
 ```sql

@@ -8,6 +8,7 @@
 - Sourcetree
 - Typora
 - DB Browser for SQLite（sqlitebrowser）github可以下载
+- VLC：视频（音频）播放
 
 ## Mac
 
@@ -17,7 +18,6 @@
 - The Unarchiver：解压rar格式文件
 - Sublime Text
 - Postman
-- IINA
 - V2rayU
 
 ## win

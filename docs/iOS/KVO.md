@@ -4,6 +4,7 @@ KVO（Key Value Observing）
 1. 添加观察
 2. 回调观察
 3. 移除观察
+
     可能有野指针
 
 ## 自定义kvo
@@ -79,16 +80,16 @@ textLab.addObserver(self, forKeyPath: "text", options: [.new], context: nil)
 
 // 回调
 override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-  if keyPath == "text" {
-    if let newText = change?[.newKey] as? String {
-      print("lllllll:\(newText)")
+    if keyPath == "text", let newText = change?[.newKey] as? String {
+        print("lllllll:\(newText)")
+    } else {
+        super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
     }
-  }
 }
 
 //
 deinit {
-  textLab.removeObserver(self, forKeyPath: "text")
+    textLab.removeObserver(self, forKeyPath: "text", context: nil)
 }
 ```
 
