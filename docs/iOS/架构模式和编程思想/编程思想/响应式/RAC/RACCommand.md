@@ -2,11 +2,11 @@
 
 ### 1、创建RACCommand
 
-`#import <ReactiveObjC.h>`
-
 在ViewModel中将接口声明成一个RACCommand
 
 ```objective-c
+#import <ReactiveObjC.h>
+
 @property (nonatomic, strong)RACCommand *fetchListCommand;
 
 // 读取我的团队列表

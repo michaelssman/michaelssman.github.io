@@ -10,18 +10,6 @@ https://www.zhihu.com/people/xiao-hui-68-47
 
 https://www.zhihu.com/people/dhcode
 
-掘金关注
-
-https://juejin.cn/user/3650034335487975/posts
-
-https://juejin.cn/user/588993965333309
-
-https://juejin.cn/user/1345457964714072
-
-https://juejin.cn/user/35629254579047
-
-https://juejin.cn/user/1802854800567390/posts
-
 ### 图标设计
 
 **Canva** (https://www.canva.com/)

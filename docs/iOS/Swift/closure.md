@@ -1,6 +1,6 @@
-# 闭包
+# closure
 
-## 函数类型 
+## 函数类型
 
 函数本身也有自己的类型，它由形式参数类型，返回类型组成。
 
@@ -75,7 +75,7 @@ print(makeIncrementer()())//11
 NSInteger tmp = i = 1
 ```
 
- 那么如果我们想要外部的修改能够影响当前 `block` 内部捕获的值，我们只需要对当前的 `i` 添加 `__block` 修饰符
+如果想要外部的修改能够影响当前 `block` 内部捕获的值，只需对当前的 `i` 添加 `__block` 修饰符
 
 ```objectivec
 - (void)testBlock{
@@ -151,8 +151,9 @@ print("after closure \(i)")
 
 默认情况下，闭包表达式从其周围的范围捕获常量和变量，并强引用这些值。可以使用捕获列表来显式控制如何在闭包中捕获值。
 
+在参数列表之前，捕获列表被写为用逗号括起来的表达式列表，并用方括号括起来。
 
-在参数列表之前，捕获列表被写为用逗号括起来的表达式列表，并用方括号括起来。**如果使用捕获列表，则即使省略参数名称，参数类型和返回类型，也必须使用in关键字。**
+**如果使用捕获列表，则即使省略参数名称、参数类型和返回类型，也必须使用in关键字。**
 
 ```swift
 var age = 0
@@ -538,8 +539,8 @@ var onValueChanged: ((String) -> Void)?
 
 //闭包实现
 targetVC.onValueChanged = { [weak self] text in
-                           self?.label.text = text
-            }
+		self?.label.text = text
+}
 
 //调用
 onValueChanged?(items)

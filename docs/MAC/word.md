@@ -1,6 +1,7 @@
 - alias：别名
 - argument：参数
 - association：关联、联想
+- assign：分配、分派
 - batch：批量
 - behavior：行为
 - channel：频道、管道、通道
@@ -8,6 +9,9 @@
 - closure：闭包
 - column：列
 - constructor：构造函数、构造器、建造者
+- concurrency：并发
+- configure：配置
+- confirm：确定、确认
 - environment：环境
 - executor：执行器
 - flush：冲洗
@@ -17,6 +21,7 @@
 - intercept：拦截
 - interval：间隔
 - isolation：隔离
+- merge：合并
 - numeric：数值的、数字的
 - otherwise：否则、除此之外
 - provider：提供者、供应商
