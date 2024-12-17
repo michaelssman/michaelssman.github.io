@@ -17,8 +17,10 @@
 - flush：冲洗
 - full：充满的
 - force：暴力
+- forward：向前的，转交、转发
 - handler：处理器
 - intercept：拦截
+- invocation：祈祷，调用
 - interval：间隔
 - isolation：隔离
 - merge：合并
