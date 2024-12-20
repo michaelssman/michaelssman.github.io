@@ -55,7 +55,7 @@ nav:
       - iOS/Swift/属性.md
       - iOS/Swift/defer.md
       - iOS/Swift/泛型和关联类型.md
-      - iOS/Swift/闭包.md
+      - iOS/Swift/closure.md
       - iOS/Swift/as.md
       - iOS/Swift/源码.md
       - iOS/Swift/运算符重载.md

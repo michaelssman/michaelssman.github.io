@@ -21,25 +21,23 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 
 ### 查找依赖流程
 
-- maven项目 找依赖
-
 - 先在本地仓库找
   - 没找到
     - 配置文件`setting.xml`中是否指定镜像仓库
       - 指定了就在镜像仓库找
       - 没指定就在中央仓库找
-  
+
     - 找到后放入本地仓库以备下次使用
-  
+
   - 找到了
     - 直接使用
-  
+
 
 ## Maven的资源坐标
 
 将坐标复制到项目的配置文件中，通过坐标就可以找到jar包。
 
-- GroupId：一般是逆向公司域名 com.hh，同一个公司的GroupId都是相同的。
+- GroupId：一般是逆向公司域名 com.xxx，同一个公司的GroupId都是相同的。
 - ArtifactId：一般是项目(jar)名 mysql-connector-java。
 - Version：版本号 8.0.28。
 

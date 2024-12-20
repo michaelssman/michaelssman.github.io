@@ -256,6 +256,33 @@ timer.resume()
 //        0
 ```
 
+### 子线程
+
+在子线程中执行复杂计算操作。
+
+```swift
+import Foundation
+
+// 创建一个全局并发队列
+// qos 参数指定了任务的优先级，比如 .userInitiated 适用于需要立即执行的任务。
+let globalQueue = DispatchQueue.global(qos: .userInitiated)
+
+// 在子线程中执行复杂操作
+// async: 异步执行任务，这样不会阻塞当前线程。
+globalQueue.async {
+    // 这里是你的复杂操作
+    for i in 0..<1000 {
+        print("执行复杂操作 \(i)")
+    }
+    
+    // 如果需要在主线程更新 UI，可以使用 DispatchQueue.main.async
+    DispatchQueue.main.async {
+        // 更新 UI 的代码
+        print("UI 更新")
+    }
+}
+```
+
 ## 死锁
 
 ```swift

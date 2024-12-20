@@ -2,15 +2,15 @@
 
 ## 插件
 
-Chinese (Simplified) (简体中文) Language Pack for Visual Studio Code
+- Chinese (Simplified) (简体中文) Language Pack for Visual Studio Code
 
-C/C++
+- C/C++
 
-vscode-icons-mac
+- vscode-icons-mac
 
 更改主题：command K command T
 
-Code Runner
+- Code Runner
 
 - GitHub Copilot
 - GitHub Copilot Chat
