@@ -71,41 +71,41 @@
 在`pom.xml`的`<build>`中添加Tomcat插件。
 
 ```xml
-    <!-- 加入tomcat插件 -->
-    <pluginRepositories>
-        <pluginRepository>
-            <id>mvnrepository</id>
-            <url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
-    <build>
-        <plugins>
-            <!-- Tomcat插件 -->
-            <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat8-maven-plugin</artifactId>
-                <version>3.0-r1756463</version>
-                <configuration>
-                    <port>8888</port>	<!-- 端口-->
-                    <path>/ssm</path>	<!--指定项目的上下文路径-->
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+<!-- 加入tomcat插件 -->
+<pluginRepositories>
+    <pluginRepository>
+        <id>mvnrepository</id>
+        <url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
+    </pluginRepository>
+</pluginRepositories>
+<build>
+    <plugins>
+        <!-- Tomcat插件 -->
+        <plugin>
+            <groupId>org.apache.tomcat.maven</groupId>
+            <artifactId>tomcat8-maven-plugin</artifactId>
+            <version>3.0-r1756463</version>
+            <configuration>
+                <port>8888</port>	<!-- 端口-->
+                <path>/ssm</path>	<!--指定项目的上下文路径-->
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
 ```
 
 ## 加入子模块
 
 ```xml
-    <modules>
-        <module>heima-leadnews-user</module>
-        <module>heima-leadnews-article</module>
-        <module>heima-leadnews-wemedia</module>
-        <module>heima-leadnews-schedule</module>
-        <module>heima-leadnews-search</module>
-        <module>heima-leadnews-admin</module>
-        <module>heima-leadnews-behavior</module>
-    </modules>
+<modules>
+    <module>heima-leadnews-user</module>
+    <module>heima-leadnews-article</module>
+    <module>heima-leadnews-wemedia</module>
+    <module>heima-leadnews-schedule</module>
+    <module>heima-leadnews-search</module>
+    <module>heima-leadnews-admin</module>
+    <module>heima-leadnews-behavior</module>
+</modules>
 ```
 
 ## `<exclusions>`
@@ -128,3 +128,19 @@
     </exclusions>
 </dependency>
 ```
+
+## Maven 中央仓库
+
+```xml
+<repositories>
+    <repository>
+        <id>spring</id>
+        <url>https://maven.aliyun.com/repository/spring</url>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
+</repositories>
