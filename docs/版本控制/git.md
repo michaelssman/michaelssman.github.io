@@ -124,7 +124,7 @@ git merge --no-ff '3.3.2'
 git push origin 'main'
 ```
 
-其中 `--no-ff` 选项的作用是强制执行非快速前进（non-fast-forward）合并。
+`--no-ff` 选项的作用是强制执行非快速前进（non-fast-forward）合并。
 
 **详细解释**
 

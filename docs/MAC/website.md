@@ -1,3 +1,5 @@
+压缩图片：https://tinypng.com/
+
 https://www.zhihu.com/zvideo/1344644440921755649
 
 https://www.zhihu.com/zvideo/1271456902351257600
@@ -12,9 +14,7 @@ https://www.zhihu.com/people/dhcode
 
 ### 图标设计
 
-**Canva** (https://www.canva.com/)
-
-- Canva是一个图形设计平台，你可以使用它来设计启动屏幕，尽管它不是专门为此设计的，但它提供了强大的设计工具和模板。
+设计启动屏幕：https://www.canva.com/
 
 ### 生成App图标包
 
