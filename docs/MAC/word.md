@@ -4,6 +4,7 @@
 - assign：分配、分派
 - batch：批量
 - behavior：行为
+- Certification：认证
 - channel：频道、管道、通道
 - choose：选择、挑选、决定
 - closure：闭包
@@ -18,13 +19,17 @@
 - full：充满的
 - force：暴力
 - forward：向前的，转交、转发
+- gradient：斜坡，坡度，渐变
 - handler：处理器
+- inherited：继承
 - intercept：拦截
 - invocation：祈祷，调用
 - interval：间隔
 - isolation：隔离
 - merge：合并
+- Mirror：镜子，镜像
 - numeric：数值的、数字的
+- Notifier：通知者
 - otherwise：否则、除此之外
 - provider：提供者、供应商
 - policy：策略

@@ -102,7 +102,7 @@ var t2: AnyObject = LGTeacherM.self//代表LGTeacherM类的类型（元类型）
 
 ### Any
 
-代表任意类型，包括 funcation 类型或者 Optional 类型 。等价于 OC的id，Any比AnyObject更广泛。
+任意类型，包括 funcation 类型或者 Optional 类型 。等价于 OC的id，Any比AnyObject更广泛。
 
 ```swift
 //var array0:[AnyObject] = [1,"fds"]//1是基本类型
@@ -242,16 +242,6 @@ var teacher = LGTeacher(age: 18, name: "fdf")
 
 ### ⽤法介绍 
 
-```swift
-//⾸先通过构造⽅法构建⼀个Mirror实例，这⾥传⼊的参数是 Any，也就意味着当前可以是类，结 构体，枚举等
-let mirror = Mirror(reflecting: LGTeacher.self)//reflecting:反射
-//接下来遍历 children 属性，这是⼀个集合
-for pro in mirror.children{
-  //然后我们可以直接通过 label 输出当前的名称，value 输出当前反射的值
-  print("\(pro.label):\(pro.value)")
-}
-```
-
 ### Mirror获取属性列表信息
 
 ```swift
@@ -261,11 +251,13 @@ class LGTeacher{
         print("teach")
     }
 }
-func testMirror() {
-    let mirror = Mirror(reflecting: LGTeacher.self)
-    for pro in mirror.children{
-        print("\(String(describing: pro.label)):\(pro.value)")
-    }
+
+//⾸先通过构造⽅法构建⼀个Mirror实例，这⾥传⼊的参数是 Any，也就意味着当前可以是类、结构体、枚举等
+let mirror = Mirror(reflecting: LGTeacher.self)//reflecting:反射
+//接下来遍历 children 属性，这是⼀个集合
+for pro in mirror.children{
+  //然后我们可以直接通过 label 输出当前的名称，value 输出当前反射的值
+  print("\(pro.label):\(pro.value)")
 }
 ```
 
