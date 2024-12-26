@@ -240,8 +240,6 @@ class LGTeacher: CustomReflectable {//会反射出来信息，lldb使用po的时
 var teacher = LGTeacher(age: 18, name: "fdf")
 ```
 
-### ⽤法介绍 
-
 ### Mirror获取属性列表信息
 
 ```swift
@@ -261,77 +259,25 @@ for pro in mirror.children{
 }
 ```
 
-### Mirror用法：json解析
-
-模型转字典
-
-```swift
-func testJson(_ mirrorObj: Any) -> Any {
-    let mirror = Mirror(reflecting: mirrorObj)
-    guard !mirror.children.isEmpty else { return mirrorObj }
-    var result: [String: Any] = [:]	//字典
-    for child in mirror.children{
-        if let key = child.label{
-            result[key] = testJson(child.value)
-        } else {
-            print("No Keys")
-        }
-    }
-    return result
-}
-```
-
-如果想要所有的对象都具有这个功能，可以将上面方法声明为一个协议。
-
-```swift
-protocol JSONMap{//定义一个协议
-    func jsonMap() -> Any
-}
-extension JSONMap{
-    func jsonMap() -> Any {
-        let mirror = Mirror(reflecting: self)
-        guard !mirror.children.isEmpty else { return self }
-        var result: [String: Any] = [:]
-        for child in mirror.children{
-            if let value = child.value as? JSONMap {
-                if let key = child.label{
-                    result[key] = value.jsonMap
-                } else {
-                    print("No Keys")
-                }
-            } else {
-                print("Value not conform JSONMap Protocol")
-            }
-        }
-        return result
-    }
-}
-
-extension LGTeacherMirror: JSONMap{}
-extension Int: JSONMap{}
-extension String: JSONMap{}
-var resutl = LGTeacherMirror().jsonMap()
-```
-
 ## throws 和 rethrows 的有哪些用法？
 
-`Swift` 中`throw`和`rethrows`关键字用于异常处理（Error handling)，都是用在函数中。
+`throw`和`rethrows`关键字用于异常处理（Error handling)，都是用在函数中。
 
-`throws`关键字用在函数声明中，**放在返回类型的前面**，明确一个函数或者方法可以抛出错误。
-
-jsonMap方法里面的功能是通用的，不需要每一个遵循JSONMap的都自己实现，可以给这个JSONMap协议一个默认的实现。
+`throws`用在函数声明中，**放在返回类型的前面**，明确一个函数可以抛出错误。
 
 ```swift
 // MARK: 想要所有的对象都具有这个功能，将方法声明为一个协议
 protocol JSONMap{//定义一个协议
     func jsonMap() throws -> Any//jsonMap函数返回一个Any类型，也需要定义throws关键字
 }
-// extension 给协议添加一个默认的实现
+/// jsonMap方法里面的功能是通用的，不需要每一个遵循JSONMap的都自己实现，可以给这个JSONMap协议一个默认的实现
+/// extension 给协议添加一个默认的实现
 extension JSONMap{
-    func jsonMap() throws -> Any {//这里也要定义throws关键字
-        let mirror = Mirror(reflecting: self)
+    func jsonMap() throws -> Any { //这里也要定义throws关键字
+        //模型转字典
+        let mirror = Mirror(reflecting: self) //self 类、结构体、枚举的对象
         guard !mirror.children.isEmpty else { return self }
-        var result: [String: Any] = [:]
+        var result: [String: Any] = [:] //字典
         for child in mirror.children{
             if let value = child.value as? JSONMap {
                 if let key = child.label{
@@ -348,7 +294,7 @@ extension JSONMap{
 }
 ```
 
-完成之后，我们该如何使用它：
+如何使用：
 
 ```swift
 extension LGTeacherMirror: JSONMap{}
@@ -387,11 +333,10 @@ enum JSONMapError: Error{//遵循ERROR协议
 
 ### try
 
-使⽤ try 关键字还有两个要注意的点，⼀个是 try! ,⼀个是 try? 
-
-try? :返回的是⼀个可选类型，这⾥的结果就是两类，⼀类是成功，返回具体的字典值；⼀类就错误，但是具体哪⼀类错误我们不关系，统⼀返回了⼀个nil。这样我们当前的错误也不会向上传播~
-
-try! 这⾥其实在写这句代码的时候你就有蜜汁⾃信，这⾏代码绝对不会发⽣错误，也就意味着这句代码就是 to be or not to be ，要么⽣，要么死。
+- try? :返回的结果是⼀个可选类型
+  - 成功，返回具体的字典值；
+  - 错误，统⼀返回了⼀个nil。当前的错误也不会向上传播。
+- try!：表示这⾏代码绝对不会发⽣错误，要么⽣，要么死。
 
 ### do catch
 
@@ -403,7 +348,7 @@ try! 这⾥其实在写这句代码的时候你就有蜜汁⾃信，这⾏代码
 ```swift
 enum JsonMapError: Error{//遵循ERROR协议
 	case emptyKey
-    case notConformProtocol
+  case notConformProtocol
 }
 
 extension LGJsonMap{
@@ -469,7 +414,6 @@ func f2(n: Int) throws -> Int {
     return n*n
 }
 
-
 do {
     let a2 = try a.map(f2)
 } catch {
@@ -477,7 +421,7 @@ do {
 }
 ```
 
-可能有同学会问那如果再这个过程中把 `rethrow` 替换成 `throw` 会有什么区别那？
+`rethrows` 和 `throws`区别
 
 ```swift
 func test(f:(Int) throws -> ()) throws {
@@ -488,5 +432,5 @@ func test2(f:(Int) throws -> ()) rethrows {
 }
 ```
 
--  这里如果我们调用 `test` 函数，就必须使用 `try` 关键字，很明显增加了代码量，因为当前在调用明确没有错误发生时还要进行错误处理
--  相比较 `throws` 明确函数发生的错误， `rethrows` 更像是传递错误（错误需要处理与否取决于当前参数是否会发生错误）
+-  调用 `test` 函数，就必须使用 `try` 关键字。
+-  `rethrows` 更像是传递错误（错误需要处理与否取决于当前参数是否会发生错误）

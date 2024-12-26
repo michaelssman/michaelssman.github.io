@@ -31,6 +31,7 @@
 - numeric：数值的、数字的
 - Notifier：通知者
 - otherwise：否则、除此之外
+- painter：画家
 - provider：提供者、供应商
 - policy：策略
 - parse：解析

@@ -8,3 +8,8 @@
 
 - 处理文章资讯版块多种类别的cell。
 - 不同类型cell的不同点击事件，使用NSInvocation调用方法。
+
+画图：
+
+- 使用CAGradientLayer实现颜色渐变填充色。
+- 带动画的环形图。利用CAShapeLayer画图，CAAnimation子类做动画。
