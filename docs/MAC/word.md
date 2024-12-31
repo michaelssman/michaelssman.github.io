@@ -1,3 +1,4 @@
+- chart：图表，曲线图
 - alias：别名
 - argument：参数
 - association：关联、联想
