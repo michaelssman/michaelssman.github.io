@@ -6,6 +6,7 @@
 - batch：批量
 - behavior：行为
 - Certification：认证
+- Character：字符
 - channel：频道、管道、通道
 - choose：选择、挑选、决定
 - closure：闭包
@@ -31,6 +32,7 @@
 - Mirror：镜子，镜像
 - numeric：数值的、数字的
 - Notifier：通知者
+- Operator：运算
 - otherwise：否则、除此之外
 - painter：画家
 - provider：提供者、供应商
