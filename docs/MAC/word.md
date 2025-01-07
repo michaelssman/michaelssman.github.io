@@ -15,6 +15,7 @@
 - concurrency：并发
 - configure：配置
 - confirm：确定、确认
+- decoration：装饰，装饰品
 - environment：环境
 - executor：执行器
 - flush：冲洗
