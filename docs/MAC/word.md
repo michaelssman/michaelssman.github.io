@@ -31,6 +31,7 @@
 - isolation：隔离
 - merge：合并
 - Mirror：镜子，镜像
+- monitor：显示器，监视仪，监控
 - numeric：数值的、数字的
 - Notifier：通知者
 - Operator：运算
