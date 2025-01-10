@@ -17,6 +17,7 @@
 - confirm：确定、确认
 - decoration：装饰，装饰品
 - environment：环境
+- Entry：入口
 - executor：执行器
 - flush：冲洗
 - full：充满的
@@ -35,6 +36,7 @@
 - numeric：数值的、数字的
 - Notifier：通知者
 - Operator：运算
+- Opacity：不透明
 - otherwise：否则、除此之外
 - painter：画家
 - provider：提供者、供应商
