@@ -92,7 +92,6 @@ spring Security功能的实现主要是由一系列过滤器链相互配合完�
 SpringBoot Security
 
 - 使用MyBatisX插件生成数据访问层的代码
-- 使用Spring Security实现用户登录注册
 - Jwt跨域认证
 
 通过AuthenticationFilter拦截用户请求并提取认证信息（用户名、密码、token），然后调用AuthenticationManager处理认证逻辑，认证逻辑会调用UserDetailsService来加载用户的详情信息（密码，用户名等），一旦认证成功，用户的信息会被设置到SecurityContext中，供后续的请求访问。
@@ -124,7 +123,75 @@ SpringBoot Security
 </dependency>
 ```
 
-1、配置类
+登录注册接口
+
+```java
+package com.example.demo.student.api;
+
+import com.example.demo.student.dto.LoginDto;
+import com.example.demo.student.dto.LoginResponseDto;
+import com.example.demo.student.dto.RegisterDto;
+import com.example.demo.student.dto.UserDto;
+import com.example.demo.student.security.JwtUtil;
+import com.example.demo.student.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+    @Resource
+    private UserService userService;
+
+    @Resource
+    private AuthenticationManager authenticationManager;
+
+    @Resource
+    private JwtUtil jwtUtil;
+
+    @PostMapping("register")
+    public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
+        UserDto user = userService.getUserByUsername(registerDto.getUsername());
+        if (user != null) {
+            return new ResponseEntity<>("用户名已存在", HttpStatus.BAD_REQUEST);
+        }
+        userService.register(registerDto);
+        return new ResponseEntity<>("用户注册成功", HttpStatus.OK);
+    }
+
+    /**
+     * 使用了 AuthenticationManager 来处理认证逻辑。
+     * authenticationManager.authenticate 方法会接收一个 UsernamePasswordAuthenticationToken 对象，根据传入的用户名和密码进行认证。
+     * 如果认证成功，SecurityContextHolder.getContext().setAuthentication(authenticate) 会将认证信息存储在安全上下文中。
+     * 最后，生成 JWT 令牌并返回给客户端。
+     *
+     * @param loginDto
+     * @return
+     */
+    @PostMapping("login")
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginDto loginDto) {
+        Authentication authenticate = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken
+                        (loginDto.getUsername(), loginDto.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        LoginResponseDto loginResponseDto = new LoginResponseDto();
+        loginResponseDto.setToken(jwtUtil.generateToken(authenticate));
+        return new ResponseEntity<>(loginResponseDto, HttpStatus.OK);
+    }
+}
+```
+
+配置类
 
 ```java
 package com.example.demo.student.security;
@@ -153,13 +220,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-	            //开启跨域认证
+               	//开启跨域认证
                 .csrf().disable()
-	            //异常处理
+               	//异常处理
                 .exceptionHandling()
                 .authenticationEntryPoint(authEntryPoint)
                 .and()
-             	//因为jwt是无状态的，所以session管理策略改为无状态的
+        	     	//因为jwt是无状态的，所以session管理策略改为无状态的
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -176,7 +243,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic();
-        //用户名，密码验证之前先对token进行有效性的验证。
+        //JWT 过滤器：在用户名密码认证过滤器之前添加 JWT 认证过滤器。先对token进行有效性的验证。
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -201,7 +268,7 @@ public class SecurityConfig {
 }
 ```
 
-2、没有权限时返回报错，而不是Spring Security默认的重定向登录页。需要添加登录异常的拦截处理类。
+没有权限时返回报错，而不是Spring Security默认的重定向登录页。需要添加登录异常的拦截处理类。
 
 ```java
 package com.example.demo.student.security;
@@ -215,7 +282,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-//实现AuthenticationEntryPoint接口
+/**
+ * 定义一个名为 AuthEntryPoint 的类，它实现了 AuthenticationEntryPoint 接口。这个类的作用是在用户尝试访问受保护的资源但未通过身份验证时，发送一个未授权的错误响应。
+ * @Component 注解表明这个类是一个 Spring 组件，会被 Spring 容器管理。
+ * commence 方法是 AuthenticationEntryPoint 接口中的方法，当用户未通过身份验证时会被调用。
+ * commence 方法接收三个参数：HttpServletRequest、HttpServletResponse 和 AuthenticationException。
+ * 在方法内部，调用 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()) 发送一个 401 未授权的 HTTP 响应，并附带异常信息。
+ */
 @Component//注册到Spring容器中
 public class AuthEntryPoint implements AuthenticationEntryPoint {
     @Override
@@ -301,22 +374,22 @@ import java.util.Date;
 public class JwtUtil {
     //生成加密key
     byte[] jwtSecretKey = DatatypeConverter.parseBase64Binary(SecurityConstants.JWT_SECRET_KEY);
-	//生成token
+		//生成token
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
         Date now = new Date();
         Date expireDate = new Date(now.getTime() + SecurityConstants.JWT_EXPIRATION);
         return Jwts.builder()
                 .setSubject(username)
-	            //token的下发时间是现在
+	          	  //token的下发时间是现在
                 .setIssuedAt(now)
-	            //过期时间
+               	//过期时间
                 .setExpiration(expireDate)
-	            //加密算法HS256
+	        	    //加密算法HS256
                 .signWith(Keys.hmacShaKeyFor(jwtSecretKey), SignatureAlgorithm.HS256)
                 .compact();
     }
-	//从token中解析用户名
+		//从token中解析用户名
     public String getUsernameFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(jwtSecretKey)
@@ -325,18 +398,19 @@ public class JwtUtil {
                 .getBody();
         return claims.getSubject();
     }
-	//校验token有效性
+		//校验token有效性
     public boolean validateToken(String token) {
         try {
-            Claims claims =
-                    Jwts.parserBuilder().setSigningKey(jwtSecretKey)
-                            .build().parseClaimsJws(token).getBody();
+            Claims claims = Jwts.parserBuilder()
+              			.setSigningKey(jwtSecretKey)            
+                   	.build()
+              			.parseClaimsJws(token)
+              			.getBody();
             return claims != null && claims.getExpiration().after(new Date());
         } catch (Exception e) {
             throw new AuthenticationCredentialsNotFoundException("Jwt 解析异常或已过期");
         }
     }
-
 }
 ```
 
@@ -365,7 +439,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private CustomUserDetailsService customUserDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+    protected void doFilterInternal(HttpServletRequest request, 
+                                    HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = getTokenFromRequest(request);
         if (token != null && jwtUtil.validateToken(token)) {

@@ -1,11 +1,12 @@
 ## 个人信息
 
 <table  border="0"> 
-  <tr><td>姓名：XXX</td><td>工作年限：8年</td></tr>
+  <tr><td>姓名：XXX</td><td>工作年限：9年</td></tr>
   <tr><td>学历：河南师范大学</td><td>专业：计算机科学与技术</td></tr>
   <tr><td>电话：1XX-XXXX-XXXX</td><td>邮箱：michaelss_work@outlook.com</td></tr>
   <tr><td colspan=2>个人博客：https://michaelssman.github.io/</td></tr>
 </table>
+
 ---
 
 ## 教育背景（2011.09-2015.07）
