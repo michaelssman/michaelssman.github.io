@@ -79,396 +79,6 @@ spring Security功能的实现主要是由一系列过滤器链相互配合完�
 5. 可以看出AuthenticationManager接口（认证管理器）是认证相关的核心接口，也是发起认证的出发点，它的实现类为ProviderManager。而Spring Security支持多种认证方式，因此ProviderManager维护着一个`List<AuthenticationProvider>`列表，存放多种认证方式，最终实际的认证工作是由AuthenticationProvider完成的。
    1. web表单的对应的AuthenticationProvider实现类为DaoAuthenticationProvider，它的内部又维护着一个`UserDetailsService`负责UserDetails的获取。最终AuthenticationProvider将UserDetails填充至Authentication。
 
-### 案例
-
-
-整合Spring Security实现JWT资源访问的认证和权限控制。
-
-- 实现注册接口，创建新用户
-- 实现登录接口，用于下发JWT Token
-- 使用JWT Filter验证带有Token的请求访问头
-- 利用Spring Security保护应用的资源API
-
-SpringBoot Security
-
-- 使用MyBatisX插件生成数据访问层的代码
-- Jwt跨域认证
-
-通过AuthenticationFilter拦截用户请求并提取认证信息（用户名、密码、token），然后调用AuthenticationManager处理认证逻辑，认证逻辑会调用UserDetailsService来加载用户的详情信息（密码，用户名等），一旦认证成功，用户的信息会被设置到SecurityContext中，供后续的请求访问。
-
-整个流程确保了应用的安全性，通过对用户的身份验证和权限校验，来决定用户是否可以访问应用中特定的资源。
-
-引入依赖
-
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-security</artifactId>
-</dependency>
-<!--jwt相关的依赖-->
-<dependency>
-    <groupId>io.jsonwebtoken</groupId>
-    <artifactId>jjwt-api</artifactId>
-    <version>0.11.5</version>
-</dependency>
-<dependency>
-    <groupId>io.jsonwebtoken</groupId>
-    <artifactId>jjwt-impl</artifactId>
-    <version>0.11.5</version>
-</dependency>
-<dependency>
-    <groupId>io.jsonwebtoken</groupId>
-    <artifactId>jjwt-jackson</artifactId>
-    <version>0.11.5</version>
-</dependency>
-```
-
-登录注册接口
-
-```java
-package com.example.demo.student.api;
-
-import com.example.demo.student.dto.LoginDto;
-import com.example.demo.student.dto.LoginResponseDto;
-import com.example.demo.student.dto.RegisterDto;
-import com.example.demo.student.dto.UserDto;
-import com.example.demo.student.security.JwtUtil;
-import com.example.demo.student.service.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
-
-@RestController
-@RequestMapping("/api/auth")
-public class AuthController {
-    @Resource
-    private UserService userService;
-
-    @Resource
-    private AuthenticationManager authenticationManager;
-
-    @Resource
-    private JwtUtil jwtUtil;
-
-    @PostMapping("register")
-    public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
-        UserDto user = userService.getUserByUsername(registerDto.getUsername());
-        if (user != null) {
-            return new ResponseEntity<>("用户名已存在", HttpStatus.BAD_REQUEST);
-        }
-        userService.register(registerDto);
-        return new ResponseEntity<>("用户注册成功", HttpStatus.OK);
-    }
-
-    /**
-     * 使用了 AuthenticationManager 来处理认证逻辑。
-     * authenticationManager.authenticate 方法会接收一个 UsernamePasswordAuthenticationToken 对象，根据传入的用户名和密码进行认证。
-     * 如果认证成功，SecurityContextHolder.getContext().setAuthentication(authenticate) 会将认证信息存储在安全上下文中。
-     * 最后，生成 JWT 令牌并返回给客户端。
-     *
-     * @param loginDto
-     * @return
-     */
-    @PostMapping("login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginDto loginDto) {
-        Authentication authenticate = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken
-                        (loginDto.getUsername(), loginDto.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
-        LoginResponseDto loginResponseDto = new LoginResponseDto();
-        loginResponseDto.setToken(jwtUtil.generateToken(authenticate));
-        return new ResponseEntity<>(loginResponseDto, HttpStatus.OK);
-    }
-}
-```
-
-配置类
-
-```java
-package com.example.demo.student.security;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import javax.annotation.Resource;
-
-@Configuration
-@EnableWebSecurity
-public class SecurityConfig {
-
-    @Resource
-    private AuthEntryPoint authEntryPoint;
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-               	//开启跨域认证
-                .csrf().disable()
-               	//异常处理
-                .exceptionHandling()
-                .authenticationEntryPoint(authEntryPoint)
-                .and()
-        	     	//因为jwt是无状态的，所以session管理策略改为无状态的
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()
-                //api/auth/下面的接口都可以被访问到（注册登录不需要验证）
-                .antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/v2/api-docs",
-                        "/configuration/ui",
-                        "/swagger-resources/**",
-                        "/configuration/security",
-                        "/swagger-ui.html",
-                        "/webjars/**").permitAll()
-              	//每一个请求都需要认证之后，才可以访问
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic();
-        //JWT 过滤器：在用户名密码认证过滤器之前添加 JWT 认证过滤器。先对token进行有效性的验证。
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
-
-    //登录接口需要使用
-    @Bean
-    public AuthenticationManager authenticationManager
-            (AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    //对用户密码进行加密
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public JWTAuthenticationFilter jwtAuthenticationFilter() {
-        return new JWTAuthenticationFilter();
-    }
-}
-```
-
-没有权限时返回报错，而不是Spring Security默认的重定向登录页。需要添加登录异常的拦截处理类。
-
-```java
-package com.example.demo.student.security;
-
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.stereotype.Component;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-/**
- * 定义一个名为 AuthEntryPoint 的类，它实现了 AuthenticationEntryPoint 接口。这个类的作用是在用户尝试访问受保护的资源但未通过身份验证时，发送一个未授权的错误响应。
- * @Component 注解表明这个类是一个 Spring 组件，会被 Spring 容器管理。
- * commence 方法是 AuthenticationEntryPoint 接口中的方法，当用户未通过身份验证时会被调用。
- * commence 方法接收三个参数：HttpServletRequest、HttpServletResponse 和 AuthenticationException。
- * 在方法内部，调用 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()) 发送一个 401 未授权的 HTTP 响应，并附带异常信息。
- */
-@Component//注册到Spring容器中
-public class AuthEntryPoint implements AuthenticationEntryPoint {
-    @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
-    }
-}
-```
-
-创建UserDetailsService，Spring Security中的核心接口，用于提供用户的详细信息。Spring Security使用此接口来获取进行身份认证和授权的用户信息。
-
-```java
-package com.example.demo.student.security;
-
-import com.example.demo.student.dto.UserDto;
-import com.example.demo.student.service.UserService;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.util.Collection;
-import java.util.stream.Collectors;
-
-@Component//注册到Spring容器中
-public class CustomUserDetailsService implements UserDetailsService {
-    @Resource
-    private UserService userService;
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDto user = userService.getUserByUsername(username);
-        if (user == null) {
-            return null;
-        }
-        //import org.springframework.security.core.userdetails.User;
-        return new User(user.getUsername(), user.getPassword(), getAuthorities(user));
-    }
-
-    //import org.springframework.security.core.GrantedAuthority;
-    private Collection<? extends GrantedAuthority> getAuthorities(UserDto user) {
-        return user.getRoles()
-                .stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toList());
-    }
-}
-```
-
-登录验证用户名和密码通过之后，生成jwt token返回给客户端，客户端之后的请求在请求头上面带上下发的JWT token，服务端验证这个token，实现jwt跨域认证的效果。
-
-```java
-package com.example.demo.student.security;
-
-public class SecurityConstants {
-    //token过期时间
-    public static final long JWT_EXPIRATION = 7 * 24 * 60 * 60 * 1000L;
-    //jwt的key
-    public static final String JWT_SECRET_KEY = "askjjdkslajkdlkjaslkdjklasjdlkjasdkljaslkdjasdlkajsdsd";
-
-}
-```
-
-```java
-package com.example.demo.student.security;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
-
-import javax.xml.bind.DatatypeConverter;
-import java.util.Date;
-
-@Component//注入到容器中
-public class JwtUtil {
-    //生成加密key
-    byte[] jwtSecretKey = DatatypeConverter.parseBase64Binary(SecurityConstants.JWT_SECRET_KEY);
-		//生成token
-    public String generateToken(Authentication authentication) {
-        String username = authentication.getName();
-        Date now = new Date();
-        Date expireDate = new Date(now.getTime() + SecurityConstants.JWT_EXPIRATION);
-        return Jwts.builder()
-                .setSubject(username)
-	          	  //token的下发时间是现在
-                .setIssuedAt(now)
-               	//过期时间
-                .setExpiration(expireDate)
-	        	    //加密算法HS256
-                .signWith(Keys.hmacShaKeyFor(jwtSecretKey), SignatureAlgorithm.HS256)
-                .compact();
-    }
-		//从token中解析用户名
-    public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(jwtSecretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
-    }
-		//校验token有效性
-    public boolean validateToken(String token) {
-        try {
-            Claims claims = Jwts.parserBuilder()
-              			.setSigningKey(jwtSecretKey)            
-                   	.build()
-              			.parseClaimsJws(token)
-              			.getBody();
-            return claims != null && claims.getExpiration().after(new Date());
-        } catch (Exception e) {
-            throw new AuthenticationCredentialsNotFoundException("Jwt 解析异常或已过期");
-        }
-    }
-}
-```
-
-验证token是否有效
-
-```java
-package com.example.demo.student.security;
-
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import javax.annotation.Resource;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-//过滤器，每次http请求时检查http请求头是否有有效的jwt令牌，对用户认证
-public class JWTAuthenticationFilter extends OncePerRequestFilter {
-    @Resource
-    private JwtUtil jwtUtil;
-    @Resource
-    private CustomUserDetailsService customUserDetailsService;
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, 
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
-        String token = getTokenFromRequest(request);
-        if (token != null && jwtUtil.validateToken(token)) {
-            String username = jwtUtil.getUsernameFromToken(token);
-            //查询user详情
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userDetails,
-                            null, userDetails.getAuthorities());
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
-        filterChain.doFilter(request, response);
-    }
-
-    //从请求头里面获取token
-    // Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcxMjMxMjg5MCwiZXhwIjoxNzEyMzEzNDk1fQ
-    // .7UhzQxpiyOqK9m3oUd2ZssvypVOUt1R9zK8-AtZ4qfU
-    private String getTokenFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
-    }
-}
-```
-
 ## OAuth2
 
 微信扫码认证，是一种第三方认证的方式，这种认证方式是基于OAuth2协议实现，
@@ -723,6 +333,409 @@ JWT还可以使用非对称加密，认证服务自己保留私钥，将公钥�
 - jti：令牌的唯一标识。
 
 **因为JWT的信息是自包含的，非常适合跨域认证的场景，客户端在登录之后会收到JWT的一个token，之后每次请求通过http头部来带上这个token，服务器来验证签名来确认用户是否有权限。**
+
+## 注册登录
+
+
+整合Spring Security实现JWT资源访问的认证和权限控制。
+
+- 实现注册接口，创建新用户
+- 实现登录接口，用于下发JWT Token
+- 使用JWT Filter验证带有Token的请求访问头
+- 利用Spring Security保护应用的资源API
+
+SpringBoot Security
+
+- 使用MyBatisX插件生成数据访问层的代码
+- Jwt跨域认证
+
+整个流程确保了应用的安全性，通过对用户的身份验证和权限校验，来决定用户是否可以访问应用中特定的资源。
+
+引入依赖
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+<!--jwt相关的依赖-->
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.11.5</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.11.5</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.11.5</version>
+</dependency>
+```
+
+### AuthController
+
+```java
+package com.example.demo.student.api;
+
+import com.example.demo.student.dto.LoginDto;
+import com.example.demo.student.dto.LoginResponseDto;
+import com.example.demo.student.dto.RegisterDto;
+import com.example.demo.student.dto.UserDto;
+import com.example.demo.student.security.JwtUtil;
+import com.example.demo.student.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+    @Resource
+    private UserService userService;
+
+    @Resource
+    private AuthenticationManager authenticationManager;
+
+    @Resource
+    private JwtUtil jwtUtil;
+
+    @PostMapping("register")
+    public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
+        UserDto user = userService.getUserByUsername(registerDto.getUsername());
+        if (user != null) {
+            return new ResponseEntity<>("用户名已存在", HttpStatus.BAD_REQUEST);
+        }
+        userService.register(registerDto);
+        return new ResponseEntity<>("用户注册成功", HttpStatus.OK);
+    }
+
+    /**
+     * 使用 AuthenticationManager 来处理认证逻辑。
+     * authenticationManager.authenticate 方法会接收一个 UsernamePasswordAuthenticationToken 对象，根据传入的用户名和密码进行认证。
+     * 如果认证成功，SecurityContextHolder.getContext().setAuthentication(authenticate) 会将认证信息存储在安全上下文中，供后续的请求访问。
+     * 最后，生成 JWT 令牌并返回给客户端。
+     */
+    @PostMapping("login")
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginDto loginDto) {
+        Authentication authenticate = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken
+                        (loginDto.getUsername(), loginDto.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        LoginResponseDto loginResponseDto = new LoginResponseDto();
+        loginResponseDto.setToken(jwtUtil.generateToken(authenticate));
+        return new ResponseEntity<>(loginResponseDto, HttpStatus.OK);
+    }
+}
+```
+
+### SecurityConfig
+
+```java
+package com.example.demo.student.security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.annotation.Resource;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Resource
+    private AuthEntryPoint authEntryPoint;
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+               	//开启跨域认证
+                .csrf().disable()
+               	//异常处理
+                .exceptionHandling()
+                .authenticationEntryPoint(authEntryPoint)
+                .and()
+        	     	//因为jwt是无状态的，所以session管理策略改为无状态的
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                //api/auth/下面的接口都可以被访问到（注册登录不需要验证）
+                .antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/v2/api-docs",
+                        "/configuration/ui",
+                        "/swagger-resources/**",
+                        "/configuration/security",
+                        "/swagger-ui.html",
+                        "/webjars/**").permitAll()
+              	//每一个请求都需要认证之后，才可以访问
+                .anyRequest().authenticated()
+                .and()
+                .httpBasic();
+        //JWT 过滤器：在用户名密码认证过滤器之前添加 JWT 认证过滤器。先对token进行有效性的验证。
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+
+    //登录接口需要使用
+    @Bean
+    public AuthenticationManager authenticationManager
+            (AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    //对用户密码进行加密
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public JWTAuthenticationFilter jwtAuthenticationFilter() {
+        return new JWTAuthenticationFilter();
+    }
+}
+```
+
+### AuthenticationEntryPoint
+
+没有权限时返回报错，而不是Spring Security默认的重定向登录页。需要添加登录异常的拦截处理类。
+
+```java
+package com.example.demo.student.security;
+
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * 定义一个名为 AuthEntryPoint 的类，它实现了 AuthenticationEntryPoint 接口。这个类的作用是在用户尝试访问受保护的资源但未通过身份验证时，发送一个未授权的错误响应。
+ * @Component 注解表明这个类是一个 Spring 组件，会被 Spring 容器管理。
+ * commence 方法是 AuthenticationEntryPoint 接口中的方法，当用户未通过身份验证时会被调用。
+ * commence 方法接收三个参数：HttpServletRequest、HttpServletResponse 和 AuthenticationException。
+ * 在方法内部，调用 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()) 发送一个 401 未授权的 HTTP 响应，并附带异常信息。
+ */
+@Component//注册到Spring容器中
+public class AuthEntryPoint implements AuthenticationEntryPoint {
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
+    }
+}
+```
+
+登录验证用户名和密码通过之后，生成jwt token返回给客户端，客户端之后的请求在请求头上面带上下发的JWT token，服务端验证这个token，实现jwt跨域认证的效果。
+
+```java
+package com.example.demo.student.security;
+
+public class SecurityConstants {
+    //token过期时间
+    public static final long JWT_EXPIRATION = 7 * 24 * 60 * 60 * 1000L;
+    //jwt的key
+    public static final String JWT_SECRET_KEY = "askjjdkslajkdlkjaslkdjklasjdlkjasdkljaslkdjasdlkajsdsd";
+
+}
+```
+
+```java
+package com.example.demo.student.security;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
+
+import javax.xml.bind.DatatypeConverter;
+import java.util.Date;
+
+@Component//注入到容器中
+public class JwtUtil {
+    //生成加密key
+    byte[] jwtSecretKey = DatatypeConverter.parseBase64Binary(SecurityConstants.JWT_SECRET_KEY);
+		//生成token
+    public String generateToken(Authentication authentication) {
+        String username = authentication.getName();
+        Date now = new Date();
+        Date expireDate = new Date(now.getTime() + SecurityConstants.JWT_EXPIRATION);
+        return Jwts.builder()
+                .setSubject(username)
+	          	  //token的下发时间是现在
+                .setIssuedAt(now)
+               	//过期时间
+                .setExpiration(expireDate)
+	        	    //加密算法HS256
+                .signWith(Keys.hmacShaKeyFor(jwtSecretKey), SignatureAlgorithm.HS256)
+                .compact();
+    }
+		//从token中解析用户名
+    public String getUsernameFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(jwtSecretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
+    }
+		//校验token有效性
+    public boolean validateToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+              			.setSigningKey(jwtSecretKey)            
+                   	.build()
+              			.parseClaimsJws(token)
+              			.getBody();
+            return claims != null && claims.getExpiration().after(new Date());
+        } catch (Exception e) {
+            throw new AuthenticationCredentialsNotFoundException("Jwt 解析异常或已过期");
+        }
+    }
+}
+```
+
+### UserDetailsService
+
+创建UserDetailsService，Spring Security中的核心接口，用于提供用户的详细信息。Spring Security使用此接口来获取进行身份认证和授权的用户信息。
+
+```java
+package com.example.demo.student.security;
+
+import com.example.demo.student.dto.UserDto;
+import com.example.demo.student.service.UserService;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
+@Component//注册到Spring容器中
+public class CustomUserDetailsService implements UserDetailsService {
+    @Resource
+    private UserService userService;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserDto user = userService.getUserByUsername(username);
+        if (user == null) {
+            return null;
+        }
+        //import org.springframework.security.core.userdetails.User;
+        return new User(user.getUsername(), user.getPassword(), getAuthorities(user));
+    }
+
+    //import org.springframework.security.core.GrantedAuthority;
+    private Collection<? extends GrantedAuthority> getAuthorities(UserDto user) {
+        return user.getRoles()
+                .stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
+    }
+}
+```
+
+### OncePerRequestFilter
+
+验证token是否有效
+
+JWTAuthenticationFilter 类是一个自定义的过滤器，用于在每次请求时验证 JWT 令牌。它继承自 OncePerRequestFilter，确保在每个请求中只执行一次过滤操作。 
+
+通过AuthenticationFilter拦截用户请求并提取认证信息（用户名、密码、token），然后调用AuthenticationManager处理认证逻辑，认证逻辑会调用UserDetailsService来加载用户的详情信息（密码，用户名等），一旦认证成功，用户的信息会被设置到SecurityContext中，供后续的请求访问。
+
+```java
+package com.example.demo.student.security;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import javax.annotation.Resource;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+//过滤器，每次http请求时检查http请求头是否有有效的jwt令牌，对用户认证
+public class JWTAuthenticationFilter extends OncePerRequestFilter {
+    @Resource
+    private JwtUtil jwtUtil;
+    @Resource
+    private CustomUserDetailsService customUserDetailsService;
+
+	  //doFilterInternal 方法是过滤器的核心逻辑
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, 
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+    	  //从请求中获取 JWT 令牌
+        String token = getTokenFromRequest(request);
+	      //验证令牌的有效性
+        if (token != null && jwtUtil.validateToken(token)) {
+	          //如果令牌有效，获取用户名
+            String username = jwtUtil.getUsernameFromToken(token);
+            //加载用户详细信息
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+	          //创建 UsernamePasswordAuthenticationToken 对象
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(userDetails,
+                            null, userDetails.getAuthorities());
+	          //设置认证详细信息
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+	          //将认证信息存储在安全上下文中
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+	      //继续过滤链
+        filterChain.doFilter(request, response);
+    }
+
+    //从请求头里面获取token
+    // Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcxMjMxMjg5MCwiZXhwIjoxNzEyMzEzNDk1fQ
+    // .7UhzQxpiyOqK9m3oUd2ZssvypVOUt1R9zK8-AtZ4qfU
+    private String getTokenFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+}
+```
 
 ## 网关认证
 
