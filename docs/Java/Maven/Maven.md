@@ -156,3 +156,9 @@ mvn -v
 
 你应该看到 Maven 的版本信息和 Java 的版本信息。
 
+## 新建Module
+
+在Module中创建子Module，文件图标不正确，需要重新添加一下pom.xml。
+
+![image-20250115234856775](assets/image-20250115234856775.png)
+
