@@ -135,7 +135,7 @@ Unix系统资源（unix  system  resources）的简写。
 - **/usr/share**：共享数据目录，存放不特定于某个用户或系统的共享数据，如文档、图标、声音等。
 - **/usr/local**：本地安装的软件和文件。用户可以在不影响系统其他部分的情况下安装和管理软件。
 
-/usr 目录中的内容通常由系统包管理器管理，如 apt、yum 等。
+/usr 目录中的内容通常由系统包管理器管理，如 apt、yum、Homebrew等。
 
 ### /opt 目录
 
@@ -310,7 +310,7 @@ michael@MichaeldeMacBook-Pro ~ %
 
 ## 配置文件.zshrc
 
-文件位置：`~/.zshrc`，`vim ~/.zshrc`去编辑，`.zshrc`中可以修改主题。
+打开.zshrc文件`open ~/.zshrc`，如果不存在则创建.zshrc文件`touch ~/.zshrc`，`vim ~/.zshrc`去编辑，`.zshrc`中可以修改主题。
 
 ### 退出vim
 
@@ -320,17 +320,15 @@ michael@MichaeldeMacBook-Pro ~ %
 
 修改了`~/.zshrc`文件需要更新
 
-`source ~/.zshrc`
+```shell
+source ~/.zshrc
+```
 
 ## 环境变量
 
 家目录下创建一个文件夹，可以是隐藏的。里面放自己的脚本和工具。
 
 用的时候需要配置环境变量。
-
-打开.zshrc文件`open ~/.zshrc`
-
-如果不存在则创建.zshrc文件`touch ~/.zshrc`
 
 `vi ~/.zshrc`
 
@@ -343,6 +341,10 @@ export FLUTTER=/opt/flutter/bin
 
 # 写入环境变量，多个环境变量配置中间使用:隔开
 export PATH=$FLUTTER:$PATH
+
+# 配置Maven
+export M2_HOME=/usr/local/apache-maven-3.8.8/bin
+export PATH=$PATH:$M2_HOME
 ```
 
 ## git配置

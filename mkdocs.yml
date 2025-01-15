@@ -240,6 +240,7 @@ nav:
       - flutter/Dart/factory和单例.md
       - flutter/Dart/Mixin多继承.md
       - flutter/Dart/方法.md
+      - flutter/Dart/高阶函数.md
     - flutter/flutter简介.md
     - flutter/AS快捷键.md
     - flutter/pubspec.yaml.md
@@ -402,7 +403,6 @@ nav:
     - Java/JWT.md
     - Java/分布式id.md
     - Java/序列化.md
-    - Java/Lombok.md
     - heima-leadnews:
       - Java/heima-leadnews/登录.md
       - Java/heima-leadnews/nginx.md

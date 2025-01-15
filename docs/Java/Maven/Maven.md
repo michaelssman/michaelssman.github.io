@@ -43,7 +43,7 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 
 ## Maven的下载和安装
 
-从maven官网下载，地址:[https://maven.apache.org](https://maven.apache.org/)
+从maven官网下载，地址：https://maven.apache.org/download.cgi
 
 https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/
 
@@ -124,10 +124,35 @@ https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/
 
 ![image-20230419215721836](../assets/image-20230419215721836.png)
 
-![image-20230420220415684](../assets/image-20230420220415684.png)
-
 ## pom.xml文件中添加依赖包
 
- [pom.xml](pom.xml.md) 
-
 选择手动导入`Import Changes`
+
+## Mac配置Maven
+
+下载 Apache Maven 的二进制压缩包：[Maven 下载页面](https://maven.apache.org/download.cgi)
+
+将解压后的目录移动到你想要存放的地方，例如 /usr/local/apache-maven-3.8.8。
+
+配置环境变量:
+
+编辑`~/.zshrc`文件，添加以下内容：
+```sh
+export M2_HOME=/usr/local/apache-maven-3.8.8/bin
+export PATH=$PATH:$M2_HOME
+```
+
+保存文件并运行以下命令以使更改生效：
+```sh
+source ~/.zshrc
+```
+
+验证安装:
+
+在终端中运行以下命令来验证 Maven 是否安装成功：
+```sh
+mvn -v
+```
+
+你应该看到 Maven 的版本信息和 Java 的版本信息。
+

@@ -33,9 +33,9 @@ CREATE TABLE IF NOT EXISTS student (
 - primary key：主键，区分每一条数据，主键的值不能相同。
 - autoincrement：自增，修饰的属性在每一次增加数据的时候值都会自动加1。
 
-### 新增字段ALTER
+### ALTER
 
-在已有的表中新增字段而不影响现有数据，通过执行`ALTER TABLE` SQL命令来添加新的列。
+在已有的表中**新增字段**而不影响现有数据：判断数据库版本号，如果小于最新版本号，则执行`ALTER TABLE` SQL命令来添加新的列。
 
 通常在**数据库版本**升级时进行。
 

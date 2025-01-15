@@ -152,8 +152,3 @@ public class HelloWorld {
     }
 }
 ```
-
-#### Book实体类
-
-参考： [实体类.md](实体类.md) 
-
