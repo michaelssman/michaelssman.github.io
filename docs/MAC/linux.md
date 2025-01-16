@@ -333,18 +333,25 @@ source ~/.zshrc
 `vi ~/.zshrc`
 
 ```shell
+# gem
+#export GEM_HOME="$HOME/.gem"
+#export PATH="$GEM_HOME/bin:$PATH"
+
 # Flutter镜像配置
 export PUB_HOSTED_URL=https://pub.flutter-io.cn
 export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
 # Flutter 配置
 export FLUTTER=/opt/flutter/bin
-
 # 写入环境变量，多个环境变量配置中间使用:隔开
 export PATH=$FLUTTER:$PATH
 
 # 配置Maven
-export M2_HOME=/usr/local/apache-maven-3.8.8/bin
-export PATH=$PATH:$M2_HOME
+export M2_HOME=/usr/local/apache-maven-3.8.8
+export PATH=$PATH:$M2_HOME/bin
+
+# 配置JDK
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home
+export PATH="$JAVA_HOME/bin:$PATH"
 ```
 
 ## git配置

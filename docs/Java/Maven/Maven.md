@@ -138,16 +138,14 @@ https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/
 
 编辑`~/.zshrc`文件，添加以下内容：
 ```sh
-export M2_HOME=/usr/local/apache-maven-3.8.8/bin
-export PATH=$PATH:$M2_HOME
+export M2_HOME=/usr/local/apache-maven-3.8.8
+export PATH=$PATH:$M2_HOME/bin
 ```
 
 保存文件并运行以下命令以使更改生效：
 ```sh
 source ~/.zshrc
 ```
-
-验证安装:
 
 在终端中运行以下命令来验证 Maven 是否安装成功：
 ```sh
