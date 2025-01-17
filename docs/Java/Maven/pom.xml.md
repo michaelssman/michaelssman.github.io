@@ -1,8 +1,8 @@
 # Pom.xml
 
-## 添加依赖包
+## `<dependencies>`
 
-引入各种jar包的坐标都在这里面写。
+导入依赖，引入各种jar包的坐标都在这里面写。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -66,6 +66,43 @@
 </project>
 ```
 
+### `<exclusions>`
+
+忽略的包，因为其它地方已经导入过了。
+
+```xml
+<dependency>
+    <groupId>org.apache.kafka</groupId>
+    <artifactId>kafka-streams</artifactId>
+    <exclusions>
+        <exclusion>
+            <artifactId>connect-json</artifactId>
+            <groupId>org.apache.kafka</groupId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+```
+
+### `<dependencyManagement>`
+
+`<dependencyManagement>` 中的 `<dependencies>` 和直接的 `<dependencies>` 有以下区别：
+
+1. **`<dependencyManagement>` 中的 `<dependencies>`**:
+   - 用于定义项目中所有模块共享的依赖版本和范围。
+   - 这些依赖不会自动引入到项目中，而是提供一个版本管理的参考。
+   - 子模块在声明依赖时可以不指定版本号，直接继承父模块中定义的版本号。
+
+2. **直接的 `<dependencies>`**:
+   - 用于定义当前模块需要的具体依赖。
+   - 这些依赖会自动引入到项目中，供当前模块使用。
+   - 必须明确指定每个依赖的版本号，除非该版本号已经在 `<dependencyManagement>` 中定义。
+
+总结来说，`<dependencyManagement>` 中的 `<dependencies>` 是为了统一管理依赖版本，而直接的 `<dependencies>` 是为了实际引入依赖。
+
 ## 加入插件
 
 在`pom.xml`的`<build>`中添加Tomcat插件。
@@ -94,7 +131,9 @@
 </build>
 ```
 
-## 加入子模块
+## `<modules>`
+
+加入子模块
 
 ```xml
 <modules>
@@ -108,28 +147,9 @@
 </modules>
 ```
 
-## `<exclusions>`
+## `<repositories>`
 
-忽略的包，因为其它地方已经导入过了。
-
-```xml
-<dependency>
-    <groupId>org.apache.kafka</groupId>
-    <artifactId>kafka-streams</artifactId>
-    <exclusions>
-        <exclusion>
-            <artifactId>connect-json</artifactId>
-            <groupId>org.apache.kafka</groupId>
-        </exclusion>
-        <exclusion>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-        </exclusion>
-    </exclusions>
-</dependency>
-```
-
-## Maven 中央仓库
+Maven 中央仓库
 
 ```xml
 <repositories>
