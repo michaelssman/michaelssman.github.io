@@ -1,5 +1,60 @@
 # Pom.xml
 
+## `<parent>`
+
+```xml
+<!-- 继承Spring boot工程 -->
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.3.9.RELEASE</version>
+</parent>
+```
+
+指定该模块继承自hhjava-service父项目。
+
+```xml
+<parent>
+    <artifactId>hhjava-service</artifactId>
+    <groupId>com.hhjava.www</groupId>
+    <version>1.0-SNAPSHOT</version>
+</parent>
+```
+
+## `<modules>`
+
+加入子模块
+
+```xml
+<modules>
+    <module>heima-leadnews-user</module>
+    <module>heima-leadnews-article</module>
+    <module>heima-leadnews-wemedia</module>
+    <module>heima-leadnews-schedule</module>
+    <module>heima-leadnews-search</module>
+    <module>heima-leadnews-admin</module>
+    <module>heima-leadnews-behavior</module>
+</modules>
+```
+
+## `<properties>`
+
+定义一些项目属性，如Java版本、编码格式和Spring Boot版本。
+
+```xml
+<properties>
+    <java.version>1.8</java.version>
+    <!-- 项目源码及编译输出的编码 -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!-- 项目编译JDK版本 -->
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <!-- 依赖包版本管理 -->
+    <spring-boot.version>2.6.13</spring-boot.version>
+</properties>
+```
+
 ## `<dependencies>`
 
 导入依赖，引入各种jar包的坐标都在这里面写。
@@ -87,7 +142,9 @@
 </dependency>
 ```
 
-### `<dependencyManagement>`
+## `<dependencyManagement>`
+
+管理依赖版本，确保所有子模块使用相同版本的依赖。
 
 `<dependencyManagement>` 中的 `<dependencies>` 和直接的 `<dependencies>` 有以下区别：
 
@@ -103,7 +160,9 @@
 
 总结来说，`<dependencyManagement>` 中的 `<dependencies>` 是为了统一管理依赖版本，而直接的 `<dependencies>` 是为了实际引入依赖。
 
-## 加入插件
+## `<build>`
+
+构建过程中的插件配置，包括Maven编译插件和Spring Boot插件。
 
 在`pom.xml`的`<build>`中添加Tomcat插件。
 
@@ -129,22 +188,6 @@
         </plugin>
     </plugins>
 </build>
-```
-
-## `<modules>`
-
-加入子模块
-
-```xml
-<modules>
-    <module>heima-leadnews-user</module>
-    <module>heima-leadnews-article</module>
-    <module>heima-leadnews-wemedia</module>
-    <module>heima-leadnews-schedule</module>
-    <module>heima-leadnews-search</module>
-    <module>heima-leadnews-admin</module>
-    <module>heima-leadnews-behavior</module>
-</modules>
 ```
 
 ## `<repositories>`
