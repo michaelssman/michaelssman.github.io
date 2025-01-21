@@ -31,32 +31,20 @@ mybaits中文网址：https://mybatis.org/mybatis-3/zh_CN/index.html
 ### 3、pom.xml文件中添加依赖
 
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.hh</groupId>
-    <artifactId>TestMyBatis</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
-    <dependencies>
-        <!--MySQL依赖，mybatis链接数据库需要mysql驱动-->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.28</version>
-        </dependency>
-        <!--Mybatis依赖-->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.5.6</version>
-        </dependency>
-    </dependencies>
-  
-</project>
+<dependencies>
+    <!--MySQL依赖，mybatis链接数据库需要mysql驱动-->
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>8.0.28</version>
+    </dependency>
+    <!--Mybatis依赖-->
+    <dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis</artifactId>
+        <version>3.5.6</version>
+    </dependency>
+</dependencies>
 ```
 
 ### 4、实体类
@@ -279,4 +267,4 @@ public class test {
 
 PS：`argM.`或者`paramN.`不可以省略不写
 
-先接口、再映射文件。
+先写接口、再写映射文件。

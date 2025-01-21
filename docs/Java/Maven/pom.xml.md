@@ -1,6 +1,25 @@
 # Pom.xml
 
-## `<parent>`
+## `<project>`
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.hh</groupId>
+    <artifactId>TestSSM</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+  
+
+</project>
+```
+
+### `<parent>`
 
 ```xml
 <!-- 继承Spring boot工程 -->
@@ -21,7 +40,7 @@
 </parent>
 ```
 
-## `<modules>`
+### `<modules>`
 
 加入子模块
 
@@ -37,7 +56,7 @@
 </modules>
 ```
 
-## `<properties>`
+### `<properties>`
 
 定义一些项目属性，如Java版本、编码格式和Spring Boot版本。
 
@@ -55,7 +74,7 @@
 </properties>
 ```
 
-## `<dependencies>`
+### `<dependencies>`
 
 导入依赖，引入各种jar包的坐标都在这里面写。
 
@@ -121,7 +140,7 @@
 </project>
 ```
 
-### `<exclusions>`
+#### `<exclusions>`
 
 忽略的包，因为其它地方已经导入过了。
 
@@ -142,7 +161,7 @@
 </dependency>
 ```
 
-## `<dependencyManagement>`
+### `<dependencyManagement>`
 
 管理依赖版本，确保所有子模块使用相同版本的依赖。
 
@@ -160,7 +179,7 @@
 
 总结来说，`<dependencyManagement>` 中的 `<dependencies>` 是为了统一管理依赖版本，而直接的 `<dependencies>` 是为了实际引入依赖。
 
-## `<build>`
+### `<build>`
 
 构建过程中的插件配置，包括Maven编译插件和Spring Boot插件。
 
@@ -190,7 +209,7 @@
 </build>
 ```
 
-## `<repositories>`
+### `<repositories>`
 
 Maven 中央仓库
 

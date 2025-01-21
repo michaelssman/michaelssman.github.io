@@ -13,7 +13,7 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 
 ## Maven的仓库
 
-中央仓库(Central Repository)：Maven官方服务器，里面存放了绝大多数市面上流行的jar。允许用户注册后，上传自己的项目到官方服务器，网址在国外。https://mvnrepository.com/
+中央仓库(Central Repository)：Maven官方服务器，里面存放了绝大多数市面上流行的jar。允许用户注册后，上传自己的项目到官方服务器。https://mvnrepository.com/
 
 本地仓库(Local Repository)：本机的文件夹作为本地仓库，本地仓库指本机的一份拷贝，用来缓存远程下载，包含你尚未发布的临时构件。
 
@@ -53,12 +53,18 @@ https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/
 
 ### 1、本地仓库
 
-1. 随便选择一个目录作为本地仓库，可以使用我提供的本地仓库
-2. 指定本地仓库位置
+1. 指定本地仓库位置
 
 ```xml
 <localRepository>C:/Users/micha/Documents/Repository</localRepository>
 ```
+
+如果不在 Maven 的 `settings.xml` 文件中指定 `<localRepository>`，Maven 将使用默认的本地仓库位置。这个默认位置通常是：
+
+- **Windows**: `C:\Users\<username>\.m2\repository`
+- **macOS/Linux**: `/Users/<username>/.m2/repository`
+
+在这个本地仓库中，Maven 会存储下载的依赖和构建的工件，以便在后续构建中重用，减少重复下载。
 
 ### 2、镜像仓库
 
@@ -108,11 +114,9 @@ https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/
 
 `File | Settings | Build, Execution, Deployment | Build Tools | Maven`
 
-- Maven home directory
-- User settings file
-- Local repository本地仓库地址
-
-![image-20230419215252262](../assets/image-20230419215252262.png)
+- Maven home directory：选择maven安装路径
+- User settings file：选择maven安装路径下的`\conf\settings.xml`
+- Local repository：使用默认本地仓库地址
 
 设置项目编码格式
 
@@ -120,9 +124,7 @@ https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/
 
 ## 创建Maven项目
 
-新建Module模块，ModuleSDK选择1.8版本的。
-
-![image-20230419215721836](../assets/image-20230419215721836.png)
+New Module，选择Maven，ModuleSDK选择java version 1.8版本的。
 
 ## pom.xml文件中添加依赖包
 
@@ -153,6 +155,18 @@ mvn -v
 ```
 
 你应该看到 Maven 的版本信息和 Java 的版本信息。
+
+### 重新下载依赖
+
+- 打开终端。
+
+- 运行以下命令以强制 Maven 重新下载该依赖：
+
+  ```bash
+  mvn clean install -U
+  ```
+
+`-U` 选项会强制更新所有快照和版本依赖。
 
 ## 新建Module
 

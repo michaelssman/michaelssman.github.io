@@ -403,6 +403,7 @@ nav:
     - Java/JWT.md
     - Java/分布式id.md
     - Java/序列化.md
+    - Java/plugins.md
     - heima-leadnews:
       - Java/heima-leadnews/登录.md
       - Java/heima-leadnews/nginx.md
