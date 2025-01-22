@@ -201,3 +201,37 @@ public class TestSpringBootApplication {
 
 浏览器访问`http://localhost:9999/findBooks`测试
 
+## spring-boot-starter
+
+- **功能**: 这是一个基础的启动器，用于支持 Spring Boot 应用程序的核心功能。
+- 包含的依赖:
+  - Spring 核心库。
+  - 日志（如 SLF4J 和 Logback）。
+- **使用场景**: 适用于任何需要 Spring Boot 基础功能的应用，不限于 Web 应用。
+
+## spring-boot-starter-web
+
+- **功能**: 这是一个 Spring Boot 启动器（starter），用于快速构建基于 Spring 的 **Web 应用程序**。
+- **包含的依赖**:
+  - Spring MVC: 用于构建基于 MVC 的 Web 应用。
+  - Tomcat: 默认的嵌入式服务器。
+  - Jackson: 用于 JSON 处理。
+  - Hibernate Validator: 用于验证框架。
+  
+### 使用场景
+
+- **Web 应用开发**: 适合开发 RESTful Web 服务和传统的 Web 应用。
+- **快速启动**: 提供了一个开箱即用的 Web 应用开发环境，减少了配置和依赖管理的复杂性。
+
+### 如何使用
+
+在 `pom.xml` 文件中添加如下依赖：
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+```
+
+这样，Spring Boot 会自动配置一个 Web 环境，并提供所需的基础设施来构建和运行你的 Web 应用。

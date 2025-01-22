@@ -209,15 +209,15 @@ Book b = new Book(1，"项目驱动零起点学Java");
 
 上面`<bean>`标签是创建对象，可以通过注解简化。
 
-| 注解名称       | 解释                                                 |
-| -------------- | ---------------------------------------------------- |
-| @Component     | 实例化Bean， 默认名称为类名首字母变小写              |
-| @Repository    | 作用和@Component一样。用在持久层                     |
-| @Service       | 作用和@Component一样。用在业务层                     |
-| @Controller    | 作用和@Component一样。用在控制器层                   |
-| @Configuration | 作用和@Component一样。用在配置类上                   |
-| @Autowired     | 自动注入。默认byType，如果多个同类型bean，使用byName |
-| @ Value        | 给普通数据类型属性赋值                               |
+| 注解名称       | 解释                                                         |
+| -------------- | ------------------------------------------------------------ |
+| @Component     | 实例化Bean， 默认名称为类名首字母变小写                      |
+| @Repository    | 作用和@Component一样。用在持久层                             |
+| @Service       | 作用和@Component一样。用在业务层ServiceImpl类上              |
+| @Controller    | 作用和@Component一样。用在控制器层                           |
+| @Configuration | 作用和@Component一样。用在配置类上。Spring 会在启动时自动扫描并加载该类中的配置。 |
+| @Autowired     | 自动注入。默认byType，如果多个同类型bean，使用byName         |
+| @ Value        | 给普通数据类型属性赋值                                       |
 
 前五个注解作用都是创建对象。只所以搞出这么多，就是在语义上给你区别，不同层用不同的注解。
 

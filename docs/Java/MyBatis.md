@@ -268,3 +268,21 @@ public class test {
 PS：`argM.`或者`paramN.`不可以省略不写
 
 先写接口、再写映射文件。
+
+## 配置
+
+在引导类中添mybatis-plus的分页拦截器
+
+```java
+/**
+ * 创建并返回一个 MybatisPlusInterceptor 实例。
+ * MybatisPlusInterceptor 是 MyBatis-Plus 的插件拦截器，用于添加各种功能插件。
+ * PaginationInnerInterceptor 插件用于分页功能，配置了数据库类型为 MySQL。
+ */
+@Bean
+public MybatisPlusInterceptor mybatisPlusInterceptor() {
+    MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+    interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
+    return interceptor;
+}
+```
