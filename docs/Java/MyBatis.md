@@ -31,20 +31,18 @@ mybaits中文网址：https://mybatis.org/mybatis-3/zh_CN/index.html
 ### 3、pom.xml文件中添加依赖
 
 ```xml
-<dependencies>
-    <!--MySQL依赖，mybatis链接数据库需要mysql驱动-->
-    <dependency>
-        <groupId>mysql</groupId>
-        <artifactId>mysql-connector-java</artifactId>
-        <version>8.0.28</version>
-    </dependency>
-    <!--Mybatis依赖-->
-    <dependency>
-        <groupId>org.mybatis</groupId>
-        <artifactId>mybatis</artifactId>
-        <version>3.5.6</version>
-    </dependency>
-</dependencies>
+<!--MySQL依赖，mybatis链接数据库需要mysql驱动-->
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.28</version>
+</dependency>
+<!--Mybatis依赖-->
+<dependency>
+    <groupId>org.mybatis</groupId>
+    <artifactId>mybatis</artifactId>
+    <version>3.5.6</version>
+</dependency>
 ```
 
 ### 4、实体类
