@@ -163,7 +163,7 @@
 
 ### `<dependencyManagement>`
 
-管理依赖版本，确保所有子模块使用相同版本的依赖。
+管理依赖版本，通常用于多模块项目的父POM中。子模块可以引用这些依赖项，而不必指定版本号。
 
 `<dependencyManagement>` 中的 `<dependencies>` 和直接的 `<dependencies>` 有以下区别：
 
