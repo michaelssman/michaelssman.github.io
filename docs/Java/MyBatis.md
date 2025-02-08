@@ -28,7 +28,7 @@ mybaits中文网址：https://mybatis.org/mybatis-3/zh_CN/index.html
 
 通过Maven导入对应框架。
 
-### 3、pom.xml文件中添加依赖
+### 3、添加依赖
 
 ```xml
 <!--MySQL依赖，mybatis链接数据库需要mysql驱动-->

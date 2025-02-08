@@ -1,7 +1,3 @@
-- decoration：装饰，装饰品
-- environment：环境
-- Entry：入口
-- executor：执行器
 - flush：冲洗
 - full：充满的
 - force：暴力

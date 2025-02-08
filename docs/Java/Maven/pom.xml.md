@@ -177,7 +177,7 @@
    - 这些依赖会自动引入到项目中，供当前模块使用。
    - 必须明确指定每个依赖的版本号，除非该版本号已经在 `<dependencyManagement>` 中定义。
 
-总结来说，`<dependencyManagement>` 中的 `<dependencies>` 是为了统一管理依赖版本，而直接的 `<dependencies>` 是为了实际引入依赖。
+`<dependencyManagement>` 中的 `<dependencies>` 是为了统一管理依赖版本，而直接的 `<dependencies>` 是为了实际引入依赖。
 
 ### `<build>`
 
@@ -226,3 +226,81 @@ Maven 中央仓库
         </snapshots>
     </repository>
 </repositories>
+
+```
+
+## 多重继承
+
+在Maven中，多重继承的结构是常见的，尤其是在多模块项目中。你的项目结构中，`hhjava-service/hhjava-user/pom.xml`会继承`hhjava/pom.xml`中的配置。这是因为Maven的继承机制允许子模块继承父模块及其祖先模块的配置。
+
+### 继承的内容
+
+1. **依赖管理**：如果`hhjava/pom.xml`中有`<dependencyManagement>`，那么`hhjava-service/hhjava-user/pom.xml`可以继承其中声明的依赖版本。
+
+2. **插件管理**：类似地，`<build>`中的插件配置也会被继承。
+
+3. **属性**：`<properties>`中定义的属性可以被子模块使用。
+   1. 在顶层 POM (`hhjava/pom.xml`) 中设置这些属性后，子模块 POM (`hhjava-service/hhjava-user/pom.xml`) 通常不需要重复设置这些属性，因为它们会被自动继承。但是，子模块可以覆盖这些属性，如果需要不同的配置。
+
+4. **其他配置**：如`<repositories>`、`<distributionManagement>`等。
+
+### 使用建议
+
+1. **集中管理版本**：
+   - 在顶层POM（`hhjava/pom.xml`）中使用`<dependencyManagement>`来定义依赖的版本。这样，所有子模块都能引用这些依赖而无需重复指定版本。
+
+2. **模块化结构**：
+   - 在中间层（如`hhjava-service/pom.xml`），可以定义与该层相关的特定依赖和插件。
+
+3. **子模块配置**：
+   - 在子模块（如`hhjava-service/hhjava-user/pom.xml`），只需声明特定于该模块的依赖和配置。
+
+### 示例
+
+**顶层 POM (`hhjava/pom.xml`)**：
+
+```xml
+<project>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>3.0.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
+```
+
+**中间层 POM (`hhjava-service/pom.xml`)**：
+
+```xml
+<project>
+    <parent>
+        <artifactId>hhjava</artifactId>
+        <groupId>com.hhjava.www</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+</project>
+```
+
+**子模块 POM (`hhjava-service/hhjava-user/pom.xml`)**：
+
+```xml
+<project>
+    <parent>
+        <artifactId>hhjava-service</artifactId>
+        <groupId>com.hhjava.www</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+这样，`hhjava-service/hhjava-user`模块可以直接使用`spring-boot-starter-web`，而无需在每个子模块中指定版本号。通过这种结构，项目的依赖管理变得更加简洁和一致。
