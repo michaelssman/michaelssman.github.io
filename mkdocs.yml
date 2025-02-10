@@ -317,6 +317,8 @@ nav:
       - 数据结构与算法/算法/面试/阿里.md
       - 数据结构与算法/算法/哈希集合.md
       - 数据结构与算法/算法/Map.md
+    - Math:
+      - 数据结构与算法/Math/Math.md
   - 计算机网络:
     - 计算机网络/集线器交换机和路由器.md
     - 计算机网络/网络模型.md
@@ -443,8 +445,6 @@ nav:
     - MAC/software.md
     - MAC/vscode.md
     - MAC/word.md
-  - Math:
-    - Math/Math.md
   - app:
     - app/jizhanghelp.md
     - app/jizhangpp.md
