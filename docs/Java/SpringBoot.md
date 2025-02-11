@@ -235,3 +235,35 @@ public class TestSpringBootApplication {
 ```
 
 这样，Spring Boot 会自动配置一个 Web 环境，并提供所需的基础设施来构建和运行你的 Web 应用。
+
+## spring.factories
+
+`spring.factories` 文件是 Spring Boot 用于自动配置的一个关键文件。它位于 `META-INF` 目录下，包含了许多 Spring Boot 自动配置类的全限定名。Spring Boot 在启动时会读取这个文件，并根据其中的配置自动加载相应的类。
+
+在你的项目中，`Spring.factories` 文件的内容如下：
+
+```unknown
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.hh.common.swagger.SwaggerConfiguration
+```
+
+这个配置的作用是告诉 Spring Boot 在启动时自动加载 `com.hh.common.swagger.SwaggerConfiguration` 类。`SwaggerConfiguration` 类使用了 `@Configuration` 注解，表示它是一个配置类，并且使用了 `@EnableSwagger2` 注解来启用 Swagger2。
+
+Spring Boot 在启动时会扫描 `META-INF/Spring.factories` 文件，并根据 `org.springframework.boot.autoconfigure.EnableAutoConfiguration` 键的值加载相应的自动配置类。这使得你可以通过简单的配置来启用和配置第三方库，而不需要在代码中显式地进行配置。
+
+## 其它微服务使用common
+
+要在 `hhjava-user` 服务中使用 `hhjava-common` 中的 Swagger 配置，你需要确保 `hhjava-common` 模块已经作为依赖添加到 `hhjava-user` 模块中，并且 `hhjava-common` 中的 `SwaggerConfiguration` 已经被正确加载。
+
+**在 `hhjava-user` 的 `pom.xml` 中添加 `hhjava-common` 依赖**：
+
+```xml
+<dependencies>
+    <!-- 引入依赖模块 -->
+    <dependency>
+        <groupId>com.hhjava.www</groupId>
+        <artifactId>hhjava-common</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+</dependencies>
+```
