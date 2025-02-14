@@ -242,7 +242,7 @@ public class TestSpringBootApplication {
 
 在你的项目中，`Spring.factories` 文件的内容如下：
 
-```unknown
+```properties
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.hh.common.swagger.SwaggerConfiguration
 ```
