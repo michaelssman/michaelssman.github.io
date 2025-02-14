@@ -39,7 +39,7 @@ Maven是使用Java语言编写的基于项目对象模型（POM）**项目管理
 
 - GroupId：一般是逆向公司域名 com.xxx，同一个公司的GroupId都是相同的。
 - ArtifactId：一般是项目(jar)名 mysql-connector-java。
-- Version：版本号 8.0.28。
+- Version：版本号。
 
 ## Maven的下载和安装
 
@@ -53,7 +53,7 @@ https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/
 
 ### 1、本地仓库
 
-1. 指定本地仓库位置
+指定本地仓库位置（可选）
 
 ```xml
 <localRepository>C:/Users/micha/Documents/Repository</localRepository>
