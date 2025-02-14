@@ -202,10 +202,8 @@ public class InitJacksonConfig {
 
 在common模块中的自动配置的spring.factories中添加如下内容
 
-```java
+```properties
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.heima.common.swagger.SwaggerConfiguration,\
-  com.heima.common.swagger.Swagger2Configuration,\
   com.heima.common.exception.ExceptionCatch,\
   com.heima.common.aliyun.GreenTextScan,\
   com.heima.common.aliyun.GreenImageScan,\

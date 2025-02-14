@@ -102,14 +102,6 @@ https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/
 </profile>
 ```
 
-## 项目依赖环境
-
-- maven：3.8.6换为低版本3.6.3
-- jdk：17换为低版本1.8
-- Intellij IEDA：2019版本
-
-- Mysql5.7+
-
 ## 在IDEA中配置Maven
 
 `File | Settings | Build, Execution, Deployment | Build Tools | Maven`
