@@ -50,6 +50,15 @@ CREATE TABLE IF NOT EXISTS student (
 ALTER TABLE users ADD COLUMN email TEXT DEFAULT 'example@example.com';
 ```
 
+添加唯一索引
+
+索引不能重复
+
+```sql
+ALTER TABLE student
+ADD constraint uk_mail UNIQUE (email)
+```
+
 ## insert
 
 ```sql
