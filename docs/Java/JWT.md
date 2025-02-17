@@ -785,14 +785,6 @@ API网关（Gateway）是应用程序客户端的单一入口点，它位于客�
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-starter-oauth2</artifactId>
 </dependency>
-<dependency>
-    <groupId>org.projectlombok</groupId>
-    <artifactId>lombok</artifactId>
-</dependency>
-<dependency>
-    <groupId>com.alibaba</groupId>
-    <artifactId>fastjson</artifactId>
-</dependency>
 ```
 
 由于是在网关处进行令牌校验，所以在微服务处不再校验令牌的合法性。
