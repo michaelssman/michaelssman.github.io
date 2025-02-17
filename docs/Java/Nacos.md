@@ -51,58 +51,6 @@ docker run --env MODE=standalone --name nacos --restart=always  -d -p 8848:8848 
 
 3、访问nacos地址：http://192.168.200.130:8848/nacos 
 
-# 搭建模块环境
-
-## 1 架构的问题分析
-
-当前要开发的是媒资管理服务，目前为止共三个微服务：内容管理、系统管理、媒资管理。
-
-后期还会添加更多的微服务，当前这种由前端直接请求微服务的方式存在弊端：
-
-如果在前端对每个请求地址都配置绝对路径，非常不利于系统维护，比如下边代码中请求系统管理服务的地址使用的是localhost
-
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=MmFkOWJlZDM3NzM5NDkyNjQ4ZWQzY2RjN2Q4MDM4YzdfQXhXRjhPNHU3eXRQQjBzVGNJbFI3NTZVNmtTQjZqeHNfVG9rZW46VkRGNGJKSUVFb0NLNWJ4bkVLbmNxODN1blhkXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
-
-当系统上线后这里需要改成公网的域名，如果这种地址非常多则非常麻烦。
-
-基于这个问题可以采用网关来解决，如下图：
-
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=ZWI4Yjk4Y2Q5NjJkN2RhYTE5Mjc0MWQyOWY5ZjY3ZDdfSEJaWDJDU1BxYWdyb3JXVmgwMElpeGJXZUYwaEpZalNfVG9rZW46SEg0SmJ5R2Qyb0pzbnh4Szh5MWNjMWpPbk1nXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
-
-这样在前端的代码中只需要指定每个接口的相对路径，如下所示：
-
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=MmM4ZmY0ODc2OWM4MjA0NjNlODNjMDcxNWYzZTU4YTZfM3dubVg4a2pSTVdYV1B5b0N3c3NBUTI4Q2VXakZBakJfVG9rZW46RmcxbGJmclZNb0V0MGl4anRXUWMwcThCbnFyXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
-
-在前端代码的一个固定的地方在接口地址前统一加网关的地址，每个请求统一到网关，由网关将请求转发到具体的微服务。
-
-为什么所有的请求先到网关呢？
-
-有了网关就可以对请求进行路由，路由到具体的微服务，减少外界对接微服务的成本，比如：400电话，路由的试可以根据请求路径进行路由、根据host地址进行路由等， 当微服务有多个实例时可以通过负载均衡算法进行路由，如下：
-
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=Y2E4NjBkYjRhODRiNjY0MmQ4NGU5ZTY1MzI5YjNjZmZfQWI4R2hnZXI3bG92OXJFMGhhOXhEa3NqSkFkRmtJZnVfVG9rZW46VFdMeWJIU2dJb1BTTmR4djY2c2NvcmlUbmlnXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
-
-另外，网关还可以实现权限控制、限流等功能。
-
-项目采用Spring Cloud Gateway作为网关，网关在请求路由时需要知道每个微服务实例的地址，项目使用Nacos作为服务发现中心和配置中心，整体的架构图如下：
-
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=ZWRkMjk2NTU3OWM2ZjcwNWJjODI2ZjI1NTA0NWExMGRfdVdoOG9yMzd1bkZxV29JY2k5Z2VuV2ZtbnY2dW1sTndfVG9rZW46TWdkV2JBM3JCb2IxRnB4TkRDOWNzNWZkblZlXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
-
-流程如下：
-
-1. 微服务启动，将自己注册到Nacos，Nacos记录了各微服务实例的地址。
-2. 网关从Nacos读取服务列表，包括服务名称、服务地址等。
-3. 请求到达网关，网关将请求路由到具体的微服务。
-
-**要使用网关首先搭建Nacos**，Nacos有两个作用：
-
-1. 服务发现中心。
-
-​	微服务将自身注册至Nacos，网关从Nacos获取微服务列表。
-
-2. 配置中心。
-
-​	微服务众多，它们的配置信息也非常复杂，为了提供系统的可维护性，微服务的配置信息统一在Nacos配置。
-
 ## 2 搭建Nacos
 
 ### 2.1 服务发现中心
@@ -116,7 +64,7 @@ Spring Cloud alibaba: nacos服务注册中心，配置中心
 在搭建Nacos服务发现中心之前需要搞清楚两个概念：namespace和group
 
 - namespace：用于区分环境、比如：开发环境、测试环境、生产环境。
-- group：用于区分项目，比如：xuecheng-plus项目、xuecheng2.0项目
+- group：用于区分项目，比如：项目A、项目B。
 
 首先在nacos配置namespace:
 
@@ -134,7 +82,7 @@ Spring Cloud alibaba: nacos服务注册中心，配置中心
 
 ![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=NjM1MmY0YWY2ZWUzMzliY2I1OWE0NjVjMGUxMTg1NWFfUjJnVzFGV0p1dXFleTRBVWVRZHVwTUUwR09ReTV4RDdfVG9rZW46QWRFVGJqWmo2b1N3TGp4NXNPMmNnMFhtblhiXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
 
-使用相同的方法再创建“测试环境”（test）、"生产环境"（dev）的命名空间。
+使用相同的方法再创建“测试环境”（test）、"生产环境"（prod）的命名空间。
 
 创建成功，如下图：
 
@@ -156,7 +104,7 @@ Spring Cloud alibaba: nacos服务注册中心，配置中心
 </dependency>
 ```
 
-2）在内容管理模块的接口工程、系统管理模块的接口工程中添加如下依赖
+2. 在某一个微服务模块的接口工程中添加如下依赖
 
 ```XML
 <dependency>
@@ -165,15 +113,15 @@ Spring Cloud alibaba: nacos服务注册中心，配置中心
 </dependency>
 ```
 
-3）配置nacos的地址
+3. 配置nacos的地址
 
-在系统管理的接口工程的配置文件中配置如下信息：
+在某一个微服务模块的接口工程的配置文件（bootstrap.yml）中配置如下信息：
 
 ```YAML
 #微服务配置
 spring:
   application:
-    name: system-service
+    name: 微服务名称
   cloud:
     nacos:
       server-addr: 192.168.101.65:8848
@@ -182,27 +130,13 @@ spring:
         group: xuecheng-plus-project
 ```
 
-在内容管理的接口工程的配置文件中配置如下信息：
-
-```YAML
-spring:
-  application:
-    name: content-api
-  cloud:
-    nacos:
-      server-addr: 192.168.101.65:8848
-      discovery:
-        namespace: dev
-        group: xuecheng-plus-project
-```
-
-4）重启内容管理服务、系统管理服务。
+4. 重启该微服务模块。
 
 待微服务启动成功，进入Nacos服务查看服务列表
 
 ![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=NjAxZjExNmJmMTU5MGQ0YTZlOTc1OWVlNDUxYjNjZDZfc2ZpeWJNQXp4VUhENGRuMHo1bDdIMmJiUWpMaVZWd2xfVG9rZW46RGNYUWJoc0lYb2xMV0R4Z29VTGNacVRtbkhjXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
 
-在 “开发环境” 命名空间下有两个服务这说明内容管理微服务和系统管理微服务在Nacos注册成功。
+在 “开发环境” 命名空间下有两个服务这说明该微服务在Nacos注册成功。
 
 点击其它一个微服务的“详情”
 
