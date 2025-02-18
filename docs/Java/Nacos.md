@@ -51,9 +51,9 @@ docker run --env MODE=standalone --name nacos --restart=always  -d -p 8848:8848 
 
 3、访问nacos地址：http://192.168.200.130:8848/nacos 
 
-## 2 搭建Nacos
+## 搭建Nacos
 
-### 2.1 服务发现中心
+### 1 服务发现中心
 
 Spring Cloud ：一套规范
 
@@ -70,23 +70,13 @@ Spring Cloud alibaba: nacos服务注册中心，配置中心
 
 登录Centos，启动Naocs，使用sh /data/soft/restart.sh将自动启动Nacos。
 
-访问：http://192.168.101.65:8848/nacos/
-
-账号密码：nacos/nacos
-
-登录成功，点击左侧菜单“命名空间”进入命名空间管理界面，
-
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=ZGJiYzBiZTczMGFjNjIxNTAwYWY4MmZkOWZiYWJjOWRfRjhSMGNhYWJrS0ZySmYzQ2F2a1NpeVNUYlk0dTlHOGpfVG9rZW46Q28zamIyelNFb09ZdjR4WE1raWNMQ3gybmljXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
+登录成功，点击左侧菜单“**命名空间**”进入命名空间管理界面，
 
 点击“新建命名空间”，填写命名空间的相关信息。如下图：
 
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=NjM1MmY0YWY2ZWUzMzliY2I1OWE0NjVjMGUxMTg1NWFfUjJnVzFGV0p1dXFleTRBVWVRZHVwTUUwR09ReTV4RDdfVG9rZW46QWRFVGJqWmo2b1N3TGp4NXNPMmNnMFhtblhiXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
+![image-20250218104949667](assets/image-20250218104949667.png)
 
 使用相同的方法再创建“测试环境”（test）、"生产环境"（prod）的命名空间。
-
-创建成功，如下图：
-
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=M2I3YTBjMDIyOGJmMmVmZGQ3NTEwNDBlMDlmZDc5YzZfbHNZWDJzWFdqS2FWYk5wSmRsNDl5V2hHNFN6b0l4eWdfVG9rZW46TUg2emI0WFZjb0tKRUp4TVVMc2M0RUVhbjBlXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
 
 注意：在下边的配置中对namespace配置为**命名空间ID**。
 
@@ -104,7 +94,7 @@ Spring Cloud alibaba: nacos服务注册中心，配置中心
 </dependency>
 ```
 
-2. 在某一个微服务模块的接口工程中添加如下依赖
+2. 在具体微服务模块的接口工程中添加如下依赖
 
 ```XML
 <dependency>
@@ -115,42 +105,36 @@ Spring Cloud alibaba: nacos服务注册中心，配置中心
 
 3. 配置nacos的地址
 
-在某一个微服务模块的接口工程的配置文件（bootstrap.yml）中配置如下信息：
+在具体微服务模块的接口工程的配置文件（bootstrap.yml）中配置如下信息：
 
 ```YAML
 #微服务配置
 spring:
   application:
-    name: 微服务名称
+    name: 具体微服务的名称
   cloud:
     nacos:
       server-addr: 192.168.101.65:8848
       discovery:
         namespace: dev
-        group: xuecheng-plus-project
+        group: 项目名称
 ```
 
 4. 重启该微服务模块。
 
-待微服务启动成功，进入Nacos服务查看服务列表
-
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=NjAxZjExNmJmMTU5MGQ0YTZlOTc1OWVlNDUxYjNjZDZfc2ZpeWJNQXp4VUhENGRuMHo1bDdIMmJiUWpMaVZWd2xfVG9rZW46RGNYUWJoc0lYb2xMV0R4Z29VTGNacVRtbkhjXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
+待微服务启动成功，进入Nacos`服务管理`查看`服务列表`。
 
 在 “开发环境” 命名空间下有两个服务这说明该微服务在Nacos注册成功。
 
-点击其它一个微服务的“详情”
+点击微服务的“详情”，可以查看微服务实例的地址。
 
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=YmFjODdlMGQ2OTM2NDRiZWQ5NTA2NzJhZGY5M2E3YjlfQ3p5SFRjekRUa2VpWWtOYkVadXpZSDI0UWtyellJTHhfVG9rZW46SWVyUmJjNXhQb3FjM2Z4V0pjOGNIVTJEbm5lXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
+### 2 配置中心
 
-通过上图可以查看微服务实例的地址。
-
-### 2.2 配置中心
-
-#### 2.2.1 配置三要素
+#### 2.1 配置三要素
 
 搭建完成Nacos服务发现中心，下边搭建Nacos为配置中心，其目的就是通过Nacos去管理项目的所有配置。
 
-先将项目中的配置文件分分类：
+先将项目中的配置文件进行分类：
 
 1、每个项目特有的配置
 
@@ -174,7 +158,7 @@ content-service：第一部分，它是在application.yaml中配置的应用名�
 
 dev：第二部分，它是环境名，通过spring.profiles.active指定，
 
-Yaml: 第三部分，它是配置文件 的后缀，目前nacos支持properties、yaml等格式类型，本项目选择yaml格式类型。
+Yaml: 第三部分，它是配置文件的后缀，目前nacos支持properties、yaml等格式类型。
 
 所以，如果我们要配置content-service工程的配置文件:
 
@@ -186,15 +170,15 @@ Yaml: 第三部分，它是配置文件 的后缀，目前nacos支持properties�
 
 我们启动项目中传入spring.profiles.active的参数决定引用哪个环境的配置文件，例如：传入spring.profiles.active=dev表示使用dev环境的配置文件即content-service-dev.yaml。
 
-#### 2.2.2 配置content-service
+#### 2.2 配置content-service
 
 下边以开发环境为例对content-service工程的配置文件进行配置，进入nacos，进入开发环境。
 
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=N2JkYTliODRlYjhkNWU3YzcxNTg3MmZiZjNhMzViMDRfZ1A5VVM4OG44QmJVZjFUNmVMUGVSOFVmdjIwZEJHZ0NfVG9rZW46SnVMYmIwQXdCbzRUQXJ4eHNHWmNpc0VXbnFmXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
+![06094289-6026-4ce9-bd61-6c5de6cb586d](assets/06094289-6026-4ce9-bd61-6c5de6cb586d.png)
 
 点击加号，添加一个配置
 
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=NjlkOWNjNWRjMWE0MTU0OWViNjc4MzAwNTkyNjY4MDBfSHBUaXdzZWZ6QUdyTXJaY21obFFYbkg3RUMyeFNudTJfVG9rZW46SGs1cmJtQW5obzFXUzd4akcxSWM2RzdQbmNnXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
+![cd2bd027-980d-4d83-abf6-7a6febb1dd5e](assets/cd2bd027-980d-4d83-abf6-7a6febb1dd5e.png)
 
 输入data id、group以及配置文件内容。
 
@@ -206,7 +190,7 @@ spring:
     name: content-service
 ```
 
-因为刚才说了dataid第一部分就是spring.application.name，nacos 客户端要根据此值确定配置文件 名称，所以spring.application.name不在nacos中配置，而是要在工程的本地进行配置。
+因为刚才说了dataid第一部分就是spring.application.name，nacos 客户端要根据此值确定配置文件名称，所以spring.application.name不在nacos中配置，而是要在工程的本地进行配置。
 
 在content-service工程的test/resources 中添加bootstrap.yaml，内容如下：
 
@@ -226,7 +210,7 @@ spring:
         file-extension: yaml
         refresh-enabled: true
 
-#profiles默认为dev
+	#profiles默认为dev
   profiles:
     active: dev
 ```
@@ -248,7 +232,7 @@ spring:
 [NacosRestTemplate.java:476] - HTTP method: POST, url: http://192.168.101.65:8848/nacos/v1/cs/configs/listener, body: {Listening-Configs=content-service.yamlxuecheng-plus-projectdevcontent-service-dev.yamlxuecheng-plus-project88459b1483b8381eccc2ef462bd59182devcontent-servicexuecheng-plus-projectdev, tenant=dev}
 ```
 
-#### 2.2.3配置content-api
+#### 2.3配置content-api
 
 以相同的方法配置content-api工程的配置文件，在nacos中的开发环境中配置content-api-dev.yaml，内容如下：
 
@@ -326,7 +310,7 @@ spring:
 
 并使用Httpclient测试课程查询接口是否可以正常查询。
 
-### 2.3 公用配置
+### 3 公用配置
 
 还有一个优化的点是如何在nacos中配置项目的公用配置呢？
 
@@ -336,7 +320,7 @@ nacos提供了shared-configs可以引入公用配置。
 
 单独在xuecheng-plus-common分组下创建xuecheng-plus的公用配置，进入nacos的开发环境，添加swagger-dev.yaml公用配置
 
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=MzYzOGJlNjU2ZmQxMDhhMjM1ZGMzYjJkN2NmZDAyODNfS3VYd2ZPekJ5V0xmQ0hGOVo0anRhN2pMU1RaWjZJemJfVG9rZW46TGdQQ2JZYjdxb0l5aDh4eUJUNGNGZ1B2bnJmXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
+![0b378ef5-1c7d-4532-a82b-69e83a80752c](assets/0b378ef5-1c7d-4532-a82b-69e83a80752c.png)
 
 删除接口工程中对swagger的配置。
 
@@ -374,19 +358,19 @@ spring:
 
 再以相同的方法配置日志的公用配置。
 
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=OTA2OThiOWE4MzJlMzVkZGU2ZjFmZDQ5YjYwNDVhMmJfOXo3Y3NtbjZMWlNrak1NaUt3aHFJd01IQU5mTzNtaDZfVG9rZW46UXRXN2I5a1dpb09Na1p4MExLTWNhQ1pPbjBkXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
+![485c92fd-cead-467e-9fed-36dfdf91e46f](assets/485c92fd-cead-467e-9fed-36dfdf91e46f.png)
 
 在接口工程和业务工程，引入loggin-dev.yaml公用配置文件 
 
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=ZTY4ZWQ5ZDgxY2Q1YTkwZjg1OGE5YWZiNjkyZDkwMzBfQzZoRHZPVmt4eE8xM0pjMjIya05abktTbENZR0d1MDdfVG9rZW46Sks2a2JZdVpsb0k2MHZ4TFoxSmNvbTZKbkplXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
+![71a056f2-689e-4614-b601-84b85b637a59](assets/71a056f2-689e-4614-b601-84b85b637a59.png)
 
 配置完成，重启content-api接口工程，访问http://localhost:63040/content/swagger-ui.html 查看swagger接口文档是否可以正常访问，查看控制台log4j2日志输出是否正常。
 
-### 2.4 配置优先级
+### 4 配置优先级
 
 到目前为止已将所有微服务的配置统一在nacos进行配置，用到的配置文件有本地的配置文件 bootstrap.yaml和nacos上的配置文件，SpringBoot读取配置文件的顺序如下：
 
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=MWVhYjgzYzgxM2E0NWZmZmYwN2VkMGM0MDBhOTU5OGRfYkk4N3BnVTZycElmSGpFMlJQSVpIS21meEhMQUs0OUpfVG9rZW46S3E5SmJUSk13b0trdW14eklkTmM5elpKblRyXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
+![b281cd6d-a532-425d-be1d-49b23a11b468](assets/b281cd6d-a532-425d-be1d-49b23a11b468.png)
 
 引入配置文件的形式有：
 
@@ -404,11 +388,11 @@ spring:
 
 我们想启动两个内容管理微服务，此时需要在本地指定不同的端口，通过VM Options参数，在IDEA配置启动参数
 
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=YTRiYjVjNjc5OTc1NjlkYTFkOTE2N2JkODVkNjZiNzZfNnVJZUpTazFpMDhqNUVVUzdhQUtYaXNXeVhTNkFnMTFfVG9rZW46R2ZhemIweVpwb2VzaFR4ZFU1R2NKNldUbjJiXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
+![ea9e7119-7b3f-4001-ac93-014fb87ad8a0](assets/ea9e7119-7b3f-4001-ac93-014fb87ad8a0.png)
 
 通过-D指定参数名和参数值，参数名即在bootstrap.yml中配置的server.port。
 
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=N2ZiYmEzNmVmMGE2YzNiYWZiMzJkNzY1YjAzMmJjNjVfdDBTVUl5VFRpU3JOMTV6RmRKMXFuUEJ1Mko1dUpvTHhfVG9rZW46Tzk3MGJHSExtb0dkSHd4VTVXM2MxY0NvbjRmXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
+![36941e6f-b558-419f-ba69-bb43d6baedb3](assets/36941e6f-b558-419f-ba69-bb43d6baedb3.png)
 
 启动ContentApplication2，发现端口仍然是63040，这说明本地的配置没有生效。
 
@@ -423,19 +407,3 @@ spring:
 ```
 
 再次启动ContentApplication2，端口为63041。
-
-### 2.5 导入配置文件
-
-课程资料中提供了系统用的所有配置文件nacos_config_export.zip，下边将nacos_config_export.zip导入nacos。
-
-进入具体的命名空间，点击“导入配置”
-
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=MDM0YTcwMTA3NjRiYTQ1M2JkM2ZlMGJiZTNjNDkxNDNfb0l6ZVdpeDdQWWRTdjRsb0JaRnJyRldBTENyaVZvRExfVG9rZW46VExxQ2JSZTd3b2IzZ3Z4cFJDeWNoa2V3bnZjXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
-
-打开导入窗口
-
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=ZGY0ODJlOTc1NDg4NWE0ZGQ2NGY2MWVjMDMzZDYyNTRfMng2QXVBRThpTlBPamhrSHdlYU5zdnZ3RmJ4dVRhRmFfVG9rZW46S3h6OGI5N0dkb3JQand4aU00emNBMEpWbkRLXzE3Mzk3NzQyMzg6MTczOTc3NzgzOF9WNA)
-
-相同的配置选择覆盖配置。
-
-点击“上传文件”选择资料中的nacos_config_export.zip开始导入。

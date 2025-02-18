@@ -397,6 +397,7 @@ nav:
       - Java/Java分层/Service业务层.md
     - Java/接口测试工具.md
     - Java/日志.md
+    - Java/异常处理.md
     - Java/工程结构.md
     - Java/MyBatis.md
     - Java/Spring.md
@@ -406,24 +407,24 @@ nav:
     - Java/分布式id.md
     - Java/序列化.md
     - Java/plugins.md
-    - heima-leadnews:
-      - Java/heima-leadnews/登录.md
-      - Java/heima-leadnews/nginx.md
-      - Java/heima-leadnews/网关和认证过滤器.md
-      - Java/heima-leadnews/静态化freemarker.md
-      - Java/heima-leadnews/分布式文件系统MinIO.md
-      - Java/heima-leadnews/app端文章查看.md
-      - Java/heima-leadnews/自媒体文章发布.md
-      - Java/heima-leadnews/自媒体文章-自动审核.md
-      - Java/heima-leadnews/延迟任务精准发布文章.md
-      - Java/heima-leadnews/消息中间件.md
-      - Java/heima-leadnews/kafka配置.md
-      - Java/heima-leadnews/kafka及异步通知文章上下架.md
-      - Java/heima-leadnews/app端文章搜索.md
-      - Java/heima-leadnews/jackson进行序列化和反序列化解决.md
-      - Java/heima-leadnews/热点文章-定时计算.md
-      - Java/heima-leadnews/新热文章-实时计算.md
-      - Java/heima-leadnews/项目部署_持续集成.md
+    - Java/nginx.md
+    - Java/Nacos.md
+    - Java/网关和认证过滤器.md
+    - Java/登录.md
+    - Java/静态化freemarker.md
+    - Java/分布式文件系统MinIO.md
+    - Java/app端文章查看.md
+    - Java/自媒体文章发布.md
+    - Java/自媒体文章-自动审核.md
+    - Java/延迟任务精准发布文章.md
+    - Java/消息中间件.md
+    - Java/kafka配置.md
+    - Java/kafka及异步通知文章上下架.md
+    - Java/app端文章搜索.md
+    - Java/jackson进行序列化和反序列化解决.md
+    - Java/热点文章-定时计算.md
+    - Java/新热文章-实时计算.md
+    - Java/项目部署_持续集成.md
   - HarmonyOS:
     - Harmony/数据类型.md
     - Harmony/class.md
