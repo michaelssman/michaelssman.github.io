@@ -116,7 +116,9 @@ end
 // 如果你使用了 resource_bundles，加载图片需要使用bundle
 @inline(__always)
 public func bundleImage(_ imageName: String) -> UIImage {
-    let bundleURL = Bundle(for: HHAssetCell.self).url(forResource: "HHSelectPhoto", withExtension: "bundle")!
+	  //可以使用组件中的任意一个类来获取 Bundle。
+	  //组件中的类是 internal 或 private，需要在主项目中使用时将其改为 public。
+    let bundleURL = Bundle(for: pod中的任意类.self).url(forResource: "YourPodName", withExtension: "bundle")!
     let resourceBundle = Bundle(url: bundleURL)!
     return UIImage(named: imageName, in: resourceBundle, compatibleWith: nil) ?? UIImage()
 }
@@ -125,9 +127,9 @@ public func bundleImage(_ imageName: String) -> UIImage {
 同时还需要修改Pods/Development Pods/自己代码文件夹/Pod/.podspec文件下的resource_bundles
 
 ```
-  s.resource_bundles = {
-      'HHSelectPhoto' => ['HHSelectPhoto/Assets/*.{png,jpeg,jpg,imageset}']
-  }
+s.resource_bundles = {
+    'YourPodName' => ['YourPodName/Assets/*.{png,jpeg,jpg,imageset}']
+}
 ```
 
 同样json文件一样 需要配置bundle。xib也需要配置bundle
