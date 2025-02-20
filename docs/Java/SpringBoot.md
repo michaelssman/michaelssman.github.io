@@ -89,11 +89,11 @@ Spring Boot的启动类的作用是启动Spring Boot项目。
 </project>
 ```
 
-### 3、编写YML配置文件
+### 3、配置文件
 
 springboot可以添加个性化配置。上下文路径、端口等。
 
-#### properties
+#### application.properties
 
 创建`项目\maven项目文件\src\main\resources\application.properties`，`application.properties`名字固定。
 
@@ -106,7 +106,7 @@ server.port=8080
 server.servlet.context-path=/springboot01
 ```
 
-#### yml
+#### application.yml
 
 springboot官方推荐的配置文件是yml文件，yml是用**层级来表示关系**的一种配置文件。
 

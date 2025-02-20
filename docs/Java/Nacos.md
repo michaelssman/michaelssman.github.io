@@ -407,3 +407,15 @@ spring:
 ```
 
 再次启动ContentApplication2，端口为63041。
+
+## spring-cloud2021.0.3之后版本的配置
+
+2021.0.5版本的 Spring Cloud 默认不再启用 bootstrap 包，因此应该将配置文件写在 application.yml 中，或手动在 maven 中导入 bootstrap 包。
+
+```yaml
+#微服务配置
+spring:
+  config:
+    import: nacos:bootstrap.yml
+```
+
