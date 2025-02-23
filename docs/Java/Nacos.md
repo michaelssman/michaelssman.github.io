@@ -34,7 +34,7 @@ Nacos作用：
 1、docker拉取镜像 
 
 ```shell
-docker pull nacos/nacos-server:1.2.0
+docker pull nacos/nacos-server:2.2.4
 ```
 
 2、创建容器
@@ -42,7 +42,7 @@ docker pull nacos/nacos-server:1.2.0
 针对nacos镜像创建容器
 
 ```shell
-docker run --env MODE=standalone --name nacos --restart=always  -d -p 8848:8848 nacos/nacos-server:1.2.0
+docker run --env MODE=standalone -d --name nacos-server --restart=always -p 8848:8848 nacos/nacos-server:2.2.4
 ```
 
 - docker run 启动容器
@@ -96,6 +96,8 @@ Spring Cloud alibaba: nacos服务注册中心，配置中心
 
 2. 在具体微服务模块的接口工程中添加如下依赖
 
+discovery依赖用来向nacos注册微服务
+
 ```XML
 <dependency>
     <groupId>com.alibaba.cloud</groupId>
@@ -107,11 +109,13 @@ Spring Cloud alibaba: nacos服务注册中心，配置中心
 
 在具体微服务模块的接口工程的配置文件（bootstrap.yml）中配置如下信息：
 
+服务名、nacos地址、namespace、group。
+
 ```YAML
 #微服务配置
 spring:
   application:
-    name: 具体微服务的名称
+    name: 具体微服务的名称 #向nacos报哪个服务
   cloud:
     nacos:
       server-addr: 192.168.101.65:8848
