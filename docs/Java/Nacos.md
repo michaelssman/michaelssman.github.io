@@ -24,17 +24,22 @@ Nacos 支持多种服务发现协议（如 HTTP、gRPC、Dubbo 等）和多种�
 
 Nacos通常安装在Linux服务器上。
 
-Nacos作用：
+Nacos有两个作用：
 
-- 作为注册中心
-- 作为配置中心
+1. 服务发现中心（注册中心）
+
+​	微服务将自身注册至Nacos，网关从Nacos获取微服务列表。
+
+2. 配置中心
+
+​	微服务众多，它们的配置信息也非常复杂，为了提供系统的可维护性，微服务的配置信息统一在Nacos配置。
 
 ## Nacos安装
 
 1、docker拉取镜像 
 
 ```shell
-docker pull nacos/nacos-server:2.2.4
+docker pull nacos/nacos-server:latest
 ```
 
 2、创建容器
@@ -42,7 +47,7 @@ docker pull nacos/nacos-server:2.2.4
 针对nacos镜像创建容器
 
 ```shell
-docker run --env MODE=standalone -d --name nacos-server --restart=always -p 8848:8848 nacos/nacos-server:2.2.4
+docker run --env MODE=standalone -d --name nacos-server --restart=always -p 8848:8848 nacos/nacos-server:latest
 ```
 
 - docker run 启动容器
@@ -53,7 +58,7 @@ docker run --env MODE=standalone -d --name nacos-server --restart=always -p 8848
 
 ## 搭建Nacos
 
-### 1 服务发现中心
+### 1、服务发现中心
 
 Spring Cloud ：一套规范
 
@@ -77,8 +82,6 @@ Spring Cloud alibaba: nacos服务注册中心，配置中心
 ![image-20250218104949667](assets/image-20250218104949667.png)
 
 使用相同的方法再创建“测试环境”（test）、"生产环境"（prod）的命名空间。
-
-注意：在下边的配置中对namespace配置为**命名空间ID**。
 
 首先完成各服务注册到Naocs，下边将内容管理服务注册到nacos中。
 
@@ -115,7 +118,7 @@ discovery依赖用来向nacos注册微服务
 #微服务配置
 spring:
   application:
-    name: 具体微服务的名称 #向nacos报哪个服务
+    name: 具体微服务的名称 #向nacos上报哪个服务
   cloud:
     nacos:
       server-addr: 192.168.101.65:8848
@@ -128,15 +131,15 @@ spring:
 
 待微服务启动成功，进入Nacos`服务管理`查看`服务列表`。
 
-在 “开发环境” 命名空间下有两个服务这说明该微服务在Nacos注册成功。
+在对应`命名空间`下有该服务这说明该微服务在Nacos注册成功。
 
 点击微服务的“详情”，可以查看微服务实例的地址。
 
-### 2 配置中心
+### 2、配置中心
 
 #### 2.1 配置三要素
 
-搭建完成Nacos服务发现中心，下边搭建Nacos为配置中心，其目的就是通过Nacos去管理项目的所有配置。
+下面搭建Nacos为配置中心，其目的就是通过Nacos去管理项目的所有配置。
 
 先将项目中的配置文件进行分类：
 
@@ -166,11 +169,9 @@ Yaml: 第三部分，它是配置文件的后缀，目前nacos支持properties�
 
 所以，如果我们要配置content-service工程的配置文件:
 
-在开发环境中配置content-service-dev.yaml
-
-在测试环境中配置content-service-test.yaml
-
-在生产环境中配置content-service-prod.yaml
+- 在开发环境中配置content-service-dev.yaml
+- 在测试环境中配置content-service-test.yaml
+- 在生产环境中配置content-service-prod.yaml
 
 我们启动项目中传入spring.profiles.active的参数决定引用哪个环境的配置文件，例如：传入spring.profiles.active=dev表示使用dev环境的配置文件即content-service-dev.yaml。
 
@@ -184,7 +185,7 @@ Yaml: 第三部分，它是配置文件的后缀，目前nacos支持properties�
 
 ![cd2bd027-980d-4d83-abf6-7a6febb1dd5e](assets/cd2bd027-980d-4d83-abf6-7a6febb1dd5e.png)
 
-输入data id、group以及配置文件内容。
+输入Data ID、Group以及配置文件内容。
 
 为什么没在nacos中配置下边的内容 ？
 
@@ -287,13 +288,6 @@ spring:
 
 注意：因为api接口工程依赖了service工程 的jar，所以这里使用extension-configs扩展配置文件的方式引用service工程所用到的配置文件。
 
-```YAML
-        extension-configs:
-          - data-id: content-service-${spring.profiles.active}.yaml
-            group: xuecheng-plus-project
-            refresh: true
-```
-
 如果添加多个扩展文件，继续在下添加即可，如下：
 
 ```YAML
@@ -320,7 +314,7 @@ spring:
 
 nacos提供了shared-configs可以引入公用配置。
 
-在content-api中配置了swagger，所有的接口工程 都需要配置swagger，这里就可以将swagger的配置定义为一个公用配置，哪个项目用引入即可。
+在content-api中配置了swagger，所有的接口工程都需要配置swagger，这里就可以将swagger的配置定义为一个公用配置，哪个项目用引入即可。
 
 单独在xuecheng-plus-common分组下创建xuecheng-plus的公用配置，进入nacos的开发环境，添加swagger-dev.yaml公用配置
 
@@ -328,7 +322,7 @@ nacos提供了shared-configs可以引入公用配置。
 
 删除接口工程中对swagger的配置。
 
-项目使用shared-configs可以引入公用配置。在接口工程的本地配置文件 中引入公用配置，如下：
+项目使用shared-configs可以引入公用配置。在接口工程的本地配置文件中引入公用配置，如下：
 
 ```YAML
 spring:
@@ -366,7 +360,42 @@ spring:
 
 在接口工程和业务工程，引入loggin-dev.yaml公用配置文件 
 
-![71a056f2-689e-4614-b601-84b85b637a59](assets/71a056f2-689e-4614-b601-84b85b637a59.png)
+```yaml
+#微服务配置
+spring:
+  application:
+    name: content-api #服务名content-api-dev.yaml
+  cloud:
+    nacos:
+      server-addr: 192.168.101.65:8848
+      discovery: #服务注册相关配置
+        namespace: ${spring.profiles.active}
+        group: xuecheng-plus-project
+      config: #配置文件相关配置
+        namespace: ${spring.profiles.active}
+        group: xuecheng-plus-project
+        file-extension: yaml
+        refresh-enabled: true
+        extension-configs:
+          - data-id: content-service-${spring.profiles.active}.yaml
+            group: xuecheng-plus-project
+            refresh: true
+        shared-configs:
+          - data-id: swagger-${spring.profiles.active}.yaml
+            group: xuecheng-plus-common
+            refresh: true
+          - data-id: logging-${spring.profiles.active}.yaml
+            group: xuecheng-plus-common
+            refresh: true
+          - data-id: freemarker-config-dev.yaml
+            group: xuecheng-plus-common
+            refresh: true
+          - data-id: feign-${spring.profiles.active}.yaml
+            group: xuecheng-plus-common
+            refresh: true  #profiles默认为dev
+  profiles:
+    active: dev   #环境名
+```
 
 配置完成，重启content-api接口工程，访问http://localhost:63040/content/swagger-ui.html 查看swagger接口文档是否可以正常访问，查看控制台log4j2日志输出是否正常。
 
