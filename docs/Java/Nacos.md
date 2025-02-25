@@ -47,7 +47,7 @@ docker pull nacos/nacos-server:latest
 针对nacos镜像创建容器
 
 ```shell
-docker run --env MODE=standalone -d --name nacos-server --restart=always -p 8848:8848 nacos/nacos-server:latest
+docker run --env MODE=standalone -d --name nacos-server --restart=always -p 8848:8848 -p 9848:9848 -p 9849:9849 nacos/nacos-server:latest
 ```
 
 - docker run 启动容器
