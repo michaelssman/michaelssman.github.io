@@ -139,17 +139,19 @@ spring:
 
 #### 2.1 配置三要素
 
-下面搭建Nacos为配置中心，其目的就是通过Nacos去管理项目的所有配置。
+搭建Nacos为配置中心，其目的就是通过Nacos去管理项目的所有配置。
+
+正式的环境下，每个服务有多个实例保证容错性，每个实例用一个docker容器管理的话，配置文件会**散落**在所有的容器中，项目升级修改数据库地址时，需要把所有实例的配置文件修改一遍，不如在nacos统一管理。
 
 先将项目中的配置文件进行分类：
 
-1、每个项目特有的配置
+**1、每个项目特有的配置**
 
 是指该配置只在有些项目中需要配置，或者该配置在每个项目中配置的值不同。
 
 比如：spring.application.name每个项目都需要配置但值不一样，以及有些项目需要连接数据库而有些项目不需要，有些项目需要配置消息队列而有些项目不需要。
 
-2、项目所公用的配置
+**2、项目所公用的配置**
 
 是指在若干项目中配置内容相同的配置。比如：redis的配置，很多项目用的同一套redis服务所以配置也一样。
 
@@ -161,11 +163,9 @@ spring:
 
 比如：content-service-dev.yaml配置文件  由（content-service）-（dev）. (yaml)三部分组成
 
-content-service：第一部分，它是在application.yaml中配置的应用名，即spring.application.name的值。
-
-dev：第二部分，它是环境名，通过spring.profiles.active指定，
-
-Yaml: 第三部分，它是配置文件的后缀，目前nacos支持properties、yaml等格式类型。
+1. content-service：服务名，它是在application.yaml中配置的应用名，即spring.application.name的值。
+2. dev：命名空间，它是环境名，通过spring.profiles.active指定，
+3. Yaml：扩展名，它是配置文件的后缀，目前nacos支持properties、yaml等格式类型。
 
 所以，如果我们要配置content-service工程的配置文件:
 
