@@ -166,7 +166,7 @@ spring:
 比如：content-service-dev.yaml配置文件  由（content-service）-（dev）. (yaml)三部分组成
 
 1. content-service：服务名，${spring.application.name}。
-2. dev：命名空间，环境名，${spring.profiles.active}。
+2. dev：环境名，${spring.profiles.active}。
 3. yaml：扩展名，配置文件的后缀，${spring.cloud.nacos.config.file-extension}，nacos支持properties、yaml等格式类型。
 
 所以，如果我们要配置content-service工程的配置文件:
@@ -324,41 +324,11 @@ nacos提供了shared-configs可以引入公用配置。
 
 删除接口工程中对swagger的配置。
 
-项目使用shared-configs可以引入公用配置。在接口工程的本地配置文件中引入公用配置，如下：
-
-```YAML
-spring:
-  application:
-    name: content-api
-  cloud:
-    nacos:
-      server-addr: 192.168.101.65:8848
-      discovery:
-        namespace: dev
-        group: xuecheng-plus-project
-      config:
-        namespace: dev
-        group: xuecheng-plus-project
-        file-extension: yaml
-        refresh-enabled: true
-        extension-configs:
-          - data-id: content-service-${spring.profiles.active}.yaml
-            group: xuecheng-plus-project
-            refresh: true
-        shared-configs:
-          - data-id: swagger-${spring.profiles.active}.yaml
-            group: xuecheng-plus-common
-            refresh: true
-          - data-id: logging-${spring.profiles.active}.yaml
-            group: xuecheng-plus-common
-            refresh: true
-  profiles:
-    active: dev
-```
-
 再以相同的方法配置日志的公用配置。
 
 ![485c92fd-cead-467e-9fed-36dfdf91e46f](assets/485c92fd-cead-467e-9fed-36dfdf91e46f.png)
+
+项目使用`shared-configs`可以引入公用配置。在接口工程的本地配置文件中引入公用配置，如下：
 
 在接口工程和业务工程，引入loggin-dev.yaml公用配置文件 
 
