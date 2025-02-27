@@ -368,21 +368,7 @@ public class ArticleHomeDto {
 
 ![image-20210420001037992](app端文章查看，静态化freemarker,分布式文件系统minIO.assets/image-20210420001037992.png)
 
-在nacos中添加对应的配置
-
-```yaml
-spring:
-  datasource:
-    driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/leadnews_article?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-    username: root
-    password: root
-# 设置Mapper接口所对应的XML文件位置，如果你在Mapper接口中有自定义方法，需要进行该配置
-mybatis-plus:
-  mapper-locations: classpath*:mapper/*.xml
-  # 设置别名包扫描路径，通过该属性可以给包中的类注册别名
-  type-aliases-package: com.heima.model.article.pojos
-```
+在nacos中添加对应的配置。
 
 #### 2、定义接口
 

@@ -135,6 +135,8 @@ spring:
 
 点击微服务的“详情”，可以查看微服务实例的地址。
 
+如果项目停止运行，则nacos对应的服务也会消失。
+
 ### 2、配置中心
 
 #### 2.1 配置三要素
@@ -159,13 +161,13 @@ spring:
 
 1、通过namespace、group找到具体的环境和具体的项目。
 
-2、通过dataid找到具体的配置文件，dataid有三部分组成
+2、通过dataid找到具体的配置文件，dataid有三部分组成：
 
 比如：content-service-dev.yaml配置文件  由（content-service）-（dev）. (yaml)三部分组成
 
-1. content-service：服务名，它是在application.yaml中配置的应用名，即spring.application.name的值。
-2. dev：命名空间，它是环境名，通过spring.profiles.active指定，
-3. Yaml：扩展名，它是配置文件的后缀，目前nacos支持properties、yaml等格式类型。
+1. content-service：服务名，${spring.application.name}。
+2. dev：命名空间，环境名，${spring.profiles.active}。
+3. yaml：扩展名，配置文件的后缀，${spring.cloud.nacos.config.file-extension}，nacos支持properties、yaml等格式类型。
 
 所以，如果我们要配置content-service工程的配置文件:
 
