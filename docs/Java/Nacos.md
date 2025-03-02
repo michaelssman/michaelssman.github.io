@@ -163,7 +163,7 @@ spring:
 
 2、通过dataid找到具体的配置文件，dataid有三部分组成：
 
-比如：content-service-dev.yaml配置文件  由（content-service）-（dev）. (yaml)三部分组成
+比如：content-service-dev.yaml配置文件  由下面三部分组成
 
 1. content-service：服务名，${spring.application.name}。
 2. dev：环境名，${spring.profiles.active}。
@@ -316,7 +316,7 @@ spring:
 
 nacos提供了shared-configs可以引入公用配置。
 
-在content-api中配置了swagger，所有的接口工程都需要配置swagger，这里就可以将swagger的配置定义为一个公用配置，哪个项目用引入即可。
+所有的接口工程都需要配置swagger，这里就可以将swagger的配置定义为一个公用配置，哪个项目用引入即可。
 
 单独在xuecheng-plus-common分组下创建xuecheng-plus的公用配置，进入nacos的开发环境，添加swagger-dev.yaml公用配置
 
@@ -328,9 +328,9 @@ nacos提供了shared-configs可以引入公用配置。
 
 ![485c92fd-cead-467e-9fed-36dfdf91e46f](assets/485c92fd-cead-467e-9fed-36dfdf91e46f.png)
 
-项目使用`shared-configs`可以引入公用配置。在接口工程的本地配置文件中引入公用配置，如下：
+项目使用`shared-configs`可以引入公用配置。
 
-在接口工程和业务工程，引入loggin-dev.yaml公用配置文件 
+在接口工程的本地配置文件中引入swagger-dev.yaml和loggin-dev.yaml公用配置文件，如下：
 
 ```yaml
 #微服务配置
@@ -375,7 +375,12 @@ spring:
 
 到目前为止已将所有微服务的配置统一在nacos进行配置，用到的配置文件有本地的配置文件 bootstrap.yaml和nacos上的配置文件，SpringBoot读取配置文件的顺序如下：
 
-![b281cd6d-a532-425d-be1d-49b23a11b468](assets/b281cd6d-a532-425d-be1d-49b23a11b468.png)
+1. 项目启动
+2. 加载bootstrap.yml，获取nacos地址、配置文件id
+3. 根据id读取nacos配置文件
+4. 读取本地配置文件application.yml，与nacos拉取到的配置合并
+5. 创建spring容器
+6. 加载bean
 
 引入配置文件的形式有：
 
@@ -387,17 +392,17 @@ spring:
 
 4、本地配置文件
 
+前三个是nacos，第四个是本地。
+
 各配置文件的优先级：项目应用名配置文件 > 扩展配置文件  > 共享配置文件 > 本地配置文件。
 
 有时候我们在测试程序时直接在本地加一个配置进行测试，比如下边的例子：
 
 我们想启动两个内容管理微服务，此时需要在本地指定不同的端口，通过VM Options参数，在IDEA配置启动参数
 
-![ea9e7119-7b3f-4001-ac93-014fb87ad8a0](assets/ea9e7119-7b3f-4001-ac93-014fb87ad8a0.png)
-
 通过-D指定参数名和参数值，参数名即在bootstrap.yml中配置的server.port。
 
-![36941e6f-b558-419f-ba69-bb43d6baedb3](assets/36941e6f-b558-419f-ba69-bb43d6baedb3.png)
+![image-20250302231334872](assets/image-20250302231334872.png)
 
 启动ContentApplication2，发现端口仍然是63040，这说明本地的配置没有生效。
 
