@@ -114,9 +114,7 @@ yml中没有标签，而是通过两个空格的**缩进来表示层级结构**�
 
 创建`项目\maven项目文件\src\main\resources\application.yml`，`application.yml`文件名字application开头，不能随意动。
 
-spring配置：
-
-连数据库，把数据源信息写到配置文件里
+spring配置：连数据库，把数据源信息写到配置文件里
 
 ```yaml
 server:
@@ -127,7 +125,7 @@ spring:
 	#mysql驱动
   datasource:
 	  driver-class-name: com.mysql.cj.jdbc.Driver	#驱动
-    url: jdbc:mysql://ip地址:3306/数据库名?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://ip地址:端口/数据库名?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
     username: root
     password: asdf123456
 ```
@@ -145,9 +143,9 @@ mybatis-plus配置：
 ```yaml
 # 设置Mapper接口所对应的XML文件位置，如果你在Mapper接口中有自定义方法，需要进行该配置
 mybatis-plus:
-  mapper-locations: classpath*:mapper/*.xml
   # 设置别名包扫描路径，通过该属性可以给包中的类注册别名
   type-aliases-package: com.heima.model.user.pojos
+  mapper-locations: classpath*:mapper/*.xml
 ```
 
 **层级结构怎么找（SpringBoot常见配置，查看官网文档）：**

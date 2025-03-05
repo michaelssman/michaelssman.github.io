@@ -13,11 +13,7 @@
 
 ## Mac
 
-- HBuilderX：Vue
-- PyCharm
-- MindNode
 - The Unarchiver：解压rar格式文件
-- Sublime Text
 - V2rayU
 
 ## win

@@ -12,40 +12,20 @@
 
 ### 电脑生成公钥私钥
 
-家目录创建.ssh文件夹`mkdir ~/.ssh`
+家目录创建.ssh文件夹
 
-`cd ~/.ssh`
+```sh
+mkdir ~/.ssh
+```
 
-生成 SSH 密钥对：一旦安装了 OpenSSH 客户端，你可以使用以下命令在 Windows/Mac 上生成 SSH 密钥对：
+```sh
+cd ~/.ssh
+```
 
-`ssh-keygen`
+生成 SSH 密钥对：一旦安装了 OpenSSH 客户端，你可以使用`ssh-keygen`命令在 Windows/Mac 上生成 SSH 密钥对：
 
-`ssh-keygen -t rsa -b 4096 -C "cuihuihui@nmy.cn"`
-
-```bash
-Last login: Fri Jun  2 12:31:48 on ttys001
-michael@localhost ~ % ssh-keygen
-Generating public/private rsa key pair.
-Enter file in which to save the key (/Users/michael/.ssh/id_rsa): 
-Enter passphrase (empty for no passphrase): 
-Enter same passphrase again: 
-Your identification has been saved in /Users/michael/.ssh/id_rsa
-Your public key has been saved in /Users/michael/.ssh/id_rsa.pub
-The key fingerprint is:
-SHA256:hBPZ+Tl+HVq7HLMF+ji0NMMMIjgoS9J8g2gD74dffMQ michael@localhost
-The key's randomart image is:
-+---[RSA 3072]----+
-|      .o .       |
-|.     .oo        |
-|.= o .o... .     |
-|++* = .oE =   +  |
-|++.o + oSo = = + |
-|. o . o . . @ = .|
-|   o . .   + B * |
-|    .       + =  |
-|             .   |
-+----[SHA256]-----+
-michael@localhost ~ % 
+```sh
+ssh-keygen -t rsa -b 4096 -C "xxxxx@nmy.cn"
 ```
 
 当你在Mac上生成SSH密钥串时，系统会提示你输入一个文件名来保存新的密钥对。如下提示：
@@ -54,15 +34,19 @@ michael@localhost ~ %
 Enter file in which to save the key (/Users/michael/.ssh/id_rsa):
 ```
 
-这意味着它建议你将新的密钥保存在`/Users/michael/.ssh/id_rsa`这个位置。这里的`/Users/michael`是你的主目录，`.ssh`是一个通常用来存放SSH密钥和配置文件的隐藏目录，`id_rsa`是私钥文件的默认名称。
+这意味着它建议你将新的密钥保存在`/Users/michael/.ssh/id_rsa`这个位置。
+
+- `/Users/michael`是你的主目录。
+- `.ssh`是一个通常用来存放SSH密钥和配置文件的隐藏目录。
+- `id_rsa`是私钥文件的默认名称。
 
 如果你只是想使用默认的文件名和位置，直接按`Enter`键即可。如果你已经有一个叫做`id_rsa`的密钥，并且不想覆盖它，你可以输入一个新的文件名，比如：
 
 ```shell
-/Users/michael/.ssh/id_rsa_new
+/Users/michael/.ssh/id_rsa_gitlab
 ```
 
-这样，系统就会将新的密钥保存为`id_rsa_new`。确保你记住了你保存密钥的位置，因为在建立SSH连接时你可能需要指定密钥文件的路径。
+这样，系统就会将新的密钥保存为`id_rsa_gitlab`。
 
 接下来，你将被要求输入一个密码来保护你的私钥。
 
@@ -77,7 +61,7 @@ lemonacc@LemonAccdeMacBook-Pro .ssh %
 添加SSH密钥到SSH代理：运行以下命令将SSH私钥添加到SSH代理中：
 
 ```
-ssh-add ~/.ssh/id_rsa
+ssh-add ~/.ssh/id_rsa_gitlab
 ```
 
 如果你使用的是非默认的密钥文件名或路径，请相应地修改命令。
@@ -112,8 +96,8 @@ Host myserver
 
 - `Host`是连接的别名
 - `HostName`指定了服务器的IP地址或域名
-- `User`指定了登录用户名
 - `Port`指定了SSH连接的端口号
+- `User`指定了登录用户名
 - `IdentityFile`指定了私钥文件的路径。
 
 ### 验证是否可以连接
@@ -163,7 +147,7 @@ cat ~/.ssh/id_rsa.pub
 3. 将你在步骤 3 中复制的公钥粘贴到 "Key"（密钥）字段中。
 4. 点击 "Add SSH key"（添加 SSH 密钥）按钮。
 
-现在，你应该已经成功将 SSH 密钥添加到 GitHub 帐户中。你可以尝试使用 SSH 克隆或推送到 GitHub 存储库，而无需每次都输入用户名和密码。
+现在，你应该已经成功将 SSH 密钥添加到 GitHub 帐户中。使用 SSH 克隆或推送到 GitHub 存储库，无需每次都输入用户名和密码。
 
 ### sourcetree
 
