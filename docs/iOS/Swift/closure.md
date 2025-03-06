@@ -1,10 +1,8 @@
 # closure
 
-## 函数类型
+## 函数是引用类型
 
 函数本身也有自己的类型，它由形式参数类型，返回类型组成。
-
-### 函数是引用类型
 
 ```swift
 func addTwoInts(_ a: Int, _ b: Int) -> Int {

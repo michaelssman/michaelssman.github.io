@@ -324,6 +324,10 @@ michael@MichaeldeMacBook-Pro ~ %
 source ~/.zshrc
 ```
 
+```sh
+source ~/.zprofile
+```
+
 ## 环境变量
 
 家目录下创建一个文件夹，可以是隐藏的。里面放自己的脚本和工具。

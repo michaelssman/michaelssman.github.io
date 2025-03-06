@@ -28,11 +28,11 @@ Java代码不再new创建对象，程序中用一个xml文件，里面配置对�
 
 #### IoC/DI
 
-IoC(Inversion of Control)中文名称：控制反转，也被称为DI(dependency injection )：依赖注入。
+**IoC(Inversion of Control)中文名称：控制反转，也被称为DI(dependency injection )：依赖注入。**
 
 创建对象的权利（控制的位置），**由JAVA代码转移到spring容器,由spring的容器控制对象的创建,就是控制反转**。
 
-由于控制反转概念比较含糊，所以又给出了一个新的名字:“依赖注入”，相对loC而言，“依赖注入”明确描述了“被注入对象依赖loC容器来配置依赖对象”，Dl是loC的别名。
+由于控制反转概念比较含糊，所以又给出了一个新的名字:“依赖注入”，相对loC而言，“依赖注入”明确描述了“被注入对象依赖loC容器来配置依赖对象”。
 
 ![IOCDI原理](assets/IOCDI原理.png)
 
