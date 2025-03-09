@@ -10,3 +10,4 @@
 ## 依赖版本兼容
 
 - 确保 Spring Boot 和 Spring Cloud 的版本是兼容的。可以参考 [Spring Cloud 官方文档](https://spring.io/projects/spring-cloud) 来确定合适的版本。
+
