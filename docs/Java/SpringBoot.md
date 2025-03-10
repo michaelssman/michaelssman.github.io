@@ -217,7 +217,22 @@ public class TestSpringBootApplication {
 
 浏览器访问`http://localhost:9999/findBooks`测试
 
-## spring-boot-starter
+## 自动化starter
+
+使用spring boot**自动配置**的starer，可以简化代码，并使其正常工作。当在这个类路径上检测到这个特定的jar文件的时候，将激活这个自动化的配置。
+
+最简单的使用方法就是依赖spring-boot-starters，例如要与redis进行集成，可以像下面的这样配置:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+```
+
+在这些启动器的帮助下，一些繁琐的配置可以很好的集成在一起，并协同工作。并且都是通过了测试和验证的。
+
+### spring-boot-starter
 
 - **功能**: 这是一个基础的启动器，用于支持 Spring Boot 应用程序的核心功能。
 - 包含的依赖:
@@ -225,7 +240,7 @@ public class TestSpringBootApplication {
   - 日志（如 SLF4J 和 Logback）。
 - **使用场景**: 适用于任何需要 Spring Boot 基础功能的应用，不限于 Web 应用。
 
-## spring-boot-starter-web
+### spring-boot-starter-web
 
 - **功能**: 这是一个 Spring Boot 启动器（starter），用于快速构建基于 Spring 的 **Web 应用程序**。
 - **包含的依赖**:
@@ -234,12 +249,12 @@ public class TestSpringBootApplication {
   - Jackson: 用于 JSON 处理。
   - Hibernate Validator: 用于验证框架。
   
-### 使用场景
+#### 使用场景
 
 - **Web 应用开发**: 适合开发 RESTful Web 服务和传统的 Web 应用。
 - **快速启动**: 提供了一个开箱即用的 Web 应用开发环境，减少了配置和依赖管理的复杂性。
 
-### 如何使用
+#### 如何使用
 
 在 `pom.xml` 文件中添加如下依赖：
 
@@ -251,6 +266,10 @@ public class TestSpringBootApplication {
 ```
 
 这样，Spring Boot 会自动配置一个 Web 环境，并提供所需的基础设施来构建和运行你的 Web 应用。
+
+### 创建自己的spring boot starter
+
+像一些公共的组件，可以抽象出自己的starter。比如统一的API日志、国际化、上传文件、支付、redis操作、统一的序列化、统一的权限验证等等，都可以封装成一个starter，供其它项目去引用。因为这些都是基于spring boot的自动化配置，使用起来也非常方便。
 
 ## spring.factories
 
