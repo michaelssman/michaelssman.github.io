@@ -420,12 +420,15 @@ spring:
 
 ## spring-cloud2021.0.3之后版本的配置
 
-2021.0.5版本的 Spring Cloud 默认不再启用 bootstrap 包，因此应该将配置文件写在 application.yml 中，或手动在 maven 中导入 bootstrap 包。
+2021.0.5版本的 Spring Cloud 默认不再启用 bootstrap 包，因此应该将配置文件写在 application.yml 中s。
 
 ```yaml
 #微服务配置
 spring:
   config:
-    import: nacos:bootstrap.yml
+    import: nacos:hhjava-user-dev.yaml?config.namespace=dev&config.group=hhjava&config.file-extension=yaml
 ```
 
+## 开放端口
+
+在阿里云安全组中一定要开放8848和9848两个端口。

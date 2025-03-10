@@ -10,7 +10,7 @@
 
 界面不依赖原生Ui，有自己独立的渲染引擎，iOS和安卓UI高度统一。iOS和安卓都有渲染引擎去解析Dart代码。flutter包大，因为有渲染引擎，效率高。
 
-## 网站
+## website
 
 flutter中文网
 
@@ -74,6 +74,8 @@ AS创建flutter也有flutter路径
 搜索flutter，Android studio安装flutter插件。会安装dart，安装完之后需要重启Android studio。
 
 ### Android studio配置
+
+设置搜索Android SDK
 
 ![image-20210716141055866](flutter简介.assets/image-20210716141055866.png)
 
