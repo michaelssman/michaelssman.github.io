@@ -262,9 +262,11 @@ public class TestSpringBootApplication {
 
 ## spring.factories
 
-`spring.factories` 文件是 Spring Boot 用于自动配置的一个关键文件。它位于 `META-INF` 目录下，包含了许多 Spring Boot 自动配置类的全限定名。Spring Boot 在启动时会读取这个文件，并根据其中的配置自动加载相应的类。
+`spring.factories` 文件是 Spring Boot 用于自动配置的一个关键文件。它位于 `META-INF` 目录下，包含了许多 Spring Boot 自动配置类的全限定名。
 
-在你的项目中，`Spring.factories` 文件的内容如下：
+Spring Boot 在启动时会扫描 `META-INF/Spring.factories` 文件，并根据 `org.springframework.boot.autoconfigure.EnableAutoConfiguration` 键的值加载相应的自动配置类。这使得你可以通过简单的配置来启用和配置第三方库，而不需要在代码中显式地进行配置。
+
+例如`Spring.factories` 文件的内容：
 
 ```properties
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
@@ -272,8 +274,6 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 ```
 
 这个配置的作用是告诉 Spring Boot 在启动时自动加载 `com.hh.common.swagger.SwaggerConfiguration` 类。`SwaggerConfiguration` 类使用了 `@Configuration` 注解，表示它是一个配置类，并且使用了 `@EnableSwagger2` 注解来启用 Swagger2。
-
-Spring Boot 在启动时会扫描 `META-INF/Spring.factories` 文件，并根据 `org.springframework.boot.autoconfigure.EnableAutoConfiguration` 键的值加载相应的自动配置类。这使得你可以通过简单的配置来启用和配置第三方库，而不需要在代码中显式地进行配置。
 
 ## 其它微服务使用common
 
