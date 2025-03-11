@@ -254,17 +254,6 @@ public class TestSpringBootApplication {
 - **Web 应用开发**: 适合开发 RESTful Web 服务和传统的 Web 应用。
 - **快速启动**: 提供了一个开箱即用的 Web 应用开发环境，减少了配置和依赖管理的复杂性。
 
-#### 如何使用
-
-在 `pom.xml` 文件中添加如下依赖：
-
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-web</artifactId>
-</dependency>
-```
-
 这样，Spring Boot 会自动配置一个 Web 环境，并提供所需的基础设施来构建和运行你的 Web 应用。
 
 ### 创建自己的spring boot starter

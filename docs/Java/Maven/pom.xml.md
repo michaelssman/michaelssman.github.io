@@ -216,6 +216,16 @@ Maven 中央仓库
 ```xml
 <repositories>
     <repository>
+        <id>central</id>
+        <url>https://repo.maven.apache.org/maven2</url>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+    </repository>
+    <repository>
         <id>spring</id>
         <url>https://maven.aliyun.com/repository/spring</url>
         <releases>
@@ -225,8 +235,19 @@ Maven 中央仓库
             <enabled>true</enabled>
         </snapshots>
     </repository>
+    <!--阿里云镜像-->
+    <repository>
+        <id>alimaven</id>
+        <name>aliyun maven</name>
+        <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
 </repositories>
-
 ```
 
 ## 多重继承
