@@ -1133,8 +1133,6 @@ public class ArticleSearchServiceImpl implements ArticleSearchService {
 6.在搜索微服务引导类上开启异步调用
 
 ```java
-package com.heima.search;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
