@@ -115,14 +115,6 @@ https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/
 
 ![image-20240814105218793](assets/image-20240814105218793.png)
 
-## 创建Maven项目
-
-New Module，选择Maven，ModuleSDK选择java version 1.8版本的。
-
-## pom.xml文件中添加依赖包
-
-选择手动导入`Import Changes`
-
 ## Mac配置Maven
 
 下载 Apache Maven 的二进制压缩包：[Maven 下载页面](https://maven.apache.org/download.cgi)
