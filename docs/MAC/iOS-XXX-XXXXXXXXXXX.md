@@ -152,7 +152,7 @@
   - 自动布局约束，实现tableViewCell高度自适应。tableView分类缓存cell高度。
   - 子线程预排版和按需加载。
   - layer.contents给UIView添加图片背景。
-- WKWebView的使用（设置userAgent，原生与js交互开发，计算内容高度，代理方法）。
+- WKWebView的使用（设置userAgent，原生与h5交互，计算内容高度，代理方法，适配深色模式）。
 - 文章详情页实现左滑下滑返回的功能。
 - 文章详情的评论输入框的封装（多行输入，键盘高度等）。
 - 封装阿里云OSS多文件下载和上传工具。
