@@ -1,8 +1,10 @@
 # Aspects切面
 
-不修改原来的函数，在函数的执行前后插入一些代码，就是面向切面（AOP）。
+面向切面编程（AOP）
 
-AOP：切面编程。业务逻辑隔离，代码耦合度降低。
+在不修改原有代码结构的情况下，为程序添加额外的行为，比如日志记录、性能监控、事务处理、异常处理等。业务逻辑隔离，代码耦合度降低。
+
+在 iOS 开发中，这通常是通过运行时(Runtime)方法交换(Method Swizzling)来实现的。
 
 面向对象的扩展
 
@@ -28,8 +30,6 @@ SDWebImage。 Manager	downloader和cache。下载功能逻辑。
 
 Hook person的test方法，不是交换imp，而是先交换person中的ForwardInvocation，指向自定义的函数。
 
-允许开发者在不修改原有代码结构的情况下，为程序添加额外的行为，比如日志记录、性能监控、事务处理、异常处理等。在 iOS 开发中，这通常是通过运行时(Runtime)方法交换(Method Swizzling)来实现的。
-
 Aspects 库简化了面向切面编程的实现。Aspects 库通过 Objective-C 的动态特性，允许开发者在运行时拦截消息，并为其添加前置、后置或替换执行的代码。这里是它的基本原理：
 
 1. **消息发送机制**：Objective-C 是一门动态语言，它的方法调用是通过消息发送（message sending）实现的。当你对一个对象发送消息时（即调用一个方法），Objective-C 的运行时系统会寻找这个消息对应的方法实现，并执行它。
@@ -42,15 +42,11 @@ Aspects 库简化了面向切面编程的实现。Aspects 库通过 Objective-C 
 
 5. **关联对象**：Aspects 可能会使用 Objective-C 的关联对象（associated objects）功能来在运行时给现有类添加存储属性，这样可以存储需要在方法拦截中使用的信息。
 
-当使用 Aspects 库时，你会指定一个切点（pointcut），这是你想要插入自定义行为的方法。然后，你会提供一个 block，当原始方法被调用时，这个 block 会被执行。Aspects 库会处理所有的运行时逻辑，确保当你的方法被调用时，你的自定义代码会被执行。
-
-这种方式非常强大，但也需要谨慎使用，因为它改变了对象的正常行为，可能会导致难以追踪的问题。此外，由于它依赖于 Objective-C 的运行时特性，它可能不适用于纯 Swift 代码，或者在 Swift 代码中可能需要特别的桥接处理。
-
 ## 类
 
 ### AspectOptions
 
-是个枚举，用来定义切面的时机
+枚举，用来定义切面的时机
 
 ```objective-c
 typedef NS_OPTIONS(NSUInteger, AspectOptions) {
@@ -67,14 +63,11 @@ typedef NS_OPTIONS(NSUInteger, AspectOptions) {
 
 ### AspectInfo
 
-1. NSInvocation sign target 信息
+NSInvocation sign target 信息
 
 ### AspectIdentifier
 
-1. runtime的封装 记录hook方法 **block签名信息**
-2. 每次hook都记录在了AspectIdentifier
-
-就是一个model用来存储hook方法的原有方法、切面block、block方法签名、切面时机等
+一个model，用来存储hook方法的原有方法、切面block、block方法签名、切面时机。
 
 ```objective-c
 @interface AspectIdentifier : NSObject
@@ -82,7 +75,7 @@ typedef NS_OPTIONS(NSUInteger, AspectOptions) {
 - (BOOL)invokeWithInfo:(id<AspectInfo>)info;
 @property (nonatomic, assign) SEL selector;//原来方法的SEL
 @property (nonatomic, strong) id block;//保存要执行的切面block，即原方法执行前后要调用的方法
-@property (nonatomic, strong) NSMethodSignature *blockSignature;//block的方法签名
+@property (nonatomic, strong) NSMethodSignature *blockSignature;//block签名信息
 @property (nonatomic, weak) id object;//target，即保存当前对象
 @property (nonatomic, assign) AspectOptions options;//是个枚举，切面执行时机
 @end
@@ -90,10 +83,7 @@ typedef NS_OPTIONS(NSUInteger, AspectOptions) {
 
 ### AspectsContainer
 
-容器类，以关联对象的形式存储在当前类或对象中，主要用来存储当前类或对象所有的切面信息
-
-1. 容器 一个类有很多hook 
-2. 3个数组 before、instead、after
+以关联对象的形式存储在当前类或对象中，主要用来存储当前类或对象所有的切面信息。
 
 ```objective-c
 @interface AspectsContainer : NSObject
@@ -114,7 +104,7 @@ typedef NS_OPTIONS(NSUInteger, AspectOptions) {
 
 ## 调用流程
 
-### 对外暴露的核心API
+**对外暴露的核心API**
 
 ```objective-c
 /// 作用域：针对所有对象生效
@@ -134,18 +124,9 @@ typedef NS_OPTIONS(NSUInteger, AspectOptions) {
                                  error:(NSError **)error;
 ```
 
-Aspects 利用消息转发机制，通过hook第三层的转发方法`forwardInvocation: `，然后根据切面的时机来动态调用block。接下来详细分析巧妙的设计
-
-1. 类A的方法m被添加切面方法。
-2. 创建类A的子类B，并hook子类B的`forwardInvocation: `方法拦截消息转发，使`forwardInvocation: `的 IMP 指向事先准备好的 ASPECTS_ARE_BEING_CALLED 函数（后面简称 ABC 函数），block方法的执行就在 ABC 函数中。
-3. 把类A的对象的isa指针指向B，这样就把消息的处理转发到类B上，类似 KVO 的机制，同时会更改 class 方法的IMP，把它指向类A的 class 方法，当外界调用 class 时获取的还是类A，并不知道中间类B的存在。
-4. 对于方法m，类B会直接把方法m的 IMP 指向`_objc_msgForward`方法，这样当调用方法m时就会走消息转发流程，触发 ABC 函数。
-
-## 详细分析 执行入口
-
 ### 存储切面信息
 
-存储切面信息主要用到了上面介绍的AspectIdentifier、AspectsContainer两个类
+存储切面信息主要用到了AspectIdentifier、AspectsContainer两个类
 
 1. 获取当前类的容器对象 aspectContainer ，如果没有则创建一个
 2. 创建一个标识符对象 identifier ，用来存储原方法信息、block、切面时机等信息
@@ -161,8 +142,7 @@ Aspects 利用消息转发机制，通过hook第三层的转发方法`forwardInv
   - block sign > sel sign 直接pass
   - Block sign > 1，第一个默认参数遵循了AspectInfo协议
   - 从第二位开始 一一比较，通过for循环遍历。
-- 添加到容器中 
-  - 通过options添加到对应的数组中。
+- 通过options添加到容器对应的数组中。
 
 ### aspect_add
 
@@ -195,8 +175,6 @@ static id aspect_add(id self, SEL selector, AspectOptions options, id block, NSE
     return identifier;
 }
 ```
-
-执行入口调用了 aspect_add(self, selector, options, block, error) 方法，这个方法是线程安全的，接下来一步步解析具体做了什么
 
 ### aspect_isSelectorAllowedAndTrack
 
@@ -298,7 +276,7 @@ static BOOL aspect_isSelectorAllowedAndTrack(NSObject *self, SEL selector, Aspec
 
 Aspects 的核心原理是消息转发，runtime中有个方法 `_objc_msgForward`，直接调用可以触发消息转发机制。
 
-假如要hook的方法叫 m1 ，那么把 m1 的 IMP 指向 _objc_msgForward ，这样当调用方法 m1 时就自动触发消息转发机制，详细实现如下
+假如要hook的方法叫 m1 ，那么把 m1 的 IMP 指向`_objc_msgForward`，这样当调用方法 m1 时就自动触发消息转发机制。
 
 ```objective-c
 static void aspect_prepareClassAndHookSelector(NSObject *self, SEL selector, NSError **error) {
@@ -335,11 +313,7 @@ static void aspect_prepareClassAndHookSelector(NSObject *self, SEL selector, NSE
 1. 如果已经存在中间类，则直接返回
 2. 如果是类对象，则不用创建中间类，并把这个类存储在 swizzledClasses 集合中，标记这个类已经被hook了
 3. 如果存在kvo的情况，那么系统已经帮我们创建好了中间类，那就直接使用
-4. 对于不存在kvo且是实例对象的，则单独创建一个继承当前类的中间类 midcls ，并hook它的 forwardInvocation: 方法，并把当前对象的isa指针指向 midcls ，这样就做到了hook操作只针对当前对象有效，因为其他对象的isa指针指向的还是原有类
-
-aspect_hookClass
-
-- aspect_swizzleClassInPlace
+4. 对于不存在kvo且是实例对象的，则单独创建一个继承当前类的中间类 midcls ，并hook它的 forwardInvocation: 方法，并把当前对象的isa指针指向 midcls ，这样就做到了hook操作只针对当前对象有效，因为其他对象的isa指针指向的还是原有类。
 
 ```objective-c
 /**
@@ -350,54 +324,52 @@ aspect_hookClass
 static Class aspect_hookClass(NSObject *self, NSError **error) {
     NSCParameterAssert(self);
     //获取当前类的对象。对象 获取类对象，类对象 返回自身
-	Class statedClass = self.class;
+    Class statedClass = self.class;
     //获取isa指针
-	Class baseClass = object_getClass(self);
-	NSString *className = NSStringFromClass(baseClass);
-
+    Class baseClass = object_getClass(self);
+    NSString *className = NSStringFromClass(baseClass);
+    
     // Already subclassed
-	if ([className hasSuffix:AspectsSubclassSuffix]) {
-		return baseClass;
-
+    if ([className hasSuffix:AspectsSubclassSuffix]) {
+        return baseClass;
+        
         // We swizzle a class object, not a single object.
-	}else if (class_isMetaClass(baseClass)) {
+    }else if (class_isMetaClass(baseClass)) {
         return aspect_swizzleClassInPlace((Class)self);
         // Probably a KVO'ed class. Swizzle in place. Also swizzle meta classes in place.
     }else if (statedClass != baseClass) {
         return aspect_swizzleClassInPlace(baseClass);
     }
-
+    
     // Default case. Create dynamic subclass.
     //动态生成一个子类
-	const char *subclassName = [className stringByAppendingString:AspectsSubclassSuffix].UTF8String;
-	Class subclass = objc_getClass(subclassName);
-
-	if (subclass == nil) {
+    const char *subclassName = [className stringByAppendingString:AspectsSubclassSuffix].UTF8String;
+    Class subclass = objc_getClass(subclassName);
+    
+    if (subclass == nil) {
         //生成一个类
-		subclass = objc_allocateClassPair(baseClass, subclassName, 0);
-		if (subclass == nil) {
-      NSString *errrorDesc = [NSString stringWithFormat:@"objc_allocateClassPair failed to allocate class %s.", subclassName];
-      AspectError(AspectErrorFailedToAllocateClassPair, errrorDesc);
-      return nil;
-    }
-
-		aspect_swizzleForwardInvocation(subclass);
+        subclass = objc_allocateClassPair(baseClass, subclassName, 0);
+        if (subclass == nil) {
+            NSString *errrorDesc = [NSString stringWithFormat:@"objc_allocateClassPair failed to allocate class %s.", subclassName];
+            AspectError(AspectErrorFailedToAllocateClassPair, errrorDesc);
+            return nil;
+        }
+        
+        aspect_swizzleForwardInvocation(subclass);
         //hook class方法，把子类的class方法的IMP指向父类，这样外界并不知道内部创建了子类
-		aspect_hookedGetClass(subclass, statedClass);
-		aspect_hookedGetClass(object_getClass(subclass), statedClass);
-		objc_registerClassPair(subclass);
-	}
+        aspect_hookedGetClass(subclass, statedClass);
+        aspect_hookedGetClass(object_getClass(subclass), statedClass);
+        objc_registerClassPair(subclass);
+    }
     //把当前对象的isa指向子类，类似kvo的用法
-	object_setClass(self, subclass);
-	return subclass;
+    object_setClass(self, subclass);
+    return subclass;
 }
 ```
 
 ### aspect_swizzleForwardInvocation
 
 主要功能就是把当前类的 forwardInvocation: 替换成` __ASPECTS_ARE_BEING_CALLED__` ，这样当触发消息转发的时候，就会调用 ` __ASPECTS_ARE_BEING_CALLED__`  方法
-
-对于` __ASPECTS_ARE_BEING_CALLED__` 方法是 Aspects 的核心操作，主要就是做消息的调用和分发，控制方法的调用的时机
 
 ```objective-c
 static NSString *const AspectsForwardInvocationSelectorName = @"__aspects_forwardInvocation:";
@@ -413,20 +385,9 @@ static void aspect_swizzleForwardInvocation(Class klass) {
 }
 ```
 
-#### 核心转发函数处理
+### `__ASPECTS_ARE_BEING_CALLED__`
 
-上面一切准备就绪，那么怎么触发之前添加的切面block呢，首先我们梳理下整个流程
-
-1. 方法 m1 的 IMP 指向了 _objc_msgForward ，调用 m1 则会自动触发消息转发机制
-2. 替换 forwardInvocation: ，把它的 IMP 指向` __ASPECTS_ARE_BEING_CALLED__` 方法，消息转发时触发的就是` __ASPECTS_ARE_BEING_CALLED__` 。
-
-上面操作可以直接看出调用方法 m1 则会直接触发 __ASPECTS_ARE_BEING_CALLED__ 方法，而 __ASPECTS_ARE_BEING_CALLED__ 方法就是处理切面block用和原有函数的调用时机，详细看下面实现步骤
-
-1. 根据调用的 selector ，获取容器对象 AspectsContainer ，这里面存储了这个类或对象的所有切面信息
-2. AspectInfo 会存储当前的参数信息，用于传递
-3. 首先触发函数调用前的block，存储在容器的 beforeAspects 对象中
-4. 接下来如果存在替换原有函数的block，即 insteadAspects 不为空，则触发它，如果不存在则调用原来的函数
-5. 触发函数调用后的block，存在在容器的 afterAspects 对象中
+` __ASPECTS_ARE_BEING_CALLED__` 方法是 Aspects 的核心操作，主要就是做消息的调用和分发，控制方法的调用的时机。
 
 ```objective-c
 // This is the swizzled forwardInvocation: method.
@@ -434,7 +395,7 @@ static void __ASPECTS_ARE_BEING_CALLED__(__unsafe_unretained NSObject *self, SEL
     NSCParameterAssert(self);
     NSCParameterAssert(invocation);
     SEL originalSelector = invocation.selector;
-	SEL aliasSelector = aspect_aliasForSelector(invocation.selector);
+		SEL aliasSelector = aspect_aliasForSelector(invocation.selector);
     invocation.selector = aliasSelector;
     AspectsContainer *objectContainer = objc_getAssociatedObject(self, aliasSelector);
     AspectsContainer *classContainer = aspect_getContainerForClass(object_getClass(self), aliasSelector);
@@ -480,7 +441,18 @@ static void __ASPECTS_ARE_BEING_CALLED__(__unsafe_unretained NSObject *self, SEL
 }
 ```
 
-## 总结
+## 总结：
 
-Aspects的核心原理是利用了消息转发机制，通过替换消息转发方法来实现切面的分发调用。
+Aspects 利用消息转发机制，通过hook第三层的转发方法`forwardInvocation: `，然后根据切面的时机来动态调用block。接下来详细分析巧妙的设计
 
+1. 类A的方法m被添加切面方法。
+2. 创建类A的子类B，并hook子类B的`forwardInvocation: `方法拦截消息转发，使`forwardInvocation: `的 IMP 指向事先准备好的`ASPECTS_ARE_BEING_CALLED`函数（后面简称 ABC 函数），block方法的执行就在 ABC 函数中。
+3. 把类A的对象的isa指针指向B，这样就把消息的处理转发到类B上，类似 KVO 的机制，同时会更改 class 方法的IMP，把它指向类A的 class 方法，当外界调用 class 时获取的还是类A，并不知道中间类B的存在。
+4. 对于方法m，**类B会直接把方法m的 IMP 指向`_objc_msgForward`方法**，这样调用方法m时就会自动触发消息转发机制。
+5. hook第三层的转发方法`forwardInvocation: `，把它的 IMP 指向` __ASPECTS_ARE_BEING_CALLED__` 方法
+6. 调用方法 m1 则会直接触发 `__ASPECTS_ARE_BEING_CALLED__`方法，而 `__ASPECTS_ARE_BEING_CALLED__`方法就是处理切面block用和原有函数的调用时机，详细看下面实现步骤
+   1. 根据调用的 selector ，获取容器对象 AspectsContainer ，这里面存储了这个类或对象的所有切面信息
+   2. AspectInfo 会存储当前的参数信息，用于传递
+   3. 首先触发函数调用前的block，存储在容器的 beforeAspects 数组中
+   4. 接下来如果存在替换原有函数的block，即 insteadAspects 不为空，则触发它，如果不存在则调用原来的函数
+   5. 最后触发函数调用后的block，存在在容器的 afterAspects 数组中
