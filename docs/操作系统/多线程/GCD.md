@@ -30,7 +30,7 @@ dispatch_barrier_sync 作用相同，**但是这个会堵塞线程，影响后�
 
 判断队列queue中有没有栅栏函数，没有的话就是普通的执行流程，一旦有栅栏函数，就会发生等待，把队列中的任务都执行完毕，等待栅栏函数执行完，然后才会走后面的任务。
 
-执行barrier任务，必须把队列中的前面任务清空，所以前面的任务全部执行完毕才会执行barrier任务。
+执行barrier任务，必须把队列中的前面任务清空，才会执行barrier任务。
 
 ### 注：
 
@@ -138,7 +138,7 @@ getter读操作：`dispatch_sync`同步。
 
 ## group调度组
 
-最直接的作用: 控制任务执行顺序
+### 控制任务执行顺序
 
 - dispatch_group_create 创建组 
 
@@ -162,18 +162,14 @@ getter读操作：`dispatch_sync`同步。
 作用：
 
 - 同步->当锁。
-- 控制GCD最大并发数。
+- 控制任务最大并发数。
 - 控制流程。
 
+```objc
+dispatch_semaphore_create(0);	//创建一个初始计数值为 0 的信号量
+dispatch_semaphore_wait				//信号量等待 -- do while死循环 等待信号量为正
+dispatch_semaphore_signal			//信号量释放 ++
 ```
-dispatch_semaphore_create		创建信号量
-dispatch_semaphore_wait			信号量等待 -- do while死循环 等待信号量为正
-dispatch_semaphore_signal		信号量释放 ++
-```
-
-`dispatch_semaphore_create(0);` 它创建了一个调度信号量（dispatch semaphore）。信号量用于同步访问资源或者协调线程间的操作。
-
-这行代码的作用是创建一个初始计数值为 0 的信号量。
 
 **信号量的计数值表示可以并发访问的资源数量。当计数值为 0 时，任何试图减少信号量的线程（通过 `dispatch_semaphore_wait` 函数）都会阻塞，直到信号量的计数值增加。**
 
@@ -211,9 +207,7 @@ NSLog(@"Continue with the main thread tasks...");
     ///执行结果：
     /// 睡2秒后
     /// 执行任务2
-    /// 任务2完成
     /// 执行任务1
-    /// 任务1完成
     dispatch_queue_t queue = dispatch_get_global_queue(0, 0);
     dispatch_semaphore_t sem = dispatch_semaphore_create(0);
     dispatch_queue_t queue1 = dispatch_queue_create("cooci", NULL);
@@ -223,18 +217,14 @@ NSLog(@"Continue with the main thread tasks...");
         //会等待，因为信号量开始是0
         //第二个参数 是等待时间 DISPATCH_TIME_FOREVER一直等，do while循环
         dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER); // 等待
-        
         NSLog(@"执行任务1");
-        NSLog(@"任务1完成");
     });
     
     //任务2
     //会先执行任务2 任务2执行完之后会释放信号 然后执行任务1
     dispatch_async(queue, ^{
         sleep(2);
-        
         NSLog(@"执行任务2");
-        NSLog(@"任务2完成");
         dispatch_semaphore_signal(sem); // 发信号
     });
     
@@ -242,9 +232,7 @@ NSLog(@"Continue with the main thread tasks...");
     dispatch_async(queue, ^{
         dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
         sleep(2);
-        
         NSLog(@"执行任务3");
-        NSLog(@"任务3完成");
         dispatch_semaphore_signal(sem);
     });
     
@@ -252,15 +240,13 @@ NSLog(@"Continue with the main thread tasks...");
     dispatch_async(queue, ^{
         dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
         sleep(2);
-        
         NSLog(@"执行任务4");
-        NSLog(@"任务4完成");
         dispatch_semaphore_signal(sem);
     });
 }
 ```
 
-控制一次最多上传或下载多少个任务：
+### 控制任务数量：
 
 ```objective-c
 ///2最先打印，1最后打印，3和4顺序不一定。
