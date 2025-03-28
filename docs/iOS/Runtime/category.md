@@ -1,10 +1,10 @@
 # category
 
-分类在运行时期才加载的。为原有类扩展方法。
+分类在运行时期才加载。为原有类扩展方法。
 
-## 关联对象
+## Associate关联对象
 
-HashMap存储，存储关联策略 关联值。
+HashMap存储，存储关联策略、关联值。
 
 整个内存里只有这一个哈希表。
 
@@ -99,7 +99,7 @@ public:
 typedef DenseMap<DisguisedPtr<objc_object>, ObjectAssociationMap> AssociationsHashMap;
 ```
 
-### set
+### objc_setAssociatedObject
 
 hashmap：AssociationsHashMap
 
@@ -113,7 +113,7 @@ hashmap：AssociationsHashMap
   - key
   - value：ObjcAssociation（关联策略和值）
 
-### get
+### objc_getAssociatedObject
 
 通过对象在hashmap找到关联策略和值
 
@@ -122,27 +122,33 @@ hashmap：AssociationsHashMap
 ### 案例
 
 ```swift
-private var selectIndexKey: Void?
+private var selectIndexKey: Void?  	//使用&操作符获取变量的指针地址作为关联键
 extension UIPickerView {
-    var selectIndex: Int {
+    var selectIndex: Int? {
         set {
+            // 设置关联对象
+            // 参数说明：
+            // 1. 目标对象
+            // 2. 关联键的指针
+            // 3. 新关联值
+            // 4. 关联策略（是否强引用 + 是否原子性）
             objc_setAssociatedObject(self, &selectIndexKey, newValue, .OBJC_ASSOCIATION_ASSIGN)
         }
         get {
-            objc_getAssociatedObject(self, &selectIndexKey) as? Int ?? 0
+            // 获取关联对象
+            // 参数说明：
+            // 1. 目标对象
+            // 2. 关联键的指针
+            objc_getAssociatedObject(self, &selectIndexKey) as? Int
         }
     }
 }
 ```
 
-### 注
-
-关联对象，里面存的都是对象类型，如果是基本数据类型的话，需要转成对象类型。
-
 ## 分类的意义
 
-1. 分类在架构设计上面：解耦，开发过程中比较繁重啰嗦的业务代码对项目的可读性造成了压力，为追求架构清晰，维护成本低，通过分类梳理。（AppDelegate分类 第三方分享 推送等等拆分）
-2. 可以为系统类添加分类进行拓展
+1. 解耦（AppDelegate分类、分享、推送等等拆分）
+2. 为系统类进行拓展
 3. 模拟多继承
 4. 把静态库的私有方法公开
 
@@ -177,9 +183,9 @@ struct category_t {
 
 ### 注意事项：
 
-1. category只能给类扩充方法，不能扩充成员变量。
+1. category只能扩充方法，不能扩充成员变量。
 2. category中也可以添加属性，只不过@property只声明里实例变量，没有setter和getter方法。需要关联对象。
-3. 如果分类中有和原有类同名的方法，会优先调用分类中的方法。
+3. 如果分类中有和原有类同名的方法，调用分类中的方法。
 4. 如果多个分类中都有和原有类中同名的方法，最后一个参与编译的方法插入到方法列表前面会被调用。因为运行时在查找方法的时候是顺着方法列表的顺序查找的，它只要一找到对应名字的方法，就会罢休，殊不知后面还有一样名字的方法。
 
 ## 如何调用原类方法
