@@ -90,8 +90,6 @@ id:标签的属性
 通过Iterator的hasNext()判断是否有下一个元素。
 
 ```java
-package com.hh.xml;
-
 import org.dom4j.io.SAXReader;
 
 import java.io.File;
