@@ -16,7 +16,7 @@ brew install cocoapods
 
 每当更新Podfile去新添加或删除或更新某个或某些pod时，使用pod install。
 
-每次你运行pod install的时候，都会在Podfile.lock文件里写入你安装的pod的版本号。这个文件会锁定你安装的pod的版本。
+运行pod install的时候，都会在Podfile.lock文件里写入你安装的pod的版本号。这个文件会锁定你安装的pod的版本。
 
 运行pod install时，Cocoapods只会按照Podfile.lock中列出的版本号来安装对应版本的pod；对于Podfile.lock文件中未列出的，Cocoapods会根据Podfile中的描述（pod ‘xxx’, '～1.0' ）去安装相应的版本。
 
@@ -47,15 +47,15 @@ pod install 命令功能：
 
 update命令并不会理会Podfile.lock中的版本信息（新版本仍然遵守在Podfile中做的限制）。
 
-所以，正确的用法是，当你往Podfile中添加了一个pod，记得用pod install；只有当你确定要更新某个或全部pod时，使用pod update。
+所以，正确的用法是，当你往Podfile中添加了一个pod，用pod install；当要更新某个或全部pod时，使用pod update。
 
 `pod update --no-repo-update`
 
-注：不建议加入--no-repo-update 参数，若添加后仅从本地Cocoapods库中查找SDK，不再更新线上SDK。如果本地存在SDK会直接使用本地SDK版本(不是线上最新版本)，若本地不存在SDK会产生错误。 也不建议使用 pod install 命令，此命令不会更新最新版本SDK。
+注：不建议加入--no-repo-update 参数，若添加后仅从本地Cocoapods库中查找SDK，不再更新线上SDK。如果本地存在SDK会直接使用本地SDK版本(不是线上最新版本)，若本地不存在SDK会产生错误。 
 
 ## pod outdated
 
-可以使用pod outdated命令来查看有哪些pod有了更新的版本。这个命令会检查Podfile.lock中列出的pod的版本。
+用pod outdated命令来查看有哪些pod有了更新的版本。这个命令会检查Podfile.lock中列出的pod的版本。
 
 ## pod repo list
 

@@ -14,7 +14,7 @@ pod search 的时候就是在search_index.json中查找的。
 
 ### 远程代码spec索引仓库
 
-使用的时候 pod setup更新 本地索引库 把远程索引库pod到本地。需要经常更新索引库。
+使用的时候 pod setup**更新本地索引库**，把远程索引库pod到本地。
 
 ### 本地代码spec索引仓库
 
@@ -49,7 +49,7 @@ Configuring GroupShadowTableView template. 下面就是一些配置。
 - Would you like to do view based testing? [ Yes / No ] 基础测试文件 选No
 - What is your class prefix? 选择文件前缀  自己定义HH
 
-然后就创建好了，项目会自动打开。里面自动有一个.podspec文件。因为前面选择 了Yes，所以里面 有Delegate和 Viewcontroller 方便测试。
+然后就创建好了，项目会自动打开。里面自动有一个.podspec文件。因为前面选择 了Yes，所以里面有`Delegate`和`Viewcontroller`方便测试。
 
 ### 3、拖入文件，修改文件
 
@@ -61,13 +61,10 @@ Xcode项目中Pods里面的Development Pods的文件夹下有一个GroupShadowTa
 
 ### 4、把依赖的其它第三方引入
 
-编译之后可能会出错，因为少了依赖的第三方框架AFN，MJ，Masnory等。
+`Pods/Development Pods/自己代码文件夹/Pod/.podspec`文件，添加需要的第三方：
 
-Pods/Development Pods/自己代码文件夹/Pod/.podspec。里面有一个Pod文件夹，Pod文件夹中有一个.podspec文件，添加需要的第三方：
-
-```
+```ruby
   s.dependency 'AFNetworking'
-  s.dependency 'Masonry'
   s.dependency 'LGMacroAndCategoryModule'//自己写的也可以引入
 
   s.prefix_header_contents = '#import "Masonry.h"','#import "UIKit+AFNetworking.h"','#import "LGMacros.h"'
@@ -104,9 +101,11 @@ end
 
 需要在Podfile文件指定路径，Podfile文件里面pod 'GroupShadowTableView', :path => '../'。
 
-`:path`指定的是本地路径。
+`:path`：指定的是本地路径。
 
-`../`是上级文件夹路径。路径是相对于Podfile的路径。
+`../`：上级文件夹路径。路径是相对于Podfile的路径。
+
+`./`：当前文件夹路径
 
 ## 图片资源文件
 
@@ -132,7 +131,7 @@ s.resource_bundles = {
 }
 ```
 
-同样json文件一样 需要配置bundle。xib也需要配置bundle
+json文件、xib同样需要配置bundle。
 
 ```objective-c
     NSString *bundlePath = [[NSBundle bundleForClass:[self class]].resourcePath stringByAppendingPathComponent:@"/LGHomeModule.bundle"];
@@ -141,7 +140,7 @@ s.resource_bundles = {
 
 ## 做成远程的
 
-本地的索引库，其他人使用的话用不了你本地电脑上的。所以做成远程的代码仓库。使用码云或者github等。
+本地的索引库，其他人用不了你本地电脑上的。所以做成远程的代码仓库。使用码云或者github等。
 
 创建一个仓库，仓库名必须跟框架名一样，选择导入已有项目，然后创建。
 
@@ -155,7 +154,7 @@ git push -u origin master。提交到远程master（分支名称）。
 要找远程索引库，向远程索引库提交.spec文件，根据.spec文件中地址找框架源码。本地索引库也有.spec文件，里面也有远程地址。
 所以就要修改.spec文件。
 
-```
+```ruby
 Pod::Spec.new do |s|
 	# 框架名称
   s.name             = 'HHTableListViewController'
@@ -177,17 +176,21 @@ Pod::Spec.new do |s|
   s.homepage         = 'https://github.com/huicuihui/HHTableListViewController'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { '805988356@qq.com' => '805988356@qq.com' }
+  s.author           = { '88888888@qq.com' => '88888888@qq.com' }
   
-  # 重要：框架源码地址。找框架源码的时候就是根据这个找的。这个地址错了就找不到了。github就写github，码云就写gitee，可以直接复制仓库地址。
-  s.source           = { :git => 'https://github.com/huicuihui/HHTableListViewController.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '8.0'
 
+  # s.swift_versions        = ['5.0', '5.1', '5.2']
+
+  # 重要：框架源码地址。找框架源码的时候就是根据这个找的。这个地址错了就找不到了，可以直接复制仓库地址。
+  s.source           = { :git => 'https://github.com/huicuihui/HHTableListViewController.git', :tag => s.version.to_s }
 	# 源代码文件（哪些文件是需要的，根据这个去找）。/**/* 代表 ：所有文件，文件夹中的所有文件。
   s.source_files = 'HHTableListViewController/Classes/**/*' # 找的Classes下的文件
-  
+  # pch头文件地址
+  s.prefix_header_file = ".pch"
+
   # 资源文件位置
   s.resource_bundles = {
     'HHTableListViewController' => ['HHTableListViewController/Assets/*.{png,jpeg,jpg,imageset}']
@@ -209,7 +212,7 @@ end
 如果用的是码云或者是其它的源地址，要在podfile文件中指定source，写上source ‘https://gifted.com/huicuihui/Spec.git’ 在这里面找。
 另外还要有source ‘https://github.com/CocoaPods/Specs.git’ 因为还有其他的第三方在github上。
 
-本地端索引库地址：/Users/cuihuihui/.cocoapods/repos。里面的master是github上的索引。
+本地端索引库地址：/Users/用户名/.cocoapods/repos。里面的master是github上的索引。
 
 私有库是提交到本地索引库的，本地端的spec文件会自动的同步远程索引库。
 向本地提交一个spec文件，本地的spec文件会 自动的向远程端同步。
@@ -230,7 +233,7 @@ pod spec lint
 
 ### 1、推到cocoapod上
 
-pod trunk register 805988356@qq.com 'huicuihui' --description='huihuiPro'。注册账号。
+pod trunk register 88888888@qq.com 'huicuihui' --description='huihuiPro'。注册账号。
 
 pod trunk push HHGroupShadowTableView.podspec --allow-warnings。如果有警告的话 需要在后面添加--allow-warnings去ignore警告。
 
@@ -260,7 +263,7 @@ pod trunk delete HHGroupShadowTableView 0.1.0（即：pod trunk delete 库名 �
 
 ### 1、确保 Pod 支持 Objective-C
 
-首先，你的 Swift Pod 库需要被设计为支持 Objective-C。这意味着你需要使用 `@objc` 关键字来标记那些需要在 Objective-C 中使用的类和方法。
+使用 `@objc` 关键字来标记那些需要在 Objective-C 中使用的类和方法。
 
 ### 2、创建Objective-C和Swift的桥接文件（如果你的项目中还没有）
 
@@ -305,8 +308,7 @@ end
 
 ### 6、调用Alamofire
 
-- 由于Alamofire是纯Swift编写的，你不能直接在Objective-C代码中使用它的所有功能，因为Swift的某些特性并不与Objective-C兼容。
-- 为了在Objective-C中使用Alamofire，你可能需要编写一些Swift代码来封装你想要使用的Alamofire功能，然后将这个封装暴露给Objective-C。这通常是通过在Swift类中使用`@objc`标记来实现的。
+- 由于Alamofire是纯Swift编写的，为了在Objective-C中使用Alamofire，你可能需要编写一些Swift代码来封装你想要使用的Alamofire功能，然后将这个封装暴露给Objective-C。这通常是通过在Swift类中使用`@objc`标记来实现的。
 
 例如，你可能需要创建一个Swift类来处理网络请求，然后在这个类中使用`@objc`标记来暴露给Objective-C可以理解的方法。
 
