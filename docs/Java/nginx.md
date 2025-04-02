@@ -55,7 +55,7 @@ server {
 
 nginx.conf   把里面注释的内容和静态资源配置相关删除，引入heima-leadnews-app.conf文件加载
 
-```javascript
+```
 #user  nobody;
 worker_processes  1;
 

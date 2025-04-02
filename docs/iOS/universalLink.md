@@ -18,7 +18,7 @@
 
 `targets->Capabilites->Associated Domains`，在其中的`Domains`中填入你想支持的域名，必须以`applinks:`为前缀，如：`applinks:m.nmkjxy.com` 
 
-配的universalLink是https://m.nmkjxy.com/app/
+配的suniversalLink是https://m.nmkjxy.com/app/
 
 则project配置Signing&capabilities下的`Associated Domains`设置applinks:m.nmkjxy.com。
 
@@ -97,7 +97,7 @@
 
 `Universal Link`必须要求跨域，如果不跨域，就不会跳转。
 
-假如当前网页的域名是`A`，当前网页发起跳转的域名是`B`，必须要求`B`和`A`是不同域名才会触发`Universal Link`，如果`B`和`A`是相同域名，只会继续在当前`WebView`里面进行跳转，哪怕你的`Universal Link`一切正常，根本不会打开`App` 
+假如当前网页的域名是`A`，当前网页发起跳转的域名是`B`，必须要求`B`和`A`是不同域名才会触发`Universal Link`，如果`B`和`A`是相同域名，只会继续在s当前`WebView`里面进行跳转，哪怕你的`Universal Link`一切正常，根本不会打开`App` 
 
 ### `Universal Link`请求`apple-app-site-association`时机
 
