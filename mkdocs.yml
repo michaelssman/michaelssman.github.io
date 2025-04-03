@@ -138,11 +138,11 @@ nav:
       - iOS/架构模式和编程思想/编程思想/响应式/RAC/RACMulticastConnection.md
       - iOS/架构模式和编程思想/编程思想/响应式/RAC/RAC基本用法.md
       - iOS/架构模式和编程思想/编程思想/响应式/RAC/takeUntil过滤.md
-      - iOS/架构模式和编程思想/编程思想/响应式/RXSwift/RXSwift.md
       - iOS/架构模式和编程思想/编程思想/响应式/RXSwift/UI.md
+      - iOS/架构模式和编程思想/编程思想/响应式/RXSwift/DisposeBag.md
       - iOS/架构模式和编程思想/编程思想/响应式/数据同步更新.md
     - iOS/数据持久化/CoreData.md
-    - iOS/universalLink.md
+    - iOS/UniversalLink.md
     - iOS/绘制图形.md
     - iOS/快捷键.md
     - iOS/控制器生命周期.md
@@ -403,13 +403,17 @@ nav:
     - Java/Spring.md
     - Java/SSM.md
     - Java/SpringBoot.md
-    - Java/JWT.md
     - Java/分布式id.md
     - Java/序列化.md
     - Java/plugins.md
     - Java/nginx.md
     - Java/Nacos.md
-    - Java/网关和认证过滤器.md
+    - 认证授权和网关:
+      - Java/认证授权和网关/OAuth2协议.md
+      - Java/认证授权和网关/jwt令牌.md
+      - Java/认证授权和网关/网关和认证过滤器.md     
+      - Java/认证授权和网关/微信登录.md  
+    - Java/认证和授权.md
     - Java/登录.md
     - Java/静态化freemarker.md
     - Java/分布式文件系统MinIO.md

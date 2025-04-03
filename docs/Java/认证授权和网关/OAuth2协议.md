@@ -12,7 +12,7 @@ Oauth协议：https://tools.ietf.org/html/rfc6749
 
 引自Oauth2.0协议rfc6749 https://tools.ietf.org/html/rfc6749
 
-![image-20240925111524146](../assets/image-20240925111524146.png)
+![image-20240925111524146](./assets/image-20240925111524146.png)
 
 ## Oauth2中的角色
 
