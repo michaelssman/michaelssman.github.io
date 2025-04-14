@@ -95,7 +95,7 @@ https://github.com/flutter/flutter/issues/119927#issuecomment-1415858226
 
   **✗** **HTTP host https://maven.google.com/ is not reachable. Reason: An error**
 
-   **occurred while checking the HTTP host: Operation timed out**
+**occurred while checking the HTTP host: Operation timed out**
 
 解决方法：
 
