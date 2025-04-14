@@ -79,6 +79,10 @@ AS创建flutter也有flutter路径
 
 ![image-20210716141055866](flutter简介.assets/image-20210716141055866.png)
 
+设置Android NDK version
+
+![image-20250412010807902](assets/image-20250412010807902.png)
+
 ### 保存时自动格式化代码
 
 Settings -> Languages & Frameworks -> Flutter -> Editor
