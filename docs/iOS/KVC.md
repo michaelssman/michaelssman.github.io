@@ -1,6 +1,4 @@
-# KVC
-NSKeyValueCoding
-
+# KVC（KeyValueCoding）
 先找方法，再找成员变量。
 
 属性本质：setter、getter、成员变量三部分。
