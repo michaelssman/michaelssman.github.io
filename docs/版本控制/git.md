@@ -164,9 +164,11 @@ A---B---C (main)
 
 使用 `--no-ff` 可以更清晰地记录分支合并的历史，尤其在团队协作或复杂项目中，这种记录方式可以帮助更好地理解代码的演变过程。
 
-### 软件开发，开发完成之后才发现在develop分支上面做的修改，可不可以将当前的修改创建一个新的分支，不在develop分支上commit和push。
+### 当前修改创建分支
 
-这种情况可以通过 Git 的分支操作完美解决。以下是分步解决方案：
+需求：将当前的修改创建一个新的分支，不在当前分支上commit和push。
+
+通过 Git 的分支操作解决。以下是分步解决方案：
 
 1. **暂存当前修改**：
    使用 `git stash` 将当前的修改暂存（适用于未提交的修改）。
@@ -196,7 +198,7 @@ A---B---C (main)
    git commit -m "Your commit message"
    ```
 
-5. **推送到远程仓库**（如果需要）：
+5. **推送到远程仓库**：
    将新分支推送到远程仓库。
 
    ```bash
@@ -204,10 +206,6 @@ A---B---C (main)
    ```
 
 这样，你就可以在新的分支上进行提交和推送，而不会影响到 `develop` 分支。
-
-## 冲突解决
-
-选中冲突的文件，点击右键选择'冲突解决'菜单中的选项解决问题。
 
 ## 拉取代码报错
 
@@ -302,4 +300,14 @@ git config --global pull.rebase false
 
 只处理project.pbxproj。
 
-pod的冲突会很多，不处理`ProjectName/Pods/Pods.xcodeproj`，删除pod冲突的文件，重新pod解决。
+### 不需要解决的文件
+
+1. pod
+   - pod的冲突会很多，不处理`ProjectName/Pods/Pods.xcodeproj`，删除pod冲突的文件，重新pod解决。s
+2. **用户状态文件**：
+   - `AccCollege/AccCollege.xcworkspace/xcuserdata/michael.xcuserdatad/UserInterfaceState.xcuserstate`：这个文件与用户的个人设置相关，通常不需要合并。
+3. **Xcode Schemes**：
+   - `AccCollege/Pods/xcuserdata/michael.xcuserdatad/xcschememanagement.plist`：这个文件包含用户特定的Scheme设置，通常可以忽略。
+4. **sTarget Support Files**：
+   - `AccCollege/Pods/Target Support Files/Pods-AccCollege/Pods-AccCollege.debug.xcconfig`
+   - `AccCollege/Pods/Target Support Files/Pods-AccCollege/Pods-AccCollege.release.xcconfig`：这些是配置文件，通常不需要解决。
