@@ -57,10 +57,6 @@ Spring Cloud Gateway基于WebFlux构建，需确保**移除所有Servlet依赖**
 
 ## WebFlux和Servlet区别
 
-以下是关于 **WebFlux 与 Servlet** 的核心区别、适用场景及实际项目中的选择建议，结合你遇到的 Spring Cloud Gateway 的上下文进行针对性说明：
-
----
-
 ### **1. 核心架构差异**
 | **特性**     | **Servlet（Spring MVC）**                      | **WebFlux（响应式）**                                   |
 | ------------ | ---------------------------------------------- | ------------------------------------------------------- |
@@ -88,7 +84,7 @@ Spring Cloud Gateway基于WebFlux构建，需确保**移除所有Servlet依赖**
 - **必须使用 WebFlux**：  
   网关需要高并发处理能力，WebFlux 的非阻塞模型能有效应对大量路由转发、限流、鉴权等操作。
 - **禁止引入 Servlet 依赖**：  
-  检查所有模块（尤其是公共模块 `hhjava-common`）的 `pom.xml`，确保无 `spring-boot-starter-web`。
+  检查所有模块（尤其是公共模块）的 `pom.xml`，确保无 `spring-boot-starter-web`。
 
 #### **场景 2：传统 CRUD 应用**
 - **使用 Servlet（Spring MVC）**：  
