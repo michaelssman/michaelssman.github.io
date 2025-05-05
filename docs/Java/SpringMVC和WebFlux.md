@@ -1,8 +1,6 @@
 # SpringMVC和WebFlux
 
-在Spring Security的配置中，存在两个同名的Bean，一个来自WebSecurityConfiguration（可能是Spring MVC的配置），另一个来自WebFluxSecurityConfiguration（属于WebFlux，即响应式配置）。Spring默认不允许Bean覆盖，因此导致冲突。
-
-依赖项中可能同时包含了Spring MVC和WebFlux的依赖。
+在Spring Security的配置中，存在两个同名的Bean，一个来自WebSecurityConfiguration（Spring MVC的配置），另一个来自WebFluxSecurityConfiguration（属于WebFlux，即响应式配置）。Spring默认不允许Bean覆盖，因此导致冲突。
 
 项目使用了Spring Cloud Gateway，而Gateway是基于WebFlux的响应式框架。同时，用户的依赖中可能引入了Spring MVC相关的starter，比如`spring-boot-starter-web`，这会导致同时存在Servlet和Reactive两种配置，从而引发冲突。
 
@@ -19,20 +17,9 @@ Spring Boot官方文档指出，同时引入`spring-boot-starter-web`和`spring-
 
 #### 移除冲突的依赖
 
-Spring Cloud Gateway基于WebFlux构建，需确保**移除所有Servlet依赖**（如`spring-boot-starter-web`）：
+Spring Cloud Gateway基于WebFlux构建，需确保**移除所有Servlet依赖**（如`spring-boot-starter-web`）
 
-1. **检查`pom.xml`或`build.gradle`**：
-
-   ```xml
-   <!-- 移除以下Servlet依赖 -->
-   <dependency>
-    <groupId>org.springframework.boot</groupId>
-       <artifactId>spring-boot-starter-web</artifactId>
-   </dependency>
-   ```
-
-2. **检查子模块依赖**：
-   如果项目中存在公共common模块，需确保该模块**没有引入Servlet依赖**。
+如果项目中存在公共common模块，需确保该模块**没有引入Servlet依赖**。
 
 ------
 
