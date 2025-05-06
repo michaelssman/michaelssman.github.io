@@ -22,8 +22,7 @@
 
 ## Cell复用时的问题
 
-解决复用`cell`中信号的办法就是在`cell`里面创建的信号加上`takeUntil:cell.rac_prepareForReuseSignal`来让`cell`在每次重用的时候都去
- disposable创建的信号(解绑信号)
+解决复用`cell`中信号的办法就是在`cell`里面创建的信号加上`takeUntil:cell.rac_prepareForReuseSignal`来让`cell`在每次重用的时候都去disposable创建的信号(解绑信号)
 
 ```objectivec
 - (UITableViewCell *)tableView:(nonnull UITableView *)tableView cellForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
