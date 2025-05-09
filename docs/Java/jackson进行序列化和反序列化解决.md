@@ -56,7 +56,7 @@ public class ConfusionSerializer extends JsonSerializer<Object> {
 
 **ConfusionDeserializer**  
 
- 用于反序列化自增数字的混淆解密
+用于反序列化自增数字的混淆解密
 
 ```java
 public class ConfusionDeserializer extends JsonDeserializer<Object> {

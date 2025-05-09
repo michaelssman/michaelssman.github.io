@@ -217,7 +217,7 @@ public class TestSpringBootApplication {
 
 浏览器访问`http://localhost:9999/findBooks`测试
 
-## 自动化starter
+## spring-boot-starter-XXX
 
 使用spring boot**自动配置**的starer，可以简化代码，并使其正常工作。当在这个类路径上检测到这个特定的jar文件的时候，将激活这个自动化的配置。
 
