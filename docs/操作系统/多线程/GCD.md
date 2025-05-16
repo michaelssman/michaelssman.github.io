@@ -157,7 +157,7 @@ getter读操作：`dispatch_sync`同步。
 
 每次dispatch_group_leave会wakeup-->dispatch_group_notify判断是否等于0，等于0就会callout唤醒notify的block任务。
 
-## semaphore信号量
+## semaphore
 
 作用：
 
