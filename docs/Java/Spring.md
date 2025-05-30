@@ -223,7 +223,9 @@ Book b = new Book(1，"项目驱动零起点学Java");
 
 ### @Component
 
-在要创建对象的类中加入@Component注解，会自动构建这个类的对象，对象名字默认为：类名首字母变小写。
+在类中加入@Component注解，会自动构建这个类的对象，对象名字默认为：类名首字母变小写。
+
+@Component 注解表明这个类是一个 Spring 组件，会被 Spring 容器管理。
 
 注解在哪个package包下？要想找到这些注解，需要将注解所在的包进行扫描：设置需要扫描的包。并且需要在applicationContext.xml中添加context命名空间
 

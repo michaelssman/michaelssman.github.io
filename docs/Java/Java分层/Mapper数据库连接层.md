@@ -76,3 +76,67 @@ sql和业务代码解耦，直接在xml中操作。
 ```
 
 **映射文件默认不会被程序加载，如果想要被项目加载，需要配置到核心配置文件mybatis.xml中`<mappers>`。** 
+
+## 文件位置
+
+将`UserMapper.xml`文件放在与`UserMapper.java`相同的`src/main/java`目录下的`mapper`文件夹中会导致问题。这是因为Maven/Gradle在构建项目时，默认只处理`src/main/java`目录下的`.java`文件，而忽略其他文件类型（如XML）。因此，XML映射文件不会被复制到最终构建输出目录中。
+
+### 解决方案：
+
+#### 方法1：移动XML文件到资源目录（推荐）
+1. 在`src/main/resources`下创建相同的包路径：
+   ```
+   src/main/resources/com/hh/user/mapper
+   ```
+2. 将所有的Mapper XML文件（如`UserMapper.xml`, `RoleMapper.xml`等）移动到该目录
+
+#### 方法2：修改构建配置（适用于需要保留原位置的情况）
+在`pom.xml`中添加资源包含配置：
+```xml
+<build>
+    <resources>
+        <resource>
+            <directory>src/main/java</directory>
+            <includes>
+                <include>**/*.xml</include>
+            </includes>
+        </resource>
+        <resource>
+            <directory>src/main/resources</directory>
+        </resource>
+    </resources>
+</build>
+```
+
+### 完整目录结构示例
+```markdown
+src/
+├── main/
+│   ├── java/
+│   │   └── com/
+│   │       └── hh/
+│   │           └── user/
+│   │               └── mapper/
+│   │                   ├── UserMapper.java
+│   │                   ├── RoleMapper.java
+│   │                   └── ...其他Java文件
+│   │
+│   └── resources/
+│       └── com/
+│           └── hh/
+│               └── user/
+│                   └── mapper/
+│                       ├── UserMapper.xml
+│                       ├── RoleMapper.xml
+│                       └── ...其他XML文件
+└── test/
+    └── ...测试文件
+```
+
+### 为什么会出现这个错误
+当XML文件放在`src/main/java`目录下时：
+1. 构建工具不会将其复制到`target/classes`
+2. 运行时MyBatis在classpath中找不到对应的XML映射文件
+3. 导致`Invalid bound statement`错误
+
+通过将XML文件移动到资源目录或修改构建配置，可以确保这些文件被正确包含在最终构建产物中，从而解决该问题。
