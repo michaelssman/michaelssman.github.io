@@ -72,6 +72,15 @@ Container(
       topRight: Radius.circular(20.0),
     ),
 		*/
+    //阴影
+    boxShadow: [
+      BoxShadow(
+        color: Colors.red.shade100, //阴影颜色
+        spreadRadius: 1, //扩散半径
+        blurRadius: 5, //模糊半径
+        offset: const Offset(0, 2), // changes position of shadow
+      ),
+    ],
     //背景图片
     image: const DecorationImage(
       image: NetworkImage('https://www.hh.imageurl.png')),
