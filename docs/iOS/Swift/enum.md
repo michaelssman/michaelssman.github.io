@@ -39,7 +39,7 @@ enum LGEnum : Double {
 
 ## 隐士 RawValue 分配
 
-建立在 Swift 的类型推断机制上的 
+建立在 Swift 的类型推断机制上的
 
 ```swift
 enum DayOfWeekIn: Int {
@@ -152,7 +152,7 @@ switch shape {
 
 枚举是值类型，存储在栈上。
 
-枚举占用的内存大小。这里区分几种不同的情况。
+枚举占用的内存大小。区分几种不同的情况。
 
 ###  1、No-payload enums
 
