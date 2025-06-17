@@ -114,6 +114,40 @@ yml中没有标签，而是通过两个空格的**缩进来表示层级结构**�
 
 创建`项目\maven项目文件\src\main\resources\application.yml`，`application.yml`文件名字application开头，不能随意动。
 
+```yaml
+#微服务配置
+spring:
+  application:
+    name: hhjava-backup-file #服务名
+  profiles:
+    active: dev #环境名
+  cloud:
+    nacos:
+      server-addr: 47.120.67.123:8848
+      username: nacos
+      password: nacos
+      discovery: #服务注册相关配置
+        namespace: dev
+        group: hhjava
+        enabled: true #开启服务注册
+        fail-fast: false # 延长等待时间（单位：毫秒）
+        watch-delay: 30000 # 可选：设置更长的超时时间
+      config: #配置文件相关配置
+        namespace: dev
+        group: hhjava
+        file-extension: yaml
+        refresh-enabled: true
+  config:
+    import: nacos:hhjava-user-dev.yaml?config.namespace=dev&config.group=hhjava&config.file-extension=yaml
+springdoc:
+  api-docs:
+    enabled: true # 是否启用OpenApi文档
+    path: /v3/api-docs # 自定义路径，默认为 "/v3/api-docs"
+  swagger-ui:
+    enabled: true # 开启swagger界面，依赖OpenApi，需要OpenApi同时开启
+    path: /swagger-ui.html # 自定义路径，默认为"/swagger-ui/index.html"
+```
+
 spring配置：连数据库，把数据源信息写到配置文件里
 
 ```yaml

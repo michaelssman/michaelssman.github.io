@@ -310,7 +310,7 @@ spring:
 
 并使用Httpclient测试课程查询接口是否可以正常查询。
 
-### 3 公用配置
+### 3、公用配置
 
 还有一个优化的点是如何在nacos中配置项目的公用配置呢？
 
@@ -371,7 +371,7 @@ spring:
 
 配置完成，重启content-api接口工程，访问http://localhost:63040/content/swagger-ui.html 查看swagger接口文档是否可以正常访问，查看控制台log4j2日志输出是否正常。
 
-### 4 配置优先级
+### 4、配置优先级
 
 到目前为止已将所有微服务的配置统一在nacos进行配置，用到的配置文件有本地的配置文件 bootstrap.yaml和nacos上的配置文件，SpringBoot读取配置文件的顺序如下：
 

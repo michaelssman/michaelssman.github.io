@@ -17,9 +17,9 @@
 
 ## 对象存储服务MinIO 
 
-MinIO基于Apache License v2.0开源协议的对象存储服务，可以做为云存储的解决方案用来保存海量的图片、视频、文档。
+基于Apache License v2.0开源协议的对象存储服务，可以做为云存储的解决方案用来保存海量的图片、视频、文档。
 
-由于采用Golang实现，服务端可以工作在Windows、Linux、OS X和FreeBSD上。
+采用Golang实现，服务端可以工作在Windows、Linux、OS X和FreeBSD上。
 
 配置简单，基本是复制可执行程序，单行命令可以运行起来。
 
@@ -74,34 +74,55 @@ MinIO兼容亚马逊S3云存储服务接口，非常适合于存储大容量非�
 **1、拉取镜像**
 
 ```sh
-docker pull minio/minio
+docker pull quay.io/minio/minio
 ```
 
-**2、创建容器**
+**2、创建持久化存储目录**
 
-使用docker进行环境部署和启动
-
-```yaml
-docker run -p 9000:9000 --name minio -d --restart=always -e "MINIO_ACCESS_KEY=minio" -e "MINIO_SECRET_KEY=minio123" -v /home/data:/data -v /home/config:/root/.minio minio/minio server /data
+```sh
+mkdir -p ~/minio/data
 ```
 
-- MINIO_ACCESS_KEY=minio：用户名是minio
-- MINIO_SECRET_KEY=minio123：密码是minio123
+**3、运行容器**
 
-docker中拉取的minio镜像为最新的版本。
+```sh
+docker run -d \
+	--restart=always \
+  -p 9000:9000 \
+  -p 9001:9001 \
+  --name minio \
+  -v ~/minio/data:/data \
+  -e "MINIO_ROOT_USER=admin" \
+  -e "MINIO_ROOT_PASSWORD=your_strong_password" \
+  quay.io/minio/minio server /data --console-address ":9001"
+```
 
-如果想要与课程中一致，可以使用资料文件夹中的minio.tar加载为本地镜像：
+**参数说明**：
 
-1. 把minio.tar上传linux服务器上
-2. 执行命令：docker load -i minio.tar
+- `-p 9000:9000`：API访问端口（S3协议）
+- `-p 9001:9001`：Web控制台端口
+- `-v ~/minio/data:/data`：挂载数据目录（本地目录:容器目录）
+- `MINIO_ROOT_USER`：管理员账号（默认`admin`）
+- `MINIO_ROOT_PASSWORD`：管理员密码（**至少8字符**）
+- `--console-address ":9001"`：强制启用Web控制台
 
-**3、管理控制台**   
+**4、验证安装**
 
-假设我们的服务器地址为http://192.168.200.130:9000，在地址栏输入：http://http://192.168.200.130:9000/ 即可进入登录界面。
+- **查看容器状态**：
+
+  ```sh
+  docker ps | grep minio
+  ```
+
+- **访问Web控制台**：
+  打开浏览器访问：`http://服务器IP:9001`
+
+  - 用户名：`admin`
+  - 密码：`your_strong_password`
 
 ## 封装MinIO为starter
 
-项目里面有文章微服务、自媒体微服务、评论微服务等等，如果MinIO在每一个微服务下都去集成的话，非常麻烦，所以抽出来`文件服务-starter`。
+项目里面有各种微服务，如果MinIO在每一个微服务下都去集成的话，非常麻烦，所以抽出来`文件服务-starter`。
 
 ### 1、创建模块heima-file-starter
 
@@ -116,9 +137,9 @@ docker中拉取的minio镜像为最新的版本。
     <dependency>
         <groupId>io.minio</groupId>
         <artifactId>minio</artifactId>
-        <version>7.1.0</version>
+        <version>8.5.17</version>
     </dependency>
-    <dependency>
+  	<dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter</artifactId>
     </dependency>
@@ -202,9 +223,6 @@ package com.heima.file.service;
 
 import java.io.InputStream;
 
-/**
- * @author itheima
- */
 public interface FileStorageService {
 
     /**
@@ -434,7 +452,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
         </dependency>
 ```
 
-第二，在微服务中添加minio所需要的配置
+第二，在具体微服务中添加minio所需要的配置
 
 `src/main/resources/application.yml`
 
@@ -444,14 +462,12 @@ minio:
   secretKey: minio123
   bucket: leadnews
   endpoint: http://192.168.200.130:9000
-  readPath: http://192.168.200.130:9000
+  readPath: http://192.168.200.130:9000  # 文件访问域名
 ```
 
 第三，在对应使用的业务类中注入FileStorageService
 
 ```java
-package com.heima.minio.test;
-
 import com.heima.file.service.FileStorageService;
 import com.heima.minio.MinioApplication;
 import org.junit.Test;

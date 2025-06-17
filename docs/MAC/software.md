@@ -2,6 +2,7 @@
 
 ## Mac&Windows
 
+- V2rayN
 - Audacity：剪辑音频
 - HandBrake：压缩视频
 - Visual Studio Code
@@ -14,11 +15,9 @@
 ## Mac
 
 - The Unarchiver：解压rar格式文件
-- V2rayU
 
 ## win
 
-- v2rayN
 - Bandizip MSE：解压缩
 
 ## iPhone
