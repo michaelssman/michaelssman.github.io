@@ -640,39 +640,7 @@ public class ArticleHomeController {
 
 #### 6、swagger测试或前后端联调测试
 
-1、微服务通过网关访问，所以需要在app**网关的微服务**的nacos的配置中心添加文章微服务的路由
-
-完整配置如下：
-
-```yaml
-spring:
-  cloud:
-    gateway:
-      globalcors:
-        cors-configurations:
-          '[/**]': # 匹配所有请求
-            allowedOrigins: "*" #跨域处理 允许所有的域
-            allowedMethods: # 支持的方法
-              - GET
-              - POST
-              - PUT
-              - DELETE
-      routes:
-        # 用户微服务
-        - id: user
-          uri: lb://leadnews-user
-          predicates:
-            - Path=/user/**
-          filters:
-            - StripPrefix= 1
-        # 文章微服务
-        - id: article
-          uri: lb://leadnews-article
-          predicates:
-            - Path=/article/**
-          filters:
-            - StripPrefix= 1
-```
+1、微服务通过网关访问，所以需要在app**网关的微服务**的nacos的配置中心添加文章微服务的路由。
 
 2、启动app网关微服务、用户微服务、文章微服务。
 
