@@ -26,6 +26,20 @@ Spring Boot的启动器实际上就是一个依赖。**这个依赖中包含了�
 
 Spring Boot的启动类的作用是启动Spring Boot项目。
 
+```java
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+
+@SpringBootApplication
+@EnableDiscoveryClient  //开启注册中心
+public class AppGatewayApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(AppGatewayApplication.class,args);
+    }
+}
+```
+
 **启动类与启动器区别**
 
 启动类表示项目的启动入口

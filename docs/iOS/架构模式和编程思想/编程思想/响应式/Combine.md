@@ -1,6 +1,4 @@
-# 数据同步更新
-
-## Combine
+# Combine
 
 `Combine`是Apple在iOS 13及以上版本中引入的一个框架，用于处理响应式编程和数据绑定。它与`RxSwift`类似，但它是Apple官方的解决方案。`Combine`提供了许多与`RxSwift`相似的功能，但在某些方面更紧密地集成到Apple的生态系统中。
 
