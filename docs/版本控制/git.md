@@ -122,14 +122,12 @@ git merge --no-ff '3.3.2'
 git push origin 'main'
 ```
 
-`--no-ff` 选项的作用是强制执行非快速前进（non-fast-forward）合并。
-
 **详细解释**
 
-- **快速前进合并（Fast-Forward Merge）**：
+- **快速前进（Fast-Forward）**：
   - 如果目标分支（例如 `main`）直接位于源分支（例如 `feature`）的历史之前，Git 默认会执行快速前进合并。这种合并方式不会创建新的合并提交，只是简单地将目标分支的指针移动到源分支的最新提交。
-- **非快速前进合并（Non-Fast-Forward Merge）**：
-  - 使用 `--no-ff` 选项时，Git 会创建一个新的合并提交。这种方式会保留分支的合并历史，明确显示合并点。
+- **非快速前进（Non-Fast-Forward）**：
+  - 使用 `--no-ff` 选项，Git 会创建一个新的合并提交。这种方式会保留分支的合并历史，明确显示合并点。
 
 **示例**
 
@@ -300,11 +298,11 @@ git config --global pull.rebase false
 ### 不需要解决的文件
 
 1. pod
-   - pod的冲突会很多，不处理`ProjectName/Pods/Pods.xcodeproj`，删除pod冲突的文件，重新pod解决。s
+   - pod的冲突会很多，不处理`ProjectName/Pods/Pods.xcodeproj`，删除pod冲突的文件，重新pod解决。
 2. **用户状态文件**：
    - `AccCollege/AccCollege.xcworkspace/xcuserdata/michael.xcuserdatad/UserInterfaceState.xcuserstate`：这个文件与用户的个人设置相关，通常不需要合并。
 3. **Xcode Schemes**：
    - `AccCollege/Pods/xcuserdata/michael.xcuserdatad/xcschememanagement.plist`：这个文件包含用户特定的Scheme设置，通常可以忽略。
-4. **sTarget Support Files**：
+4. **Target Support Files**：
    - `AccCollege/Pods/Target Support Files/Pods-AccCollege/Pods-AccCollege.debug.xcconfig`
    - `AccCollege/Pods/Target Support Files/Pods-AccCollege/Pods-AccCollege.release.xcconfig`：这些是配置文件，通常不需要解决。

@@ -442,7 +442,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 
 ### 5、其他微服务使用
 
-第一，pom.xml文件中导入heima-file-starter的依赖
+1、pom.xml文件中导入heima-file-starter的依赖
 
 ```xml
         <dependency>
@@ -452,20 +452,20 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
         </dependency>
 ```
 
-第二，在具体微服务中添加minio所需要的配置
+2、在微服务`application.yml`中添加minio所需要的配置
 
-`src/main/resources/application.yml`
+注：也可以在nacos中去配置下面内容。
 
 ```yaml
 minio:
-  accessKey: minio
-  secretKey: minio123
-  bucket: leadnews
-  endpoint: http://192.168.200.130:9000
-  readPath: http://192.168.200.130:9000  # 文件访问域名
+  accessKey: admin
+  secretKey: your_strong_password
+  bucket: backup
+  endpoint: http://47.120.67.123:9000
+  readPath: http://47.120.67.123:9001/  # 文件访问域名
 ```
 
-第三，在对应使用的业务类中注入FileStorageService
+3、在对应使用的业务类中注入FileStorageService
 
 ```java
 import com.heima.file.service.FileStorageService;

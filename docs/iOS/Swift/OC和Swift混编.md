@@ -148,11 +148,11 @@ swift中的属性和方法如果需要给OC使用，需要前面加`@objc`修饰
 
 必须定义出`Int`类型，前面加`@objc`才能调用(毕竟swift的枚举比OC强大太多)
 
-```java
+```swift
 @objc enum CPLineType: Int {
-case schoolToHome = 0
-case homeToSchool
-case return
+  case schoolToHome = 0
+  case homeToSchool
+  case return
 }
 ```
 

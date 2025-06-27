@@ -1,15 +1,10 @@
 # SpringMVC和WebFlux
 
-在Spring Security的配置中，存在两个同名的Bean，一个来自WebSecurityConfiguration（Spring MVC的配置），另一个来自WebFluxSecurityConfiguration（属于WebFlux，即响应式配置）。Spring默认不允许Bean覆盖，因此导致冲突。
+在Spring Security的配置中，存在两个同名的Bean，一个来自`WebSecurityConfiguration`（Spring MVC的配置），另一个来自`WebFluxSecurityConfiguration`（属于WebFlux，即响应式配置）。Spring默认不允许Bean覆盖，因此导致冲突。
 
 项目使用了Spring Cloud Gateway，而Gateway是基于WebFlux的响应式框架。同时，用户的依赖中可能引入了Spring MVC相关的starter，比如`spring-boot-starter-web`，这会导致同时存在Servlet和Reactive两种配置，从而引发冲突。
 
 Spring Boot官方文档指出，同时引入`spring-boot-starter-web`和`spring-boot-starter-webflux`会导致应用默认使用Spring MVC，因为前者会优先。但在Spring Cloud Gateway这种基于WebFlux的项目中，应该只使用WebFlux，避免引入MVC相关的依赖。
-
-### 原因分析
-
-1. **依赖冲突**：项目同时引入了`spring-boot-starter-web`（Servlet）和`spring-boot-starter-webflux`（Reactive）依赖。
-2. **Bean名称重复**：Spring Security的`WebSecurityConfiguration`（Servlet）和`WebFluxSecurityConfiguration`（Reactive）都定义了名为`conversionServicePostProcessor`的Bean。
 
 ------
 
@@ -25,7 +20,7 @@ Spring Cloud Gateway基于WebFlux构建，需确保**移除所有Servlet依赖**
 
 ## WebFlux和Servlet区别
 
-### 1. 核心架构差异
+### 核心架构差异
 | **特性**     | **Servlet（Spring MVC）**                      | **WebFlux（响应式）**                                   |
 | ------------ | ---------------------------------------------- | ------------------------------------------------------- |
 | **编程模型** | 基于 **阻塞式 I/O**（每个请求占用一个线程）    | 基于 **非阻塞 I/O**（事件驱动，少量线程处理高并发）     |
@@ -34,7 +29,7 @@ Spring Cloud Gateway基于WebFlux构建，需确保**移除所有Servlet依赖**
 | **背压支持** | 不支持                                         | 支持响应式流背压（如 `Flux`/`Mono` 控制数据流速）       |
 | **适用场景** | 传统 CRUD 应用、同步阻塞操作（如 JDBC）        | 高并发、低延迟（如实时推送、API 网关、微服务通信）      |
 
-### 2. 为何需要避免混合使用
+### 需要避免混合使用
 - **Spring Cloud Gateway 的依赖本质**：  
   Gateway 基于 WebFlux 构建，强制依赖 `spring-boot-starter-webflux`。若同时引入 `spring-boot-starter-web`（Servlet），会导致：
   - **Bean 冲突**（如你遇到的 `conversionServicePostProcessor` 重复定义）
@@ -45,7 +40,7 @@ Spring Cloud Gateway基于WebFlux构建，需确保**移除所有Servlet依赖**
 
 ---
 
-### 3. 如何正确选择
+### 如何正确选择
 #### 场景 1：构建 API 网关（如 Spring Cloud Gateway）
 - **必须使用 WebFlux**：  
   网关需要高并发处理能力，WebFlux 的非阻塞模型能有效应对大量路由转发、限流、鉴权等操作。
@@ -60,7 +55,7 @@ Spring Cloud Gateway基于WebFlux构建，需确保**移除所有Servlet依赖**
 
 ---
 
-### 4. 依赖冲突排查与解决
+### 依赖冲突排查与解决
 #### 步骤 1：检查依赖树
 通过 Maven 命令定位 `spring-boot-starter-web` 的来源：
 ```bash
@@ -90,7 +85,7 @@ mvn dependency:tree -Dincludes=spring-boot-starter-web
 
 ---
 
-### 5. 迁移现有代码到 WebFlux
+### 迁移现有代码到 WebFlux
 若需将部分 Servlet 代码迁移到 WebFlux：
 - **Controller 层**：  
   使用 `@RestController` + 返回 `Mono<T>`/`Flux<T>`。
@@ -115,7 +110,7 @@ mvn dependency:tree -Dincludes=spring-boot-starter-web
 
 ---
 
-### 6. 关键注意事项
+### 关键注意事项
 - **避免混用两种模型**：  
   同一应用中同时使用 Servlet 和 WebFlux 会导致不可预测的行为，如线程模型冲突、安全配置失效。
 - **响应式编程学习曲线**：  
