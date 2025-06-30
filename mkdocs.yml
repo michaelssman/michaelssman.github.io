@@ -140,7 +140,7 @@ nav:
       - iOS/架构模式和编程思想/编程思想/响应式/RAC/takeUntil过滤.md
       - iOS/架构模式和编程思想/编程思想/响应式/RXSwift/UI.md
       - iOS/架构模式和编程思想/编程思想/响应式/RXSwift/DisposeBag.md
-      - iOS/架构模式和编程思想/编程思想/响应式/数据同步更新.md
+      - iOS/架构模式和编程思想/编程思想/响应式/Combine.md
     - iOS/数据持久化/CoreData.md
     - iOS/UniversalLink.md
     - iOS/绘制图形.md
