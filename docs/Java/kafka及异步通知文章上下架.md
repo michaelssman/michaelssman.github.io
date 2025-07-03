@@ -31,7 +31,7 @@
 
 Kafka 是一个分布式流媒体平台，类似于消息队列或企业消息传递系统。
 
-kafka官网：http://kafka.apache.org/  
+官网：http://kafka.apache.org/  
 
 ![image-20210525181028436](kafka及异步通知文章上下架.assets/image-20210525181028436.png)
 
@@ -39,13 +39,13 @@ kafka介绍-名词解释
 
 ![image-20210525181100793](kafka及异步通知文章上下架.assets/image-20210525181100793.png)
 
-- producer：发布消息的对象称之为主题生产者（Kafka topic producer）
+- producer：发布消息的对象称之为主题生产者（topic producer）
 
 - topic：Kafka将消息分门别类，每一类的消息称之为一个主题（Topic）
 
-- consumer：订阅消息并处理发布的消息的对象称之为主题消费者（consumers）
+- consumer：订阅消息并处理发布的消息的对象称之为主题消费者（topic consumers）
 
-- broker：已发布的消息保存在一组服务器中，称之为Kafka集群。集群中的每一个服务器都是一个代理（Broker）。 消费者可以订阅一个或多个主题（topic），并从Broker拉数据，从而消费这些已发布的消息。
+- broker：已发布的消息保存在一组服务器中，称之为Kafka集群。集群中的每一个服务器都是一个代理（Broker）。消费者可以订阅一个或多个主题（topic），并从Broker拉数据，从而消费这些已发布的消息。
 
 - Kafka Cluster：Kafka集群。
 

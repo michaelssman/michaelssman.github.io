@@ -16,7 +16,7 @@ NSObject *objc = [NSObject alloc];
 id __weak obj = objc;
 ```
 
-一个是引用计数表，一个是弱引用表。weak所引⽤对象的引⽤计数不会加1，对引用计数没有处理。
+一个是引用计数表，一个是弱引用表。**weak所引⽤对象的引⽤计数不会加1**，对引用计数没有处理。
 
 ## 原理探索
 
@@ -35,7 +35,7 @@ objc_initWeak(id *location, id newObj)//location是当前对象的地址	newObj�
         return nil;
     }
     //C++模版函数  第一次进来DontHaveOld是false  DoHaveNew是true
-  //location weakself的指针地址	newObj绑定的对象
+	  //location weakself的指针地址	newObj绑定的对象
     return storeWeak<DontHaveOld, DoHaveNew, DoCrashIfDeallocating>
         (location, (objc_object*)newObj);
 }
@@ -91,7 +91,7 @@ storeWeak(id *location, objc_object *newObj)
             !((objc_class *)cls)->isInitialized()) 
         {
             SideTable::unlockTwo<haveOld, haveNew>(oldTable, newTable);
-          //散列表初始化--类的初始化 --父类+子类
+       	    //散列表初始化--类的初始化 --父类+子类
             class_initialize(cls, (id)newObj);
 
             // If this class is finished with +initialize then we're good.
@@ -107,15 +107,15 @@ storeWeak(id *location, objc_object *newObj)
     }
 
     // Clean up old value, if any.
-  //弱引用对象有可能已经在散列表的weakTable里了，移除。
+ 	  //弱引用对象有可能已经在散列表的weakTable里了，移除。
     if (haveOld) {
         weak_unregister_no_lock(&oldTable->weak_table, oldObj, location);
     }
-//weakTable弱引用表
+		//weakTable弱引用表
     // Assign new value, if any.
     if (haveNew) {
         newObj = (objc_object *)
-          //注册 把弱引用对象注册到弱引用表里。
+           //注册 把弱引用对象注册到弱引用表里。
             weak_register_no_lock(&newTable->weak_table, (id)newObj, location, 
                                   crashIfDeallocating);
         // weak_register_no_lock returns nil if weak store should be rejected
@@ -160,7 +160,7 @@ _class_initialize中调用weak_register_no_lock，weak_unregister_no_lock
 
 ### weak_register_no_lock注册引用weak表
 
-注册之前判断，因为weakTable里面维护Person，Dog，Student，Car很多类。为了数据不混乱就引入了weak_entry（类似数组其实是哈希），weak_entry里面有refreces，
+注册之前判断，因 为weakTable里面维护Person，Dog，Student，Car很多类。为了数据不混乱就引入了weak_entry（类似数组其实是哈希），weak_entry里面有refreces，
 
 弱引用指针存储到弱引用表。通过哈希运算，放入weak_table
 
@@ -269,11 +269,11 @@ store_weak中执行完weak_register_no_lock之后，又调用了setWeaklyReferen
 
   - 没有找到entry_t则创建一个实体**weak_entry_t**，放到weak_table。
 
-    - ```c++
-      weak_entry_t new_entry(referent, referrer);	//创建这个entry
-      weak_grow_maybe(weak_table);								//改变大小，扩容
-      weak_entry_insert(weak_table, &new_entry);	//把new_entry加入到weak_table
-      ```
+    ```c++
+    weak_entry_t new_entry(referent, referrer);	//创建这个entry
+    weak_grow_maybe(weak_table);								//改变大小，扩容
+    weak_entry_insert(weak_table, &new_entry);	//把new_entry加入到weak_table
+    ```
 
 - SideTables：散列表，多张。
 
