@@ -325,3 +325,18 @@ Maven 中央仓库
 ```
 
 这样，`hhjava-service/hhjava-user`模块可以直接使用`spring-boot-starter-web`，而无需在每个子模块中指定版本号。通过这种结构，项目的依赖管理变得更加简洁和一致。
+
+## 常用依赖
+
+```xml
+<!--解析json-->
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>fastjson</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+</dependency>
+```
+
