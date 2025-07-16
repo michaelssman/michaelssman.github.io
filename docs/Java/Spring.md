@@ -30,7 +30,7 @@ Java代码不再new创建对象，程序中用一个xml文件，里面配置对�
 
 **IoC(Inversion of Control)中文名称：控制反转，也被称为DI(dependency injection )：依赖注入。**
 
-创建对象的权利（控制的位置），**由JAVA代码转移到spring容器,由spring的容器控制对象的创建,就是控制反转**。
+**创建对象由JAVA代码转移到spring容器，由spring的容器控制对象的创建，就是控制反转**。
 
 由于控制反转概念比较含糊，所以又给出了一个新的名字:“依赖注入”，相对loC而言，“依赖注入”明确描述了“被注入对象依赖loC容器来配置依赖对象”。
 
@@ -46,9 +46,7 @@ Java代码不再new创建对象，程序中用一个xml文件，里面配置对�
 
 构建是Spring底层通过反射技能做的。
 
-构建的对象放到了**Spring容器**，底层是map集合。
-
-applicationContext.xml通过反射创建对象，所有对象放在容器中，java程序从容器中取对象。
+applicationContext.xml通过反射创建对象，所有对象放在Spring容器中（底层是map集合），java程序从容器中取对象。
 
 ### 2、简化开发
 
@@ -66,7 +64,7 @@ Spring是框架的框架。
 
 **不重复造轮子**
 
-A公司用a框架，B公司用b框架、C公司用c框架。3个框架的作用是完全一样的，用法也差不多。原有的技术加Spring的整合就可以很简单。不过后来Spring违背了这一原则，自己又出了新轮子。
+A公司用a框架，B公司用b框架、C公司用c框架。3个框架的作用是完全一样的，用法也差不多。原有的技术加Spring的整合就可以很简单。
 
 ## 第一个Spring项目-完成IoC/DI代码的实现
 
@@ -89,8 +87,6 @@ Spring项目想要运行起来必须包含:
 - spring-jcl.jar
 
 所以在Maven中想要使用Spring框架只需要在项目中导入`spring-context`就可以了，其他的jar包根据Maven依赖传递性都可以导入进来。
-
- [pom.xml](Maven/pom.xml.md) 
 
 ### 2、实体类
 
@@ -199,7 +195,7 @@ Book b = new Book(1，"项目驱动零起点学Java");
 
 类的属性可以是基本数据类型，也可以是引用数据类型。
 
-设置属性的值：
+属性的值：
 
 - value：简单数据类型（基本数据类型+String）直接设置。
 
@@ -209,15 +205,17 @@ Book b = new Book(1，"项目驱动零起点学Java");
 
 上面`<bean>`标签是创建对象，可以通过注解简化。
 
-| 注解名称       | 解释                                                         |
-| -------------- | ------------------------------------------------------------ |
-| @Component     | 实例化Bean， 默认名称为类名首字母变小写                      |
-| @Repository    | 作用和@Component一样。用在持久层                             |
-| @Service       | 作用和@Component一样。用在业务层ServiceImpl类上              |
-| @Controller    | 作用和@Component一样。用在控制器层                           |
-| @Configuration | 作用和@Component一样。用在配置类上。Spring 会在启动时自动扫描并加载该类中的配置。 |
-| @Autowired     | 自动注入。默认byType，如果多个同类型bean，使用byName         |
-| @ Value        | 给普通数据类型属性赋值                                       |
+| 注解名称               | 解释                                                         |
+| ---------------------- | ------------------------------------------------------------ |
+| @Component             | 实例化Bean， 默认名称为类名首字母变小写                      |
+| @Repository            | 作用和@Component一样。用在持久层                             |
+| @Service               | 作用和@Component一样。用在业务层ServiceImpl类上              |
+| @Controller            | 作用和@Component一样。用在控制器层                           |
+| @Configuration         | 作用和@Component一样。标记该类为一个配置类，Spring 会在启动时自动扫描并加载该类中的配置。 |
+| @Autowired             | 自动注入。默认byType，如果多个同类型bean，使用byName         |
+| @Value                 | 给普通数据类型属性赋值                                       |
+| @EnableDiscoveryClient | 开启服务注册发现功能                                         |
+| @Bean                  | 注入到容器中。对象为一个 Spring Bean，Spring 会将其管理在应用上下文中。 |
 
 前五个注解作用都是创建对象。只所以搞出这么多，就是在语义上给你区别，不同层用不同的注解。
 
@@ -225,9 +223,9 @@ Book b = new Book(1，"项目驱动零起点学Java");
 
 在类中加入@Component注解，会自动构建这个类的对象，对象名字默认为：类名首字母变小写。
 
-@Component 注解表明这个类是一个 Spring 组件，会被 Spring 容器管理。
+@Component 注解表明这个类是一个 Spring 组件，被 Spring 容器管理。
 
-注解在哪个package包下？要想找到这些注解，需要将注解所在的包进行扫描：设置需要扫描的包。并且需要在applicationContext.xml中添加context命名空间
+要想找到这些注解，需要将注解所在的package包进行扫描，在applicationContext.xml中添加context命名空间
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?> 

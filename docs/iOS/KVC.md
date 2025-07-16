@@ -42,6 +42,10 @@ valueForKey调用顺序
 
 ## KeyPath
 
+使用场景：模型嵌套模型。
+
+例如：单据Model类中有一个商品Model属性，商品Model中有一个价格Model属性，价格Model中有单价、批发价、采购价等属性。
+
 ```objective-c
 //嵌套拿数据     里面是点语法 一直点下去 点分离key
 id age = [p valueForKeyPath:@"dog.age"];//dog是p的属性
