@@ -14,7 +14,7 @@ Block的使用很像函数指针，不过与函数最大的不同是：Block可�
 
 **没有捕获外界变量，或者只用到全局变量、静态(static)变量的block就是全局block。**
 
-NSGlobalBlock，类似函数，存储在程序的数据区域（text段）。
+存储在程序的数据区域（text段）。
 
 对于Global的Block，我们无需多处理，不需retain和copy，即使copy，也不会copy到堆区，内存不会发生变化，操作都无效。
 
@@ -39,7 +39,7 @@ NSGlobalBlock，类似函数，存储在程序的数据区域（text段）。
 
 对于Stack的Block，如果不做任何操作，随栈自生自灭。
 
-而如果想让它获得比stack更久的生命，那就调用`Block_copy()`，或者copy修饰，让它搬家到堆内存上，这也是为什么用copy修饰Block的原因。
+而如果想让它获得比stack更久的生命，那就调用`Block_copy()`，或者copy修饰，拷贝到堆内存上，这也是为什么用copy修饰Block的原因。
 
 ```objective-c
 		int a = 10;
@@ -80,7 +80,7 @@ ARC下：
 - block引用了栈里的临时变量, 才会被创建在stack区。
 - **stack区的块只要赋值给strong类型的变量, 就会自动copy到堆里**。所以要不要写copy都没关系
 
-**block在创建的时候，内存是分配在栈上的（内存随时可能被销毁）。**MRC使用copy的目的是将block创建默认放在栈区拷贝一份到堆区，**因为栈区中的变量管理是由它自己管理的，随时可能被销毁，一旦被销毁后续再次调用空对象就可能会造成程序崩溃问题**， block放在了堆中，block有个指针指向了栈中的block代码块，
+**block在创建的时候，内存是分配在栈上的（内存随时可能被销毁）。**MRC使用copy的目的是将block创建默认放在栈区拷贝一份到堆区，**因为栈区中的变量管理是由它自己管理的，随时可能被销毁，一旦被销毁后续再次调用空对象就可能会造成程序崩溃问题**， block放在了堆中，block有个指针指向了栈中的block代码块。
 
 在ARC模式下，系统会默认使用copy进行修饰。
 
@@ -346,7 +346,7 @@ struct __main0_block_impl_0 {
   __main0_block_impl_0(void *fp, struct __main0_block_desc_0 *desc, int flags=0) {
     impl.isa = &_NSConcreteStackBlock;//栈区的block
     impl.Flags = flags;
-    impl.FuncPtr = fp; //编程思想：函数式。先保存 在合适的地方调用，需要的地方调用。
+    impl.FuncPtr = fp; //编程思想：函数式。先保存，在block调用的时候执行。
     Desc = desc;
   }
 };
@@ -356,8 +356,6 @@ struct __main0_block_impl_0 {
      printf("Hello hh");
  }
 ```
-
-block fp函数式保存，block调用的时候执行。
 
 #### __block_impl结构体
 
@@ -454,7 +452,7 @@ block创建的时候是在栈上的，在将栈block拷⻉到堆上的时候，�
          (__Block_byref_a_0 *)&a, //地址空间 取a的地址
          0,
          sizeof(__Block_byref_a_0),
-         10//值
+         10//a的值
     };
      
      

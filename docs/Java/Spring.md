@@ -205,17 +205,24 @@ Book b = new Book(1，"项目驱动零起点学Java");
 
 上面`<bean>`标签是创建对象，可以通过注解简化。
 
-| 注解名称               | 解释                                                         |
-| ---------------------- | ------------------------------------------------------------ |
-| @Component             | 实例化Bean， 默认名称为类名首字母变小写                      |
-| @Repository            | 作用和@Component一样。用在持久层                             |
-| @Service               | 作用和@Component一样。用在业务层ServiceImpl类上              |
-| @Controller            | 作用和@Component一样。用在控制器层                           |
-| @Configuration         | 作用和@Component一样。标记该类为一个配置类，Spring 会在启动时自动扫描并加载该类中的配置。 |
-| @Autowired             | 自动注入。默认byType，如果多个同类型bean，使用byName         |
-| @Value                 | 给普通数据类型属性赋值                                       |
-| @EnableDiscoveryClient | 开启服务注册发现功能                                         |
-| @Bean                  | 注入到容器中。对象为一个 Spring Bean，Spring 会将其管理在应用上下文中。 |
+| 注解名称                 | 解释                                                         |
+| ------------------------ | ------------------------------------------------------------ |
+| @Component               | 实例化Bean， 默认名称为类名首字母变小写                      |
+| @Repository              | 作用和@Component一样。用在持久层                             |
+| @Service                 | 作用和@Component一样。用在业务层ServiceImpl类上              |
+| @Controller              | 作用和@Component一样。用在控制器层                           |
+| @Configuration           | 作用和@Component一样。标记该类为一个配置类，Spring 会在启动时自动扫描并加载该类中的配置。 |
+| @Autowired               | 自动注入。默认byType，如果多个同类型bean，使用byName         |
+| @Value                   | 给普通数据类型属性赋值                                       |
+| @EnableDiscoveryClient   | 开启服务注册发现功能                                         |
+| @Bean                    | 注入到容器中。对象为一个 Spring Bean，Spring 会将其管理在应用上下文中。 |
+| @SpringBootApplication   | 标记Spring Boot应用程序的主类，启用自动配置、组件扫描和额外的配置功能。 |
+| @ComponentScan           | 指定Spring扫描并注册组件的包路径，自动发现并注册Bean         |
+| @EnableAutoConfiguration | 根据类路径中的jar依赖自动配置Spring应用，简化配置过程        |
+| @Controller              | 标记类为Spring MVC控制器，处理HTTP请求并返回视图             |
+| @RestController          | @Controller与@ResponseBody的组合，创建RESTful Web服务，直接返回数据而非视图 |
+| @RequestMapping          | 映射HTTP请求到控制器的处理方法，可指定路径、HTTP方法等       |
+| @ConfigurationProperties | 将外部配置属性值绑定到Java对象，用于批量配置属性注入         |
 
 前五个注解作用都是创建对象。只所以搞出这么多，就是在语义上给你区别，不同层用不同的注解。
 

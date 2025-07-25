@@ -4,11 +4,7 @@
 
 GCD是苹果公司为多核的并发运算提出的解决方案
 
-GCD会自动利用更多的CPU内核（比如双核，四核）
-
-GCD会自动管理线程的生命周期（创建线程，调度任务，销毁线程）
-
-程序员只需要告诉GCD想要执行什么任务，不需要编写任何线程管理代码
+GCD会自动管理线程的生命周期（创建线程，调度任务，销毁线程），程序员只需要告诉GCD想要执行什么任务，不需要编写任何线程管理代码。
 
 ## 多线程控制最大并发数
 
@@ -34,7 +30,7 @@ dispatch_barrier_sync 作用相同，**但是这个会堵塞线程，影响后�
 
 ### 注：
 
-1. 全局并发队列不能使用barrier。全局并发队列并不只是自己使用，系统后台可能也会使用，所以不能堵塞。所以只能使用自定义的并发队列。
+1. 全局并发队列不能使用barrier。全局并发队列并不只是自己使用，系统后台可能也会使用，所以不能堵塞。只能使用自定义的并发队列。
 
 2. 栅栏函数只能控制同一队列
 
@@ -73,13 +69,7 @@ getter读操作：`dispatch_sync`同步。
 @end
  
 @implementation ViewController
- 
-- (void)viewDidLoad {
-    [super viewDidLoad];
- 
-    [self readWriteLock];
-}
- 
+
 - (void)readWriteLock {
     // 使用自己创建的并发队列
     self.concurrentQueue = dispatch_queue_create("aaa", DISPATCH_QUEUE_CONCURRENT);
@@ -151,7 +141,7 @@ getter读操作：`dispatch_sync`同步。
   里面封装了dispatch_group_enter和dispatch_group_leave（callout执行完毕）
 
   - dispatch_group_enter 进组     --
-  - dispatch_group_leave 出组 	++
+  - dispatch_group_leave 出组     ++
 
   类似信号量的加减，搭配使用。
 
