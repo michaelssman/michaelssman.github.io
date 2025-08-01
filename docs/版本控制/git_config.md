@@ -75,7 +75,7 @@ ssh-add ~/.ssh/id_rsa_gitlab
 ```bash
 Host		git.nmy.cn
 	HostName        192.168.1.66
-	User            cuihuihui@nmy.com
+	User            michael@nmy.com
 	AddKeysToAgent  yes
 	UseKeychain     yes
 	IdentityFile    ~/.ssh/gitlab_hh
@@ -85,11 +85,11 @@ Host		github.com
 	AddKeysToAgent  yes
 	UseKeychain     yes
 	IdentityFile    ~/.ssh/id_rsa
-Host myserver
-    HostName 192.168.1.100
-    User username
-    Port 22
-    IdentityFile ~/.ssh/private_key
+Host 		myserver
+    HostName 			192.168.1.100
+    User 					username
+    Port 					22
+    IdentityFile 	~/.ssh/private_key
 ```
 
 在上面的例子中：
@@ -117,7 +117,7 @@ ED25519 key fingerprint is SHA256:Ftr+xLxVgYwrZhNzkFYlPFCryD2LupmkWoiZmQtdtGI.
 This key is not known by any other names
 Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
 Warning: Permanently added '192.168.1.66' (ED25519) to the list of known hosts.
-Welcome to GitLab, @cuihuihui!
+Welcome to GitLab, @michael!
 ```
 
 known_hosts里面记录了公钥和私钥
