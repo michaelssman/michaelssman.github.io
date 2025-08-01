@@ -35,7 +35,7 @@ PS C:\Users\micha> git config --global http.proxy http://127.0.0.1:10809
 **步骤：**
 
 1. **获取最新IP地址**  
-   - 访问IP查询网站（如 [IPAddress.com](https://www.ipaddress.com/ip-lookup)或https://www.ipaddress.com/website/gitgub.com/），输入`github.com`和`github.global.ssl.fastly.net`，获取当前有效的IPv4地址。  
+   - 访问IP查询网站（如 [IPAddress.com](https://www.ipaddress.com/ip-lookup)），输入`github.com`和`github.global.ssl.fastly.net`，获取当前有效的IPv4地址。  
    
      ```
      192.30.255.112  github.com
