@@ -61,9 +61,9 @@ print(makeIncrementer()())//11
     
     i += 1;
     
-    NSLog(@"before block %ld:", i);
-    block();
-    NSLog(@"after block %ld:", i);
+    NSLog(@"before block %ld:", i);	// 2
+    block();												// 1
+    NSLog(@"after block %ld:", i);	// 2
 }
 ```
 
@@ -105,7 +105,7 @@ closure()											//2
 print("after closure \(i)")		//2
 ```
 
-这里例子输出的结果就和 Block 中的第一个例子不同了，因为当前 `Swift` 值的捕获是在**执行的时候再捕获**，当代码执行到 `closure()` ，对值进行捕获，此时`i`的值为几，捕获到的 `i` 就是几。
+`Swift` 值的捕获是在**执行的时候再捕获**，当代码执行到 `closure()` ，对值进行捕获，此时`i`的值为几，捕获到的 `i` 就是几。
 
 
 所以下面这个打印的是多少？
@@ -127,9 +127,6 @@ closure()//4
 ```
 
 如果在 `Swift` 中想要捕获当前变量的瞬时值，该怎么操作那？答案是：捕获列表
-
-
-我们来看下面这段代码
 
 ```swift
 var i = 1
@@ -222,7 +219,7 @@ print(closure())
 
 闭包是一个`函数`加上`捕获了上下文的常量或者变量`。
 
-这里我们也可以通过 `IR` 的分析来看一下他的底层数据结构，最终我们能得出来这样一个结果
+通过 `IR` 的分析来看一下他的底层数据结构：
 
 ```swift
 //实例对象内存地址
@@ -459,28 +456,7 @@ t.dosomething()
 t.completionHandle?(10)
 ```
 
-#### Escaping closure captures non-escaping parameter 'callback'
-
-在 Swift 中，当一个闭包作为参数传递给一个函数，并且在函数结束之后仍然可以被调用时，我们需要在闭包参数前面加上 `@escaping` 标识符来标记它是一个逃逸闭包。
-
-这个错误的意思是说，你正在尝试在一个逃逸闭包中捕获一个非逃逸参数 `callback`，这是不允许的。
-
-要解决这个问题，你可以将 `callback` 参数也标记为逃逸闭包，或者在闭包内部使用 `self.callback` 来避免捕获它。具体的解决方案取决于你的代码逻辑和需求。
-
-```swift
-func FaceIDAuthentication(callback: (_ success: Bool)->Void) {
-    let context = LAContext()
-    context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: "请使用Face ID登录") { success, error in
-        if success {
-            // Face ID验证成功
-            callback(true)
-        } else {
-            // Face ID验证失败
-            callback(false)
-        }
-    }
-}
-```
+当一个闭包作为参数传递给一个函数，并且在函数结束之后仍然可以被调用时，我们需要在闭包参数前面加上 `@escaping` 标识符来标记它是一个逃逸闭包。
 
 ### 非逃逸闭包
 
@@ -594,7 +570,7 @@ closure1 = nil
 ## 内存
 
 ```swift
-vc.serialNumber = { [self] serialNumberString in
+vc.serialNumber = { [weak self] serialNumberString in
 	guard let strongSelf = self else { return }
 	///里面使用strongSelf
 }

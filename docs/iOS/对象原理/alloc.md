@@ -104,8 +104,6 @@ _objc_rootAllocWithZone(Class cls, malloc_zone_t *zone __unused)
 
 ### _class_createInstanceFromZone
 
-_class_createInstancesFromZone方法里面：
-
 1. 计算需要分配内存大小，不同的class成员变量多少不同，需要的内存大小不同。
 2. 开辟内存空间。
 3. 创建初始化isa指针，把类和当前的指针地址关联，申请的内存和class绑定在一起。
