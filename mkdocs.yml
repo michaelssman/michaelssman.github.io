@@ -67,7 +67,6 @@ nav:
       - iOS/Swift/OC和Swift混编.md
       - iOS/Swift/协议.md
       - iOS/Swift/指针和内存管理.md
-      - iOS/Swift/enum.md
       - iOS/Swift/IR.md
     - 底层原理分析:
       - iOS/底层原理分析/底层探索分析.md
@@ -174,7 +173,7 @@ nav:
       - 操作系统/多线程/线程同步.md
       - 操作系统/多线程/锁.md
       - 操作系统/多线程/队列和函数.md
-      - 操作系统/多线程/Java/Java多线程.md
+      - 操作系统/多线程/Java多线程.md
     - 操作系统/IO.md
     - 操作系统/运算符.md
     - 操作系统/数据处理.md
@@ -196,10 +195,11 @@ nav:
     - 编程/XML.md
     - 编程/token.md
     - 编程/typedef.md
+    - 编程/类型判断.md
+    - 编程/编译流程.md
     - 编程/方法调度.md
     - 编程/注解.md
     - 编程/继承多态接口.md
-    - 编程/编译流程.md
     - 模块和访问权限:
       - 编程/模块&访问权限/访问权限.md
       - 编程/模块&访问权限/模块.md
@@ -384,7 +384,6 @@ nav:
     - Java/环境搭建.md
     - Java/数据类型.md
     - Java/实体类.md
-    - Java/IO.md
     - Java/JDBC.md
     - Maven:
       - Java/Maven/Maven.md

@@ -261,3 +261,13 @@ SUM函数来计算所有账户的总余额，结果是一个列表。
 
 - `and`：和
 - `or`：或
+
+## 索引
+
+```sql
+-- 建立联合索引
+CREATE INDEX idx_name_age ON users(name, age);
+--这个查询就用到了覆盖索引
+SELECT name, age FROM users WHERE name = '张三';
+```
+
