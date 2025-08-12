@@ -68,7 +68,7 @@ void CFRunLoopAddTimer(CFRunLoopRef rl, CFRunLoopTimerRef rlt, CFStringRef modeN
             CFRelease(set);
         }
     } else {
-        //根据mode名字找到mode
+        //根据modeName找到mode
         CFRunLoopModeRef rlm = __CFRunLoopFindMode(rl, modeName, true);
         //如果没有 就创建一个
         if (NULL != rlm) {
@@ -121,7 +121,7 @@ void CFRunLoopAddTimer(CFRunLoopRef rl, CFRunLoopTimerRef rlt, CFStringRef modeN
 static Boolean __CFRunLoopDoTimers(CFRunLoopRef rl, CFRunLoopModeRef rlm, uint64_t limitTSR) {    /* DOES CALLOUT */
     Boolean timerHandled = false;
     CFMutableArrayRef timers = NULL;
-  //先找到runloop里的所有timer，可能不止一个
+ 	  //先找到runloop里的所有timer，可能不止一个
     for (CFIndex idx = 0, cnt = rlm->_timers ? CFArrayGetCount(rlm->_timers) : 0; idx < cnt; idx++) {
         CFRunLoopTimerRef rlt = (CFRunLoopTimerRef)CFArrayGetValueAtIndex(rlm->_timers, idx);
         
@@ -133,7 +133,7 @@ static Boolean __CFRunLoopDoTimers(CFRunLoopRef rl, CFRunLoopModeRef rlm, uint64
         }
     }
     
-  //遍历 执行。__CFRunLoopDoTimer
+  	//遍历 执行。__CFRunLoopDoTimer
     for (CFIndex idx = 0, cnt = timers ? CFArrayGetCount(timers) : 0; idx < cnt; idx++) {
         CFRunLoopTimerRef rlt = (CFRunLoopTimerRef)CFArrayGetValueAtIndex(timers, idx);
         Boolean did = __CFRunLoopDoTimer(rl, rlm, rlt);

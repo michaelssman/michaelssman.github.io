@@ -8,16 +8,11 @@ UI模式只能被触摸事件唤醒。
 
 runloop死循环能够保住线程。
 
-**RunLoop与线程**
+## RunLoop与线程
 
 - RunLoop和线程的关系：一个RunLoop对应着一条唯一的线程
-
-- 如何让子线程不死
-
-  给这条子线程开启一个RunLoop
-
-- RunLoop的创建：主线程RunLoop已经创建好了，子线程的runloop需要手动创建
-
+- 常驻线程，如何让子线程不死：在子线程中开启一个runloop
+- RunLoop的创建：主线程RunLoop默认创建好了，子线程的runloop需要手动创建和开启。
 - RunLoop的生命周期：在第一次获取时创建，在线程结束时销毁
 
 ## 作用
@@ -119,8 +114,6 @@ RunLoop要想跑起来，它的内部必须要有一个mode，这个mode里面�
 - observer源：`__CFRUNLOOP_IS_CALLING_OUT_TO_AN_OBSERVER_CALLBACK_FUNCTION__`
 
 Port事件，自定义perform事件，timer事件，GCD，通知事件，用户交互的UI事件都会牵扯runloop。
-
-主线程runloop默认创建，子线程runloop需要手动创建和开启。
 
 ## Runloop 执行方式（三种）
 
@@ -395,8 +388,6 @@ TableView的Cell 中的内容加载如何做性能优化，ImageView显示：控
    }
    ```
 
-### 常驻线程：在子线程中开启一个runloop
-
 ### 自动释放池
 
 第一次创建：进入runloop的时候
@@ -404,32 +395,3 @@ TableView的Cell 中的内容加载如何做性能优化，ImageView显示：控
 最后一次释放：runloop退出的时候
 
 其它创建和释放：当runloop即将休眠的时候会把之前的自动释放池释放，然后重新创建一个新的释放池
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

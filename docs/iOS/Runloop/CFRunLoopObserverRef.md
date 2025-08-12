@@ -2,8 +2,6 @@
 
 runloop有`source` `timer` `observer`，**Observer用来监听RunLoop状态变化的**。
 
-## CFRunLoopObserverRef
-
 **CFRunLoopObserverRef：是观察者，能够监听RunLoop的状态改变。**通过CFRunLoopObserverCreateWithHandler函数来创建一个观察者（函数会有一个block回调），对RunLoop进行观察，当RunLoop状态变化时，会触发block回调，回调会返回对应的状态，在回调里做相应操作。
 
 ```objective-c
