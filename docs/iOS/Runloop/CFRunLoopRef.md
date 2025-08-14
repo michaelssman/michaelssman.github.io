@@ -29,7 +29,7 @@ CF_EXPORT CFRunLoopRef _CFRunLoopGet0(pthread_t t) {
     if (pthread_equal(t, kNilPthreadT)) {
         t = pthread_main_thread_np();//main线程
     }
-  //
+  	//
     __CFLock(&loopsLock);
     if (!__CFRunLoops) {//全局的字典： __CFRunLoops
         __CFUnlock(&loopsLock);
@@ -80,6 +80,7 @@ CF_EXPORT CFRunLoopRef _CFRunLoopGet0(pthread_t t) {
 
 ## 获取runloop的流程
 
+- CFRunLoopGetMain或CFRunLoopGetCurrent
 - 通过_CFRunLoopGet0函数传入一条线程。
 - 判断线程是否为主线程并且判断是否已经存在__CFRunLoops（全局CFMutableDictionaryRef）。
 - 如果不存在，说明第一次进入，初始化全局dict，并先为主线程创建一个 RunLoop。并将mainLoop添加到dict中。
@@ -92,15 +93,17 @@ CF_EXPORT CFRunLoopRef _CFRunLoopGet0(pthread_t t) {
 
 RunLoop对象是利用字典来进行存储，而且key对应的线程Value为该线程对应的RunLoop。
 
-我们只能通过CFRunLoopGetMain函数或者CFRunLoopGetCurrent函数来获取RunLoop，无论是CFRunLoopGetMain函数还是CFRunLoopGetCurrent函数，都是通过对应的线程获取对应的RunLoop，**线程和RunLoop是一一对应的**，不会重复创建。
+只能通过CFRunLoopGetMain函数或者CFRunLoopGetCurrent函数来获取RunLoop，无论是CFRunLoopGetMain函数还是CFRunLoopGetCurrent函数，都是通过对应的线程获取对应的RunLoop，**线程和RunLoop是一一对应的**，不会重复创建。
 
 ## 主线程的runloop是默认创建和开启的，子线程的runloop需要手动创建和开启。
 
 开一个子线程创建runloop，不是通过alloc init方法创建，而是直接通过调用currentRunLoop方法来创建，它本身是一个懒加载的。
 
-在子线程中，如果不主动获取RunLoop的话，那么子线程内部是不会创建RunLoop的。可以下载CFRunLoopRef的源码，搜索_CFRunLoopGet0,查看代码。
+在子线程中，如果不主动获取RunLoop的话，那么子线程内部是不会创建RunLoop的。
 
-在主线程，系统会帮我们创建RunLoop，来处理事件。而子线程RunLoop并不会默认开启。子线程操作完成后，线程就被销毁了，如果我们想线程不被销毁，得主动获取一个RunLoop，并且在RunLoop中添加Timer/Source/Observer其中的一个。
+在主线程，系统会帮我们创建RunLoop，来处理事件。而子线程RunLoop并不会默认开启。
+
+子线程操作完成后，线程就被销毁了，如果我们想线程不被销毁，得主动获取一个RunLoop，并且在RunLoop中添加Timer/Source/Observer其中的一个。
 
 ## 创建runloop
 
@@ -111,7 +114,7 @@ static CFRunLoopRef __CFRunLoopCreate(pthread_t t) {
     uint32_t size = sizeof(struct __CFRunLoop) - sizeof(CFRuntimeBase);
     loop = (CFRunLoopRef)_CFRuntimeCreateInstance(kCFAllocatorSystemDefault, CFRunLoopGetTypeID(), size, NULL);
     if (NULL == loop) {
-    return NULL;
+    	return NULL;
     }
     (void)__CFRunLoopPushPerRunData(loop);
     __CFRunLoopLockInit(&loop->_lock);

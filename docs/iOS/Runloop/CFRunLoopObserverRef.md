@@ -2,7 +2,7 @@
 
 runloop有`source` `timer` `observer`，**Observer用来监听RunLoop状态变化的**。
 
-**CFRunLoopObserverRef：是观察者，能够监听RunLoop的状态改变。**通过CFRunLoopObserverCreateWithHandler函数来创建一个观察者（函数会有一个block回调），对RunLoop进行观察，当RunLoop状态变化时，会触发block回调，回调会返回对应的状态，在回调里做相应操作。
+通过CFRunLoopObserverCreateWithHandler函数来创建一个观察者（函数会有一个block回调），对RunLoop进行观察，当RunLoop状态变化时，会触发block回调，回调会返回对应的状态，在回调里做相应操作。
 
 ```objective-c
 //创建一个runloop监听者
@@ -42,7 +42,7 @@ typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) {
 
 点击CFRunLoopRef到API中发现定义了Observer的相关声明CFRunLoopObserverRef,这正是我们想要的:
 
-```
+```c++
 typedef struct CF_BRIDGED_MUTABLE_TYPE(id) __CFRunLoop * CFRunLoopRef;
 
 typedef struct CF_BRIDGED_MUTABLE_TYPE(id) __CFRunLoopSource * CFRunLoopSourceRef;
@@ -55,17 +55,15 @@ typedef struct CF_BRIDGED_MUTABLE_TYPE(NSTimer) __CFRunLoopTimer * CFRunLoopTime
 找到了CFRunLoopObserverRef之后就是要创建一个Observer了,在API中找到如下函数声明:
 
 ```c++
+// 它需要的参数:
+// CFAllocatorRef allocator 
+// CFOptionFlags activities 表示要监听RunLoop的变化的状态(kCFRunLoopAfterWaiting等)
+// Boolean repeats 表示是否重复监听
+// CFIndex order 这个传0即可暂时没研究
+// CFRunLoopObserverCallBack callout 表示监听的回调方法(C语言的方法)
+// CFRunLoopObserverContext *context 表示上下文环境,用于C语言的方法与OC的互传传值
 CF_EXPORT CFRunLoopObserverRef CFRunLoopObserverCreate(CFAllocatorRef allocator, CFOptionFlags activities, Boolean repeats, CFIndex order, CFRunLoopObserverCallBack callout, CFRunLoopObserverContext *context);
 ```
-
-这正是我们想要的创建OBserver的方法,看看它需要的参数:
-
-- CFAllocatorRef allocator 
-- CFOptionFlags activities 表示要监听RunLoop的变化的状态(kCFRunLoopAfterWaiting等)
-- Boolean repeats 表示是否重复监听
-- CFIndex order 这个传0即可暂时没研究
-- CFRunLoopObserverCallBack callout 表示监听的回调方法(C语言的方法)
-- CFRunLoopObserverContext *context 表示上下文环境,用于C语言的方法与OC的互传传值
 
 既然如此现在来创建一个CFRunLoopObserverContext,在API中也找到一个CFRunLoopObserverContext的声明
 
@@ -108,7 +106,7 @@ typedef void (*CFRunLoopObserverCallBack)(CFRunLoopObserverRef observer, CFRunLo
 ```c++
 static void runLoopOserverCallBack(CFRunLoopObserverRef observer, CFRunLoopActivity activity, void *info){
 
-//void *info正是我们要用来与OC传值的,这边可以转成OC对象,前面我们传进来的时候是self
+	//void *info正是我们要用来与OC传值的,这边可以转成OC对象,前面我们传进来的时候是self
 
 }
 ```
@@ -143,59 +141,55 @@ CFRelease(observer);
 @implementation ViewController
 
 - (void)viewDidLoad {
+  [super viewDidLoad];
 
-[super viewDidLoad];
+  [self addRunLoopObserver];
 
-[self addRunLoopObserver];
-
-[self initData];
-
+  [self initData];
 }
 
 - (void)initData{
 
-_name = @"piaojin";
+  _name = @"piaojin";
 
-//默认会添加到当前的runLoop中去,不做任何事情,为了让runLoop一直处理任务而不去睡眠
-
-_runLoopObServerTimer = [NSTimer scheduledTimerWithTimeInterval:0.001 target:self selector:@selector(timerMethod) userInfo:nil repeats:YES];
+  //默认会添加到当前的runLoop中去,不做任何事情,为了让runLoop一直处理任务而不去睡眠
+  _runLoopObServerTimer = [NSTimer scheduledTimerWithTimeInterval:0.001 target:self selector:@selector(timerMethod) userInfo:nil repeats:YES];
 
 }
 
 - (void)addRunLoopObserver{
 
-//获取当前的CFRunLoopRef
-CFRunLoopRef runLoopRef = CFRunLoopGetCurrent();
+  //获取当前的CFRunLoopRef
+  CFRunLoopRef runLoopRef = CFRunLoopGetCurrent();
 
-//创建上下文,用于控制器数据的获取
-CFRunLoopObserverContext context = {
-0,
-(__bridge void *)(self),//self传递过去
-&CFRetain,
-&CFRelease,
-NULL
-};
+  //创建上下文,用于控制器数据的获取
+  CFRunLoopObserverContext context = {
+    0,
+    (__bridge void *)(self),//self传递过去
+    &CFRetain,
+    &CFRelease,
+    NULL
+  };
 
-//创建一个监听
-static CFRunLoopObserverRef observer;
-observer = CFRunLoopObserverCreate(NULL, kCFRunLoopBeforeWaiting, YES, 0, &runLoopOserverCallBack,&context);
+  //创建一个监听
+  static CFRunLoopObserverRef observer;
+  observer = CFRunLoopObserverCreate(NULL, kCFRunLoopBeforeWaiting, YES, 0, &runLoopOserverCallBack,&context);
 
-//注册监听
-CFRunLoopAddObserver(runLoopRef, observer, kCFRunLoopCommonModes);
+  //注册监听
+  CFRunLoopAddObserver(runLoopRef, observer, kCFRunLoopCommonModes);
 
-//销毁
-CFRelease(observer);
+  //销毁
+  CFRelease(observer);
 }
 
 //监听CFRunLoopRef回调函数
-
 static void runLoopOserverCallBack(CFRunLoopObserverRef observer, CFRunLoopActivity activity, void *info){
-ViewController *viewController = (__bridge ViewController *)(info);//void *info即是我们前面传递的self(ViewController)
-NSLog(@"runLoopOserverCallBack -> name = %@",viewController.name);
+  ViewController *viewController = (__bridge ViewController *)(info);//void *info即是我们前面传递的self(ViewController)
+  NSLog(@"runLoopOserverCallBack -> name = %@",viewController.name);
 }
 
 - (void)timerMethod{
-//不做任何事情,为了让runLoop一直处理任务而不去睡眠
+	//不做任何事情,为了让runLoop一直处理任务而不去睡眠
 }
 @end
 ```

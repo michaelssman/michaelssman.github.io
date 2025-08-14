@@ -1,11 +1,11 @@
 # CFRunLoopModeRef
 
 - CFRunLoopModeRef代表着RunLoop的运行模式。
-- 每个RunLoop中有若干个Mode，每个Mode中又存在着若干个Observer、Source和Timer等等。
+- 每个RunLoop中有若干个Mode，每个Mode中又存在着若干个Observer、Source和Timer。
 - 每次runloop启动的时候，只能指定一个mode，这个mode被称为该RunLoop的CurrentMode。
 - 如果需要切换mode，只能先退出当前RunLoop，再重新指定一个mode进入。
   - 这样做主要是为了分隔开不同组的 Source/Timer/Observer，让其互不影响。
-  - 不同的mode之间是不能够通讯的。
+- 不同的mode之间是不能够通讯的。
   - 添加timer是添加在DefalutMode，在触摸的时候失效。
   - 即想在DefalutMode下接收到timer的回调事件，又想在TrackingMode下接收到回调事件。所以把timer复制到TrackingMode一份儿。两种模式都有同一个timer。处于不同的模式下都有正确的事件回调。
 
@@ -23,7 +23,9 @@
 
    它里面sources0/sources1/observers/timers都是null，可见这是一个占位的 Mode，没有实际作用，不是一种真正的Mode。
 
-   kCFRunLoopCommonModes**是一个集合set**，包含kCFRunLoopDefaultMode，UITrackingRunLoopMode。如果是CommMode会循环给所有mode添加事件处理，同步每一个mode。
+   kCFRunLoopCommonModes**是一个集合set**，包含kCFRunLoopDefaultMode，UITrackingRunLoopMode。
+   
+   CommMode会循环给所有mode添加事件处理，同步每一个mode。
    
    一个 Mode 可以将自己标记为”Common”属性（通过将其 ModeName 添加到 RunLoop 的 “commonModes” 中）。每当 RunLoop 的内容发生变化时，RunLoop 都会自动将 _commonModeItems 里的 Source/Observer/Timer 同步到具有 “Common” 标记的所有Mode里。
 

@@ -2,7 +2,7 @@
 
 **CFRunLoopTimerRef**：基于时间的触发器，CFRunLoopTimerRef是Core Foundation提供的基础定时器，NSTimer则是建立在CFRunLoopTimerRef之上的高层组件。
 
-当Timer被加入到RunLoop时，RunLoop会注册对应的时间点，当达到时间时，RunLoop会被唤醒，执行创建Timer时的回调。
+**当Timer被加入到RunLoop时，RunLoop会注册对应的时间点，当达到时间时，RunLoop会被唤醒，执行创建Timer时的回调。**
 
 ```swift
 // 创建一个每秒触发一次的定时器
