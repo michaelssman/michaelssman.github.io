@@ -8,11 +8,11 @@
 
 socket实际是传输层供给应用层的编程接口。传输层则在网络层的基础上提供进程到进程间的逻辑通道，而应用层的进程则利用传输层向另一台主机的某一进程通信。Socket就是应用层与传输层之间的桥梁。
 
-**通常情况下Socket连接就是TCP连接**，因此Socket连接一旦建立，通信双方即可开始相互发送数据内容，直到双方连接断开。
-
 在实际应用中，客户端到服务器之间的通信防火墙默认会关闭长时间处于非活跃状态的连接而导致 Socket 连接断连，因此需要通过轮询告诉网络，该连接处于活跃状态。
 
-Socket是对TCP/IP协议的封装，Socket本身并不是协议，而是一个调用接口（API），通过Socket，我们才能使用TCP/IP协议。
+Socket是对TCP/IP协议的封装，因此Socket连接一旦建立，通信双方即可开始相互发送数据内容，直到双方连接断开。
+
+Socket本身并不是协议，而是一个调用接口（API），通过Socket，我们才能使用TCP/IP协议。
 
 ## Socket机制
 
@@ -81,8 +81,6 @@ app读取的是本机内核`socket queue`队列中的数据。当app读取socket
 
 客户端和服务端有两个队列：读写队列
 
-## IO模型
-
 ## Java
 
 ### 双向通信
@@ -92,8 +90,6 @@ app读取的是本机内核`socket queue`队列中的数据。当app读取socket
 服务端代码
 
 ```java
-package com.hh.networking;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -132,8 +128,6 @@ public class TestServer {
 客户端代码
 
 ```java
-package com.hh.networking;
-
 import java.io.*;
 import java.net.Socket;
 

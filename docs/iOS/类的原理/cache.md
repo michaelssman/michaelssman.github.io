@@ -106,7 +106,7 @@ struct cache_t {//8+8=16字节
 private:
     explicit_atomic<uintptr_t> _bucketsAndMaybeMask; // 8字节  指针地址 存的是buckets首地址
     union {//联合体  成员变量之间互斥 8字节
-      //互斥结构，有struct没_originalPreoptCache，有_originalPreoptCache没struct
+      	//互斥结构，有struct没_originalPreoptCache，有_originalPreoptCache没struct
         struct {
             explicit_atomic<mask_t>    _maybeMask; // 4字节 bucket_t长度-1
 #if __LP64__  //long point 64位
@@ -117,9 +117,9 @@ private:
         explicit_atomic<preopt_cache_t *> _originalPreoptCache; // 指针8字节  隐藏的数据 一般看上面的struct
     };
 
-  /*
-  省略代码
-  */
+    /*
+    省略代码
+    */
 
     void incrementOccupied();
     void setBucketsAndMask(struct bucket_t *newBuckets, mask_t newMask);
@@ -142,9 +142,9 @@ public:
     struct bucket_t *buckets() const;//提供buckets()方法，返回bucket_t
     Class cls() const;
 
-  /*
-  省略代码
-  */
+    /*
+    省略代码
+    */
   	void insert(SEL sel, IMP imp, id receiver);
     void copyCacheNolock(objc_imp_cache_entry *buffer, int len);
     void destroy();
@@ -154,9 +154,9 @@ public:
     static void collectNolock(bool collectALot);
     static size_t bytesForCapacity(uint32_t cap);
 
-  /*
-  省略代码
-  */
+    /*
+    省略代码
+    */
 }
 ```
 
@@ -170,25 +170,25 @@ public:
 void cache_t::insert(SEL sel, IMP imp, id receiver)
 {
   
-  //在这个方法里打断点，可以看到调用堆栈 log_and_fill_cache。
-  //log_and_fill_cache在方法lookUpImpOrForward里面。
-  
-	/**
-	省略代码
-	*/
+    //在这个方法里打断点，可以看到调用堆栈 log_and_fill_cache。
+    //log_and_fill_cache在方法lookUpImpOrForward里面。
+
+    /**
+    省略代码
+    */
   
     // Use the cache as-is if until we exceed our expected fill ratio.
     mask_t newOccupied = occupied() + 1;//occupied自增1
     unsigned oldCapacity = capacity(), capacity = oldCapacity;
   
-  //在arm64架构下开辟一个长度为2的桶子，在X86_64架构下开辟一个长度为4的桶子
+  	//在arm64架构下开辟一个长度为2的桶子，在X86_64架构下开辟一个长度为4的桶子
     if (slowpath(isConstantEmptyCache())) {//cache是否为空
         // Cache is read-only. Replace it.
         if (!capacity) capacity = INIT_CACHE_SIZE;//初始值capacity：X86_64架构为4，arm64架构为2
         reallocate(oldCapacity, capacity, /* freeOld */false);
     }
   
-  //判断是否满了cache_fill_ratio，在arm64架构下如果缓存大小小于等于bucket_t长度的八分之七，在X86_64架构下如果缓存的大小小于等于桶子长度bucket_t长度的四分之三，则什么都不干。
+  	//判断是否满了cache_fill_ratio，在arm64架构下如果缓存大小小于等于bucket_t长度的八分之七，在X86_64架构下如果缓存的大小小于等于桶子长度bucket_t长度的四分之三，则什么都不干。
     else if (fastpath(newOccupied + CACHE_END_MARKER <= cache_fill_ratio(capacity))) {
         // Cache is less than 3/4 or 7/8 full. Use it as-is.
     }
@@ -214,14 +214,14 @@ void cache_t::insert(SEL sel, IMP imp, id receiver)
 
     // Scan for the first unused slot and insert there.
     // There is guaranteed to be an empty slot.
-  //操作bucket_t 往bucket里面set插入数据
+  	//操作bucket_t 往bucket里面set插入数据
     do {
         if (fastpath(b[i].sel() == 0)) {
             incrementOccupied();
             b[i].set<Atomic, Encoded>(b, sel, imp, cls());
             return;
         }
-      //已经缓存过了
+     	 //已经缓存过了
         if (b[i].sel() == sel) {
             // The entry was added to the cache by some other thread
             // before we grabbed the cacheUpdateLock.
@@ -248,7 +248,7 @@ void cache_t::insert(SEL sel, IMP imp, id receiver)
 - 刚开始初始化的容器的长度为4。
 - 是3/4扩容。这里的3/4扩容指的是：如果容器的长度为4，当第3个数据需要存储的时候，就要扩容了。如果容器的长度为8，当第6个数据需要存储的时候，就要扩容了。也就是说容器只能存储容器长度的3/4减1个方法。
 
-**还有一点就是：当容器扩容之后，前面存储的方法也会随之清空。只有新增的那一个。为了性能效率考虑，舍弃了之前旧的。**
+**注意：当容器扩容之后，前面存储的方法也会随之清空。只有新增的那一个。为了性能效率考虑，舍弃了之前旧的。**
 
 负载因子。0.75。空间利用率比较高。哈希冲突不会过多。
 
