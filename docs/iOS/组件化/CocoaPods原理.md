@@ -146,7 +146,7 @@ json文件、xib同样需要配置bundle。
 
 cd本地仓库文件夹
 
-git remote add origin https://github.com/huicuihui/GroupShadowTableView.git 后面的https地址是github当前仓库地址。
+git remote add origin https://github.com/michael/GroupShadowTableView.git 后面的https地址是github当前仓库地址。
 git push -u origin master。提交到远程master（分支名称）。
 
 ## .spec
@@ -173,7 +173,7 @@ Pod::Spec.new do |s|
   s.description      = '封装tableView基类 刷新自动加载更多'
 
 	# 主页地址，远程库的地址。（如果是私有的，地址只需要写到自己的github地址，不需要写项目具体地址）
-  s.homepage         = 'https://github.com/huicuihui/HHTableListViewController'
+  s.homepage         = 'https://github.com/michael/HHTableListViewController'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { '88888888@qq.com' => '88888888@qq.com' }
@@ -185,7 +185,7 @@ Pod::Spec.new do |s|
   # s.swift_versions        = ['5.0', '5.1', '5.2']
 
   # 重要：框架源码地址。找框架源码的时候就是根据这个找的。这个地址错了就找不到了，可以直接复制仓库地址。
-  s.source           = { :git => 'https://github.com/huicuihui/HHTableListViewController.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/michael/HHTableListViewController.git', :tag => s.version.to_s }
 	# 源代码文件（哪些文件是需要的，根据这个去找）。/**/* 代表 ：所有文件，文件夹中的所有文件。
   s.source_files = 'HHTableListViewController/Classes/**/*' # 找的Classes下的文件
   # pch头文件地址
@@ -209,7 +209,7 @@ end
 
 终端打印`pod repo`，master显示github上的源地址.
 
-如果用的是码云或者是其它的源地址，要在podfile文件中指定source，写上source ‘https://gifted.com/huicuihui/Spec.git’ 在这里面找。
+如果用的是码云或者是其它的源地址，要在podfile文件中指定source，写上source ‘https://gifted.com/michael/Spec.git’ 在这里面找。
 另外还要有source ‘https://github.com/CocoaPods/Specs.git’ 因为还有其他的第三方在github上。
 
 本地端索引库地址：/Users/用户名/.cocoapods/repos。里面的master是github上的索引。
@@ -233,7 +233,7 @@ pod spec lint
 
 ### 1、推到cocoapod上
 
-pod trunk register 88888888@qq.com 'huicuihui' --description='huihuiPro'。注册账号。
+pod trunk register 88888888@qq.com 'michael' --description='michaelPro'。注册账号。
 
 pod trunk push HHGroupShadowTableView.podspec --allow-warnings。如果有警告的话 需要在后面添加--allow-warnings去ignore警告。
 
@@ -245,7 +245,7 @@ pod master push HHGroupShadowTableView.podspec --allow-warnings
 
 在github上创建一个仓库HHSpecs 来管理自己的共有和私有库。
 
-pod repo add HHSpecs https://github.com/huicuihui/HHGroupShadowTableView.git
+pod repo add HHSpecs https://github.com/michael/HHGroupShadowTableView.git
 
 pod repo push HHSpecs HHGroupShadowTableView.podspec --allow-warnings
 
