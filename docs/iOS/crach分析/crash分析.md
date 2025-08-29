@@ -32,7 +32,7 @@ websocket
 
 ## 1、exception
 
-为什么是`NSSetUncaughtExceptionHandler`：
+`NSSetUncaughtExceptionHandler`：设置未捕获异常处理程序
 objc-os.mm文件中的exception_init函数。_objc_terminate回调。
 
 ```c++
@@ -62,8 +62,8 @@ static void _objc_terminate(void)
     }
 }
 ```
-catch到了就uncaught_handler回调。把e（exception）传出去。
-uncaught_handler点击进去有一个默认值，防止没有值，
+catch到了就`uncaught_handler`回调。把e（exception）传出去。
+`uncaught_handler`点击进去有一个默认值，防止没有值，
 objc-exception文件中
 
 ```c++
@@ -90,21 +90,21 @@ fn是外界传进来的block。fn给了uncaught_handler回调，一发生问题�
 
 ## 2、signal
 
-并不是所有的程序崩溃都是由于发生可以捕捉的异常的，有些时候引起崩溃的原因如：内存访问错误，重复释放等错误，这种错误它抛出的是Signal，所以必须要专门做Signal处理。
-当应用发生错误而产生上述Signal后，就将会进入我们自定义的回调函数SignalExceptionHandler。为了得到崩溃时的信息，还可以加入一些获取CallTrace及设备信息的代码。
+并不是所有的崩溃都是由于发生可以捕捉的异常，有时候引起崩溃的原因如：内存访问错误，重复释放等，这种错误它抛出的是Signal。
+当应用发生错误而产生Signal后，就会进入我们自定义的回调函数SignalExceptionHandler。为了得到崩溃时的信息，可以加入一些获取CallTrace及设备信息的代码。
 
-### `signal.h`中的`void(*signal(int, void (*)(int)))(int);`方法介绍
+### `signal.h`中的`void(*signal(int, void (*)(int)))(int);`
 
 这行代码是C语言中的一个函数声明，它定义了`signal`函数的原型。这个函数用于设置一个信号处理函数，它是UNIX、Linux系统编程中用来处理异步事件的一个标准库函数。
 
 让我们逐部分解析这个声明：
 
-- `signal`：这是函数名。
-- `int`：这是第一个参数的类型，表示信号的编号。在C语言中，不同的信号（如SIGINT, SIGTERM等）通常用整数常量来表示。
-- `void (*)(int)`：这是第二个参数的类型，它是一个函数指针，指向一个返回类型为void、接受一个int参数的函数。这个函数指针指向的函数是当信号发生时将要被调用的信号处理函数。
+- `signal`：函数名。
+- `int`：第一个参数的类型，表示信号的编号。在C语言中，不同的信号（如SIGINT, SIGTERM等）通常用整数常量来表示。
+- `void (*)(int)`：第二个参数的类型，它是一个函数指针，指向一个返回类型为void、接受一个int参数的函数。这个函数指针指向的函数是当信号发生时将要被调用的信号处理函数。
 - `void (*signal(int, void (*)(int)))(int)`：整个声明的返回类型是一个函数指针，这个函数指针指向的函数类型也是返回void、接受一个int参数的函数。这意味着`signal`函数返回的是另一个函数指针，这个返回的函数指针通常指向之前设置的旧的信号处理函数。
 
-简单来说，`signal`函数的作用是设置一个信号的处理函数（即当信号发生时系统自动调用的函数）。当你调用`signal`函数时，你需要提供两个参数：一个是你想要处理的信号的编号，另一个是一个指向信号处理函数的指针。然后，`signal`函数会返回一个指向之前关联到该信号的旧处理函数的指针（如果有的话）。
+`signal`函数的作用是设置一个信号的处理函数（即当信号发生时系统自动调用的函数）。当你调用`signal`函数时，你需要提供两个参数：一个是你想要处理的信号的编号，另一个是一个指向信号处理函数的指针。然后，`signal`函数会返回一个指向之前关联到该信号的旧处理函数的指针（如果有的话）。
 
 使用`signal`函数的一个典型例子是捕获中断信号（如用户按下Ctrl+C产生的SIGINT信号），以确保程序可以以一种预定的方式响应这个信号，比如进行清理工作并优雅地退出。
 
@@ -132,15 +132,15 @@ int main() {
 ```
 在这个例子中，当用户按下Ctrl+C时，程序不会立即退出，而是调用`handle_sigint`函数来处理信号。
 
-### BSD和Mach
+## BSD和Mach
 
 BSD和Mach是两种不同的内核，分别用于不同的操作系统。在macOS和iOS系统中，BSD是底层的网络和文件系统部分，而Mach是底层的进程管理和通信部分。
 
-#### BSD崩溃
+### BSD崩溃
 
 BSD崩溃通常指应用程序中的崩溃，例如访问无效的内存地址或执行非法指令等。在BSD崩溃发生时，**操作系统会发送一个信号给应用程序，称为SIGSEGV（Segmentation Violation）信号。应用程序可以使用信号处理机制来捕获和处理该信号，通常使用的方法是注册SIGSEGV信号的处理函数。**在处理函数中，您可以记录崩溃信息、生成崩溃报告或采取其他操作。
 
-#### Mach崩溃
+### Mach崩溃
 
 Mach崩溃通常指系统级别的崩溃，例如虚拟内存错误、线程死锁或异常信号等。Mach异常和信号是在内核级别处理的，应用程序无法直接捕获和处理这些异常。然而，您可以使用Mach异常处理机制来**注册异常处理器**，并对特定的Mach异常进行处理。通过注册异常处理器，您可以在Mach崩溃发生时收到通知，并进行一些操作，如记录日志、生成崩溃报告或采取其他措施。
 
@@ -183,7 +183,7 @@ symbolicatecrash xxxx.crash > xxxx.txt 或 symbolicatecrash -o xxxx.txt xxxx.cra
 
 ## Bugly上传符号表
 
-上传符号表（也称为符号文件，对于iOS是dSYM文件，对于Android是mapping文件）是Bugly崩溃分析的一个重要步骤，因为它可以将加密的崩溃日志还原为可读的堆栈信息。
+上传符号表是Bugly崩溃分析的一个重要步骤，因为它可以将加密的崩溃日志还原为可读的堆栈信息。
 
 CI（持续集成）流水线是自动化地集成和测试代码变更的一系列流程，确保新的代码提交不会破坏现有的功能。在CI流程中集成上传Bugly符号表的步骤可以自动化地处理符号文件的上传，提高效率并减少人为错误。
 
@@ -227,7 +227,7 @@ curl -k "http://api.bugly.qq.com/openapi/file/upload/symbol?app_id=你的AppID&a
 
 请注意，你需要将`你的AppID`、`你的AppKey`、`你的BundleID`、`你的版本号`和`文件路径`替换为实际的值。而且，对于iOS，通常需要先将dSYM文件压缩成zip格式。
 
-确保在CI流水线中正确设置所有的环境变量，并且在上传前测试脚本的有效性。此外，Bugly的API和上传方式可能会随着时间而变化，因此请参考最新的Bugly文档来获取最准确的信息。
+确保在CI流水线中正确设置所有的环境变量，并且在上传前测试脚本的有效性。
 
 ### bugly使用上传工具上传
 

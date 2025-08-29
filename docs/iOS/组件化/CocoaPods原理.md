@@ -2,9 +2,7 @@
 
 ![image-20210918142536466](CocoaPods原理.assets/image-20210918142536466.png)
 
-## 项目安装框架源码
-
-### 使用pod search搜索不到时
+## 使用pod search搜索不到时
 
 删除`/Users/用户名/Library/Caches/CocoaPods`下的`search_index.json`检索索引文件，然后pod search就会重新生成最新的。就可以搜索到自己刚才的库。
 
@@ -12,15 +10,15 @@ pod search 的时候就是在search_index.json中查找的。
 
 使用的时候要在Podfile文件中添加source指定源地址。
 
-### 远程代码spec索引仓库
+## 远程spec索引库
 
 使用的时候 pod setup**更新本地索引库**，把远程索引库pod到本地。
 
-### 本地代码spec索引仓库
+## 本地spec索引库
 
-本地代码仓库的文件地址路径：`/硬盘/Users/用户名/.cocoapods/repos`，里面有master和trunk。
+本地索引库地址：/Users/用户名/.cocoapods/repos。里面有master、trunk、cocoapods、清华镜像等，master是github上的索引。
 
-向cocoapods上面上传代码和拉取代码，拉取代码需要安装cocoapods。
+向cocoapods上面上传代码和拉取代码。
 
 `pod search AFNetworking`就是在`.cocoapods/repos`本地资源库找到索引`AFNetworking.podspec.json`。
 
@@ -32,15 +30,13 @@ pod search 的时候就是在search_index.json中查找的。
 
 先抽成本地的，本地的私有索引库。然后提交远程。
 
-### 1、cd到本地的Lib文件夹，也可以是其它任意文件夹。
+### 1、cd到本地文件夹
 
-### 2、`pod lib create GroupShadowTableView`，创建模版。
+### 2、`pod lib create GroupShadowTableView`，创建模版
 
 Cloning `https://github.com/CocoaPods/pod-template.git` into `GroupShadowTableView`.从github上面clone一个pod模版，创建仓库。
 
-Configuring GroupShadowTableView template. 下面就是一些配置。
-
-模版执行完之后 
+模版执行完之后，下面就是一些配置。
 
 - What platform do you want to use?? [ iOS / macOS ] 选择iOS
 - What language do you want to use?? [ Swift / ObjC ] 输入语言swift/Objc 
@@ -51,11 +47,9 @@ Configuring GroupShadowTableView template. 下面就是一些配置。
 
 然后就创建好了，项目会自动打开。里面自动有一个.podspec文件。因为前面选择 了Yes，所以里面有`Delegate`和`Viewcontroller`方便测试。
 
-### 3、拖入文件，修改文件
+### 3、拖入文件
 
-Xcode项目中Pods里面的Development Pods的文件夹下有一个GroupShadowTableView文件夹，也就是`ReplaceMe.m`文件所在的位置，在/Lib/GroupShadowTableView/GroupShadowTableView/Classes该文件夹中放自己抽取的代码，以及自己写的代码。再把ReplaceMe.m文件删除。
-
-然后 在终端cd Podfile文件路径cd /Users/当前用户/Documents/Lib/GroupShadowTableView/Example 然后pod install安装。
+Xcode项目中Pods里面的Development Pods的文件夹下有一个GroupShadowTableView文件夹，也就是`ReplaceMe.m`文件所在的位置，在/Lib/GroupShadowTableView/GroupShadowTableView/Classes文件夹中放自己抽取的代码。再把ReplaceMe.m文件删除。
 
 **一定要记得pod install** 不然Development Pods文件夹下没有文件，本地无法使用。
 
@@ -70,13 +64,9 @@ Xcode项目中Pods里面的Development Pods的文件夹下有一个GroupShadowTa
   s.prefix_header_contents = '#import "Masonry.h"','#import "UIKit+AFNetworking.h"','#import "LGMacros.h"'
 ```
 
-把依赖的第三方在.podspec文件中添加上，然后pod install安装。
+**每次修改都需要`pod install`。**
 
-### 5、 `Pod install` 安装
-
-每次修改都**需要`pod install`**。
-
-### 6、创建HHSpecs
+### 5、创建HHSpecs远程索引库
 
 创建https://github.com/michaelssman/HHSpecs.git管理库，创建库文件夹HHUtils，里面创建文件夹0.1.0（tag标签），复制`/Users/michael/Documents/HHLib/HHUtils/Example/Pods/Local Podspecs/HHUtils.podspec.json`文件到文件夹。
 
@@ -93,7 +83,7 @@ platform :ios, '9.0'
 
 target 'LGCommonUIModule_Example' do
   pod 'LGCommonUIModule', :path => '../'
-  pod 'LGMacroAndCategoryModule', :path => '../../LGMacroAndCategoryModule'//本地库
+  pod 'LGMacroAndCategoryModule', :path => '../../LGMacroAndCategoryModule'	//本地库
 end
 ```
 
@@ -125,9 +115,9 @@ public func bundleImage(_ imageName: String) -> UIImage {
 
 同时还需要修改Pods/Development Pods/自己代码文件夹/Pod/.podspec文件下的resource_bundles
 
-```
+```ruby
 s.resource_bundles = {
-    'YourPodName' => ['YourPodName/Assets/*.{png,jpeg,jpg,imageset}']
+    'YourPodName' => ['YourPodName/Assets/*/*.{png,jpeg,jpg,imageset}']
 }
 ```
 
@@ -140,9 +130,7 @@ json文件、xib同样需要配置bundle。
 
 ## 做成远程的
 
-本地的索引库，其他人用不了你本地电脑上的。所以做成远程的代码仓库。使用码云或者github等。
-
-创建一个仓库，仓库名必须跟框架名一样，选择导入已有项目，然后创建。
+使用码云或者github等，创建一个仓库，仓库名必须跟框架名一样，选择导入已有项目，然后创建。
 
 cd本地仓库文件夹
 
@@ -211,11 +199,6 @@ end
 
 如果用的是码云或者是其它的源地址，要在podfile文件中指定source，写上source ‘https://gifted.com/michael/Spec.git’ 在这里面找。
 另外还要有source ‘https://github.com/CocoaPods/Specs.git’ 因为还有其他的第三方在github上。
-
-本地端索引库地址：/Users/用户名/.cocoapods/repos。里面的master是github上的索引。
-
-私有库是提交到本地索引库的，本地端的spec文件会自动的同步远程索引库。
-向本地提交一个spec文件，本地的spec文件会 自动的向远程端同步。
 
 ## 提交
 
@@ -298,7 +281,7 @@ end
 @import Alamofire;
 ```
 
-或者，如果你在项目设置中关闭了模块支持，你可以使用生成的Swift头文件：
+或者，如果你在项目设置中关闭了模块支持，可以使用生成的Swift头文件：
 
 ```objc
 #import <YourProjectName-Swift.h>
@@ -349,7 +332,7 @@ NetworkManager *manager = [[NetworkManager alloc] init];
    ```
 
 2. 为特定的依赖项设置 `:modular_headers => true`：
-   如果你不想对所有的依赖项使用模块化头文件，你可以只为特定的依赖项设置。在Podfile中，找到相关的依赖项，然后添加 `:modular_headers => true` 选项。
+   如果不想对所有的依赖项使用模块化头文件，可以只为特定的依赖项设置。在Podfile中，找到相关的依赖项，然后添加 `:modular_headers => true` 选项。
 
    ```ruby
    pod 'MJRefresh', :modular_headers => true

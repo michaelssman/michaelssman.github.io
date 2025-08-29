@@ -56,7 +56,6 @@ nav:
       - iOS/Swift/defer.md
       - iOS/Swift/泛型和关联类型.md
       - iOS/Swift/closure.md
-      - iOS/Swift/as.md
       - iOS/Swift/源码.md
       - iOS/Swift/运算符重载.md
       - iOS/Swift/高阶函数.md
@@ -108,7 +107,6 @@ nav:
     - 组件化:
       - iOS/组件化/CocoaPods原理.md
       - iOS/组件化/Pod.md
-      - iOS/组件化/组件化.md
       - iOS/组件化/组件化通讯.md
     - iOS/响应者链.md
     - 性能优化:

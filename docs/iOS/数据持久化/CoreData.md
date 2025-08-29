@@ -1,6 +1,6 @@
 # CoreData
 
-对象关系映射（英语称object Relational Mapping，简称ORM）。
+对象关系映射（Object Relational Mapping，简称ORM）。
 
 ORM是通过使用描述对象和数据库之间映射的元数据，可以实现将对象自动持久化到关系数据库当中。
 
@@ -10,7 +10,7 @@ ORM是通过使用描述对象和数据库之间映射的元数据，可以实�
 
 ### 数据模型文件 - Data Model
 
-当我们用`Core Data`时，我们需要一个用来存放数据模型的地方，数据模型文件就是我们要创建的文件类型。它的后缀是`.xcdatamodeld`。只要在项目中选 **新建文件→Data Model** 即可创建。
+用`Core Data`时，我们需要一个用来存放数据模型的地方，数据模型文件就是我们要创建的文件类型。它的后缀是`.xcdatamodeld`。只要在项目中选 **新建文件→Data Model** 即可创建。
 
 默认系统提供的命名为 `Model.xcdatamodeld` 。
 
@@ -18,7 +18,7 @@ ORM是通过使用描述对象和数据库之间映射的元数据，可以实�
 
 ### 数据模型中的“表格” - Entity实体
 
-`Entity`中文翻译叫“实体”。如果把数据模型文件比作数据库中的“库”，那么`Entity`就相当于数据库中的“表格”。`Entity`就是让你定义数据表格类型的名词。
+如果把数据模型文件比作数据库中的“库”，那么`Entity`就相当于数据库中的“表格”。`Entity`就是让你定义数据表格类型的名词。
 
 假设我这个数据模型是用来存放图书馆信息的，那么就建立一个叫`Book`的`Entity`。
 
@@ -29,7 +29,7 @@ ORM是通过使用描述对象和数据库之间映射的元数据，可以实�
 
 ### “属性” - Attributes
 
-当建立一个名为`Book`的`Entity`时，会看到视图中有栏写着`Attributes`，我们知道，当我们定义一本书时，自然要定义书名，书的编码等信息。这部分信息叫`Attributes`，即书的属性。
+当建立一个名为`Book`的`Entity`时，会看到视图中有栏写着`Attributes`，当定义一本书时，自然要定义书名，书的编码等信息。这部分信息叫`Attributes`，即书的属性。
 
 Book的`Entity`：
 
@@ -50,7 +50,7 @@ Reader的`Entity`：
 
 ### “关系” - Relationship
 
-在我们使用`Entity`编辑时，除了看到了`Attributes`一栏，还看到下面有`Relationships`一栏。
+在使用`Entity`编辑时，除了看到了`Attributes`一栏，还看到下面有`Relationships`一栏。
 
 当定义图书馆信息时，书籍和读者的信息，这两个信息彼此是孤立的，而事实上他们存在着联系。
 

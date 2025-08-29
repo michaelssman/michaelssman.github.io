@@ -77,7 +77,7 @@ NSInvocation sign target 信息
 @property (nonatomic, strong) id block;//保存要执行的切面block，即原方法执行前后要调用的方法
 @property (nonatomic, strong) NSMethodSignature *blockSignature;//block签名信息
 @property (nonatomic, weak) id object;//target，即保存当前对象
-@property (nonatomic, assign) AspectOptions options;//是个枚举，切面执行时机
+@property (nonatomic, assign) AspectOptions options;//是个枚举，切面时机
 @end
 ```
 
@@ -369,7 +369,7 @@ static Class aspect_hookClass(NSObject *self, NSError **error) {
 
 ### aspect_swizzleForwardInvocation
 
-主要功能就是把当前类的 forwardInvocation: 替换成` __ASPECTS_ARE_BEING_CALLED__` ，这样当触发消息转发的时候，就会调用 ` __ASPECTS_ARE_BEING_CALLED__`  方法
+把当前类的`forwardInvocation:`替换成` __ASPECTS_ARE_BEING_CALLED__` ，这样当触发消息转发的时候，就会调用 `__ASPECTS_ARE_BEING_CALLED__`方法
 
 ```objective-c
 static NSString *const AspectsForwardInvocationSelectorName = @"__aspects_forwardInvocation:";
@@ -441,7 +441,7 @@ static void __ASPECTS_ARE_BEING_CALLED__(__unsafe_unretained NSObject *self, SEL
 }
 ```
 
-## 总结：
+## 总结
 
 Aspects 利用消息转发机制，通过hook第三层的转发方法`forwardInvocation: `，然后根据切面的时机来动态调用block。接下来详细分析巧妙的设计
 
