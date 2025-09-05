@@ -32,9 +32,7 @@ Block可以作为函数参数或者函数的返回值，而其本身又可以带
 
 ### 2、NSStackBlock
 
-捕获了外界变量，或者OC的属性，并且**赋值给弱引用**
-
-位于栈内存，函数返回后Block将无效，随栈自生自灭。
+捕获了外界变量，或者OC的属性，并且**赋值给弱引用**。
 
 如果想让它获得比stack更久的生命，那就调用`Block_copy()`，或者copy修饰，拷贝到堆内存上，这也是为什么用copy修饰Block的原因。
 
@@ -51,13 +49,13 @@ MRC下：
 
  `__NSStackBlock__ __NSMallocBlock__`
 
-结果分析：当Block中使用了外部变量，Block为NSStackBlock类型，存储在栈区，当函数执行结束后，该Block就会被释放，调用copy后，栈区Block被copy到堆区NSMallocBlock。
+结果分析：当Block中使用了外部变量，Block为NSStackBlock类型。**存储在栈区内存，随栈自生自灭。当函数执行结束后，该Block就会被释放。**调用copy后，栈区Block被copy到堆区NSMallocBlock。
 
 ARC下：
 
 `__NSMallocBlock__ __NSMallocBlock__`
 
-分析结果：在ARC下，生成的Block默认也是NSStackBlock类型，只是在变量赋值的时候，系统默认对其进行了copy，从NSStackBlock给copy到堆区的NSMallocBlock类型。而在非arc中，则需要手动copy。
+分析结果：在ARC下，生成的Block默认也是NSStackBlock类型，只是在变量赋值的时候，系统默认对其进行了copy，从NSStackBlock给copy到堆区的NSMallocBlock类型。而在mrc中，则需要手动copy。
 
 ### 3、NSMallocBlock
 
@@ -102,7 +100,7 @@ self.block = ^{
 };
 ```
 
-分析：因为Block是当前self属性，self强引用Block。当在Block内部捕获了self（使用_一样也是引用了self），Block便强引用了self，两者相互持有，无法释放。  
+分析：Block是当前self属性，self强引用Block。当在Block内部捕获了self（使用_一样也是引用了self），Block便强引用了self，两者相互持有，无法释放。  
 
 解决方法是ARC 下`__weak`修饰self：__`weak Class *weakSelf = self;` MRC下`__weak`改为`__block`。
 
@@ -136,8 +134,6 @@ vc.refreshFuZhu = ^{
 警告是因为在 block 中强引用了 `vc`，可能导致 retain cycle（循环引用）。在 Objective-C 和 Swift 中，**block 会捕获并持有其引用的对象**。如果 block 中强引用了 `vc`，而 `vc` 又持有这个 block，就会导致 retain cycle。
 
 要解决这个问题，可以在 block 中使用弱引用（weak reference）来避免 retain cycle。可以使用 `__weak` 或 `__block` 关键字来声明一个弱引用的 `vc`。
-
-以下是如何修改你的代码来避免 retain cycle：
 
 ```objc
 __weak typeof(vc) weakVC = vc;
@@ -195,8 +191,6 @@ vc.refreshFuZhu = ^{
 ### 1、局部变量
 
 #### 1、基本数据类型
-
-当在Block中使用局部变量时，在Block中只读。
 
 Block会copy该局部变量的值，在Block中作为常量使用，不允许修改。所以即使变量的值在Block外改变，也不影响他在Block中的值。
 
@@ -265,8 +259,7 @@ void (^block3) () = ^ {
 		self.num++;
 };
 block3();
-NSLog(@"%d",self.num);
-//输出结果为 3
+NSLog(@"%d",self.num);	//输出结果为 3
 ```
 
 3、指针类型： 成员变量（实例变量），静态变量，全局变量
@@ -386,8 +379,8 @@ int main1(){
 ```c++
  int main1(){
      int a = 10;
- //比之前多个一个参数a  3个参数
-   //参数1：block的实现函数
+ 		 //比之前多个一个参数a  3个参数
+     //参数1：block的实现函数
      void(*block)(void) = (__main1_block_impl_0(__main1_block_func_0, &__main1_block_desc_0_DATA, a));
      ((void (*)(__block_impl *))((__block_impl *)block)->FuncPtr)((__block_impl *)block);
      return 0;
@@ -800,7 +793,7 @@ struct Block_layout {
         @对象
         cmd方法编号        
     */
-  //存储block附加信息
+  	//存储block附加信息
     volatile int32_t flags; // contains ref count//标识符 存数据信息，是否正在析构，是否有keep函数，是否有析构函数 等等很多
   
     int32_t reserved;//保留的变量（暂时不用）

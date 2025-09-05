@@ -290,7 +290,7 @@ nav:
         - 数据结构与算法/数据结构/链表/线性表.md
         - 数据结构与算法/数据结构/链表/链表.md
         - 数据结构与算法/数据结构/链表/STL中的list.md
-      - 数据结构与算法/数据结构/栈Stack.md
+      - 数据结构与算法/数据结构/Stack.md
       - 数据结构与算法/数据结构/队列.md
       - 树:
         - 数据结构与算法/数据结构/树/树.md
@@ -428,9 +428,9 @@ nav:
     - Java/新热文章-实时计算.md
     - Java/项目部署_持续集成.md
   - HarmonyOS:
+    - Harmony/Harmony.md
     - Harmony/数据类型.md
     - Harmony/class.md
-    - Harmony/啊啊啊.md
     - Harmony/声明式UI.md
     - Harmony/lazyForEach.md
   - 数据库:
@@ -447,7 +447,6 @@ nav:
     - MAC/清理Xcode.md
     - MAC/software.md
     - MAC/vscode.md
-    - MAC/word.md
   - app:
     - app/jizhanghelp.md
     - app/jizhangpp.md

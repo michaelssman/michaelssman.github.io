@@ -25,7 +25,7 @@
 
 valueForKey调用顺序
 
-1. 先调用相关方法 先后顺序是：getKey -> key -> isKey->_key 
+1. 先调用相关方法：getKey -> key -> isKey->_key 
 
   如果实现了`countOfKey`，`objectInKeyAtIndex`这两个方法，key变成了NSKeyValueArray是NSArray子类，返回一个数组。
 

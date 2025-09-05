@@ -1,20 +1,16 @@
+# Harmony
+
 Harmony OS应用开发使用ArkTS语言，ArkTS是在TypeScript基础上的扩展，TS是JS的超集。
 
 ## 网址
 
-华为开发者联盟：https://developer.huawei.com/consumer/cn/
-
-下载工具：https://developer.huawei.com/consumer/cn/download/
-
-OpenHarmony三方库中心仓：https://ohpm.openharmony.cn/#/cn/home
-
-三方库资源：https://gitee.com/openharmony-tpc/tpc_resource
-
-应用开发导读：https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/application-dev-guide-0000001630265101
-
-Gitee安全开发指南：https://gitee.com/openharmony/docs/tree/master/zh-cn/application-dev/security
-
-华为开发者平台安全开发指南：https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/asset-store-kit-overview-0000001816916898
+- 华为开发者联盟：https://developer.huawei.com/consumer/cn/
+- 下载工具：https://developer.huawei.com/consumer/cn/download/
+- OpenHarmony三方库中心仓：https://ohpm.openharmony.cn/#/cn/home
+- 三方库资源：https://gitee.com/openharmony-tpc/tpc_resource
+- 应用开发导读：https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/application-dev-guide-0000001630265101
+- Gitee安全开发指南：https://gitee.com/openharmony/docs/tree/master/zh-cn/application-dev/security
+- 华为开发者平台安全开发指南：https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/asset-store-kit-overview-0000001816916898
 
 三方框架
 
@@ -83,6 +79,7 @@ drawing画图；图形 文字 位图（图像）
 - Feature:应用的特性模块，用于实现应用的特性功能
 
 **HSP(Harmony shared Package)动态共享包，运行时复用**
+
 主要使用场景
 
 - 多模块(HAP或者HSP)共用的代码、资源可以使用HSP，提高代码的可重用性和可维护性
@@ -92,6 +89,7 @@ drawing画图；图形 文字 位图（图像）
 不常用的功能，封装成一个独立的HSP模块按需加载。
 
 **HAR(Harmony Archive)静态共享包，编译态复用**
+
 主要使用场景
 
 - 作为二方库，发布到OHPM私仓，供公司内部其他应用依赖使用
@@ -344,7 +342,7 @@ function f(): returnType { //返回值类型是一个函数类型
 
 ### 函数重载
 
-我们可以通过编写重载，指定函数的不同调用方式。具体方法为，为同一个函数写入多个同名但签名不同的函数头，函数实现紧随其后。
+可以通过编写重载，指定函数的不同调用方式。具体方法为，为同一个函数写入多个同名但签名不同的函数头，函数实现紧随其后。
 
 ```typescript
 function foo(x: number): void;            /* 第一个函数定义 */

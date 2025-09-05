@@ -30,7 +30,7 @@
   - 了解自动释放池底层原理。
   - 了解属性关键字（retain、assign、strong、weak、copy）。
   - 了解weak对象存储的原理和销毁置nil的原理，对象dealloc流程。
-- 了解对象的底层原理（内存对齐、alloc流程，isa指针）。
+- 了解对象的底层原理（内存对齐、alloc流程、isa指针）。
 - 了解类的原理和底层数据结构。
 - 了解消息发送和转发机制。
 - 了解Runloop
