@@ -6,15 +6,15 @@
 
 意义：单点登录要用到。
 
-登录成功之后，服务器会返回一个响应结果（token），客户端去保存这个token，一般是local storage或者user default。每次重新登陆都会给一个token。
+每次登录成功之后，服务器都会返回一个响应结果（token），客户端去保存这个token，一般是local storage或者user default。
 
 后续请求（受保护的接口）的时候会在请求头把这个token给带上，服务器验证token是有效的，就会响应一个正确的结果。
 
 服务器响应401没有权限，原因是token的过期时间非常的短，只有几十分钟。
 
-服务器除了会返回一个过期时间非常短的token，还有一个过期时间比较长Rrefreshtoken，过期时间一般几天或者几个月。客户端也要保存这个refreshtoken。
+服务器除了会返回一个过期时间非常短的token，还有一个过期时间比较长Rrefreshtoken，过期时间一般几天或者几个月。**客户端也要保存这个refreshtoken。**
 
-token过期的话就可以拿这个过期时间长的refreshtoken去重新换，调用刷新token的网络请求。同样的客户端去保存token。
+token过期的话就可以拿这个过期时间长的refreshtoken去重新换，调用刷新token的网络请求。
 
 ### 实现无感刷新
 

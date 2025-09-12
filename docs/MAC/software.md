@@ -19,8 +19,3 @@
 ## win
 
 - Bandizip MSE：解压缩
-
-## iPhone
-- 随手记
-- 北京交警
-- 交管12123

@@ -8,9 +8,7 @@ Harmony OS应用开发使用ArkTS语言，ArkTS是在TypeScript基础上的扩�
 - 下载工具：https://developer.huawei.com/consumer/cn/download/
 - OpenHarmony三方库中心仓：https://ohpm.openharmony.cn/#/cn/home
 - 三方库资源：https://gitee.com/openharmony-tpc/tpc_resource
-- 应用开发导读：https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/application-dev-guide-0000001630265101
 - Gitee安全开发指南：https://gitee.com/openharmony/docs/tree/master/zh-cn/application-dev/security
-- 华为开发者平台安全开发指南：https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/asset-store-kit-overview-0000001816916898
 
 三方框架
 

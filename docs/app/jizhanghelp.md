@@ -180,5 +180,5 @@
 
 对于任何支持请求，请发送电子邮件至：michaelss_work@outlook.com。
 
-## 推送功能
+## 推送
 
