@@ -561,8 +561,8 @@ closure1 = nil
 ## 内存
 
 ```swift
-vc.serialNumber = { [weak self] serialNumberString in
-	guard let strongSelf = self else { return }
+vc.serialNumber = { [weak self] x in
+  guard let self = self else { return }
 	///里面使用strongSelf
 }
 ```
