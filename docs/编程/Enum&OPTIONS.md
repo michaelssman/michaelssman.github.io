@@ -17,8 +17,6 @@ enum Season {
 }
 ```
 
-`Season` 是一个枚举，它有四个值：`spring`、`summer`、`autumn` 和 `winter`。
-
 使用枚举：
 
 ```dart
@@ -68,7 +66,7 @@ Season: Season.autumn, Index: 2
 Season: Season.winter, Index: 3
 ```
 
-在实际的 Flutter 应用中，枚举可以用于定义主题、颜色、路由名称等。它们提供了一种类型安全的方式来处理一组预定义的选项。
+在应用中，枚举可以用于定义主题、颜色、路由名称等。它们提供了一种类型安全的方式来处理一组预定义的选项。
 
 ## Swift Enum
 
@@ -263,11 +261,9 @@ print(MemoryLayout<LGEnum1>.size)//打印结果是9
 print(MemoryLayout<LGEnum1>.stride)//16
 ```
 
-Swift 中的 enum 中的 Single-payload enums 会使用负载类型中的额外空间来记录没有负载的 case 值。
+Swift 中的 enum 中的 Single-payload enums 会**使用负载类型中的额外空间，来记录没有负载的 case 值**。
 
 Bool 类型是 1字节，也就是 UInt8 ，所以当前能表达 256 个 case的情况，对于布尔类型来说，只需要使用低位的 0, 1 这两种情况，其他剩余的空间就可以用来表示没有负载的 case 值。 
-
-可以看到，不同的 case 值确实是按照我们在开始得出来的那个结论进行布局的。 
 
 对于 Int 类型的负载来说，系统没有办法推算当前的负载所要使用的位数，也就意味着当前 Int 类型的负载是没有额外的剩余空间，这个时候就需要额外开辟内存空间来去存储我们的 case 值，也就是 8 + 1 = 9 字节。 
 

@@ -32,3 +32,17 @@ array1 = [[NSMutableArray alloc]initWithArray:array0 copyItems:**YES**];
 model.copy浅拷贝
 
 model.mutableCopy需要实现copy协议，model里面的子model也会拷贝。属于深拷贝。
+
+## swift
+
+A页面进入B页面，B页面的属性值由A页面传进来，要想B页面的属性修改，不影响A页面。需要拷贝。
+
+```swift
+prodPrices = prodPrices.map({$0.mutableCopy() as! SCMPriceModel})
+```
+
+要遵循`<NSCopying,NSMutableCopying>`协议，实现方法：
+```objective-c
+- (id)copyWithZone:(NSZone *)zone {}
+- (id)mutableCopyWithZone:(NSZone *)zone {}
+```

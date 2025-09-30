@@ -58,8 +58,8 @@ Container(
   decoration: BoxDecoration(
     //边框
     border: Border.all(
-      color: Colors.amberAccent, 
-      width: 2.0,
+      color: Colors.amberAccent,	//边框颜色
+      width: 2.0,	//边框粗细
     ),
     //背景颜色
     color: Colors.green,
