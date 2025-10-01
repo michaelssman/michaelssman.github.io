@@ -55,8 +55,13 @@ ALTER TABLE users ADD COLUMN email TEXT DEFAULT 'example@example.com';
 索引不能重复
 
 ```sql
-ALTER TABLE student
-ADD constraint uk_mail UNIQUE (email)
+ALTER TABLE student ADD constraint uk_mail UNIQUE (email)
+```
+
+表信息查询语句
+
+```sql
+PRAGMA table_info($tableName)
 ```
 
 ## insert
@@ -93,8 +98,6 @@ drop Database Students;
 
 ## update
 
-### 参数化查询
-
 为了避免SQL注入攻击，最好使用**参数化查询**，而不是直接将变量插入到SQL语句中。
 
 ```dart
@@ -114,8 +117,8 @@ txn.rawUpdate(
 SELECT * 
 FROM TABLENAME 
 WHERE editDate < 'last_edit_date' -- 选择editDate小于上次查询的最后一条数据的editDate的数据
-AND name = '倒数离开' 
-AND showtime < '1517904068.1524' 
+	AND name = '倒数离开' 
+	AND showtime < '1517904068.1524' 
 ORDER BY date DESC, id DESC -- 首先根据date字段降序排序，如果date相同，那么再根据id字段降序排序
 LIMIT 10 OFFSET %d ; -- 分页，每页10个。
 ```
@@ -135,13 +138,17 @@ SELECT stu_name,stu_gender FROM Students
 按日分组：
 ```sql
 -- 通过年份、月份和日期分组，并计算每个日期的记录数
-SELECT YEAR(date_field) AS year, MONTH(date_field) AS month, DAY(date_field) AS day, COUNT(*) AS count
+SELECT 
+	YEAR(date_field) AS year, 
+	MONTH(date_field) AS month, 
+	DAY(date_field) AS day, 
+	COUNT(*) AS count
 FROM your_table
 GROUP BY YEAR(date_field), MONTH(date_field), DAY(date_field)
 ORDER BY YEAR(date_field) DESC, MONTH(date_field) DESC, DAY(date_field) DESC;
 ```
 
-"date_field" 是一个日期（date）类型的字段，而不是文本（text）类型。日期类型字段用于存储日期和时间信息，允许您进行日期和时间相关的操作，例如按年、月和日分组、排序和计算日期差异，以便可以对其进行查询和分组。文本字段不具备这些日期操作的能力。
+"date_field" 是一个日期（date）类型的字段，而不是文本（text）类型。日期类型字段用于存储日期和时间信息，允许您进行日期和时间相关的操作，例如按年、月和日分组、排序和计算日期差异，以便可以对其进行查询和分组。
 
 在大多数关系型数据库管理系统中，日期类型的字段通常被定义为"DATE"，"DATETIME"，"TIMESTAMP"等，具体的命名可能会因数据库系统而异。确保在创建数据库表时，将日期字段指定为适当的日期类型，以便能够正确地存储和处理日期数据。
 
@@ -261,3 +268,13 @@ SUM函数来计算所有账户的总余额，结果是一个列表。
 
 - `and`：和
 - `or`：或
+
+## 索引
+
+```sql
+-- 建立联合索引
+CREATE INDEX idx_name_age ON users(name, age);
+--这个查询就用到了覆盖索引
+SELECT name, age FROM users WHERE name = '张三';
+```
+

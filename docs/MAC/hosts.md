@@ -2,26 +2,15 @@
 
 ## 配置Hosts
 
-在ipaddress中查找github.com与github.global.ssl.fastly.net对应的ip，配置到hosts即可。
-
 ```shell
 sudo vi /etc/hosts
-```
-
-```
-https://www.ipaddress.com/
-```
-
-```
-xxxx  github.global.ssl.fastly.net
-xxxx  github.com
 ```
 
 在`/etc/hosts`中添加：
 
 ```
-151.101.72.249 github.http://global.ssl.fastly.net
-140.82.113.4 github.com
+192.30.255.112  github.com
+185.31.16.184   github.global.ssl.fastly.net
 ```
 
 ## Windows清除DNS缓存：
@@ -47,7 +36,7 @@ PS C:\Users\micha> git config --global http.proxy http://127.0.0.1:10809
 
 1. **获取最新IP地址**  
    - 访问IP查询网站（如 [IPAddress.com](https://www.ipaddress.com/ip-lookup)），输入`github.com`和`github.global.ssl.fastly.net`，获取当前有效的IPv4地址。  
-   - 示例（需替换为最新IP）：
+   
      ```
      192.30.255.112  github.com
      185.31.16.184   github.global.ssl.fastly.net

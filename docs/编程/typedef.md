@@ -14,3 +14,7 @@ typedef DetailLinkedHashMap = LinkedHashMap<String, Map<String, Map<String, List
 typedef int Object;
 ```
 
+```c++
+typedef long	__darwin_intptr_t;
+```
+

@@ -4,7 +4,7 @@
 
 ### RN
 
-调的系统的UIKit。原生UI的基础上进行的包装。性能不如flutter，原生更新的话，RN也需要更新。
+调的系统的UIKit。原生更新的话，RN也需要更新。
 
 ### flutter
 
@@ -36,7 +36,7 @@ https://book.flutterchina.club/ flutter实战第二版
 
 shell就是操作系统
 
-Mac电脑上早期是bash 位置：`~/.bash_profile`，现在是zsh更强大 位置：`~/.zshrc`。
+位置：`~/.zshrc`。
 
 `vim ~/.zshrc`去编辑
 
@@ -142,25 +142,15 @@ https://github.com/flutter/flutter/issues/119927#issuecomment-1415858226
 
 Engine revision：引擎版本
 
-## 安卓模拟器
-
-夜神NoxAPPPlayer
-
-需要安装最新的VirtualBox，如果不是最新的会卡在99%，需要下载最新的，然后使用安装包中自带的uninstall去卸载，然后安装。在系统偏好设置中权限打开。最后重新打开启动Nox。
-
-####  `Android Studio` 依旧连接不到模拟器
-
-前往 `应用程序` 找到 `Nox App Player.app` ，然后右键 `显示包内容` ，找到 `Contents / MacOS / adb` 文件，将 `adb` 文件直接拖到终端，然后 `Android Studio` 上就会显示夜神模拟器了。
-
 ## 运行安卓模拟器Gradle卡住问题
 
-那么在首次运行的时候, 你会发现卡在如下的地方了, 原因是`Gradle`的`Maven`仓库在国外......然后你就懂了.
+在首次运行的时候，你会发现卡在如下的地方了：
 
 ```
 Running Gradle task 'assembleDebug'
 ```
 
-解决它比较简单的操作就是镜像, 配置如下:
+原因是`Gradle`的`Maven`仓库在国外，解决它比较简单的操作就是镜像，配置如下:
 
 ### 修改项目下的 `build.gradle` 文件
 

@@ -410,7 +410,7 @@ map_images_nolock(unsigned mhCount, const char * const mhPaths[],
       
     }
 
-  //所有类初始化完成之后
+  	//所有类初始化完成之后
     if (hCount > 0) {
         _read_images(hList, hCount, totalClasses, unoptimizedTotalClasses);
     }

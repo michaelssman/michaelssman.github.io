@@ -10,13 +10,13 @@ CFRunLoopRef CFRunLoopGetMain(void) {
 
 CFRunLoopRef CFRunLoopGetCurrent(void) {
     CHECK_FOR_FORK();
-      //创建子runloop或者线程保活 + source (为什么加source？：因为底层加判断 finish，如果是主线程，不需要加false，其它线程的话需要判断_sources0，_sources1，_timers)
+    //创建子runloop或者线程保活 + source (为什么加source？：因为底层加判断 finish，如果是主线程，不需要加false，其它线程的话需要判断_sources0，_sources1，_timers)
   
-  //类似缓存 key-value获取runloop
+  	//类似缓存 key-value获取runloop
     CFRunLoopRef rl = (CFRunLoopRef)_CFGetTSD(__CFTSDKeyRunLoop);
     if (rl) return rl;
   
-  //获取不了 就拿当前线程去获取 线程为key，取出value
+  	//获取不了 就拿当前线程去获取 线程为key，取出value
     return _CFRunLoopGet0(pthread_self());
 }
 ```
@@ -29,7 +29,7 @@ CF_EXPORT CFRunLoopRef _CFRunLoopGet0(pthread_t t) {
     if (pthread_equal(t, kNilPthreadT)) {
         t = pthread_main_thread_np();//main线程
     }
-  //
+  	//
     __CFLock(&loopsLock);
     if (!__CFRunLoops) {//全局的字典： __CFRunLoops
         __CFUnlock(&loopsLock);
@@ -44,32 +44,31 @@ CF_EXPORT CFRunLoopRef _CFRunLoopGet0(pthread_t t) {
     //key - value 的形式存放，主线程绑定主runloop  
     CFDictionarySetValue(dict, pthreadPointer(pthread_main_thread_np()), mainLoop);
         
-        
     if (!OSAtomicCompareAndSwapPtrBarrier(NULL, dict, (void * volatile *)&__CFRunLoops)) {
         CFRelease(dict);
     }
     CFRelease(mainLoop);
         __CFLock(&loopsLock);
     }
-  //通过线程直接从dict中获取loop
+  	//通过线程直接从dict中获取loop
     CFRunLoopRef loop = (CFRunLoopRef)CFDictionaryGetValue(__CFRunLoops, pthreadPointer(t));
     __CFUnlock(&loopsLock);
-  //如果没有 则通过线程创建一个loop
+  	//如果没有 则通过线程创建一个loop
     if (!loop) {
-    CFRunLoopRef newLoop = __CFRunLoopCreate(t);
+    		CFRunLoopRef newLoop = __CFRunLoopCreate(t);
         __CFLock(&loopsLock);
-    loop = (CFRunLoopRef)CFDictionaryGetValue(__CFRunLoops, pthreadPointer(t));
+  		  loop = (CFRunLoopRef)CFDictionaryGetValue(__CFRunLoops, pthreadPointer(t));
     if (!loop) {
-      //再次确认没有loop，则添加到全局可变字典中
+      	//再次确认没有loop，则添加到全局可变字典中
         CFDictionarySetValue(__CFRunLoops, pthreadPointer(t), newLoop);
         loop = newLoop;
     }
         // don't release run loops inside the loopsLock, because CFRunLoopDeallocate may end up taking it
         __CFUnlock(&loopsLock);
-    CFRelease(newLoop);
+  		  CFRelease(newLoop);
     }
     if (pthread_equal(t, pthread_self())) {
-      //注册一个回调，当线程销毁时，顺便也销毁其对应的Runloop。
+     	  //注册一个回调，当线程销毁时，顺便也销毁其对应的Runloop。
         _CFSetTSD(__CFTSDKeyRunLoop, (void *)loop, NULL);
         if (0 == _CFGetTSD(__CFTSDKeyRunLoopCntr)) {
             _CFSetTSD(__CFTSDKeyRunLoopCntr, (void *)(PTHREAD_DESTRUCTOR_ITERATIONS-1), (void (*)(void *))__CFFinalizeRunLoop);
@@ -79,8 +78,9 @@ CF_EXPORT CFRunLoopRef _CFRunLoopGet0(pthread_t t) {
 }
 ```
 
-## 获取runloop的流程：
+## 获取runloop的流程
 
+- CFRunLoopGetMain或CFRunLoopGetCurrent
 - 通过_CFRunLoopGet0函数传入一条线程。
 - 判断线程是否为主线程并且判断是否已经存在__CFRunLoops（全局CFMutableDictionaryRef）。
 - 如果不存在，说明第一次进入，初始化全局dict，并先为主线程创建一个 RunLoop。并将mainLoop添加到dict中。
@@ -93,15 +93,17 @@ CF_EXPORT CFRunLoopRef _CFRunLoopGet0(pthread_t t) {
 
 RunLoop对象是利用字典来进行存储，而且key对应的线程Value为该线程对应的RunLoop。
 
-我们只能通过CFRunLoopGetMain函数或者CFRunLoopGetCurrent函数来获取RunLoop，无论是CFRunLoopGetMain函数还是CFRunLoopGetCurrent函数，都是通过对应的线程获取对应的RunLoop，**线程和RunLoop是一一对应的**，不会重复创建。
+只能通过CFRunLoopGetMain函数或者CFRunLoopGetCurrent函数来获取RunLoop，无论是CFRunLoopGetMain函数还是CFRunLoopGetCurrent函数，都是通过对应的线程获取对应的RunLoop，**线程和RunLoop是一一对应的**，不会重复创建。
 
 ## 主线程的runloop是默认创建和开启的，子线程的runloop需要手动创建和开启。
 
-开一个子线程创建runloop,不是通过alloc init方法创建，而是直接通过调用currentRunLoop方法来创建，它本身是一个懒加载的。
+开一个子线程创建runloop，不是通过alloc init方法创建，而是直接通过调用currentRunLoop方法来创建，它本身是一个懒加载的。
 
-在子线程中，如果不主动获取RunLoop的话，那么子线程内部是不会创建RunLoop的。可以下载CFRunLoopRef的源码，搜索_CFRunLoopGet0,查看代码。
+在子线程中，如果不主动获取RunLoop的话，那么子线程内部是不会创建RunLoop的。
 
-在主线程，系统会帮我们创建RunLoop，来处理事件。而子线程RunLoop并不会默认开启。子线程操作完成后，线程就被销毁了，如果我们想线程不被销毁，得主动获取一个RunLoop，并且在RunLoop中添加Timer/Source/Observer其中的一个。
+在主线程，系统会帮我们创建RunLoop，来处理事件。而子线程RunLoop并不会默认开启。
+
+子线程操作完成后，线程就被销毁了，如果我们想线程不被销毁，得主动获取一个RunLoop，并且在RunLoop中添加Timer/Source/Observer其中的一个。
 
 ## 创建runloop
 
@@ -112,7 +114,7 @@ static CFRunLoopRef __CFRunLoopCreate(pthread_t t) {
     uint32_t size = sizeof(struct __CFRunLoop) - sizeof(CFRuntimeBase);
     loop = (CFRunLoopRef)_CFRuntimeCreateInstance(kCFAllocatorSystemDefault, CFRunLoopGetTypeID(), size, NULL);
     if (NULL == loop) {
-    return NULL;
+    	return NULL;
     }
     (void)__CFRunLoopPushPerRunData(loop);
     __CFRunLoopLockInit(&loop->_lock);

@@ -4,9 +4,10 @@ Block是一个对象，内存结构中是一个结构体，它封装了一段代
 
 Block可以作为函数参数或者函数的返回值，而其本身又可以带输入参数或返回值。它是对C语言的扩展，用来实现匿名函数的特性。
 
-Block的使用很像函数指针，不过与函数最大的不同是：Block可以访问函数以外、词法作用域以内的外部变量的值。
+## Block与函数指针的区别
 
-换句话说，Block不仅实现函数的功能，还能携带函数的执行环境，更通俗的讲Block就是能够读取其它函数内部变量的函数。
+- 函数指针只是一个指向函数的地址，不携带上下文。
+- Block不仅实现函数的功能，还能捕获外部变量（形成闭包）。
 
 ## block分类
 
@@ -14,9 +15,9 @@ Block的使用很像函数指针，不过与函数最大的不同是：Block可�
 
 **没有捕获外界变量，或者只用到全局变量、静态(static)变量的block就是全局block。**
 
-NSGlobalBlock，类似函数，存储在程序的数据区域（text段）。
+存储在程序的数据区域（text段）。
 
-对于Global的Block，我们无需多处理，不需retain和copy，即使copy，也不会copy到堆区，内存不会发生变化，操作都无效。
+不需retain和copy，即使copy，也不会copy到堆区，内存不会发生变化，操作都无效。
 
 ```objective-c
    void (^globalBlock)(int, int) = ^(int a, int b){
@@ -27,19 +28,13 @@ NSGlobalBlock，类似函数，存储在程序的数据区域（text段）。
 
 特点：命长，应用程序在它就在。
 
-对于全局block，用weak，strong，还是copy修饰都是可以的。（但最好不用用weak）
-
-注意：如果block中没有用到外界变量，不管他是用什么修饰符修饰，都是全局block！
+对于全局block，用weak，strong，还是copy修饰都是可以的。（但最好不要用weak）
 
 ### 2、NSStackBlock
 
-捕获了外界变量，或者是OC的属性，并且**赋值给弱引用**
+捕获了外界变量，或者OC的属性，并且**赋值给弱引用**。
 
-位于栈内存，函数返回后Block将无效；对于定义的Block加入了对定义环境变量的引用，也就是说内部使用了外部变量，就是NSStackBlock。
-
-对于Stack的Block，如果不做任何操作，随栈自生自灭。
-
-而如果想让它获得比stack更久的生命，那就调用`Block_copy()`，或者copy修饰，让它搬家到堆内存上，这也是为什么用copy修饰Block的原因。
+如果想让它获得比stack更久的生命，那就调用`Block_copy()`，或者copy修饰，拷贝到堆内存上，这也是为什么用copy修饰Block的原因。
 
 ```objective-c
 		int a = 10;
@@ -50,19 +45,17 @@ NSGlobalBlock，类似函数，存储在程序的数据区域（text段）。
     NSLog(@"block:%@--%@",block,[block copy]);
 ```
 
-MRC下
+MRC下：
 
  `__NSStackBlock__ __NSMallocBlock__`
 
-结果分析：当Block中使用了外部变量，Block为NSStackBlock类型，存储在栈区，当函数执行结束后，该Block就会被释放，调用copy后，栈区Block被copy到堆区NSMallocBlock。
+结果分析：当Block中使用了外部变量，Block为NSStackBlock类型。**存储在栈区内存，随栈自生自灭。当函数执行结束后，该Block就会被释放。**调用copy后，栈区Block被copy到堆区NSMallocBlock。
 
 ARC下：
 
 `__NSMallocBlock__ __NSMallocBlock__`
 
-分析结果：在ARC模式下，没有了__NSStackBlock__类型，不要认为ARC没有了栈区Block这种类型。
-
-其实在ARC下，生成的Block默认也是NSStackBlock类型，只是在变量赋值的时候，系统默认对其进行了copy，从NSStackBlock给copy到堆区的NSMallocBlock类型。而在非arc中，则需要手动copy。
+分析结果：在ARC下，生成的Block默认也是NSStackBlock类型，只是在变量赋值的时候，系统默认对其进行了copy，从NSStackBlock给copy到堆区的NSMallocBlock类型。而在mrc中，则需要手动copy。
 
 ### 3、NSMallocBlock
 
@@ -78,9 +71,9 @@ ARC下：
 
 - **没有引用临时变量的block是放在global区**, 是不会被释放的。
 - block引用了栈里的临时变量, 才会被创建在stack区。
-- **stack区的块只要赋值给strong类型的变量, 就会自动copy到堆里**。所以要不要写copy都没关系
+- **stack区的block只要赋值给strong类型的变量, 就会自动copy到堆里**。所以要不要写copy都没关系
 
-**block在创建的时候，内存是分配在栈上的（内存随时可能被销毁）。**MRC使用copy的目的是将block创建默认放在栈区拷贝一份到堆区，**因为栈区中的变量管理是由它自己管理的，随时可能被销毁，一旦被销毁后续再次调用空对象就可能会造成程序崩溃问题**， block放在了堆中，block有个指针指向了栈中的block代码块，
+**block在创建的时候，内存是分配在栈上的。**MRC使用copy的目的是将block创建默认放在栈区拷贝一份到堆区，**因为栈区中的变量管理是由它自己管理的，随时可能被销毁，一旦被销毁后续再次调用空对象就可能会造成程序崩溃问题**， block放在了堆中，block有个指针指向了栈中的block代码块。
 
 在ARC模式下，系统会默认使用copy进行修饰。
 
@@ -93,9 +86,8 @@ Block的内存需要开发人员自己管理，错误的内存管理会造成循
 
 Block包含两部分：
 
-一部分是Block所执行的代码，这一部分在编译的时候已经生产好了。
-
-另一部分是Block执行时所需要的外部变量值的数据结构，注意的是Block会将使用到的变量的值拷贝到栈上。
+1. Block所执行的代码，这一部分在编译的时候已经生产好了。
+2. Block执行时所需要的外部变量值的数据结构，注意的是Block会将使用到的变量的值拷贝到栈上。
 
 ## 循环引用
 
@@ -108,13 +100,13 @@ self.block = ^{
 };
 ```
 
-分析：因为Block是当前self属性，self强引用Block。当在Block内部捕获了self（使用_一样也是引用了self），Block便强引用了self，两者相互持有，无法释放。  
+分析：Block是当前self属性，self强引用Block。当在Block内部捕获了self（使用_一样也是引用了self），Block便强引用了self，两者相互持有，无法释放。  
 
 解决方法是ARC 下`__weak`修饰self：__`weak Class *weakSelf = self;` MRC下`__weak`改为`__block`。
 
 **只有双方持有的时候才会造成循环引用。**
 
-### 1. 强弱共舞
+### 1. `__weak`和`__strong`
 
 ```objective-c
 __weak typeof(self) weakSelf = self;
@@ -139,11 +131,9 @@ vc.refreshFuZhu = ^{
 };
 ```
 
-警告是因为在 block 中强引用了 `vc`，可能导致 retain cycle（循环引用）。在 Objective-C 和 Swift 中，block 会捕获并持有其引用的对象。如果 block 中强引用了 `vc`，而 `vc` 又持有这个 block，就会导致 retain cycle。
+警告是因为在 block 中强引用了 `vc`，可能导致 retain cycle（循环引用）。在 Objective-C 和 Swift 中，**block 会捕获并持有其引用的对象**。如果 block 中强引用了 `vc`，而 `vc` 又持有这个 block，就会导致 retain cycle。
 
 要解决这个问题，可以在 block 中使用弱引用（weak reference）来避免 retain cycle。可以使用 `__weak` 或 `__block` 关键字来声明一个弱引用的 `vc`。
-
-以下是如何修改你的代码来避免 retain cycle：
 
 ```objc
 __weak typeof(vc) weakVC = vc;
@@ -174,7 +164,6 @@ vc.refreshFuZhu = ^{
         //里面代码复杂的情况。里面有异步 耗时操作
         //延长生命周期
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            
             NSLog(@"%@",vc.name);
             //因为捕获了vc，所以用完之后需要将vc置空
             vc = nil;//self->block->vc->self
@@ -190,7 +179,6 @@ vc.refreshFuZhu = ^{
         //里面代码复杂的情况。里面有异步 耗时操作
         //延长生命周期
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            
             NSLog(@"%@",vc.name);
         });
     };
@@ -202,9 +190,7 @@ vc.refreshFuZhu = ^{
 
 ### 1、局部变量
 
-1、基本数据类型
-
-当在Block中使用局部变量时，在Block中只读。
+#### 1、基本数据类型
 
 Block会copy该局部变量的值，在Block中作为常量使用，不允许修改。所以即使变量的值在Block外改变，也不影响他在Block中的值。
 
@@ -230,9 +216,9 @@ block内部修改外界变量的值直接报错，如果想要修改，可以在
     NSLog(@"b = %d",b); //输出结果 b = 2;
 ```
 
-2、指针类型
+#### 2、指针类型
 
-   block会copy一份指针并强引用指针所指对象，内部不能修改指针的指向，但是可以修改指针所指向对象的值
+block会copy一份指针并强引用指针所指对象，不能修改指针的指向，但是可以修改指针所指向对象的值。
 
 ```objective-c
 　　NSMutableString *str = @"abc".mutableCopy; 
@@ -273,8 +259,7 @@ void (^block3) () = ^ {
 		self.num++;
 };
 block3();
-NSLog(@"%d",self.num);
-//输出结果为 3
+NSLog(@"%d",self.num);	//输出结果为 3
 ```
 
 3、指针类型： 成员变量（实例变量），静态变量，全局变量
@@ -296,6 +281,11 @@ block5();
 ### 3、__block修饰的变量
 
 对外界进行修改的时候需要加__block，拷贝到堆区
+
+### 修改外部变量
+
+- 默认 Block 捕获的外部变量是值拷贝（不能修改）。
+- 使用 `__block` 修饰的变量会被包装成对象（`__Block_byref_xxx`），从而可以在 Block 内部修改。
 
 ## block底层原理分析
 
@@ -319,9 +309,7 @@ clang编译 看底层实现
 
 在底部找到int main0()函数 三行代码 .cpp的三行代码对应上面的三个代码 定义 调用 和return0.
 
-block就是__main0_block_impl_0这个函数
-
- __main0_block_impl_0这个函数就是一个struct
+block就是__main0_block_impl_0这个函数，是一个struct。
 
 对象在底层是结构体
 
@@ -337,16 +325,23 @@ int main0(){
     return 0;
 }
 
+//__block_impl结构体
+struct __block_impl {
+  void *isa;	//指向 Block 的类型（全局/栈/堆）
+  int Flags;	//枚举类型
+  int Reserved;
+  void *FuncPtr;// Block 的函数指针
+};
 //block结构体
 struct __main0_block_impl_0 {
   struct __block_impl impl;
   struct __main0_block_desc_0* Desc;
-    //void *fp就是第一个参数
-    //结构体的构造函数
+  //void *fp就是第一个参数
+  //结构体的构造函数
   __main0_block_impl_0(void *fp, struct __main0_block_desc_0 *desc, int flags=0) {
     impl.isa = &_NSConcreteStackBlock;//栈区的block
     impl.Flags = flags;
-    impl.FuncPtr = fp; //编程思想：函数式。先保存 在合适的地方调用，需要的地方调用。
+    impl.FuncPtr = fp; //编程思想：函数式。先保存，在block调用的时候执行。
     Desc = desc;
   }
 };
@@ -357,24 +352,11 @@ struct __main0_block_impl_0 {
  }
 ```
 
-block fp函数式保存，block调用的时候执行。
-
-#### __block_impl结构体
-
-```c++
-struct __block_impl {
-  void *isa;//指针指向（栈block、堆block）
-  int Flags;//枚举类型
-  int Reserved;
-  void *FuncPtr;
-};
-```
-
 ### 捕获变量  
 
 捕获对象 如何保存和释放 keep-dispose
 
-#### 1、不修改值，不加__block
+#### 1、不加__block
 
 传的变量的值
 
@@ -397,8 +379,8 @@ int main1(){
 ```c++
  int main1(){
      int a = 10;
- //比之前多个一个参数a  3个参数
-   //参数1：block的实现函数
+ 		 //比之前多个一个参数a  3个参数
+     //参数1：block的实现函数
      void(*block)(void) = (__main1_block_impl_0(__main1_block_func_0, &__main1_block_desc_0_DATA, a));
      ((void (*)(__block_impl *))((__block_impl *)block)->FuncPtr)((__block_impl *)block);
      return 0;
@@ -432,7 +414,7 @@ block把a的值传了进去，里面生成了一个新的变量a。
 
 #### 2、__block原理
 
-如果要修改a的值 要在前面加__block。
+如果要修改a的值，需要在前面加__block。
 
 **静态变量和全局变量不需要加__block。block不会捕获静态变量和全局变量，因为存在全局区。**
 
@@ -454,7 +436,7 @@ block创建的时候是在栈上的，在将栈block拷⻉到堆上的时候，�
          (__Block_byref_a_0 *)&a, //地址空间 取a的地址
          0,
          sizeof(__Block_byref_a_0),
-         10//值
+         10//a的值
     };
      
      
@@ -467,10 +449,10 @@ block创建的时候是在栈上的，在将栈block拷⻉到堆上的时候，�
  //__Block_byref_a_0是一个结构体
  struct __Block_byref_a_0 {
    void *__isa;
- __Block_byref_a_0 *__forwarding;//__forwarding指针指向结构体本身
+ 	__Block_byref_a_0 *__forwarding;//__forwarding指针指向结构体本身（栈或堆上的副本）
   int __flags;
   int __size;
-  int a;
+  int a; // 原始变量
  };
 
  static void __main1_block_func_0(struct __main1_block_impl_0 *__cself) {
@@ -480,10 +462,13 @@ block创建的时候是在栈上的，在将栈block拷⻉到堆上的时候，�
    }
 ```
 
+- 通过 `__forwarding` 指针保证无论变量在栈还是堆上，都能正确访问。
+
 ### block本质就是一个结构体
 
 ```c++
- //没有用__block修饰。a就传到了__main1_block_impl_0里面
+ //没有用__block修饰a
+ //a就传到了__main1_block_impl_0里面
  struct __main1_block_impl_0 {
    struct __block_impl impl;
    struct __main1_block_desc_0* Desc;
@@ -497,7 +482,7 @@ block创建的时候是在栈上的，在将栈block拷⻉到堆上的时候，�
    }
  };
 
-//a用__block修饰
+//用__block修饰a
 struct __main1_block_impl_0 {
   struct __block_impl impl;
   struct __main1_block_desc_0* Desc;
@@ -511,6 +496,8 @@ struct __main1_block_impl_0 {
   }
 };
 ```
+
+在 Block 的底层实现中，`__Block_byref_xxx` 是一个自动生成的结构体名称，其中的 `byref` 是 **"by reference"（按引用）** 的缩写，表示这个结构体用于实现 **通过引用捕获变量** 的机制。
 
 ## block 底层copy处理
 
@@ -533,10 +520,9 @@ id objc_retainBlock(id x) {
 _Block_copy在lib system_blocks.dylib库libclosure-master
 
 ```c++
-// 重点提示: 这里是核心重点 block的拷贝操作: 栈Block -> 堆Block
-// 拷贝 block，
-// 如果原来就在堆上，就将引用计数加 1，返回 block 本身;
-// 如果 block 在全局区，不用加引用计数，也不用拷贝，直接返回 block 本身
+// 重点提示: 这里是核心重点 block的拷贝操作: stack栈Block -> malloc堆Block
+// 如果原来就在堆上，将引用计数加 1，返回 block 本身;
+// 如果 block 在全局区，不加引用计数，也不拷贝，直接返回 block 本身
 // 如果原来在栈上：
   // 1.malloc在堆上开辟内存
   // 2.memmove会拷贝到堆上
@@ -545,7 +531,6 @@ _Block_copy在lib system_blocks.dylib库libclosure-master
 	// 5.isa标记堆block
 	// 参数 arg 就是 Block_layout 对象，
 	// 返回值是拷贝后的 block 的地址
-	// 运行？stack -》malloc
 void *_Block_copy(const void *arg) {
     struct Block_layout *aBlock;
 
@@ -808,7 +793,7 @@ struct Block_layout {
         @对象
         cmd方法编号        
     */
-  //存储block附加信息
+  	//存储block附加信息
     volatile int32_t flags; // contains ref count//标识符 存数据信息，是否正在析构，是否有keep函数，是否有析构函数 等等很多
   
     int32_t reserved;//保留的变量（暂时不用）
@@ -853,7 +838,7 @@ struct Block_descriptor_3 {
 };
 ```
 
-引用了外部变量 没经过_Block_copy操作 是栈block 经过block_copy是堆block
+引用了外部变量，没经过_Block_copy操作 是栈block，经过block_copy是堆block。
 
 ### 捕获变量
 

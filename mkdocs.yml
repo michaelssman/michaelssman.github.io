@@ -56,7 +56,6 @@ nav:
       - iOS/Swift/defer.md
       - iOS/Swift/泛型和关联类型.md
       - iOS/Swift/closure.md
-      - iOS/Swift/as.md
       - iOS/Swift/源码.md
       - iOS/Swift/运算符重载.md
       - iOS/Swift/高阶函数.md
@@ -67,7 +66,6 @@ nav:
       - iOS/Swift/OC和Swift混编.md
       - iOS/Swift/协议.md
       - iOS/Swift/指针和内存管理.md
-      - iOS/Swift/enum.md
       - iOS/Swift/IR.md
     - 底层原理分析:
       - iOS/底层原理分析/底层探索分析.md
@@ -98,18 +96,17 @@ nav:
       - iOS/应用程序加载/动态库静态库.md
       - iOS/应用程序加载/多环境支持.md
     - Runloop:
-      - iOS/Runloop/00RunLoop.md
-      - iOS/Runloop/01CFRunLoopRef.md
-      - iOS/Runloop/02CFRunLoopModeRef.md
-      - iOS/Runloop/03CFRunLoopSourceRef.md
-      - iOS/Runloop/04CFRunLoopTimerRef.md
-      - iOS/Runloop/05CFRunLoopObserverRef.md
+      - iOS/Runloop/RunLoop.md
+      - iOS/Runloop/CFRunLoopRef.md
+      - iOS/Runloop/CFRunLoopModeRef.md
+      - iOS/Runloop/CFRunLoopSourceRef.md
+      - iOS/Runloop/CFRunLoopTimerRef.md
+      - iOS/Runloop/CFRunLoopObserverRef.md
       - iOS/Runloop/线程保活.md
       - iOS/Runloop/自动释放池.md
     - 组件化:
       - iOS/组件化/CocoaPods原理.md
       - iOS/组件化/Pod.md
-      - iOS/组件化/组件化.md
       - iOS/组件化/组件化通讯.md
     - iOS/响应者链.md
     - 性能优化:
@@ -174,8 +171,8 @@ nav:
       - 操作系统/多线程/线程同步.md
       - 操作系统/多线程/锁.md
       - 操作系统/多线程/队列和函数.md
-      - 操作系统/多线程/Java/Java多线程.md
-    - 操作系统/IO.md
+      - 操作系统/多线程/Java多线程.md
+    - 操作系统/IO模型.md
     - 操作系统/运算符.md
     - 操作系统/数据处理.md
     - 操作系统/正则.md
@@ -196,10 +193,11 @@ nav:
     - 编程/XML.md
     - 编程/token.md
     - 编程/typedef.md
+    - 编程/类型判断.md
+    - 编程/编译流程.md
     - 编程/方法调度.md
     - 编程/注解.md
     - 编程/继承多态接口.md
-    - 编程/编译流程.md
     - 模块和访问权限:
       - 编程/模块&访问权限/访问权限.md
       - 编程/模块&访问权限/模块.md
@@ -292,7 +290,7 @@ nav:
         - 数据结构与算法/数据结构/链表/线性表.md
         - 数据结构与算法/数据结构/链表/链表.md
         - 数据结构与算法/数据结构/链表/STL中的list.md
-      - 数据结构与算法/数据结构/栈Stack.md
+      - 数据结构与算法/数据结构/Stack.md
       - 数据结构与算法/数据结构/队列.md
       - 树:
         - 数据结构与算法/数据结构/树/树.md
@@ -384,7 +382,6 @@ nav:
     - Java/环境搭建.md
     - Java/数据类型.md
     - Java/实体类.md
-    - Java/IO.md
     - Java/JDBC.md
     - Maven:
       - Java/Maven/Maven.md
@@ -431,9 +428,9 @@ nav:
     - Java/新热文章-实时计算.md
     - Java/项目部署_持续集成.md
   - HarmonyOS:
+    - Harmony/Harmony.md
     - Harmony/数据类型.md
     - Harmony/class.md
-    - Harmony/啊啊啊.md
     - Harmony/声明式UI.md
     - Harmony/lazyForEach.md
   - 数据库:
@@ -450,7 +447,6 @@ nav:
     - MAC/清理Xcode.md
     - MAC/software.md
     - MAC/vscode.md
-    - MAC/word.md
   - app:
     - app/jizhanghelp.md
     - app/jizhangpp.md

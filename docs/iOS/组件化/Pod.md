@@ -94,7 +94,7 @@ pod repo add showself-spec http://192.168.84.67/ios/lib/showself_pods_spec.git
 
 ```ruby
 source 'https://github.com/CocoaPods/Specs.git'
-source 'https://github.com/huicuihui/HHSpecs.git'
+source 'https://github.com/michael/HHSpecs.git'
 
 自有库
 source 'http://192.168.84.67/ios/lib/showself_pods_spec.git'

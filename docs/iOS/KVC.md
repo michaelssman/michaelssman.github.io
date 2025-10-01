@@ -25,7 +25,7 @@
 
 valueForKey调用顺序
 
-1. 先调用相关方法 先后顺序是：getKey -> key -> isKey->_key 
+1. 先调用相关方法：getKey -> key -> isKey->_key 
 
   如果实现了`countOfKey`，`objectInKeyAtIndex`这两个方法，key变成了NSKeyValueArray是NSArray子类，返回一个数组。
 
@@ -41,6 +41,10 @@ valueForKey调用顺序
 ```
 
 ## KeyPath
+
+使用场景：模型嵌套模型。
+
+例如：单据Model类中有一个商品Model属性，商品Model中有一个价格Model属性，价格Model中有单价、批发价、采购价等属性。
 
 ```objective-c
 //嵌套拿数据     里面是点语法 一直点下去 点分离key

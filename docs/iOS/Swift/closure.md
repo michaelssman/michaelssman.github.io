@@ -49,7 +49,7 @@ print(makeIncrementer()())//11
 **捕获值相当于在堆区开辟内存空间，创建一个实例变量，捕获的值当作这个实例变量的属性。**
 
 
-先来回顾一下 Block 捕获值的情形
+Block 捕获值的情形
 
 ```objectivec
 - (void)testBlock{
@@ -61,13 +61,13 @@ print(makeIncrementer()())//11
     
     i += 1;
     
-    NSLog(@"before block %ld:", i);
-    block();
-    NSLog(@"after block %ld:", i);
+    NSLog(@"before block %ld:", i);	// 2
+    block();												// 1
+    NSLog(@"after block %ld:", i);	// 2
 }
 ```
 
-这里输出的结果是： `2, 1, 2` 。这是因为当前我们的应用程序执行到 `i += 1` 的时候，其实当前 `block` 已经捕获了当前 i 的瞬时变量的值，相当与在其内做了一次：
+这里输出的结果是： `2, 1, 2` 。当应用程序执行到 `i += 1` 的时候，当前 `block` 已经捕获了当前 i 的瞬时变量的值，相当与在其内做了一次：
 
 ```objectivec
 NSInteger tmp = i = 1
@@ -91,8 +91,7 @@ NSInteger tmp = i = 1
 }
 ```
 
-
-那么对于 `Swift` 中的闭包同样会捕获值，这里我们把 OC的例子修改成对应 Swift 的例子来看一下：
+`Swift` 中的闭包同样会捕获值：
 
 ```swift
 var i = 1
@@ -105,10 +104,7 @@ closure()											//2
 print("after closure \(i)")		//2
 ```
 
-这里例子输出的结果就和 Block 中的第一个例子不同了，因为当前 `Swift` 值的捕获是在**执行的时候再捕获**，当代码执行到 `closure()` ，对值进行捕获，此时`i`的值为几，捕获到的 `i` 就是几。
-
-
-所以下面这个打印的是多少？
+`Swift` 值的捕获是在**执行的时候再捕获**。
 
 ```swift
 var i = 1
@@ -121,15 +117,9 @@ closure()//2
 
 i += 1
 closure()//3
-
-i += 1
-closure()//4
 ```
 
 如果在 `Swift` 中想要捕获当前变量的瞬时值，该怎么操作那？答案是：捕获列表
-
-
-我们来看下面这段代码
 
 ```swift
 var i = 1
@@ -137,12 +127,10 @@ let closure = { [i] in
     print("closure \(i)")
 }
 i += 1
-print("before closure \(i)")
-closure()
-print("after closure \(i)")
+print("before closure \(i)")	//2
+closure()											//1
+print("after closure \(i)")		//2
 ```
-
-这个打印出来的结果就是: `2, 1, 2` 。
 
 ### 捕获列表 
 
@@ -220,9 +208,9 @@ print(closure())
 
 ## 闭包本质
 
-闭包是一个`函数`加上`捕获了上下文的常量或者变量`。
+闭包是`函数 + 捕获了上下文的常量或者变量`。
 
-这里我们也可以通过 `IR` 的分析来看一下他的底层数据结构，最终我们能得出来这样一个结果
+通过 `IR` 的分析来看一下他的底层数据结构：
 
 ```swift
 //实例对象内存地址
@@ -289,7 +277,7 @@ func test() {
 test()//11，21，31
 ```
 
-这里打印出来的分别是多少？是 10，11，12 还是 11，21，31？我们来运行一下，结果是第二个。这个不就和我们在上面得出来的结论是相反的嘛？我们上面说过闭包是引用类型，所以当前闭包在运行的时候捕获变量10，放到堆区，那么接下来都是针对堆区的值进行修改。
+这里打印出来的结果是 11，21，31。这个不就和我们在上面得出来的结论是相反的嘛？我们上面说过闭包是引用类型，所以当前闭包在运行的时候捕获变量10，放到堆区，那么接下来都是针对堆区的值进行修改。
 通过 `IR` 分析，可以看到的是当前在调用闭包的时候确实发生了内存的分配
 
 ## 自动闭包
@@ -302,7 +290,7 @@ test()//11，21，31
 - 使用`@autoclosure`关键字能简化闭包调用形式
 - 使用`@autoclosure`关键字能延迟闭包的执行
 
-我们先来看下面这个例子
+先来看下面这个例子
 
 ```swift
 func debugOutPrint(_ condition: Bool , _ message: String){
@@ -314,10 +302,10 @@ func debugOutPrint(_ condition: Bool , _ message: String){
 debugOutPrint(true, "Application Error Occured")
 ```
 
-上述代码会在当前 `conditon` 为 `true` 的时候，打印我们当前的错误信息，也就意味着 `false` 的时候当前条件不会执行。
+上述代码会在当前 `conditon` 为 `true` 的时候，打印当前的错误信息，也就意味着 `false` 的时候当前条件不会执行。
 
 
-如果我们当前的message字符串可能是在某个业务逻辑功能中获取的，比如下面这样写：
+当前的message字符串可能是在某个业务逻辑功能中获取的，比如下面这样写：
 
 ```swift
 func debugOutPrint(_ condition: Bool , _ message: String){
@@ -334,7 +322,7 @@ func doSomething() -> String{
 debugOutPrint(true, doSomething())
 ```
 
-这个时候我们会发现一个问题，那就是当前的 conditon，无论是 `true` 还是 `false` ,当前的方法`doSomething`都会执行。如果当前的 `doSomething` 是一个耗时的任务操作，那么这里就造成了资源浪费。
+这个时候我们会发现当前的 conditon，无论是 `true` 还是 `false` ,当前的方法`doSomething`都会执行。如果当前的 `doSomething` 是一个耗时的任务操作，那么这里就造成了资源浪费。
 
 
 这个时候我们想到的是把当前的参数修改成一个闭包，
@@ -375,11 +363,11 @@ debugOutPrint(true, doSomething())
 debugOutPrint(true, "Application Error Occured")
 ```
 
-上面我们使用 `@autoclosure` 将当前的表达式声明成了一个自动闭包，**不接收任何参数，返回值是当前内部表达式的值**。所以**实际上我们传入的 `String` 就是放入到一个闭包表达式中，在调用的时候返回。**
+上面使用 `@autoclosure` 将当前的表达式声明成了一个自动闭包，**不接收任何参数，返回值是当前内部表达式的值**。所以**实际上我们传入的 `String` 就是放入到一个闭包表达式中，在调用的时候返回。**
 
-## 尾随闭包 
+## 尾随闭包
 
-当闭包表达式作为函数的最后一个参数，如果当前的闭包表达式很长，我们可以通过尾随闭包的书写方式来提高代码的可读性。 
+当闭包表达式作为函数的最后一个参数，如果当前的闭包表达式很长，可以通过尾随闭包的书写方式来提高代码的可读性。 
 
 ```swift
     //尾随闭包
@@ -459,28 +447,7 @@ t.dosomething()
 t.completionHandle?(10)
 ```
 
-#### Escaping closure captures non-escaping parameter 'callback'
-
-在 Swift 中，当一个闭包作为参数传递给一个函数，并且在函数结束之后仍然可以被调用时，我们需要在闭包参数前面加上 `@escaping` 标识符来标记它是一个逃逸闭包。
-
-这个错误的意思是说，你正在尝试在一个逃逸闭包中捕获一个非逃逸参数 `callback`，这是不允许的。
-
-要解决这个问题，你可以将 `callback` 参数也标记为逃逸闭包，或者在闭包内部使用 `self.callback` 来避免捕获它。具体的解决方案取决于你的代码逻辑和需求。
-
-```swift
-func FaceIDAuthentication(callback: (_ success: Bool)->Void) {
-    let context = LAContext()
-    context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: "请使用Face ID登录") { success, error in
-        if success {
-            // Face ID验证成功
-            callback(true)
-        } else {
-            // Face ID验证失败
-            callback(false)
-        }
-    }
-}
-```
+当一个闭包作为参数传递给一个函数，并且在函数结束之后仍然可以被调用时，我们需要在闭包参数前面加上 `@escaping` 标识符来标记它是一个逃逸闭包。
 
 ### 非逃逸闭包
 
@@ -594,8 +561,8 @@ closure1 = nil
 ## 内存
 
 ```swift
-vc.serialNumber = { [self] serialNumberString in
-	guard let strongSelf = self else { return }
+vc.serialNumber = { [weak self] x in
+  guard let self = self else { return }
 	///里面使用strongSelf
 }
 ```

@@ -28,7 +28,7 @@ callAlloc(Class cls, bool checkNil, bool allocWithZone=false)
 #if __OBJC2__
     if (slowpath(checkNil && !cls)) return nil;
     if (fastpath(!cls->ISA()->hasCustomAWZ())) {
-      //第二次会走_objc_rootAllocWithZone
+      	//第二次会走_objc_rootAllocWithZone
         return _objc_rootAllocWithZone(cls, nil);
     }
 #endif
@@ -37,7 +37,7 @@ callAlloc(Class cls, bool checkNil, bool allocWithZone=false)
     if (allocWithZone) {
         return ((id(*)(id, SEL, struct _NSZone *))objc_msgSend)(cls, @selector(allocWithZone:), nil);
     }
-  //第一次先走下面的objc_msgSend调用alloc
+  	//第一次先走下面的objc_msgSend调用alloc
     return ((id(*)(id, SEL))objc_msgSend)(cls, @selector(alloc));
 }
 ```
@@ -71,7 +71,7 @@ callAlloc(Class cls, bool checkNil, bool allocWithZone=false)
 #if __OBJC2__
     if (slowpath(checkNil && !cls)) return nil;
     if (fastpath(!cls->ISA()->hasCustomAWZ())) {
-      //第二次会走_objc_rootAllocWithZone
+     	 //第二次会走_objc_rootAllocWithZone
         return _objc_rootAllocWithZone(cls, nil);
     }
 #endif
@@ -80,7 +80,7 @@ callAlloc(Class cls, bool checkNil, bool allocWithZone=false)
     if (allocWithZone) {
         return ((id(*)(id, SEL, struct _NSZone *))objc_msgSend)(cls, @selector(allocWithZone:), nil);
     }
-  //第一次先走下面的objc_msgSend调用alloc
+  	//第一次先走下面的objc_msgSend调用alloc
     return ((id(*)(id, SEL))objc_msgSend)(cls, @selector(alloc));
 }
 ```
@@ -103,8 +103,6 @@ _objc_rootAllocWithZone(Class cls, malloc_zone_t *zone __unused)
 注：有其它的，需要先来到Person的alloc，然后再进入符号断点。
 
 ### _class_createInstanceFromZone
-
-_class_createInstancesFromZone方法里面：
 
 1. 计算需要分配内存大小，不同的class成员变量多少不同，需要的内存大小不同。
 2. 开辟内存空间。
@@ -253,9 +251,9 @@ NSObject中有一个isa成员变量
 
 字节对齐：alloc产生的对象16字节对齐， 不容易出错， 速度快
 
-影响因素：成员变量。和其它的（协议，方法）没有关系。
+影响因素：**成员变量**。和其它的（协议，方法）没有关系。
 
-2个成员变量 8(isa)+8+8=24 字节对齐32
+2个成员变量 8(isa)+8+8=24，然后16字节对齐，结果为32。
 
 
 
