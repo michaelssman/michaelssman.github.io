@@ -69,7 +69,7 @@ AS创建flutter也有flutter路径
 
 ## Android studio
 
-### Android studio选择Plugins安装插件
+### 插件Plugins
 
 搜索flutter，Android studio安装flutter插件。会安装dart，安装完之后需要重启Android studio。
 

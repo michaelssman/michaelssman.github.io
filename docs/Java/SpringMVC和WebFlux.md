@@ -111,11 +111,11 @@ mvn dependency:tree -Dincludes=spring-boot-starter-web
 ---
 
 ### 关键注意事项
-- **避免混用两种模型**：  
+- **避免混用两种模型**：
   同一应用中同时使用 Servlet 和 WebFlux 会导致不可预测的行为，如线程模型冲突、安全配置失效。
-- **响应式编程学习曲线**：  
+- **响应式编程学习曲线**：
   WebFlux 需要熟悉 `Flux`、`Mono`、`Schedulers` 等概念，建议从简单路由开始逐步迁移。
-- **监控与调试**：  
+- **监控与调试**：
   WebFlux 的堆栈跟踪可能更复杂，可结合 Micrometer 和 Reactor Debug Agent 进行诊断：
   
   ```java
