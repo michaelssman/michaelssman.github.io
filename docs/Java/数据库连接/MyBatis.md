@@ -6,6 +6,14 @@ mybaits中文网址：https://mybatis.org/mybatis-3/zh_CN/index.html
 
 等效于对之前学习JDBC的MyBatis框架。
 
+每次对数据库增删改操作，都得手动写一大串SQL语句，不仅麻烦还容易出错，此时就需要MyBatis。
+
+MyBatis功能：
+
+- 对SQL语句进行管理。
+  - 把SQL语句和Java代码分离开来，放置在单独的配置文件里。管理比较清晰。当程序需要和数据库交互时，只需要告诉MyBatis要做什么，MyBatis就会根据配置文件里的SQL语句去数据库里执行相应的操作。
+- 对象关系映射（ORM）
+
 ## MyBatis是持久层框架
 
 **持久层**是分层开发中专门负责访问数据源的一层。
@@ -16,7 +24,26 @@ mybaits中文网址：https://mybatis.org/mybatis-3/zh_CN/index.html
 
 **ORM**(Object Relation Mapping)，中文名称：**对象关系映射**。是一种解决数据库发展和面向对象编程语言发展不匹配问题而出现的技术。
 
+把数据库中的表和Java中的对象对应起来，数据库中的每一行记录都可以映射成Java中的一个对象。
+
 ![image-20230420215343107](assets/image-20230420215343107.png)
+
+## MyBatis架构
+
+- SqlSessionFactoryBuilder：负责根据配置文件创建SqlSessionFactory。
+- SqlSessionFactory：生产SqlSession。
+- SqlSession：负责和数据库进行具体的交互。它可以执行SQL语句（增删改查）。
+
+**Mapper接口和Mapper XML文件**
+
+- Mapper接口：Mapper接口定义了一系列方法。
+- Mapper XML文件：里面写着具体的SQL语句。
+
+当程序调用Mapper接口的方法时，MyBatis会根据Mapper XML文件里的SQL语句去数据库里执行相应的操作。
+
+**MyBatis插件扩展功能**
+
+例如：通过插件实现分页查询，性能监控等功能。
 
 ## 搭建MyBatis框架
 
@@ -159,8 +186,6 @@ MyBatis框架中内置了一些常见类型的别名。这些别名不需要配�
 ### 7、测试类，启动项目
 
 ```java
-package com.hh.test;
-
 import com.hh.mapper.BookMapper;
 import com.hh.pojo.Book;
 import org.apache.ibatis.io.Resources;

@@ -2,6 +2,8 @@
 
 JDBC（Java DataBase Connectivity - Java数据库连接），是SUN公司定义的一套接口（规范）
 
+用于数据库连接的JDBC驱动库。
+
 ![image-20230416185209410](assets/image-20230416185209410.png)
 
 ## 在程序中加入驱动jar包
