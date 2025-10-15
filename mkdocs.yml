@@ -211,7 +211,7 @@ nav:
     - C++/内联函数.md
     - C++/构造函数和析构函数.md
     - C++/继承和组合.md
-    - C++/引用和指针.md
+    - C++/指针和引用.md
     - C++/替代链接.md
     - C++/默认参数和函数重载.md
     - C++/内存分配和释放.md
@@ -291,7 +291,7 @@ nav:
         - 数据结构与算法/数据结构/链表/链表.md
         - 数据结构与算法/数据结构/链表/STL中的list.md
       - 数据结构与算法/数据结构/Stack.md
-      - 数据结构与算法/数据结构/队列.md
+      - 数据结构与算法/数据结构/queue.md
       - 树:
         - 数据结构与算法/数据结构/树/树.md
         - 数据结构与算法/数据结构/树/红黑树.md
@@ -339,7 +339,7 @@ nav:
     - 创建型模式:
       - 设计模式/创建型模式/单例模式.md
       - 设计模式/创建型模式/工厂模式.md
-      - 设计模式/创建型模式/03建造者模式.md
+      - 设计模式/创建型模式/建造者模式.md
       - 设计模式/创建型模式/04创建者模式和工厂模式的区别.md
       - 设计模式/创建型模式/05原型模式Prototype.md
     - 结构型模式:
@@ -381,8 +381,8 @@ nav:
     - Java/Java.md
     - Java/环境搭建.md
     - Java/数据类型.md
+    - Java/Stream.md
     - Java/实体类.md
-    - Java/JDBC.md
     - Maven:
       - Java/Maven/Maven.md
       - Java/Maven/pom.xml.md
@@ -396,10 +396,13 @@ nav:
     - Java/日志.md
     - Java/异常处理.md
     - Java/工程结构.md
-    - Java/MyBatis.md
+    - 数据库连接:
+      - Java/数据库连接/JDBC.md
+      - Java/数据库连接/MyBatis.md
     - Java/Spring.md
     - Java/SSM.md
     - Java/SpringBoot.md
+    - Java/SpringMVC和WebFlux.md
     - Java/分布式id.md
     - Java/序列化.md
     - Java/plugins.md
@@ -408,10 +411,9 @@ nav:
     - 认证授权和网关:
       - Java/认证授权和网关/OAuth2协议.md
       - Java/认证授权和网关/jwt令牌.md
-      - Java/认证授权和网关/网关和认证过滤器.md     
+      - Java/认证授权和网关/网关-认证过滤器-拦截器.md     
+      - Java/认证授权和网关/认证和授权.md
       - Java/认证授权和网关/微信登录.md  
-    - Java/认证和授权.md
-    - Java/SpringMVC和WebFlux.md
     - Java/登录.md
     - Java/静态化freemarker.md
     - Java/分布式文件系统MinIO.md
@@ -431,6 +433,8 @@ nav:
     - Harmony/Harmony.md
     - Harmony/数据类型.md
     - Harmony/class.md
+    - Harmony/AbilityStage.md
+    - Harmony/UIAbility.md
     - Harmony/声明式UI.md
     - Harmony/lazyForEach.md
   - 数据库:
