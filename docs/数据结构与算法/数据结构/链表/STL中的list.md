@@ -27,14 +27,14 @@ using namespace std;//list也是用的std命名空间
 
 ```c++
 //标准C++ STL中的链表和迭代器
-    //可以往链表的前面增加数据，也可以往链表的后面增加数据
-list<int> listIntegers;//listIntegers就是双向链表
+//可以往链表的前面增加数据，也可以往链表的后面增加数据
+list<int> listIntegers;//list
 listIntegers.push_front(5);//在链表前面插入数据
 listIntegers.push_front(15);
 listIntegers.push_front(25);
 listIntegers.push_front(35);
 
-//想要看链表中的数据 使用迭代器
+//查看链表中的数据 使用迭代器
 list<int>::iterator i = listIntegers.begin();//迭代器 返回第一个数据
 //迭代器是一个指针
 cout << *i << "->";
@@ -45,7 +45,7 @@ while (i != listIntegers.end()) {
 cout << endl;
 ```
 
-操作类私有的数据成员。需要做成友元类。
+操作**类私有的数据成员**。需要做成友元类。
 
 ### 插入数据
 
