@@ -8,7 +8,7 @@
 
 ### flutter
 
-界面不依赖原生Ui，有自己独立的渲染引擎，iOS和安卓UI高度统一。iOS和安卓都有渲染引擎去解析Dart代码。flutter包大，因为有渲染引擎，效率高。
+界面不依赖原生UI，有自己独立的渲染引擎，iOS和安卓UI高度统一。iOS和安卓都有渲染引擎去解析Dart代码。flutter包大，因为有渲染引擎，效率高。
 
 ## website
 
@@ -83,34 +83,49 @@ AS创建flutter也有flutter路径
 
 ![image-20250412010807902](assets/image-20250412010807902.png)
 
-### 保存时自动格式化代码
+### 自动格式化代码
 
 Settings -> Languages & Frameworks -> Flutter -> Editor
 
 选中`Format code on save`也可以勾选子选项`Organize imports on save`
 
-### 1、Windows Version (Unable to confirm if installed Windows version is 10 or greater)
+### Windows Version (Unable to confirm if installed Windows version is 10 or greater)
 
 下载master分支的flutter：`git clone -b master https://github.com/flutter/flutter.git`。
 
 https://github.com/flutter/flutter/issues/119927#issuecomment-1415858226
 
-### 2、[!] HTTP Host Availability
+### 🔧 配置Gradle包装器下载源
 
-  **✗** **HTTP host https://maven.google.com/ is not reachable. Reason: An error**
+这个配置直接解决你遇到的Gradle压缩包下载超时问题。
 
-**occurred while checking the HTTP host: Operation timed out**
+找到你Flutter项目中的 `android/gradle/wrapper/gradle-wrapper.properties` 文件，将 `distributionUrl` 这一行注释掉（行首加`#`），并修改为国内镜像地址。
 
-解决方法：
+```properties
+# 这是原来的配置
+# distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip
+
+# 修改为腾讯云镜像
+distributionUrl=https\://mirrors.cloud.tencent.com/gradle/gradle-8.13-bin.zip
+```
+
+### 📦 配置项目依赖仓库镜像
+
+在首次运行的时候，你会发现卡在如下的地方了：
+
+```
+Running Gradle task 'assembleDebug'
+```
+
+原因是`Gradle`的`Maven`仓库在国外，解决方法就是镜像：
 
 1. 打开`/path-to-flutter-sdk/packages/flutter_tools/lib/src/http_host_validator.dart`文件，修改`https://maven.google.com/`为 google maven 的国内镜像，如`https://maven.aliyun.com/repository/google/`
 
-2. 修改 flutter 安装目录中的 `flutter.gradle` 文件
+2. 修改`flutter安装目录/packages/flutter_tools/gradle/flutter.gradle`文件和`项目 -> Android -> build.gradle`两个文件：
 
-   - 文件路径: /opt/flutter/packages/flutter_tools/gradle/flutter.gradle
-   - 修改内容: `buildscript` 加入阿里镜像
+   - 在 `buildscript > repositories` 块内添加阿里镜像
 
-   ```
+   ```groovy
    buildscript {
        repositories {
            //google()
@@ -118,7 +133,6 @@ https://github.com/flutter/flutter/issues/119927#issuecomment-1415858226
            maven { url 'https://maven.aliyun.com/repository/google' }
            maven { url 'https://maven.aliyun.com/repository/jcenter' }
            maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
-   
        }
        dependencies {
            classpath 'com.android.tools.build:gradle:4.1.0'
@@ -126,11 +140,28 @@ https://github.com/flutter/flutter/issues/119927#issuecomment-1415858226
    }
    ```
 
+   - 在 `allprojects > repositories` 块内添加:
+
+   ```groovy
+   allprojects {
+       repositories {
+           // 阿里云镜像仓库
+           maven { url 'https://maven.aliyun.com/repository/google' }
+           maven { url 'https://maven.aliyun.com/repository/jcenter' }
+           maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }      
+           // 如需，也可添加清华镜像
+           // maven { url 'https://mirrors.tuna.tsinghua.edu.cn/flutter/download.flutter.io' } :cite[3]:cite[10]
+       }
+   }
+   ```
+
+   请注意，有些配置建议移除或注释掉原有的 `google()` 和 `jcenter()`，但有时这可能导致某些特定依赖找不到。如果遇到问题，可以尝试保留它们，并将国内镜像放在前面优先使用。
+
 3. 删除`/path-to-flutter-sdk/bin/cache` 文件夹
 
 4. 重新执行`flutter doctor`
 
-### 3、Unable to find bundled Java version.
+### Unable to find bundled Java version.
 
 下载安装java。
 
@@ -141,30 +172,6 @@ https://github.com/flutter/flutter/issues/119927#issuecomment-1415858226
 查看flutter版本，有新版本就更新flutter版本。
 
 Engine revision：引擎版本
-
-## 运行安卓模拟器Gradle卡住问题
-
-在首次运行的时候，你会发现卡在如下的地方了：
-
-```
-Running Gradle task 'assembleDebug'
-```
-
-原因是`Gradle`的`Maven`仓库在国外，解决它比较简单的操作就是镜像，配置如下:
-
-### 修改项目下的 `build.gradle` 文件
-
-- 文件路径: 项目 -> Android -> build.gradle
-
-- 修改内容: 找到`buildscript` 和 `allprojects`, 将里边 `google()`  和`mavenCentral()`注释掉, 添加阿里云的镜像.
-
-  ```
-  maven { url 'https://maven.aliyun.com/repository/google' }
-  maven { url 'https://maven.aliyun.com/repository/jcenter' }
-  maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
-  ```
-
-  ![9C38D932-1246-4E24-B16D-875A50B2E3F4.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0f852b4735f64c83b350c6bf0480545e~tplv-k3u1fbpfcp-watermark.awebp?)
 
 ## Windows
 
