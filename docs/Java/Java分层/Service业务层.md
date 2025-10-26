@@ -18,8 +18,6 @@ public interface BookService {
 
 ## 实现类
 
-编写上面接口的实现类
-
 在com.hh.service包下再new一个包`com.hh.service.impl`
 
 在包下创建接口的实现类BookServiceImpl。

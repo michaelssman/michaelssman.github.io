@@ -2,8 +2,6 @@
 
 前端请求到这个类里的具体方法
 
-##### 响应数据
-
 从前端、服务端、数据库一层一层的查找数据，然后再从数据库、服务端一层一层返还到前端。
 
 ```java
@@ -45,4 +43,4 @@ public class BookController {
 
 响应页面或者响应数据，响应数据需要加注解`@ResponseBody`，数据就可以return出去。
 
-@ResponseBody注解作用：直接在方法上添加上@ResponseBody，Spring MVC会把返回值设置到响应流中。
+`@ResponseBody`注解作用：直接在方法上添加上`@ResponseBody`，Spring MVC会把返回值设置到响应流中。

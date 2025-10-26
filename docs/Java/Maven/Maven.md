@@ -21,7 +21,7 @@ HttpClient库：用于网络请求
 
 镜像仓库(Mirror Repository)：访问国外的Maven仓库特别慢。镜像仓库就是另一台备份/复制了中央仓库的服务器。平时使用阿里云镜像或华为云镜像，这样可以大大提升从中央仓库下载资源的速度。但它的角色仍然是一个远程库。
 
-### 查找依赖流程
+## 查找依赖流程
 
 > 先在本地仓库找
 >
@@ -62,7 +62,7 @@ https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/
 <localRepository>C:/Users/micha/Documents/Repository</localRepository>
 ```
 
-如果不在 Maven 的 `settings.xml` 文件中指定 `<localRepository>`，Maven 将使用默认的本地仓库位置。这个默认位置通常是：
+如果不在 Maven 的 `settings.xml` 文件中指定 `<localRepository>`，Maven 将使用默认的本地仓库位置：
 
 - **Windows**: `C:\Users\<username>\.m2\repository`
 - **macOS/Linux**: `/Users/<username>/.m2/repository`
