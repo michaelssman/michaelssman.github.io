@@ -1,6 +1,6 @@
 # GCD（Grand Central Dispatch）
 
-纯C语言，提供了非常多强大的函数
+纯C语言
 
 GCD是苹果公司为多核的并发运算提出的解决方案
 
@@ -73,8 +73,6 @@ getter读操作：`dispatch_sync`同步。
 - (void)readWriteLock {
     // 使用自己创建的并发队列
     self.concurrentQueue = dispatch_queue_create("aaa", DISPATCH_QUEUE_CONCURRENT);
-    // 使用全局队列,必定野指针崩溃
-//    self.concurrentQueue = dispatch_get_global_queue(0, 0);
  
     // 测试代码,模拟多线程情况下的读写
     for (int i = 0; i<10; i++) {
@@ -82,7 +80,6 @@ getter读操作：`dispatch_sync`同步。
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             [self updateText:[NSString stringWithFormat:@"噼里啪啦--%d",i]];
         });
- 
     }
  
     for (int i = 0; i<50; i++) {
@@ -90,7 +87,6 @@ getter读操作：`dispatch_sync`同步。
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             NSLog(@"读 %@ %@",[self getCurrentText],[NSThread currentThread]);
         });
- 
     }
  
     for (int i = 10; i<20; i++) {
@@ -282,7 +278,7 @@ NSLog(@"Continue with the main thread tasks...");
 
 通过条件控制block执行。
 
-在任一线程上调用它的一个函数 dispatch_source_merge_data 后，会执行 Dispatch Source 事先定义好的句柄(可以把句柄简单理解为一个 block ) 这个过程叫 Custom event 用户事件。是 dispatch source 支持处理的一种事件
+在任一线程上调用它的一个函数 dispatch_source_merge_data 后，会执行 Dispatch Source 事先定义好的句柄(可以把句柄简单理解为一个 block ) 这个过程叫`Custom event`用户事件。是`dispatch source`支持处理的一种事件
 
 句柄是一种指向指针的指针 它指向的就是一个类或者结构，它和系统有很密切的关系 HINSTANCE(实例句柄)，HBITMAP(位图句柄)，HDC(设备表述句柄)，HICON (图标句柄)等。这当中还有一个通用的句柄，就是HANDLE
 
