@@ -266,7 +266,7 @@ void main() {
 
 在此示例中，EnhancedLogger Mixin扩展了Logger Mixin并添加了`logError`方法。NetworkManager类使用EnhancedLogger Mixin来获取`log`和`logError`方法。这演示了一个Mixin如何扩展另一个Mixin，从而允许更多
 
-## 了解on关键字
+## on关键字
 
 Dart中的on关键字在Mixin中用于指定约束，这意味着Mixin只能应用于扩展或实现指定类的类。这允许更多的控制，并确保在适当的上下文中使用 Mixin。
 

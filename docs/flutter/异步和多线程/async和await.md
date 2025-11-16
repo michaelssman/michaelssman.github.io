@@ -7,7 +7,7 @@ Future类似H5中的promise。
 - `async`：这是一个用于声明异步函数的关键字。必须使用在函数上，他会把一个函数标记为`异步函数`。异步函数是一种可以在等待某些操作完成时不阻塞程序执行的函数。异步函数在执行时返回一个 Future 对象。
 - `await`：这是一个只能在`异步函数(async 标记的函数）`中使用的关键字，它可以暂停代码的执行，直到等待的 Future 完成。
 
-使用async/await替代.then()：.then()在某些情况下是有用的，使用async/await可以使代码更易读，更易理解。
+使用async/await替代`.then():`，使用async/await可以使代码更易读，更易理解。
 
 async 和await 关键字让我们可以用一种更简洁的方式写出基于 Promise 的异步行为，而无需刻意地链式调用promise。
 
