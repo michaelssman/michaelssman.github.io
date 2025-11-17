@@ -32,7 +32,7 @@ Java代码不再new创建对象，程序中用一个xml文件，里面配置对�
 
 **创建对象由JAVA代码转移到spring容器，由spring的容器控制对象的创建，就是控制反转**。
 
-IOC的核心是把对象的创建交给容器来管理，不用我自己在代码里到处new对象。
+IOC的核心是把对象的创建交给容器来管理，不用自己在代码里到处new对象。
 
 DI就是容器把需要的对象自动注入到我定义的类里，让代码更简洁、更好维护。
 
@@ -50,7 +50,7 @@ DI就是容器把需要的对象自动注入到我定义的类里，让代码更
 
 在xml中可以配置bean标签，例：`<bean id="s" class="Student">`，这行代码底层做的就是`Student s = new Student();`。
 
-构建是Spring底层通过反射技能做的。
+构建是Spring底层通过**反射**做的。
 
 applicationContext.xml通过反射创建对象，所有对象放在Spring容器中（底层是map集合），java程序从容器中取对象。
 
@@ -238,7 +238,7 @@ Book b = new Book(1，"项目驱动零起点学Java");
 
 @Component 注解表明这个类是一个 Spring 组件，被 Spring 容器管理。
 
-要想找到这些注解，需要将注解所在的package包进行扫描，在applicationContext.xml中添加context命名空间
+要想找到这些注解，需要将注解所在的package包进行扫描，在`applicationContext.xml`中添加context命名空间
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?> 

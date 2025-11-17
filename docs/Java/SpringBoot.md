@@ -105,7 +105,7 @@ public class AppGatewayApplication {
 
 ### 3、配置文件
 
-springboot可以添加个性化配置。上下文路径、端口等。
+springboot可以添加个性化配置：上下文路径、端口等。
 
 #### application.properties
 
@@ -170,12 +170,11 @@ server:
   servlet:
     context-path: /springbootssm
 spring:
-	#mysql驱动
-  datasource:
-	  driver-class-name: com.mysql.cj.jdbc.Driver	#驱动
-    url: jdbc:mysql://ip地址:端口/数据库名?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
-    username: root
-    password: asdf123456
+  #mysql驱动
+  datasource: driver-class-name: com.mysql.cj.jdbc.Driver	#驱动
+  url: jdbc:mysql://ip地址:端口/数据库名?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+  username: root
+  password: asdf123456
 ```
 
 mybatis配置：
