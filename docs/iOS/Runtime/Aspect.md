@@ -12,9 +12,7 @@
 
 ## 继承 
 
-耦合程度高。
-
-需要对基类修改。
+耦合程度高，需要对基类修改。
 
 ## AOP
 
@@ -30,13 +28,13 @@ SDWebImage。 Manager	downloader和cache。下载功能逻辑。
 
 Hook person的test方法，不是交换imp，而是先交换person中的ForwardInvocation，指向自定义的函数。
 
-Aspects 库简化了面向切面编程的实现。Aspects 库通过 Objective-C 的动态特性，允许开发者在运行时拦截消息，并为其添加前置、后置或替换执行的代码。这里是它的基本原理：
+Aspects 库通过 Objective-C 的动态特性，允许开发者在运行时拦截消息，并为其添加前置、后置或替换执行的代码。这里是它的基本原理：
 
 1. **消息发送机制**：Objective-C 是一门动态语言，它的方法调用是通过消息发送（message sending）实现的。当你对一个对象发送消息时（即调用一个方法），Objective-C 的运行时系统会寻找这个消息对应的方法实现，并执行它。
 
 2. **Method Swizzling**：这是 Objective-C 运行时的一个特性，允许开发者在运行时交换两个方法的实现。这意味着你可以将一个方法的实现动态地替换为另一个方法的实现。
 
-3. **Block（闭包）**：Aspects 使用了 Objective-C 的 block 语法来允许开发者定义在原方法执行前、执行后或替换原方法时要执行的代码块。
+3. **Block（闭包）**：Aspects 使用 Objective-C 的 block 语法来允许开发者定义在原方法执行前、执行后或替换原方法时要执行的代码块。
 
 4. **动态方法解析**：Aspects 可能会使用 Objective-C 的动态方法解析来动态地添加方法实现，或者在某个方法被调用时进行拦截。
 
@@ -104,7 +102,7 @@ NSInvocation sign target 信息
 
 ## 调用流程
 
-**对外暴露的核心API**
+### 对外暴露的核心API
 
 ```objective-c
 /// 作用域：针对所有对象生效
@@ -268,9 +266,9 @@ static BOOL aspect_isSelectorAllowedAndTrack(NSObject *self, SEL selector, Aspec
 ```
 
 1. 不允许hook：retain 、 release 、 autorelease 、 forwardInvocation。
-2. 允许hook dealloc ，但是只能在 dealloc 执行前，这都是为了程序的安全性设置的
-3. 检查这个方法是否存在，不存在则不能hook
-4. Aspects对于hook的生效作用域做了区分：所有实例对象&某个具体实例对象。对于所有实例对象在整个继承链中，同一个方法只能被hook一次，这么做的目的是为了规避循环调用的问题（详情可以了解下 supper 关键字）
+2. 允许hook dealloc ，但是只能在 dealloc 执行前。
+3. 检查这个方法是否存在，不存在则不能hook。
+4. Aspects对于hook的生效作用域做了区分：所有实例对象&某个具体实例对象。对于所有实例对象在整个继承链中，同一个方法只能被hook一次，这么做的目的是为了规避循环调用的问题（详情可以了解下 supper 关键字）。
 
 ### aspect_prepareClassAndHookSelector
 
@@ -332,7 +330,6 @@ static Class aspect_hookClass(NSObject *self, NSError **error) {
     // Already subclassed
     if ([className hasSuffix:AspectsSubclassSuffix]) {
         return baseClass;
-        
         // We swizzle a class object, not a single object.
     }else if (class_isMetaClass(baseClass)) {
         return aspect_swizzleClassInPlace((Class)self);
@@ -443,14 +440,13 @@ static void __ASPECTS_ARE_BEING_CALLED__(__unsafe_unretained NSObject *self, SEL
 
 ## 总结
 
-Aspects 利用消息转发机制，通过hook第三层的转发方法`forwardInvocation: `，然后根据切面的时机来动态调用block。接下来详细分析巧妙的设计
+Aspects 利用消息转发机制，通过hook第三层的转发方法`forwardInvocation:`，然后根据切面的时机来动态调用block。接下来详细分析巧妙的设计
 
 1. 类A的方法m被添加切面方法。
-2. 创建类A的子类B，并hook子类B的`forwardInvocation: `方法拦截消息转发，使`forwardInvocation: `的 IMP 指向事先准备好的`ASPECTS_ARE_BEING_CALLED`函数（后面简称 ABC 函数），block方法的执行就在 ABC 函数中。
-3. 把类A的对象的isa指针指向B，这样就把消息的处理转发到类B上，类似 KVO 的机制，同时会更改 class 方法的IMP，把它指向类A的 class 方法，当外界调用 class 时获取的还是类A，并不知道中间类B的存在。
+2. 创建类A的子类B，把类A的对象的isa指针指向B，这样就把消息的处理转发到类B上，类似 KVO 的机制，同时会更改 class 方法的IMP，把它指向类A的 class 方法，当外界调用 class 时获取的还是类A，并不知道中间类B的存在。
+3. hook子类B的`forwardInvocation: `方法，拦截消息转发，使`forwardInvocation: `的 IMP 指向事先准备好的`ASPECTS_ARE_BEING_CALLED`函数（后面简称 ABC 函数），block方法的执行就在 ABC 函数中。
 4. 对于方法m，**类B会直接把方法m的 IMP 指向`_objc_msgForward`方法**，这样调用方法m时就会自动触发消息转发机制。
-5. hook第三层的转发方法`forwardInvocation: `，把它的 IMP 指向` __ASPECTS_ARE_BEING_CALLED__` 方法
-6. 调用方法 m1 则会直接触发 `__ASPECTS_ARE_BEING_CALLED__`方法，而 `__ASPECTS_ARE_BEING_CALLED__`方法就是处理切面block用和原有函数的调用时机，详细看下面实现步骤
+5. 调用方法 m1 则会直接触发 `__ASPECTS_ARE_BEING_CALLED__`方法，而 `__ASPECTS_ARE_BEING_CALLED__`方法就是处理切面block用和原有函数的调用时机，详细看下面实现步骤：
    1. 根据调用的 selector ，获取容器对象 AspectsContainer ，这里面存储了这个类或对象的所有切面信息
    2. AspectInfo 会存储当前的参数信息，用于传递
    3. 首先触发函数调用前的block，存储在容器的 beforeAspects 数组中
