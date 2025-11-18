@@ -63,6 +63,10 @@ typedef NS_OPTIONS(NSUInteger, AspectOptions) {
 
 NSInvocation sign target 信息
 
+- instance：hook的对象。
+- originalInvocation：hook方法的原始Invocation。
+- arguments：hook的方法的参数数组。
+
 ### AspectIdentifier
 
 一个model，用来存储hook方法的原有方法、切面block、block方法签名、切面时机。

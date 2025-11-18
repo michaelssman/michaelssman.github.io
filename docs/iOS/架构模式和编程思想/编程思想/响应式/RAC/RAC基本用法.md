@@ -181,6 +181,20 @@ UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
 }];
 ```
 
+```objc
+// 1. 创建长按手势
+UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] init];
+longPressGesture.minimumPressDuration = 0.8; // 设置长按时间
+// 2. 使用 ReactiveObjC 处理手势
+[[[longPressGesture rac_gestureSignal] filter:^BOOL(UILongPressGestureRecognizer *gesture) {
+    return gesture.state == UIGestureRecognizerStateBegan;
+}] subscribeNext:^(UILongPressGestureRecognizer *sender) {
+    // 处理长按点击的逻辑
+}];
+// 3. 添加到 cell
+[view addGestureRecognizer:longPressGesture];
+```
+
 ## 通知
 
 ```objective-c
