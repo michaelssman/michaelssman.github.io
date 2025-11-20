@@ -447,8 +447,8 @@ static void __ASPECTS_ARE_BEING_CALLED__(__unsafe_unretained NSObject *self, SEL
 Aspects 利用消息转发机制，通过hook第三层的转发方法`forwardInvocation:`，然后根据切面的时机来动态调用block。接下来详细分析巧妙的设计
 
 1. 类A的方法m被添加切面方法。
-2. 创建类A的子类B，把类A的对象的isa指针指向B，这样就把消息的处理转发到类B上，类似 KVO 的机制，同时会更改 class 方法的IMP，把它指向类A的 class 方法，当外界调用 class 时获取的还是类A，并不知道中间类B的存在。
-3. hook子类B的`forwardInvocation: `方法，拦截消息转发，使`forwardInvocation: `的 IMP 指向事先准备好的`ASPECTS_ARE_BEING_CALLED`函数（后面简称 ABC 函数），block方法的执行就在 ABC 函数中。
+2. **创建类A的子类B，把类A的对象的isa指针指向B，这样就把消息的处理转发到类B上，同时会更改 class 方法的IMP，把它指向类A的 class 方法，当外界调用 class 时获取的还是类A，并不知道中间类B的存在。类似 KVO 的机制。**
+3. hook子类B的`forwardInvocation: `方法，拦截消息转发，使`forwardInvocation: `的 IMP 指向事先准备好的`ASPECTS_ARE_BEING_CALLED`函数，block方法的执行就在`ASPECTS_ARE_BEING_CALLED`函数中。
 4. 对于方法m，**类B会直接把方法m的 IMP 指向`_objc_msgForward`方法**，这样调用方法m时就会自动触发消息转发机制。
 5. 调用方法 m1 则会直接触发 `__ASPECTS_ARE_BEING_CALLED__`方法，而 `__ASPECTS_ARE_BEING_CALLED__`方法就是处理切面block用和原有函数的调用时机，详细看下面实现步骤：
    1. 根据调用的 selector ，获取容器对象 AspectsContainer ，这里面存储了这个类或对象的所有切面信息
