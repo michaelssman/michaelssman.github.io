@@ -1,6 +1,10 @@
-# 项目部署_持续集成
+# CI/CD
 
-## 持续集成
+## CI/CD
+
+CI/CD 包含了一个 CI 和两个 CD，CI全称 Continuous Integration，表示持续集成，CD包含 Continuous Delivery和 Continuous Deployment，分别是持续交付和持续部署，三者具有前后依赖关系。
+
+### CI持续集成
 
 持续集成（ Continuous integration ， 简称 CI ）指的是，频繁地（一天多次）将代码集成到主干
 
@@ -13,6 +17,147 @@
 - 代码存储库：一般使用SVN或Git。
 
 - 持续集成（CI）服务器：Jenkins 就是一个配置简单和使用方便的持续集成服务器。
+
+### CD持续交付
+
+持续交付将集成后的代码部署到类生产环境(预发布)，除了交付到类生产环境之外，还会执行一些集成测试、API测试。持续交付强调的是“交付”，交付给测试、产品验收，不管怎么更新，软件是随时随地可以交付的。
+
+### CD持续部署
+
+在持续交付的基础上由开发人员或运维人员自助式的定期向生产环境部署稳定的构建版本，持续部署的目标是代码在任何时刻都是可部署的，并可自动进入到生产环境。
+
+## 人工部署方式
+
+如果不使用CI/CD则需要人工手动对工程进行测试、打包、部署。使用CI/CD后通过自动化的工具去完成。
+
+### 1、 项目打包
+
+1.1、首先在父工程添加models，聚合各各模块
+
+```Bash
+<modules>
+    <module>../xuecheng-plus-base</module>
+    <module>../xuecheng-plus-checkcode</module>
+    <module>../xuecheng-plus-gateway</module>
+    <module>../xuecheng-plus-auth</module>
+    <module>../xuecheng-plus-content</module>
+    <module>../xuecheng-plus-learning</module>
+    <module>../xuecheng-plus-media</module>
+    <module>../xuecheng-plus-orders</module>
+    <module>../xuecheng-plus-message-sdk</module>
+    <module>../xuecheng-plus-search</module>
+    <module>../xuecheng-plus-system</module>
+</modules>
+```
+
+1.2、配置**打包插件**
+
+使用springboot打包插件进行打包，在需要打可执行包的工程中配置spring-boot-maven-plugin插件，否则报 “jar中没有主清单属性” 。
+
+```Bash
+<build>
+    <finalName>${project.artifactId}-${project.version}</finalName>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <version>${spring-boot.version}</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>repackage</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+```
+
+说明：
+
+哪个微服务加了这个插件，哪个微服务就可以使用。打包之后的jar包在具体微服务的target文件夹中。
+
+配置了springboot打包插件即可在maven窗口显示如下：
+
+![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=NGIxYWE3ZmQ2MTEyNDkxM2EyMTNiMzFiZGY0ZGUyMzRfczVGSVYzM2xEMHlGUU1QOTVlQXBIZWExVEhIaVFyeEFfVG9rZW46T2Q1b2JhOHhMb3ZMS2x4ejlEQWNkY1ZHblNDXzE3NjM5MDU5NDA6MTc2MzkwOTU0MF9WNA)
+
+功能说明：
+
+- build-info：生成项目的构建信息文件 build-info.properties
+- repackage：这个是默认 goal，在 mvn package 执行之后，这个命令再次打包生成可执行的 jar，同时将 mvn package 生成的 jar 重命名为 *.origin
+- run：这个可以用来运行 Spring Boot 应用
+- start：这个在 mvn integration-test 阶段，进行 Spring Boot 应用生命周期的管理
+- stop：这个在 mvn integration-test 阶段，进行 Spring Boot 应用生命周期的管理
+
+在父工程执行：clean install -DskipTests -f pom.xml 对所有工程进行打包
+
+- install 
+- DskipTests：跳过单元测试
+
+打包完成可在本地通过java -jar  运行jar包观察是否可以正常运行。
+
+下边测试验证码服务：
+
+进入验证码服务的target目录，cmd运行：
+
+```sh
+java -Dfile.encoding=utf-8  -jar xuecheng-plus-checkcode-0.0.1-SNAPSHOT.jar 
+```
+
+使用httpclient测试申请验证码：
+
+```JavaScript
+### 申请验证码
+POST localhost:63075/checkcode/pic
+```
+
+### 2、部署到Linux
+
+将打成的jar包拷贝到Linux，生成镜像，并创建容器。
+
+2.1、编写Dockerfile文件，生成镜像。
+
+```dockerfile
+FROM java:8u20
+MAINTAINER docker_maven docker_maven@email.com
+WORKDIR /ROOT
+ADD xuecheng-plus-checkcode-0.0.1-SNAPSHOT.jar xuecheng-plus-checkcode.jar
+CMD ["java", "-version"]
+ENTRYPOINT ["java", "-Dfile.encoding=utf-8","-jar", "xuecheng-plus-checkcode.jar"]
+EXPOSE 63075
+```
+
+- FROM：依赖的jdk。
+- EXPOSE：暴露的端口。
+
+2.2、创建镜像
+
+```sh
+docker build -t checkcode:1.0 .
+```
+
+- checkcode：镜像名称。
+- 1.0：版本号。
+- 最后的`.`：所在的目录。
+
+创建成功，查询镜像：`docker images`，可以看到有`checkcode`。
+
+2.3、创建容器
+
+```sh
+docker run --name xuecheng-plus-checkcode -p 63075:63075 -idt checkcode:1.0
+```
+
+- checkcode：镜像
+- xuecheng-plus-checkcode：容器名字
+
+再次测试
+
+```JavaScript
+### 申请验证码
+POST 192.168.101.65:63075/checkcode/pic
+```
 
 ## Jenkins
 
