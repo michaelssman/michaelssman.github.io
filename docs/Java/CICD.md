@@ -52,7 +52,7 @@ CI/CD 包含了一个 CI 和两个 CD，CI全称 Continuous Integration，表示
 
 1.2、配置**打包插件**
 
-使用springboot打包插件进行打包，在需要打可执行包的工程中配置spring-boot-maven-plugin插件，否则报 “jar中没有主清单属性” 。
+使用springboot打包插件进行打包，在需要打可执行jar包的工程中配置spring-boot-maven-plugin插件，否则报 “jar中没有主清单属性” 。
 
 ```Bash
 <build>
@@ -80,7 +80,7 @@ CI/CD 包含了一个 CI 和两个 CD，CI全称 Continuous Integration，表示
 
 配置了springboot打包插件即可在maven窗口显示如下：
 
-![img](https://mx67xggunk5.feishu.cn/space/api/box/stream/download/asynccode/?code=NGIxYWE3ZmQ2MTEyNDkxM2EyMTNiMzFiZGY0ZGUyMzRfczVGSVYzM2xEMHlGUU1QOTVlQXBIZWExVEhIaVFyeEFfVG9rZW46T2Q1b2JhOHhMb3ZMS2x4ejlEQWNkY1ZHblNDXzE3NjM5MDU5NDA6MTc2MzkwOTU0MF9WNA)
+![image](assets/image.png)
 
 功能说明：
 
@@ -90,7 +90,7 @@ CI/CD 包含了一个 CI 和两个 CD，CI全称 Continuous Integration，表示
 - start：这个在 mvn integration-test 阶段，进行 Spring Boot 应用生命周期的管理
 - stop：这个在 mvn integration-test 阶段，进行 Spring Boot 应用生命周期的管理
 
-在父工程执行：clean install -DskipTests -f pom.xml 对所有工程进行打包
+在父工程执行：`clean install -DskipTests -f pom.xml`对所有工程进行打包
 
 - install 
 - DskipTests：跳过单元测试
@@ -179,6 +179,147 @@ Jenkins安装和持续集成环境配置
 1. 开发人员每天进行代码提交，提交到Git仓库。
 2. Jenkins作为持续集成工具，使用Git工具到Git仓库拉取代码到集成服务器，再配合JDK，Maven等软件完成代码编译、测试、审查、打包等工作，在这个过程中每一步出错，都重新再执行一次整个流程。
 3. Jenkins把生成的jar或war包分发到测试服务器或者生产服务器，测试人员或用户就可以访问应用。
+
+### 自动部署流程
+
+![35cd14d4-bd6b-4b53-b1eb-a6e1e4ec0c54](assets/35cd14d4-bd6b-4b53-b1eb-a6e1e4ec0c54.png)
+
+1. 代码全部上传git
+2. 通过jekins软件把git上的代码拉到Jenkins服务器上，使用maven进行编译打包
+3. 在打包的时候生成了jar包，还要使用插件生成镜像，自动上传到docker仓库。
+4. 在服务器上使用jekins把镜像拉下来，创建容器，启动容器。
+
+#### 修改pom.xml文件
+
+在pom.xml添加docker-maven-plugin插件实现将springboot工程创建镜像， 此pom.xml添加docker-maven-plugin插件用于生成镜像。
+
+分别修改具体微服务的pom.xml文件。
+
+插件的坐标如下：
+
+```xml
+<dependency>
+    <groupId>com.spotify</groupId>
+    <artifactId>docker-maven-plugin</artifactId>
+    <version>1.2.2</version>
+</dependency>
+```
+
+修改pom.xml文件，以验证码微服务为例，如下：
+
+1. 编译打包插件
+2. 生成镜像上传docker仓库插件
+
+```xml
+<build>
+    <finalName>${project.artifactId}-${project.version}</finalName>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <version>${spring-boot.version}</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>repackage</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+        <plugin>
+            <groupId>com.spotify</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <version>1.2.2</version>
+            <configuration>
+                <!--修改imageName节点的内容，改为私有仓库地址和端口，再加上镜像id和 TAG,我们要直接传到私服-->
+                <!--配置最后生成的镜像名，docker images里的，我们这边取项目名:版本-->
+                <!--<imageName>${project.artifactId}:${project.version}</imageName>-->
+                <!--5000是docker私服的端口-->
+                <imageName>192.168.101.65:5000/${project.artifactId}:${project.version}</imageName>
+                <!--也可以通过以下方式定义image的tag信息。 -->
+                <!-- <imageTags>
+                     <imageTag>${project.version}</imageTag>
+                     &lt;!&ndash;build 时强制覆盖 tag，配合 imageTags 使用&ndash;&gt;
+                     <forceTags>true</forceTags>
+                     &lt;!&ndash;build 完成后，push 指定 tag 的镜像，配合 imageTags 使用&ndash;&gt;
+                     <pushImageTag>true</pushImageTag>
+                 </imageTags>-->
+                <!--依赖的jdk的版本-->
+                <baseImage>java:8u20</baseImage>
+                <maintainer>docker_maven docker_maven@email.com</maintainer>
+                <workdir>/root</workdir>
+                <cmd>["java", "-version"]</cmd>
+                <!--来指明Dockerfile文件的所在目录，如果配置了dockerDirectory则忽略baseImage，maintainer等配置-->
+                <!--<dockerDirectory>./</dockerDirectory>-->
+                <!--2375是docker的远程端口，插件生成镜像时连接docker，这里需要指定docker远程端口-->
+                <dockerHost>http://192.168.101.65:2375</dockerHost>
+                <!--入口点，project.build.finalName就是project标签下的build标签下 的filename标签内容，testDocker-->
+                <!--相当于启动容器后，会自动执行java -jar ...-->
+                <entryPoint>["java", "-Dfile.encoding=utf-8","-jar", "/root/${project.build.finalName}.jar"]</entryPoint>
+                <!--是否推送到docker私有仓库，旧版本插件要配置maven的settings文件。 -->
+                <pushImage>true</pushImage>
+                <registryUrl>192.168.101.65:5000</registryUrl>  <!-- 这里是复制 jar 包到 docker 容器指定目录配置 -->
+                <resources>
+                    <resource>
+                        <targetPath>/root</targetPath>
+                        <directory>${project.build.directory}</directory>
+                        <!--把哪个文件上传到docker，相当于Dockerfile里的add app.jar /-->
+                        <include>${project.build.finalName}.jar</include>
+                    </resource>
+                </resources>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+```
+
+其中system-api服务的bootstrap.yml修改如下：
+
+```JavaScript
+server:
+  servlet:
+    context-path: /system
+  port: 63110
+#微服务配置
+spring:
+  application:
+    name: system-api
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.101.65:3306/xcplus_system?serverTimezone=UTC&userUnicode=true&useSSL=false&
+    username: root
+    password: mysql
+  cloud:
+    nacos:
+      server-addr: 192.168.101.65:8848
+      discovery:
+        namespace: dev166
+        group: xuecheng-plus-project
+# 日志文件配置路径
+logging:
+  config: classpath:log4j2-dev.xml
+
+# swagger 文档配置
+swagger:
+  title: "学成在线系统管理"
+  description: "系统管理接口"
+  base-package: com.xuecheng.system
+  enabled: true
+  version: 1.0.0
+```
+
+在system-api工程添加nacos的依赖：
+
+```JavaScript
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+</dependency>
+```
+
+删除system-service工程下的配置文件。
+
+以上内容修改完毕再次提交Git。
 
 ### 1、Jenkins安装
 
@@ -714,15 +855,13 @@ ENTRYPOINT ["sh","-c","java -jar $JAVA_OPTS /app.jar $PARAMS"]
 选择`Invoke top-level Maven targets`。
 
 - Maven版本：选择maven。
-- 目标：`clean install -Dmaven.test.skip=true dockerfile:build -f heima-leadnews/heima-leadnews-service/heima-leadnews-user/pom.xml`
+- 目标：`clean install -Dmaven.test.skip=true dockerfile:build -f heima-leadnews/heima-leadnews-service/heima-leadnews-user/pom.xml``
+  - `-Dmaven.test.skip=true`：跳过测试。
+  - `dockerfile:build`：启动dockerfile插件构建容器。
+  - `-f heima-leadnews-user/pom.xml`：指定需要构建的文件（必须是pom）。
 
-<font color='red'>注意：根据自己的实际代码路径配置</font>
 
-`-Dmaven.test.skip=true`：跳过测试。
-
-`dockerfile:build`：启动dockerfile插件构建容器。
-
-`-f heima-leadnews-user/pom.xml`：指定需要构建的文件（必须是pom）。
+​	<font color='red'>注意：根据自己的实际代码路径配置</font>
 
 4、执行shell脚本
 

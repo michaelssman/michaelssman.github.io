@@ -92,7 +92,7 @@ void newFunc(const char *str){
 
 ## MachO
 
-首先我们要了解一个东西。我们写好的代码，生成的 iOS 程序其实是一个可执行文件。这个文件格式是 MachO 格式，所以一般我们称其为 **MachO** 文件。
+我们写好的代码，生成的 iOS 程序其实是一个可执行文件。这个文件格式是 MachO 格式，所以一般我们称其为 **MachO** 文件。
 
 这个文件里面包含的就是数据和指令。比如你定义的类、方法、全局变量、方法实现等等。
 
@@ -177,7 +177,7 @@ fishhook 之所以 HOOK 不了自定义的函数，就是因为**自定义的函
 
 ![图片](https://mmbiz.qpic.cn/mmbiz_jpg/yoM0qNN7RwYOHKkIp9ibnGsMWjyJGl2tOAT4OfGQxTSdDdOibv3bhiaZyfAxmxyhln0FaKgcarKkibJkQKf1QPZtgQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
 
-重复上面的步骤，查看符号的内存数据，然后取出里面的值，通过 dis 反汇编查看。你会发现此刻符号内的数据已经替换成了自定义的函数地址了。（符号重绑定成功！）
+重复上面的步骤，查看符号的内存数据，然后取出里面的值，通过 dis 反汇编查看。你会发现此刻符号内的数据已经替换成了自定义的**函数地址**了。（符号重绑定成功！）
 
 ![图片](fishhook.assets/640-20220606025427291.jpeg)
 
