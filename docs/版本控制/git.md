@@ -291,6 +291,23 @@ git config --global pull.rebase false
 
 ![image-20240709155256180](assets/image-20240709155256180.png)
 
+## git revert
+
+**撤销普通提交**
+
+```sh
+git revert <commit_id>
+```
+
+**撤销分支合并提交**
+
+```sh
+git revert -m 1 abc1234  # 替换为实际的提交哈希
+```
+
+- `-m 1` 表示接收合并的分支，即你的 release 分支
+- `-m 2` 表示被合并的分支，即 develop 或 feature/inform
+
 ## iOS合并代码
 
 只处理project.pbxproj。
@@ -298,7 +315,7 @@ git config --global pull.rebase false
 ### 不需要解决的文件
 
 1. pod
-   - pod的冲突会很多，不处理`ProjectName/Pods/Pods.xcodeproj`，删除pod冲突的文件，重新pod解决。
+   - pod的冲突会很多，不需要处理`ProjectName/Pods/Pods.xcodeproj`，删除pod冲突的文件，重新pod解决。
 2. **用户状态文件**：
    - `AccCollege/AccCollege.xcworkspace/xcuserdata/michael.xcuserdatad/UserInterfaceState.xcuserstate`：这个文件与用户的个人设置相关，通常不需要合并。
 3. **Xcode Schemes**：
