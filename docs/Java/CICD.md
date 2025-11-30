@@ -112,11 +112,13 @@ java -Dfile.encoding=utf-8  -jar xuecheng-plus-checkcode-0.0.1-SNAPSHOT.jar
 POST localhost:63075/checkcode/pic
 ```
 
-### 2、部署到Linux
+### 2、使用docker部署spring boot项目到Linux
 
 将打成的jar包拷贝到Linux，生成镜像，并创建容器。
 
 2.1、编写Dockerfile文件，生成镜像。
+
+在项目目录下面创建一个Dockerfile文件。
 
 ```dockerfile
 FROM java:8u20
@@ -128,10 +130,14 @@ ENTRYPOINT ["java", "-Dfile.encoding=utf-8","-jar", "xuecheng-plus-checkcode.jar
 EXPOSE 63075
 ```
 
-- FROM：依赖的jdk。
-- EXPOSE：暴露的端口。
+- WORKDIR：工作目录，这个工作目录可以不写。
+- FROM：定义基础镜像，依赖的jdk。
+- ADD：把打包后的jar包复制到镜像里面，并命名xuecheng-plus-checkcode.jar。
+- EXPOSE：暴露这个服务的端口。
 
-2.2、创建镜像
+完成之后，把项目上传到服务器上面。
+
+2.2、构建镜像
 
 ```sh
 docker build -t checkcode:1.0 .
@@ -146,11 +152,19 @@ docker build -t checkcode:1.0 .
 2.3、创建容器
 
 ```sh
-docker run --name xuecheng-plus-checkcode -p 63075:63075 -idt checkcode:1.0
+docker run -d --name xuecheng-plus-checkcode -p 63075:63075 -idt checkcode:1.0
 ```
 
+- -d：在后台运行
+- --name xuecheng-plus-checkcode：容器名字xuecheng-plus-checkcode
+- -p：端口映射，宿主机和容器都是63075
 - checkcode：镜像
-- xuecheng-plus-checkcode：容器名字
+
+2.4、查看容器的日志
+
+```sh
+docker logs -f 容器id
+```
 
 再次测试
 
