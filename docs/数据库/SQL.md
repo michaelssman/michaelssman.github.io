@@ -159,7 +159,7 @@ ORDER BY YEAR(date_field) DESC, MONTH(date_field) DESC, DAY(date_field) DESC;
 数据库有一个记账明细表MC_DETAIL_TEXT，里面的字段是id、from_ac_id、to_ac_id、ac_detail_date（日期）、ac_detail_type（类型）、ac_detail_amount（金额）。
 要求写一个sql语句，取出每个月类型为收入的总金额。
 
-可以使用SQL的`SUM`函数和`GROUP BY`子句来实现这个需求。以下是一个可能的SQL查询语句：
+使用SQL的`SUM`函数和`GROUP BY`子句来实现这个需求。以下是一个可能的SQL查询语句：
 
 ```sql
 SELECT 
@@ -202,19 +202,123 @@ GROUP BY
 
 注意：`ac_detail_date`是一个日期类型的字段，`ac_detail_amount`是一个数值类型的字段，`ac_detail_type`是一个文本类型的字段，且"收入"和"支出"是表示收入类型和支出类型的准确值。
 
-### 关联查询
+------
 
-![微信图片_20251130202833_10_197](assets/微信图片_20251130202833_10_197.jpg)
+## SQL JOIN 关系总结
 
-### LEFT JOIN关联查询
+### 1、INNER JOIN（内连接）
+
+![ScreenShot_2025-12-01_194912_607](assets/ScreenShot_2025-12-01_194912_607.png)
+
+仅返回两表中 **键值相等** 的记录。
+
+```sql
+SELECT *
+FROM A
+INNER JOIN B ON A.key = B.key;
+```
+
+------
+
+### 2、FULL JOIN（全连接）
+
+![image-20251201195022625](assets/image-20251201195022625.png)
+
+返回 A 与 B 所有记录，匹配不到的以 NULL 填充。
+
+```sql
+SELECT *
+FROM A
+FULL JOIN B ON A.key = B.key;
+```
+
+------
+
+#### FULL JOIN + WHERE IS NULL（对称差 / XOR）
+
+![image-20251201195138481](assets/image-20251201195138481.png)
+
+交集不返回，仅返回 A 独有 + B 独有。
+
+```sql
+SELECT *
+FROM A
+FULL JOIN B ON A.key = B.key
+WHERE A.key IS NULL OR B.key IS NULL;
+```
+
+------
+
+### 3、LEFT JOIN（左连接）
+
+![image-20251201195301893](assets/image-20251201195301893.png)
+
+左表 A 全部返回，右表不匹配时为 NULL。
+
+```sql
+SELECT *
+FROM A
+LEFT JOIN B ON A.key = B.key;
+```
+
+------
+
+#### LEFT JOIN + WHERE B.key IS NULL（A 独有）
+
+![image-20251201195411097](assets/image-20251201195411097.png)
+
+显示 A 独有的数据（不在 B 中出现）。
+
+```sql
+SELECT *
+FROM A
+LEFT JOIN B ON A.key = B.key
+WHERE B.key IS NULL;
+```
+
+------
+
+### 4、RIGHT JOIN（右连接）
+
+![image-20251201195507875](assets/image-20251201195507875.png)
+
+右表 B 全部返回，左表不匹配时为 NULL。
+
+```sql
+SELECT *
+FROM A
+RIGHT JOIN B ON A.key = B.key;
+```
+
+------
+
+#### RIGHT JOIN + WHERE A.key IS NULL（B 独有）
+
+![image-20251201195559692](assets/image-20251201195559692.png)
+
+显示 B 独有的数据（不在 A 中出现）。
+
+```sql
+SELECT *
+FROM A
+RIGHT JOIN B ON A.key = B.key
+WHERE A.key IS NULL;
+```
+
+------
+
+### JOIN关联查询
 
 JOIN连接两个表
 
 数据库有两个表：
-账户表：MC_TEXT，该表中的字段：id, type, name, balance。
-明细表：MC_DETAIL_TEXT，该表中的字段：id, from_ac_id, to_ac_id, ac_detail_date, ac_detail_type, ac_detail_amount。
-明细表中的from_ac_id和to_ac_id对应账户表中的id。
-应该如何设计表，查询明细表的时候，返回id, from_ac_id, to_ac_id, ac_detail_date, ac_detail_type这些字段的信息，并且加上from_ac_id和to_ac_id对应的账户的信息。
+
+- 账户表：MC_TEXT。
+- 明细表：MC_DETAIL_TEXT。
+
+明细表中的from_ac_id和to_ac_id对应账户表中的id字段。
+
+要求：查询明细表的时候，返回id, from_ac_id, to_ac_id, ac_detail_date, ac_detail_type这些字段的信息，并且加上from_ac_id和to_ac_id对应的账户的其它字段信息。
 
 #### 方法
 
@@ -256,7 +360,7 @@ ON
 - `INNER JOIN` 用于连接表，确保只有当账户ID在账户表中存在时，明细表的记录才会被返回。
 - 使用 `AS` 关键字为每列提供了别名，如 `from_ac_type`, `from_ac_name`, `from_ac_balance`, `to_ac_type`, `to_ac_name`, `to_ac_balance`。
 
-如果数据库中存在`from_ac_id`或`to_ac_id`没有对应账户记录的情况，可能需要使用`LEFT JOIN`来代替`INNER JOIN`，以确保即使某些账户信息不存在也能返回明细记录。
+如果数据库中存在`from_ac_id`或`to_ac_id`没有对应账户记录的情况，需要使用`LEFT JOIN`来代替`INNER JOIN`，以确保即使某些账户信息不存在也能返回明细记录。
 
 ### SUM
 
