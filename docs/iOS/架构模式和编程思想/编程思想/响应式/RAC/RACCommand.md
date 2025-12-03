@@ -12,7 +12,7 @@
 // 读取我的团队列表
 - (RACCommand *)fetchListCommand {
     if (!_fetchListCommand) {
-        //创建command，init方法传block，block返回一个RACSignal
+        //创建command，init方法参数传block，block返回一个RACSignal
 	      //block实现传过去：网络请求
         _fetchListCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
             NSLog(@"%@",input);//input打印出：起飞～～～～～
@@ -87,16 +87,16 @@
 [self.viewModel.fetchListCommand execute:@"起飞～～～～～"];
 ```
 
-1. 没有打印`执行结束`需要发送完消息之后调用`[subscriber sendCompleted];`告诉外界发送完成了。
-2. 第一次就打印执行结束，这次的判断不是我们想要的， 需要跳过第一步。这个时候我需要用到一个方法`skip`，这个方法后面有一个参数，填的就是忽略的次数，我们这个时候只想忽略第一次， 所以就填1
+1. 第一次就打印执行结束，这次的判断不是我们想要的， 需要跳过第一步。这个时候我需要用到一个方法`skip`，这个方法后面有一个参数，填的就是忽略的次数，我们这个时候只想忽略第一次， 所以就填1
 
 既然提到了`skip`那就随便可以提提其它的类似的方法
- `filter`过滤某些
- `ignore`忽略某些值
- `startWith`从哪里开始
- `skip`跳过（忽略）次数
- `take`取几次值 正序
- `takeLast`取几次值 倒序
+
+- `filter`过滤某些
+- `ignore`忽略某些值
+- `startWith`从哪里开始
+- `skip`跳过（忽略）次数
+- `take`取几次值 正序
+- `takeLast`取几次值 倒序
 
 ## 注意的点
 

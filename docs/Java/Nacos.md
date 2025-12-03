@@ -234,13 +234,21 @@ spring:
 
 #### 2.3配置content-api
 
-以相同的方法配置content-api工程的配置文件，在nacos中的开发环境中配置content-api-dev.yaml，内容如下：
+在nacos中的开发环境中配置content-api-dev.yaml，内容如下：
 
 ```YAML
 server:
   servlet:
     context-path: /content
   port: 63040
+
+#微服务配置
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.101.65:3306/accounting_app?useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: mysql
 
 # 日志文件配置路径
 logging:
@@ -255,7 +263,7 @@ swagger:
   version: 1.0.0
 ```
 
-在content-api工程 的本地配置bootstrap.yaml，内容如下：
+在content-api工程的本地配置bootstrap.yaml，内容如下：
 
 ```YAML
 #微服务配置
