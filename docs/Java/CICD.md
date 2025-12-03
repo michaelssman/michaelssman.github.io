@@ -26,7 +26,7 @@ CI/CD 包含了一个 CI 和两个 CD，CI全称 Continuous Integration，表示
 
 在持续交付的基础上由开发人员或运维人员自助式的定期向生产环境部署稳定的构建版本，持续部署的目标是代码在任何时刻都是可部署的，并可自动进入到生产环境。
 
-## 人工部署方式
+## 人工部署
 
 如果不使用CI/CD则需要人工手动对工程进行测试、打包、部署。使用CI/CD后通过自动化的工具去完成。
 
@@ -34,7 +34,7 @@ CI/CD 包含了一个 CI 和两个 CD，CI全称 Continuous Integration，表示
 
 1.1、首先在父工程添加models，聚合各各模块
 
-```Bash
+```xml
 <modules>
     <module>../xuecheng-plus-base</module>
     <module>../xuecheng-plus-checkcode</module>
@@ -52,7 +52,7 @@ CI/CD 包含了一个 CI 和两个 CD，CI全称 Continuous Integration，表示
 
 1.2、配置**打包插件**
 
-使用springboot打包插件进行打包，在需要打可执行jar包的工程中配置spring-boot-maven-plugin插件，否则报 “jar中没有主清单属性” 。
+使用springboot打包插件进行打包，在需要打可执行jar包的工程中配置`spring-boot-maven-plugin`插件，否则报 “jar中没有主清单属性” 。
 
 ```Bash
 <build>
@@ -130,8 +130,8 @@ ENTRYPOINT ["java", "-Dfile.encoding=utf-8","-jar", "xuecheng-plus-checkcode.jar
 EXPOSE 63075
 ```
 
-- WORKDIR：工作目录，这个工作目录可以不写。
 - FROM：定义基础镜像，依赖的jdk。
+- WORKDIR：工作目录，这个工作目录可以不写
 - ADD：把打包后的jar包复制到镜像里面，并命名xuecheng-plus-checkcode.jar。
 - EXPOSE：暴露这个服务的端口。
 
@@ -155,9 +155,6 @@ docker build -t checkcode:1.0 .
 docker run -d --name xuecheng-plus-checkcode -p 63075:63075 -idt checkcode:1.0
 ```
 
-- -d：在后台运行
-- --name xuecheng-plus-checkcode：容器名字xuecheng-plus-checkcode
-- -p：端口映射，宿主机和容器都是63075
 - checkcode：镜像
 
 2.4、查看容器的日志
@@ -205,9 +202,7 @@ Jenkins安装和持续集成环境配置
 
 #### 修改pom.xml文件
 
-在pom.xml添加docker-maven-plugin插件实现将springboot工程创建镜像， 此pom.xml添加docker-maven-plugin插件用于生成镜像。
-
-分别修改具体微服务的pom.xml文件。
+分别在具体微服务pom.xml中添加`docker-maven-plugin`插件实现将springboot工程创建生成镜像。
 
 插件的坐标如下：
 
@@ -286,52 +281,6 @@ Jenkins安装和持续集成环境配置
     </plugins>
 </build>
 ```
-
-其中system-api服务的bootstrap.yml修改如下：
-
-```JavaScript
-server:
-  servlet:
-    context-path: /system
-  port: 63110
-#微服务配置
-spring:
-  application:
-    name: system-api
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.101.65:3306/xcplus_system?serverTimezone=UTC&userUnicode=true&useSSL=false&
-    username: root
-    password: mysql
-  cloud:
-    nacos:
-      server-addr: 192.168.101.65:8848
-      discovery:
-        namespace: dev166
-        group: xuecheng-plus-project
-# 日志文件配置路径
-logging:
-  config: classpath:log4j2-dev.xml
-
-# swagger 文档配置
-swagger:
-  title: "学成在线系统管理"
-  description: "系统管理接口"
-  base-package: com.xuecheng.system
-  enabled: true
-  version: 1.0.0
-```
-
-在system-api工程添加nacos的依赖：
-
-```JavaScript
-<dependency>
-    <groupId>com.alibaba.cloud</groupId>
-    <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-</dependency>
-```
-
-删除system-service工程下的配置文件。
 
 以上内容修改完毕再次提交Git。
 
