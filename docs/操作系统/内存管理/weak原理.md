@@ -2,7 +2,7 @@
 
 ## weak对象存储原理和销毁为什么会置nil
 
-weak在底层维护了⼀张全局的**弱引用表（weak_table_t结构的hash表）**，全局的弱引用表保存了所有的弱引用对象。
+weak在底层维护了⼀张全局的**弱引用表（weak_table_t结构的hash表）**，保存了所有的弱引用对象。
 
 key：对象的地址（因为一个对象在内存中的地址是不变的）。
 
@@ -160,7 +160,7 @@ _class_initialize中调用weak_register_no_lock，weak_unregister_no_lock
 
 ### weak_register_no_lock注册引用weak表
 
-注册之前判断，因 为weakTable里面维护Person，Dog，Student，Car很多类。为了数据不混乱就引入了weak_entry（类似数组其实是哈希），weak_entry里面有refreces，
+注册之前判断，因为weakTable里面维护Person，Dog，Student，Car很多类。为了数据不混乱就引入了weak_entry（类似数组其实是哈希），weak_entry里面有refreces，
 
 弱引用指针存储到弱引用表。通过哈希运算，放入weak_table
 
@@ -184,14 +184,14 @@ weak_register_no_lock(weak_table_t *weak_table, id referent_id,
 
     // now remember it and where it is being stored
     weak_entry_t *entry;
-  //entry 加 weak 引用对象
-  //散列表.weak表.entry.数组
+  	//entry 加 weak 引用对象
+ 	 	//散列表.weak表.entry.数组
     if ((entry = weak_entry_for_referent(weak_table, referent))) {
-      //有就添加
+      	//有就添加
         append_referrer(entry, referrer);
     } 
     else {
-      //没有就创建
+      	//没有就创建
         weak_entry_t new_entry(referent, referrer);
         weak_grow_maybe(weak_table);
         weak_entry_insert(weak_table, &new_entry);
@@ -244,7 +244,7 @@ weak_register_no_lock(weak_table_t *weak_table, id referent_id,
   省略代码
   */
    
-  //哈希-->数组[index]
+  	//哈希-->数组[index]
     weak_referrer_t &ref = entry->referrers[index];
     ref = new_referrer;
     entry->num_refs++;
@@ -391,7 +391,7 @@ void *objc_destructInstance(id obj)
 
    object_cxxDestruct这个方法最终会调用objc_storeStrong来释放成员变量（实例变量）
 
-2. 移除关联对象_object_remove_assocations（常用于category中添加带变量的属性）
+2. 移除关联对象`_object_remove_assocations`
 
 3. 调用clearDeallocating()方法
 
