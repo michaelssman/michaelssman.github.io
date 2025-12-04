@@ -57,9 +57,7 @@ Spring Cloud ：一套规范
 
 Spring Cloud alibaba: nacos服务注册中心，配置中心
 
-首先搭建Nacos服务发现中心。
-
-在搭建Nacos服务发现中心之前需要搞清楚两个概念：namespace和group
+在搭建Nacos**服务发现中心**之前需要搞清楚两个概念：namespace和group
 
 - namespace：用于区分环境、比如：开发环境、测试环境、生产环境。
 - group：用于区分项目，比如：项目A、项目B。
@@ -76,9 +74,9 @@ Spring Cloud alibaba: nacos服务注册中心，配置中心
 
 使用相同的方法再创建“测试环境”（test）、"生产环境"（prod）的命名空间。
 
-首先完成各服务注册到Naocs，下边将内容管理服务注册到nacos中。
+首先完成各服务注册到Naocs。
 
-1) 在xuecheng-plus-parent中添加依赖管理 
+1、在xuecheng-plus-parent中添加依赖管理 
 
 ```XML
 <dependency>
@@ -90,7 +88,7 @@ Spring Cloud alibaba: nacos服务注册中心，配置中心
 </dependency>
 ```
 
-2. 在具体微服务模块的接口工程中添加如下依赖
+2、在具体微服务模块的接口工程中添加如下依赖
 
 discovery依赖用来向nacos注册微服务
 
@@ -101,7 +99,7 @@ discovery依赖用来向nacos注册微服务
 </dependency>
 ```
 
-3. 配置nacos的地址
+3、配置nacos的地址
 
 在具体微服务模块的接口工程的配置文件`application.yml`中配置如下信息：
 
@@ -120,7 +118,7 @@ spring:
         group: 项目名称
 ```
 
-4. 重启该微服务模块。
+4、重启该微服务模块。
 
 待微服务启动成功，进入Nacos`服务管理`查看`服务列表`。
 
@@ -172,7 +170,7 @@ spring:
 
 #### 2.2 配置content-service
 
-下边以开发环境为例对content-service工程的配置文件进行配置，进入nacos，进入开发环境。
+以开发环境为例对content-service工程的配置文件进行配置，进入nacos，进入开发环境。
 
 ![06094289-6026-4ce9-bd61-6c5de6cb586d](assets/06094289-6026-4ce9-bd61-6c5de6cb586d.png)
 
@@ -190,9 +188,9 @@ spring:
     name: content-service
 ```
 
-因为刚才说了dataid第一部分就是spring.application.name，nacos 客户端要根据此值确定配置文件名称，所以spring.application.name不在nacos中配置，而是要在工程的本地进行配置。
+因为刚才说了dataid第一部分就是spring.application.name，nacos 客户端要根据此值确定配置文件名称，所以要在工程的本地进行配置。
 
-在content-service工程的test/resources 中添加bootstrap.yaml，内容如下：
+在content-service工程的resources中添加bootstrap.yaml，内容如下：
 
 ```YAML
 spring:
@@ -224,7 +222,7 @@ spring:
 </dependency>
 ```
 
-配置完成，运行content-service工程 的单元测试文件，能否正常测试，跟踪单元测试方法可以正常读取数据库的数据，说明从nacos读取配置信息正常。
+配置完成，运行content-service工程的单元测试文件，能否正常测试，跟踪单元测试方法可以正常读取数据库的数据，说明从nacos读取配置信息正常。
 
 通过运行观察控制台打印出下边的信息，NacosRestTemplate.java通过Post方式与nacos服务端交互读取配置信息。
 
