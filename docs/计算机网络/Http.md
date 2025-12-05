@@ -53,13 +53,9 @@ name=world
 
   gzip, deflate
 
-- Authorization
+- Authorization：请求接口需要传用户信息进行验证，将用户token放在网络请求的头部。
 
-  - 请求接口需要传用户信息进行验证，将用户token放在网络请求的头部。
-
-- Accept
-
-  application/json
+- Accept：application/json
 
 - Cookie
 
@@ -211,7 +207,7 @@ HTTP1.1提出了长连接的概念，也就是`Keep-alive`。在长连接上建�
 
 `HttpOnly`表示此 Cookie 只能通过浏览器 HTTP 协议传输，禁止其他方式访问。这也是预防“跨站脚本”（XSS）攻击的有效手段。
 
-`SameSite`可以防范“跨站请求伪造”（XSRF）攻击，`SameSite = strict`表示禁止cookie在跳转链接时跨域传输。`SameSite = lax`稍微宽松一点，允许在`GET`、`HEAD`等安全请求方式中跨域携带。默认值为`none`,表示不限制cookie的携带和传输。
+`SameSite`可以防范“跨站请求伪造”（XSRF）攻击，`SameSite = strict`表示禁止cookie在跳转链接时跨域传输。`SameSite = lax`稍微宽松一点，允许在`GET`、`HEAD`等安全请求方式中跨域携带。默认值为`none`，表示不限制cookie的携带和传输。
 
 `Secure`表示这个cookie仅能用HTTPS协议加密传输，明文的HTTP协议会禁止发送。但Cookie本身不是加密的，浏览器里还是以明文的形式存在。
 
@@ -357,7 +353,7 @@ HTTPS可以用TLS或者SSL进行加密，以`TLS1.2`为例。
 
 - 服务端告诉客户端：**服务器随机数** + 服务器证书（里面有公钥） + 确定的加密协议版本（比如就是TLS1.2）。
 
-**3、浏览器将对称加密密钥用公钥加密后发给服务器**
+**3、客户端将对称加密密钥用公钥加密后发给服务器**
 
 -  `Client Key Exchange`: 客户端再生成**一个随机数**（前主密钥 `pre_master_key `）。从第二次握手的**服务器证书**里取出服务器公钥，用公钥加密 `pre_master_key`，发给服务器。
 -  `Change Cipher Spec`: 客户端**已经拥有三个随机数**：客户端随机数，服务器随机数和pre_master_key，用这三个随机数**根据前面协商好的特定算法**生成一个"**会话秘钥**"。此时客户端通知服务端，后面会用这个会话秘钥进行对称机密通信。
