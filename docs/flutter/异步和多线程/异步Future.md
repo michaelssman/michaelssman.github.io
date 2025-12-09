@@ -6,7 +6,7 @@ Future只是异步代码，在一个队列中，还在主线程中。
 
 先保存代码，然后回调的时候再调用，使用then。
 
-方法后面加`async`（不加也可以），把耗时的操作（任务）包装到`Future`里面。
+方法后面加`async`（不加也可以），把耗时的任务包装到`Future`里面。
 
 使用`await`会等异步操作完成，这时方法后面需要加`async`，把方法包成异步的。
 
@@ -124,8 +124,8 @@ getData() async {
 
 Future结果处理
 
-- `.then`用来注册一个Future完成时要调用的回调。Future里面有return时，`.then`回调中的`value`才有值。如果里面throw抛出了错误，那么不会调用`.then`
-- `.whenComplete`在Future完成之后总是会调用，不管是错误导致的完成还是正常执行完毕
+- `.then`用来注册一个Future完成时要调用的回调。Future里面有return时，`.then`回调中的`value`才有值。如果里面throw抛出了错误，那么不会调用`.then`。
+- `.whenComplete`在Future完成之后总是会调用，不管是错误导致的完成还是正常执行完毕。
 - `.catchError`注册一个回调，来捕捉Future的error
   - `.catchError`回调只处理原始Future抛出的错误，不能处理回调函数抛出的错误
 - `onError`只能处理当前Future的错误
@@ -139,9 +139,9 @@ Future结果处理
 
 Future后面是任务，要想等任务执行完毕之后再操作，需要加await。
 
-等待`await`会卡住下面所有的
+`await`会卡住下面所有的
 
-如果不想卡住所有的，不使用await，在future.then中加入要等待的任务。
+在future.then中加入要等待的任务。
 
 ```dart
 import 'dart:async';
@@ -330,7 +330,7 @@ void testFuture2() {
 
 每个异步任务都是独立执行的，`Future.wait`将在它们都完成后继续执行。`Future.wait`返回的是一个包含所有结果的列表，这个列表中的**结果顺序和传入`Future.wait`的`Future`列表顺序相同**。
 
-所有的异步任务都是并行执行的，而不是顺序执行。这意味着总的等待时间将不会超过最长的那个任务所需的时间，除非其中一个任务抛出了异常。
+所有的异步任务都是**并行**执行的。这意味着总的等待时间将不会超过最长的那个任务所需的时间，除非其中一个任务抛出了异常。
 
 如果想要处理可能发生的异常，可以给`Future.wait`添加`onError`回调或者使用`try-catch`块。
 
