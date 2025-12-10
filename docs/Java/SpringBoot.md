@@ -322,6 +322,29 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 
 这个配置的作用是告诉 Spring Boot 在启动时自动加载 `com.hh.common.swagger.SwaggerConfiguration` 类。`SwaggerConfiguration` 类使用了 `@Configuration` 注解，表示它是一个配置类，并且使用了 `@EnableSwagger2` 注解来启用 Swagger2。
 
+SpringBoot2 构建的 Starter 在 SpringBoot3 中引用的话会启动报错。
+
+**原因：`spring.factories` 的写法已废弃**。
+
+### Spring 3.0 写法
+
+文件目录：
+
+```shell
+resources
+└── META-INF
+    └── spring
+        └── org.springframework.boot.autoconfigure.AutoConfiguration.imports
+```
+
+其中 `org.springframework.boot.autoconfigure.AutoConfiguration.imports` 文件内容（示例）：
+
+```properties
+org.looko.demomavenstarter.config.DemoMavenAutoConfiguration
+```
+
+另外要注意如果用 IDEA 基于 SpringBoot 项目去写 SpringBootStarter 时，除了不需要启动类外，还要删除 `pom.xml` 里的 `<build></build>` 标签。
+
 ## 其它微服务使用common
 
 要在 `hhjava-user` 服务中使用 `hhjava-common` 中的 Swagger 配置，你需要确保 `hhjava-common` 模块已经作为依赖添加到 `hhjava-user` 模块中，并且 `hhjava-common` 中的 `SwaggerConfiguration` 已经被正确加载。
