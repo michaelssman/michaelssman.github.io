@@ -12,13 +12,11 @@ spring问题：编写大量xml配置。管理依赖，版本，坐标等。
 
 核心思想：**约定大于配置**。默认配置好了通用配置。程序员只需要关注业务代码。
 
-springBoot不止可以整合SSM，还可以整合其它框架。
+Spring框架在项目中作用是：整合各种其他技术，让其他技术使用更加方便。
 
 ## 启动器和启动类
 
 **启动器**
-
-Spring框架在项目中作用是：整合各种其他技术，让其他技术使用更加方便。
 
 Spring Boot的启动器实际上就是一个依赖。**这个依赖中包含了整个这个技术的相关jar包，还包含了这个技术的自动配置**，以前绝大多数XML配置都不需要配置了。以后每次使用Spring Boot整合其他技术时首先需要考虑导入启动器。
 
@@ -220,7 +218,7 @@ mybatis:
 
 #### 5.2、mapper.xml映射文件
 
-在resource下新建mybatis文件夹，mapper.xml文件名没有要求了，不需要和接口名完全对应了，是根据namespace去找接口。但是最好还是和接口名字保持一致。
+在resource下新建mybatis文件夹，mapper.xml文件名没有要求了，不需要和接口名完全对应了，是根据namespace去找接口。但最好和接口名字保持一致。
 
 #### 5.3、yml配置文件中加入映射文件位置
 
@@ -289,7 +287,7 @@ public class TestSpringBootApplication {
 
 ### spring-boot-starter-web
 
-- **功能**: 这是一个 Spring Boot 启动器（starter），用于快速构建基于 Spring 的 **Web 应用程序**。
+- **功能**: 这是一个 Spring Boot 启动器（starter），用于快速构建基于 Spring 的 **Web 应用程序**，会自动配置一个 Web 环境，并提供所需的基础设施来构建和运行你的 Web 应用。
 - **包含的依赖**:
   - Spring MVC: 用于构建基于 MVC 的 Web 应用。
   - Tomcat: 默认的嵌入式服务器。
@@ -301,32 +299,19 @@ public class TestSpringBootApplication {
 - **Web 应用开发**: 适合开发 RESTful Web 服务和传统的 Web 应用。
 - **快速启动**: 提供了一个开箱即用的 Web 应用开发环境，减少了配置和依赖管理的复杂性。
 
-这样，Spring Boot 会自动配置一个 Web 环境，并提供所需的基础设施来构建和运行你的 Web 应用。
-
 ### 创建自己的spring boot starter
 
-像一些公共的组件，可以抽象出自己的starter。比如统一的API日志、国际化、上传文件、支付、redis操作、统一的序列化、统一的权限验证等等，都可以封装成一个starter，供其它项目去引用。因为这些都是基于spring boot的自动化配置，使用起来也非常方便。
+一些公共的组件，比如的API日志、国际化、上传文件、支付、redis操作、序列化、权限验证等等，都可以封装成一个自己的starter，供其它项目去引用。因为这些都是基于spring boot的自动化配置，使用起来也非常方便。
 
-## spring.factories
+## 自动配置
 
-`spring.factories` 文件是 Spring Boot 用于自动配置的一个关键文件。它位于 `META-INF` 目录下，包含了许多 Spring Boot 自动配置类的全限定名。
+包含了许多 Spring Boot 自动配置类的全限定名。
 
-Spring Boot 在启动时会扫描 `META-INF/Spring.factories` 文件，并根据 `org.springframework.boot.autoconfigure.EnableAutoConfiguration` 键的值加载相应的自动配置类。这使得你可以通过简单的配置来启用和配置第三方库，而不需要在代码中显式地进行配置。
+Spring Boot 在启动时会扫描 `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` 文件，并根据文件中的值加载相应的自动配置类。
 
-例如`Spring.factories` 文件的内容：
+自动配置类使用了 `@Configuration` 注解，表示它是一个配置类。
 
-```properties
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.hh.common.swagger.SwaggerConfiguration
-```
-
-这个配置的作用是告诉 Spring Boot 在启动时自动加载 `com.hh.common.swagger.SwaggerConfiguration` 类。`SwaggerConfiguration` 类使用了 `@Configuration` 注解，表示它是一个配置类，并且使用了 `@EnableSwagger2` 注解来启用 Swagger2。
-
-SpringBoot2 构建的 Starter 在 SpringBoot3 中引用的话会启动报错。
-
-**原因：`spring.factories` 的写法已废弃**。
-
-### Spring 3.0 写法
+这使得你可以通过简单的配置来启用和配置第三方库，而不需要在代码中显式地进行配置。
 
 文件目录：
 

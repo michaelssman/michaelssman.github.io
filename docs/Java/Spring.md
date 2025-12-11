@@ -30,7 +30,7 @@ Java代码不再new创建对象，程序中用一个xml文件，里面配置对�
 
 **IoC(Inversion of Control)中文名称：控制反转，也被称为DI(dependency injection )：依赖注入。**
 
-**创建对象由JAVA代码转移到spring容器，由spring的容器控制对象的创建，就是控制反转**。
+**控制反转：创建对象由JAVA代码转移到spring容器，由spring的容器控制对象的创建**。
 
 IOC的核心是把对象的创建交给容器来管理，不用自己在代码里到处new对象。
 
@@ -92,7 +92,7 @@ Spring项目想要运行起来必须包含:
 
 - spring-jcl.jar
 
-所以在Maven中想要使用Spring框架只需要在项目中导入`spring-context`就可以了，其他的jar包根据Maven依赖传递性都可以导入进来。
+所以在Maven中想要使用Spring框架只需在项目中导入`spring-context`就可以了，其他的jar包根据Maven依赖传递性都可以导入进来。
 
 ### 2、实体类
 
@@ -140,8 +140,6 @@ Spring项目想要运行起来必须包含:
 ```
 
 ### 4、创建容器
-
-在测试类中创建容器
 
 ```java
 package com.msb.test;
@@ -197,15 +195,11 @@ Book b = new Book(1，"项目驱动零起点学Java");
 </bean>
 ```
 
-#### 属性为引用数据类型
-
-类的属性可以是基本数据类型，也可以是引用数据类型。
-
 属性的值：
 
 - value：简单数据类型（基本数据类型+String）直接设置。
 
-- ref：需要引用另一个bean的id。也就是说这个参数是一个类类型，且这个类的对象也被Spring容器管理。
+- ref：需要引用另一个bean的id，引用数据类型。也就是说这个参数是一个类类型，且这个类的对象也被Spring容器管理。
 
 ## IoC/DI相关的注解
 
@@ -230,7 +224,7 @@ Book b = new Book(1，"项目驱动零起点学Java");
 | @RequestMapping          | 映射HTTP请求到控制器的处理方法，可指定路径、HTTP方法等       |
 | @ConfigurationProperties | 将外部配置属性值绑定到Java对象，用于批量配置属性注入         |
 
-前五个注解作用都是创建对象。只所以搞出这么多，就是在语义上给你区别，不同层用不同的注解。
+前五个注解作用都是创建对象。之所以搞出这么多，就是在语义上给你区别，不同层用不同的注解。
 
 ### @Component
 
