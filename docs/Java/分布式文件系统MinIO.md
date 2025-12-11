@@ -160,15 +160,13 @@ docker run -d \
 MinIOConfigProperties.java
 
 ```java
-package com.heima.file.config;
-
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.io.Serializable;
 
 @Data
-@ConfigurationProperties(prefix = "minio")  // 文件上传 配置前缀file.oss
+@ConfigurationProperties(prefix = "minio")  // 文件上传 配置前缀minio
 public class MinIOConfigProperties implements Serializable {
     private String accessKey;
     private String secretKey;
@@ -181,29 +179,33 @@ public class MinIOConfigProperties implements Serializable {
 MinIOConfig.java
 
 ```java
-package com.heima.file.config;
-
-import com.heima.file.service.FileStorageService;
 import io.minio.MinioClient;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MinIO 自动配置类
+ * - 仅在 classpath 中存在 MinioClient 并且配置了 minio.endpoint 时生效
+ * - 负责创建 MinioClient Bean 并绑定 MinIOConfigProperties
+ */
 @Data
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({MinIOConfigProperties.class})
-//当引入FileStorageService接口时
-@ConditionalOnClass(FileStorageService.class)
+@ConditionalOnClass(MinioClient.class)
+@ConditionalOnProperty(prefix = "minio", name = "endpoint")
 public class MinIOConfig {
+    private final MinIOConfigProperties minIOConfigProperties;
 
-   @Autowired
-   private MinIOConfigProperties minIOConfigProperties;
+    public MinIOConfig(MinIOConfigProperties minIOConfigProperties) {
+        this.minIOConfigProperties = minIOConfigProperties;
+    }
 
     @Bean
-    public MinioClient buildMinioClient(){
+    public MinioClient buildMinioClient() {
         return MinioClient
                 .builder()
                 .credentials(minIOConfigProperties.getAccessKey(), minIOConfigProperties.getSecretKey())
@@ -218,43 +220,54 @@ public class MinIOConfig {
 FileStorageService
 
 ```java
-package com.heima.file.service;
-
 import java.io.InputStream;
 
 public interface FileStorageService {
 
     /**
-     *  上传图片文件
-     * @param prefix  文件前缀
-     * @param filename  文件名
+     * 上传图片文件
+     *
+     * @param prefix      文件前缀
+     * @param filename    文件名
      * @param inputStream 文件流
-     * @return  文件全路径
+     * @return 文件全路径
      */
-    public String uploadImgFile(String prefix, String filename,InputStream inputStream);
+    String uploadImgFile(String prefix, String filename, InputStream inputStream);
 
     /**
-     *  上传html文件
-     * @param prefix  文件前缀
-     * @param filename   文件名
-     * @param inputStream  文件流
-     * @return  文件全路径
+     * 上传html文件
+     *
+     * @param prefix      文件前缀
+     * @param filename    文件名
+     * @param inputStream 文件流
+     * @return 文件全路径
      */
-    public String uploadHtmlFile(String prefix, String filename,InputStream inputStream);
+    String uploadHtmlFile(String prefix, String filename, InputStream inputStream);
+
+    /**
+     * 上传数据库文件
+     *
+     * @param prefix      文件前缀
+     * @param filename    文件名
+     * @param inputStream 文件流
+     * @return 文件全路径
+     */
+    String uploadDbFile(String prefix, String filename, InputStream inputStream);
 
     /**
      * 删除文件
-     * @param pathUrl  文件全路径
+     *
+     * @param pathUrl 文件全路径
      */
-    public void delete(String pathUrl);
+    void delete(String pathUrl);
 
     /**
      * 下载文件
-     * @param pathUrl  文件全路径
-     * @return
      *
+     * @param pathUrl 文件全路径
+     * @return
      */
-    public byte[]  downLoadFile(String pathUrl);
+    byte[] downLoadFile(String pathUrl);
 
 }
 ```
@@ -262,31 +275,26 @@ public interface FileStorageService {
 MinIOFileStorageService
 
 ```java
-package com.heima.file.service.impl;
-
-
-import com.heima.file.config.MinIOConfig;
-import com.heima.file.config.MinIOConfigProperties;
-import com.heima.file.service.FileStorageService;
+import com.hhjava.www.config.MinIOConfigProperties;
+import com.hhjava.www.service.FileStorageService;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Import;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
+@Service
 @Slf4j
-@EnableConfigurationProperties(MinIOConfigProperties.class)
-@Import(MinIOConfig.class)
+//@EnableConfigurationProperties(MinIOConfigProperties.class)
+//@Import(MinIOConfig.class)
 public class MinIOFileStorageService implements FileStorageService {
 
     @Autowired
@@ -295,148 +303,148 @@ public class MinIOFileStorageService implements FileStorageService {
     @Autowired
     private MinIOConfigProperties minIOConfigProperties;
 
-    private final static String separator = "/";
+    private final static String SEPARATOR = "/";
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
     /**
-     * @param dirPath
-     * @param filename  yyyy/mm/dd/file.jpg
-     * @return
+     * 构建文件路径
+     *
+     * @param dirPath  目录路径
+     * @param filename 文件名
+     * @return 完整文件路径
      */
-    public String builderFilePath(String dirPath,String filename) {
+    private String buildFilePath(String dirPath, String filename) {
         StringBuilder stringBuilder = new StringBuilder(50);
-        if(!StringUtils.isEmpty(dirPath)){
-            stringBuilder.append(dirPath).append(separator);
+        if (StringUtils.hasText(dirPath)) {
+            stringBuilder.append(dirPath).append(SEPARATOR);
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-        String todayStr = sdf.format(new Date());
-        stringBuilder.append(todayStr).append(separator);
-        stringBuilder.append(filename);
+        String todayStr = LocalDate.now().format(DATE_FORMATTER);
+        stringBuilder.append(todayStr).append(SEPARATOR).append(filename);
         return stringBuilder.toString();
     }
 
     /**
-     *  上传图片文件
-     * @param prefix  文件前缀
-     * @param filename  文件名
+     * 通用文件上传方法
+     *
+     * @param prefix      文件前缀
+     * @param filename    文件名
      * @param inputStream 文件流
-     * @return  文件全路径
+     * @param contentType 文件类型
+     * @return 文件全路径
      */
-    @Override
-    public String uploadImgFile(String prefix, String filename,InputStream inputStream) {
-        String filePath = builderFilePath(prefix, filename);
+    private String uploadFile(String prefix, String filename, InputStream inputStream, String contentType) {
+        String filePath = buildFilePath(prefix, filename);
         try {
             PutObjectArgs putObjectArgs = PutObjectArgs.builder()
                     .object(filePath)
-                    .contentType("image/jpg")
+                    .contentType(contentType)
                     .bucket(minIOConfigProperties.getBucket())
-              			.stream(inputStream,inputStream.available(),-1)
+                    .stream(inputStream, inputStream.available(), -1) // 文件流
                     .build();
             minioClient.putObject(putObjectArgs);
-            StringBuilder urlPath = new StringBuilder(minIOConfigProperties.getReadPath());
-            urlPath.append(separator+minIOConfigProperties.getBucket());
-            urlPath.append(separator);
-            urlPath.append(filePath);
-            return urlPath.toString();
-        }catch (Exception ex){
-            log.error("minio put file error.",ex);
+            return minIOConfigProperties.getReadPath() + SEPARATOR + minIOConfigProperties.getBucket() +
+                    SEPARATOR + filePath;
+        } catch (Exception ex) {
+            log.error("MinIO 文件上传失败，文件路径: {}, 错误信息: {}", filePath, ex.getMessage(), ex);
             throw new RuntimeException("上传文件失败");
         }
     }
 
     /**
-     *  上传html文件
-     * @param prefix  文件前缀
-     * @param filename   文件名
-     * @param inputStream  文件流
-     * @return  文件全路径
+     * 上传图片文件
+     *
+     * @param prefix      文件前缀
+     * @param filename    文件名
+     * @param inputStream 文件流
+     * @return 文件全路径
      */
     @Override
-    public String uploadHtmlFile(String prefix, String filename,InputStream inputStream) {
-        String filePath = builderFilePath(prefix, filename);
-        try {
-            PutObjectArgs putObjectArgs = PutObjectArgs.builder()
-                    .object(filePath)
-                    .contentType("text/html")
-                    .bucket(minIOConfigProperties.getBucket())
-              			.stream(inputStream,inputStream.available(),-1)
-                    .build();
-            minioClient.putObject(putObjectArgs);
-            StringBuilder urlPath = new StringBuilder(minIOConfigProperties.getReadPath());
-            urlPath.append(separator+minIOConfigProperties.getBucket());
-            urlPath.append(separator);
-            urlPath.append(filePath);
-            return urlPath.toString();
-        }catch (Exception ex){
-            log.error("minio put file error.",ex);
-            ex.printStackTrace();
-            throw new RuntimeException("上传文件失败");
-        }
+    public String uploadImgFile(String prefix, String filename, InputStream inputStream) {
+        return uploadFile(prefix, filename, inputStream, "image/*");
+    }
+
+    /**
+     * 上传html文件
+     *
+     * @param prefix      文件前缀
+     * @param filename    文件名
+     * @param inputStream 文件流
+     * @return 文件全路径
+     */
+    @Override
+    public String uploadHtmlFile(String prefix, String filename, InputStream inputStream) {
+        return uploadFile(prefix, filename, inputStream, "text/html");
+    }
+
+    /**
+     * 上传数据库文件
+     *
+     * @param prefix      文件前缀
+     * @param filename    文件名
+     * @param inputStream 文件流
+     * @return 文件全路径
+     */
+    @Override
+    public String uploadDbFile(String prefix, String filename, InputStream inputStream) {
+        return uploadFile(prefix, filename, inputStream, "application/x-sqlite3");
     }
 
     /**
      * 删除文件
-     * @param pathUrl  文件全路径
+     *
+     * @param pathUrl 文件全路径
      */
     @Override
     public void delete(String pathUrl) {
-        String key = pathUrl.replace(minIOConfigProperties.getEndpoint()+"/","");
-        int index = key.indexOf(separator);
-        String bucket = key.substring(0,index);
-        String filePath = key.substring(index+1);
+        String key = pathUrl.replace(minIOConfigProperties.getEndpoint() + SEPARATOR, "");
+        int index = key.indexOf(SEPARATOR);
+        String bucket = key.substring(0, index);
+        String filePath = key.substring(index + 1);
         // 删除Objects
         RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder().bucket(bucket).object(filePath).build();
         try {
             minioClient.removeObject(removeObjectArgs);
+            log.info("文件删除成功，路径: {}", pathUrl);
         } catch (Exception e) {
-            log.error("minio remove file error.  pathUrl:{}",pathUrl);
-            e.printStackTrace();
+            log.error("MinIO 文件删除失败，路径: {}, 错误信息: {}", pathUrl, e.getMessage(), e);
         }
     }
 
-
     /**
      * 下载文件
-     * @param pathUrl  文件全路径
-     * @return  文件流
      *
+     * @param pathUrl 文件全路径
+     * @return 文件流
      */
     @Override
-    public byte[] downLoadFile(String pathUrl)  {
-        String key = pathUrl.replace(minIOConfigProperties.getEndpoint()+"/","");
-        int index = key.indexOf(separator);
-        String bucket = key.substring(0,index);
-        String filePath = key.substring(index+1);
-        InputStream inputStream = null;
-        try {
-            inputStream = minioClient.getObject(GetObjectArgs.builder().bucket(minIOConfigProperties.getBucket()).object(filePath).build());
-        } catch (Exception e) {
-            log.error("minio down file error.  pathUrl:{}",pathUrl);
-            e.printStackTrace();
-        }
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        byte[] buff = new byte[100];
-        int rc = 0;
-        while (true) {
-            try {
-                if (!((rc = inputStream.read(buff, 0, 100)) > 0)) break;
-            } catch (IOException e) {
-                e.printStackTrace();
+    public byte[] downLoadFile(String pathUrl) {
+        String key = pathUrl.replace(minIOConfigProperties.getEndpoint() + SEPARATOR, "");
+        int index = key.indexOf(SEPARATOR);
+        String bucket = key.substring(0, index);
+        String filePath = key.substring(index + 1);
+        try (InputStream inputStream = minioClient.getObject(GetObjectArgs.builder().bucket(bucket).object(filePath).build());
+             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            byte[] buff = new byte[4096]; // 缓冲区大小
+            int rc;
+            while ((rc = inputStream.read(buff)) > 0) {
+                byteArrayOutputStream.write(buff, 0, rc);
             }
-            byteArrayOutputStream.write(buff, 0, rc);
+            log.info("文件下载成功，路径: {}", pathUrl);
+            return byteArrayOutputStream.toByteArray();
+        } catch (Exception e) {
+            log.error("MinIO 文件下载失败，路径: {}, 错误信息: {}", pathUrl, e.getMessage(), e);
+            throw new RuntimeException("下载文件失败", e);
         }
-        return byteArrayOutputStream.toByteArray();
     }
 }
 ```
 
 ### 4、对外加入自动配置
 
-在resources中新建`META-INF/spring.factories`
+在 src/main/resources/META-INF/spring/ 下新增文件`org.springframework.boot.autoconfigure.AutoConfiguration.imports`，列出自动配置类全名。
 
 ```java
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.heima.file.service.impl.MinIOFileStorageService
+com.hhjava.www.config.MinIOConfig
 ```
 
 ### 5、其他微服务使用
