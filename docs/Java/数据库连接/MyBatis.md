@@ -11,7 +11,7 @@ mybaits中文网址：https://mybatis.org/mybatis-3/zh_CN/index.html
 MyBatis功能：
 
 - 对SQL语句进行管理。
-  - 把SQL语句和Java代码分离开来，放置在单独的配置文件里。管理比较清晰。当程序需要和数据库交互时，只需要告诉MyBatis要做什么，MyBatis就会根据配置文件里的SQL语句去数据库里执行相应的操作。
+  - 把SQL语句和Java代码分离开来，放置在单独的配置文件里。当程序需要和数据库交互时，只需要告诉MyBatis要做什么，MyBatis就会根据配置文件里的SQL语句去数据库里执行相应的操作。
 - 对象关系映射（ORM）
 
 ## MyBatis是持久层框架
@@ -22,7 +22,7 @@ MyBatis功能：
 
 ## MyBatis是ORM框架
 
-**ORM**(Object Relation Mapping)，中文名称：**对象关系映射**。是一种解决数据库发展和面向对象编程语言发展不匹配问题而出现的技术。
+**ORM**（Object Relation Mapping）**对象关系映射**。是一种解决数据库发展和面向对象编程语言发展不匹配问题而出现的技术。
 
 把数据库中的表和Java中的对象对应起来，数据库中的每一行记录都可以映射成Java中的一个对象。
 
@@ -32,11 +32,11 @@ MyBatis功能：
 
 - SqlSessionFactoryBuilder：负责根据配置文件创建SqlSessionFactory。
 - SqlSessionFactory：生产SqlSession。
-- SqlSession：负责和数据库进行具体的交互。它可以执行SQL语句（增删改查）。
+- SqlSession：负责和数据库进行具体的交互，它可以执行SQL语句。
 
 **Mapper接口和Mapper XML文件**
 
-- Mapper接口：Mapper接口定义了一系列方法。
+- Mapper接口：定义了一系列方法。
 - Mapper XML文件：里面写着具体的SQL语句。
 
 当程序调用Mapper接口的方法时，MyBatis会根据Mapper XML文件里的SQL语句去数据库里执行相应的操作。
@@ -84,7 +84,7 @@ Mybatis查询到的数据要封装成对象，对象要依托于类。
 
 6.1、配置数据库属性文件
 
-在`项目|模块|src|main|resources`中创建`db.properties`文件，后缀名必须是`.properties`。
+在`src|main|resources`中创建`db.properties`文件，后缀名必须是`.properties`。
 
 里面放数据库的配置信息。
 
@@ -97,7 +97,7 @@ username=数据库名字
 password=数据库密码
 ```
 
-6.2、在`项目|模块|src|main|resources`中创建`mybatis.xml`文件
+6.2、在`src|main|resources`中创建`mybatis.xml`文件
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -305,6 +305,7 @@ PS：`argM.`或者`paramN.`不可以省略不写
 @Bean
 public MybatisPlusInterceptor mybatisPlusInterceptor() {
     MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+    // 显式添加分页插件
     interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
     return interceptor;
 }

@@ -305,11 +305,9 @@ public class TestSpringBootApplication {
 
 ## 自动配置
 
-包含了许多 Spring Boot 自动配置类的全限定名。
-
 Spring Boot 在启动时会扫描 `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` 文件，并根据文件中的值加载相应的自动配置类。
 
-自动配置类使用了 `@Configuration` 注解，表示它是一个配置类。
+自动配置类使用`@Configuration`注解，表示它是一个配置类。
 
 这使得你可以通过简单的配置来启用和配置第三方库，而不需要在代码中显式地进行配置。
 
