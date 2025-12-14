@@ -15,6 +15,6 @@ typedef int Object;
 ```
 
 ```c++
-typedef long	__darwin_intptr_t;
+typedef long __darwin_intptr_t;
 ```
 
