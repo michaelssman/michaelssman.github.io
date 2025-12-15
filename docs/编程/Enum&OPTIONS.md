@@ -391,6 +391,6 @@ view.borderOptions = UIViewBorderOptionTop | UIViewBorderOptionBottom; // 设置
 view.borderOptions = UIViewBorderOptionTop | UIViewBorderOptionRight | UIViewBorderOptionBottom | UIViewBorderOptionLeft;
 ```
 
-在这个例子中，`UIViewBorderOptions` 是一个使用 `NS_OPTIONS` 定义的类型，它允许你通过按位 OR 运算符组合不同的边框选项。然后在 `CustomView` 的 `-setBorderOptions:` 方法中，你可以检查哪些选项被设置，并相应地更新视图的边框。
+在这个例子中，`UIViewBorderOptions` 是一个使用 `NS_OPTIONS` 定义的类型，它允许你通过按位`OR`运算符组合不同的边框选项。然后在 `CustomView` 的 `-setBorderOptions:` 方法中，你可以检查哪些选项被设置，并相应地更新视图的边框。
 
 使用 `NS_OPTIONS` 可以让你的 API 更清晰，并且确保类型安全，因为编译器知道这个类型是用来表示一组选项的。
