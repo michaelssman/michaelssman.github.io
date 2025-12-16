@@ -47,7 +47,9 @@ docker run --env MODE=standalone -d --name nacos-server --restart=always -p 8848
 - MODE=standalone 单机版
 - --restart=always 开机启动
 
-3、访问nacos地址：http://192.168.200.130:8848/nacos 
+**在阿里云安全组中一定要开放8848和9848两个端口。**
+
+3、访问nacos地址：http://服务器ip:8848/nacos 
 
 ## 搭建Nacos
 
@@ -140,7 +142,7 @@ spring:
 
 **1、每个项目特有的配置**
 
-是指该配置只在有些项目中需要配置，或者该配置在每个项目中配置的值不同。
+该配置只在有些项目中需要配置，或者该配置在每个项目中配置的值不同。
 
 比如：spring.application.name每个项目都需要配置但值不一样，以及有些项目需要连接数据库而有些项目不需要，有些项目需要配置消息队列而有些项目不需要。
 
@@ -162,9 +164,9 @@ spring:
 
 所以，如果我们要配置content-service工程的配置文件:
 
-- 在开发环境中配置content-service-dev.yaml
-- 在测试环境中配置content-service-test.yaml
-- 在生产环境中配置content-service-prod.yaml
+- 在开发环境中配置：content-service-dev.yaml
+- 在测试环境中配置：content-service-test.yaml
+- 在生产环境中配置：content-service-prod.yaml
 
 我们启动项目中传入spring.profiles.active的参数决定引用哪个环境的配置文件，例如：传入spring.profiles.active=dev表示使用dev环境的配置文件即content-service-dev.yaml。
 
@@ -425,7 +427,3 @@ spring:
   config:
     import: nacos:hhjava-user-dev.yaml?config.namespace=dev&config.group=hhjava&config.file-extension=yaml
 ```
-
-## 开放端口
-
-在阿里云安全组中一定要开放8848和9848两个端口。

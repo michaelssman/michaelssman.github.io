@@ -4,7 +4,7 @@
 
 项目使用了Spring Cloud Gateway，而Gateway是基于WebFlux的响应式框架。同时，用户的依赖中可能引入了Spring MVC相关的starter，比如`spring-boot-starter-web`，这会导致同时存在Servlet和Reactive两种配置，从而引发冲突。
 
-Spring Boot官方文档指出，同时引入`spring-boot-starter-web`和`spring-boot-starter-webflux`会导致应用默认使用Spring MVC，因为前者会优先。但在Spring Cloud Gateway这种基于WebFlux的项目中，应该只使用WebFlux，避免引入MVC相关的依赖。
+Spring Boot官方文档指出，同时引入`spring-boot-starter-web`和`spring-boot-starter-webflux`会导致应用默认使用Spring MV。但在Spring Cloud Gateway这种基于WebFlux的项目中，应该只使用WebFlux，避免引入MVC相关的依赖。
 
 ------
 
