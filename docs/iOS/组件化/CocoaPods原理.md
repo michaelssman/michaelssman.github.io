@@ -168,9 +168,13 @@ Pod::Spec.new do |s|
   
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '8.0'
-
+  s.ios.deployment_target = '13.0'
   # s.swift_versions        = ['5.0', '5.1', '5.2']
+  # 支持混合语言配置
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES',
+    'SWIFT_VERSION' => '5.0'
+  }
 
   # 重要：框架源码地址。找框架源码的时候就是根据这个找的。这个地址错了就找不到了，可以直接复制仓库地址。
   s.source           = { :git => 'https://github.com/michael/HHTableListViewController.git', :tag => s.version.to_s }
@@ -184,8 +188,17 @@ Pod::Spec.new do |s|
     'HHTableListViewController' => ['HHTableListViewController/Assets/*.{png,jpeg,jpg,imageset}']
   }
 
+  # 如果需要桥接文件
+  s.prefix_header_contents = <<-EOS
+    #ifdef __OBJC__
+      #import "LMBaseModule-Bridging-Header.h"
+    #endif
+  EOS
+  
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
+
+  # 添加第三方依赖
   s.dependency 'AFNetworking', '~> 4.0'
   s.dependency 'MJRefresh'
   s.dependency 'Masonry'
