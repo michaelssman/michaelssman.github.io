@@ -1,6 +1,5 @@
-# KVO
+# KVO（Key Value Observing）
 
-KVO（Key Value Observing）
 1. 添加观察
 2. 回调观察
 3. 移除观察
@@ -18,7 +17,7 @@ A监听B 系统会创建子类NSKVONotifying_B
 
 ### 3、object_setClass
 
-B的isa 指向NSKVONotifying_B
+B的isa指向NSKVONotifying_B
 
 ### 4、class_addMethod
 
@@ -28,7 +27,7 @@ B的isa 指向NSKVONotifying_B
 
 ##### 调用父类方法objc_msgSendSuper
 
-objc_msgSend(observer, @selector(observeValueForKeyPath:ofObject:change:context:),key,self,@{key:newName},nil);
+`objc_msgSend(observer, @selector(observeValueForKeyPath:ofObject:change:context:), key, self, @{key:newName}, nil);`
 
 #### 4.3、添加dealloc方法
 
@@ -149,7 +148,7 @@ class Approval: NSObject {
 }
 ```
 
-KVO还有一个新的基于bock的api,就像这样工作,
+KVO还有一个新的基于bock的api，KeyValueObservation在deinited时无效，因此不需要删除观察者：
 
 ```swift
 @objcMembers
@@ -174,5 +173,3 @@ class Approval: NSObject {
     }
 }
 ```
-
-基于块的api看起来超级好用且易于使用.此外,KeyValueObservation在deinited时无效,因此不需要删除观察者.
