@@ -20,7 +20,7 @@ mach_port大家就理解成进程间相互发送消息的一种机制就好, 比
 
 非基于Port的处理事件，即这个消息不是其他进程或者内核直接发送给你的。一般是APP内部的事件, 比如`hitTest:withEvent`的处理, `PerformSelector`的事件。
 
-非基于port的事件，手动weakup来唤醒runloop。就是应用层事件。是一个数组。
+手动weakup来唤醒runloop。就是应用层事件。是一个数组。
 
 ## 例子
 

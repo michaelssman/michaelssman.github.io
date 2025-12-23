@@ -1,6 +1,6 @@
 # CFRunLoopObserverRef
 
-runloop有`source` `timer` `observer`，**Observer用来监听RunLoop状态变化的**。
+runloop有`source` `timer` `observer`，**Observer用来监听RunLoop状态变化**。
 
 通过CFRunLoopObserverCreateWithHandler函数来创建一个观察者（函数会有一个block回调），对RunLoop进行观察，当RunLoop状态变化时，会触发block回调，回调会返回对应的状态，在回调里做相应操作。
 
@@ -17,19 +17,17 @@ CFRelease(observer);
 
 ## RunLoop状态与唤醒机制
 
-在 iOS/macOS 开发中，RunLoop 的**核心状态**是由 Core Foundation 框架定义的 `CFRunLoopActivity` 枚举来表示的。
-
-整个事务的执行状况。
+RunLoop 的**核心状态**是由 Core Foundation 框架定义的 `CFRunLoopActivity` 枚举来表示的。
 
 ```c
 /* Run Loop Observer Activities */
 typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) {
-    kCFRunLoopEntry = (1UL << 0),					//1 即将进入RunLoop
+    kCFRunLoopEntry = (1UL << 0),			//1 即将进入RunLoop
     kCFRunLoopBeforeTimers = (1UL << 1),	//2 即将处理NSTimer
     kCFRunLoopBeforeSources = (1UL << 2), //4 即将处理Sources
     kCFRunLoopBeforeWaiting = (1UL << 5),	//32 即将进入休眠，休眠之前
     kCFRunLoopAfterWaiting = (1UL << 6),	//64 唤醒之前
-    kCFRunLoopExit = (1UL << 7),					//128 即将退出runloop
+    kCFRunLoopExit = (1UL << 7),			//128 即将退出runloop
     kCFRunLoopAllActivities = 0x0FFFFFFFU //所有状态改变
 };
 ```
@@ -78,9 +76,8 @@ typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) {
 **关键问题解答：**
 
 1.  **什么状态表示 RunLoop 在休眠？**
-    *   **严格来说，`CFRunLoopActivity` 枚举中没有直接表示“休眠中”的状态。**
     *   **休眠发生在 `kCFRunLoopBeforeWaiting` 和 `kCFRunLoopAfterWaiting` 之间。** 当 RunLoop 进入 `kCFRunLoopBeforeWaiting` 状态，执行完相关的 Observer 回调后，如果确实没有事件需要处理，它会调用底层的 `mach_msg()` 函数。这个函数会使当前线程在内核态挂起（睡眠），**此时线程不消耗 CPU 时间，这就是休眠的本质**。
-
+    
 2.  **什么状态表示 RunLoop 被唤醒执行任务？**
     *   **`kCFRunLoopAfterWaiting` 是 RunLoop 被唤醒后进入的第一个状态。** 它标志着休眠的结束。
     *   唤醒的原因（Timer 到期、端口消息到达等）决定了 RunLoop 接下来要处理什么。
