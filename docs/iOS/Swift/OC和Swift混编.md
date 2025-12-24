@@ -2,9 +2,9 @@
 
 ## swift调OC
 
-Swift项目创建OC文件。使用`项目名-Bridging-Header.h`桥接文件。一组暴露给swift的头文件。类似散头文件，通过一个头文件映射一组头文件。
+使用`项目名-Bridging-Header.h`桥接文件，一组暴露给swift的头文件。类似散头文件，通过一个头文件映射一组头文件。
 
-`项目名-Bridging-Header.h`桥接文件中引入OC头文件用`#import`，引入C头文件用`#include`。
+桥接文件中引入OC头文件用`#import`，引入C头文件用`#include`。
 
 swift的framework默认创建了一个散头文件module.modulemap。
 
@@ -12,56 +12,7 @@ TRAGETS --> Build Setting --> Objective-C Bridging Header
 
 ![image-20221228171453313](OC和Swift混编.assets/image-20221228171453313.png)
 
-### 1、OC的Block和Swift的闭包相互调用 
-
-我们在OC中定义的Block，在Swift中是如何调用的那？我们来看一下 
-
-#### OC
-
-HHTestOC.h
-
-```objective-c
-#import <Foundation/Foundation.h>
-
-NS_ASSUME_NONNULL_BEGIN
-
-typedef void(^ResultBlock)(NSError *error);
-
-@interface HHTestOC : NSObject
-
-+ (void)testBlockCall:(ResultBlock)block;
-
-@end
-
-NS_ASSUME_NONNULL_END
-```
-
-HHTestOC.m
-
-```objective-c
-#import "HHTestOC.h"
-
-@implementation HHTestOC
-
-+ (void)testBlockCall:(ResultBlock)block {
-    NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:400 userInfo:nil];
-    block(error);
-}
-
-@end
-```
-
-#### swift
-
-```swift
-func swiftOC() {
-    HHTestOC.testBlockCall{ error in
-        let errorcast = error as NSError
-    }
-}
-```
-
-### 2、Swift调用C
+### Swift调用C
 
 HHTestC.h
 
@@ -142,7 +93,7 @@ OC调用的时候`#import <SCM-Swift.h>`引入头文件即可。
 
 不继承NSObject的纯swift类不能被OC所访问
 
-swift中的属性和方法如果需要给OC使用，需要前面加`@objc`修饰。（用@objcMembers直接修饰在class前面，系统会自自动给class对象的属性、方法前面添加@objec来表明它们是可以被OC访问的。）
+swift中的属性和方法如果需要给OC使用，需要前面加`@objc`修饰（用@objcMembers直接修饰在class前面，系统会自自动给class对象的属性、方法前面添加@objec来表明它们是可以被OC访问的）。
 
 ### OC调用swift的enum
 
