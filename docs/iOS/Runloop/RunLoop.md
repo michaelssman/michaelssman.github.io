@@ -57,7 +57,7 @@ runloop死循环能够保住线程。
    }
    ```
    
-   给`return i;`这一行加上断点。发现并不会被断点断住。说明并没有执行到这一步，即上一步还没有结束。为什么会这样呢，那就引出了今天的主角：**RunLoop！因为UIApplicationMain函数内部帮我创建了一个RunLoop “运行循环”**，来保证线程不会退出，能随时处理事件和消息。
+   给`return i;`这一行加上断点，发现并不会被断点断住，说明并没有执行到这一步。**因为UIApplicationMain函数内部创建了一个RunLoop “运行循环”**，来保证线程不会退出，能随时处理事件和消息。
 
 - 负责监听事件: 触摸(UI界面的交互)事件，定时器事件（timer），selector事件（选择器performSelector），网络事件.
 
@@ -78,14 +78,13 @@ runloop死循环能够保住线程。
   }
   ```
 
-  会有一个`do while`循环来等待message，并处理message，只有当while条件不满足时（比如传入 quit 的消息），才会退出循环，让函数返回。而RunLoop内对其进行了进一步的优化：它能很好的管理事件和消息，并且让线程在没有处理消息时休眠以避免资源占用、在有消息到来时立刻被唤醒。
+  会有一个`do while`循环来等待message，并处理message，只有当while条件不满足时（比如传入 quit 的消息），才会退出循环，让函数返回。而RunLoop内对其进行了进一步的优化：它能很好的管理事件和消息，并且让线程在没有处理消息时休眠以避免资源占用，在有消息到来时立刻被唤醒。
 
   - runloop和while(true)的区别
     1. while(true)要一直检测条件是否满足，消耗CPU性能。这是死循环。
-    2. runloop有任务的时候干活 没任务的时候休眠。通过线程节约资源。占用CPU很少。
-       1. 无任务的时候谁休眠：线程休眠。
-       2. runloop有状态：退出，进入前台，进入后台，聚焦等等。
-
+    2. runloop有任务的时候干活 没任务的时候**线程休眠**。通过线程节约资源。占用CPU很少。
+       1. runloop有状态：退出，进入前台，进入后台，聚焦等等。
+  
 - 负责渲染屏幕上的所有UI(一次RunLoop循环需要渲染屏幕上所有UI变化的点!)
 
 ## RunLoop相关类
@@ -93,10 +92,10 @@ runloop死循环能够保住线程。
 **五个相关的类**
 
 1. CFRunLoopRef
-2. CFRunLoopModeRef【RunLoop的运行模式】
-3. CFRunLoopSourceRef【RunLoop要处理的事件源】
-4. CFRunLoopTimerRef【Timer事件】
-5. CFRunLoopObserverRef【RunLoop的观察者（监听者）】
+2. CFRunLoopModeRef：RunLoop的运行模式
+3. CFRunLoopSourceRef：RunLoop要处理的事件源
+4. CFRunLoopTimerRef：Timer事件
+5. CFRunLoopObserverRef：RunLoop的观察者（监听者）
 
 RunLoop要想跑起来，它的内部必须要有一个mode，这个mode里面必须有source\observer\timer，至少要有其中的一个。
 
@@ -206,7 +205,6 @@ static int32_t __CFRunLoopRun(CFRunLoopRef rl, CFRunLoopModeRef rlm, CFTimeInter
             /// 处理Blocks
             __CFRunLoopDoBlocks(rl, rlm);
         }
-        
         
         /// 判断有无端口消息(Source1)
         if (__CFRunLoopServiceMachPort(dispatchPort, &msg, sizeof(msg_buffer), &livePort, 0, &voucherState, NULL)) {
