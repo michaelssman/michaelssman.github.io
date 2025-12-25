@@ -83,8 +83,9 @@ CF_EXPORT CFRunLoopRef _CFRunLoopGet0(pthread_t t) {
 - CFRunLoopGetMain或CFRunLoopGetCurrent
 - 通过_CFRunLoopGet0函数传入一条线程。
 - 判断线程是否为主线程并且判断是否已经存在__CFRunLoops（全局CFMutableDictionaryRef）。
-- 如果不存在，说明第一次进入，初始化全局dict，并先为主线程创建一个 RunLoop。并将mainLoop添加到dict中。
-- 如果__CFRunLoops存在，会通过对应线程在全局的__CFRunLoops中查找对应的RunLoop。
+  - 如果不存在，说明第一次进入，初始化全局dict，并先为主线程创建一个 RunLoop。并将mainLoop添加到dict中。
+  - 如果__CFRunLoops存在，会通过对应线程在全局的__CFRunLoops中查找对应的RunLoop。
+
 - 如果对应RunLoop不存在，会创建一个新的RunLoop，并添加到__CFRunLoops中。
 - 注册一个回调，当线程销毁时，顺便也销毁其对应的 RunLoop。
 - 返回RunLoop。
