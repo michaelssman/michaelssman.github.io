@@ -26,6 +26,17 @@ MaterialApp(
     splashColor: const Color.fromRGBO(1, 0, 0, 0.0),
     //背景色
     scaffoldBackgroundColor: const Color(0xFFF7F7F8),
+    // 导航栏
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color(0xFFFFFFFF), // AppBar背景色
+      elevation: 0.5, // AppBar阴影高度
+      titleTextStyle: TextStyle(
+        color: Color(0xFF333333), // 标题文字颜色
+        fontSize: 16.0, // 标题文字大小
+        fontWeight: FontWeight.w600, // 标题文字粗细
+      ),
+      toolbarHeight: kToolbarHeight,
+    ),
     //分割线
     dividerColor: Colors.black12,
     textTheme: const TextTheme(
@@ -70,6 +81,15 @@ MaterialApp(
     primaryColor: const Color(0xFF0cb2f1),
     //背景色
     scaffoldBackgroundColor: const Color(0xFF1A1A1C),
+    // 导航栏
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color(0xFF1B1B21), // AppBar背景色
+      elevation: 0.5, // AppBar阴影高度
+      titleTextStyle: TextStyle(
+        color: Color(0xFFDBDBDB), // 标题文字颜色
+        fontSize: 16.0, // 标题文字大小
+        fontWeight: FontWeight.w600, // 标题文字粗细
+      ),
     //底部导航tab
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Color(0xFF1B1B21), // 底部导航栏背景色
