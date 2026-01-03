@@ -4,7 +4,11 @@
 TextField(
   textAlign: TextAlign.right,//文字对齐方式
   controller: _controller,//TextEditingController
-  // onChanged: _onChange,
+  //maxLines: 3, // 多行输入
+  maxLength: 100, // 最长100字
+  onChanged: (value) {
+    setState(() {}); // 更新字数统计
+  },
   //自动聚焦
   autofocus: true,
   //光标颜色
@@ -24,15 +28,17 @@ TextField(
   //TextInputType.none不弹出键盘
   keyboardType: TextInputType.none,
   decoration: const InputDecoration(
-    //内容约束
-    contentPadding: EdgeInsets.only(left: 5),
-    border: InputBorder.none,		//输入框边框
-    hintText: '金额',						//占位文字
+    hintText: '金额',		 	  //占位文字
     hintStyle: TextStyle(
       color: Color(0xeaeaeaea),
       fontSize: 18,
       letterSpacing: 2.0,
-    ),
+    ),      
+    //内容约束
+    contentPadding: EdgeInsets.only(left: 5),// 内边距
+    border: InputBorder.none,	//输入框边框
+  	//isDense: true, // 紧凑型
+    //contentPadding: EdgeInsets.zero, // 去掉内边距
   ),
 )
 ```
@@ -211,17 +217,23 @@ TextField(
 
 通过修改`borderSide`的`color`属性来设置颜色。同样，`width`属性设置边框的宽度。这样就可以根据UI设计来定制`TextField`的外观了。
 
-## 限制字数
+## 限制字数maxLength
 
-如果限制`TextField`控件的输入长度为10个字符，可以通过设置`maxLength`属性来实现这个功能。`maxLength`属性定义了用户可以输入的字符数量的上限。
-
-这里有一个简单的示例，展示了如何设置`TextField`的`maxLength`属性：
+如果限制`TextField`控件的输入长度为50个字符，可以通过设置`maxLength`属性来实现这个功能。`maxLength`属性定义了用户可以输入的字符数量的上限。
 
 ```dart
 TextField(
-  maxLength: 10,
+  maxLength: 50,
   decoration: InputDecoration(
     counterText: '', // 这行可以隐藏右下角的字符计数器
+    counterText:
+        '${_noteController.text.length}/50', // 字数统计
+    counterStyle: TextStyle(
+      color: _noteController.text.length > 50
+          ? Colors.red
+          : Colors.grey,
+      fontSize: 12,
+    ),
   ),
 )
 ```
