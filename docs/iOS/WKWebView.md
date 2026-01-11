@@ -220,7 +220,7 @@ Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_2 like Mac OS X) AppleWebKit/603.2.4 (KH
 
 以`js`调用客户端为例，有两个纬度的调用。可以通过`URLRouter`的方式直接调用某个模块，这种调用方式遵循客户端的`URL`定义即可调起，并且支持传参。还可以通过`userContentController`的方式，进行页面级的调用，例如关闭`webView`、调起登录功能等，也就是通过`js`调用客户端的某个功能，这种方式需要客户端提供对应的处理代码。
 
-二者之间相互调用，尽量避免高频调用，而且一般也不会有高频调用的需求。但如果发生相同功能高频调用，则需要设置一个`actionID`来区分不同的调用，以保证发生回调时可以正常被区分。
+二者之间相互调用，尽量避免高频调用。如果发生相同功能高频调用，则需要设置一个`actionID`来区分不同的调用，以保证发生回调时可以正常被区分。
 
 `callback`的回调方法也可以通过参数传递过来，这种方式灵活性比较强，如果固定写死会有版本限制，较早版本的客户端可能并不支持这个回调。
 
@@ -317,7 +317,7 @@ Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_2 like Mac OS X) AppleWebKit/603.2.4 (KH
 
 ### Cookie处理
 
-众所周知，`http`协议中是支持`cookie`设置的，服务器可以通过`Set-Cookie:`字段对浏览器设置`cookie`，并且还可以指定过期时间、域名等。这些在`Chrome`这些浏览器中比较适用，但是如果在客户端内进行显示，就需要客户端传一些参数过去，可以让`H5`获取到登录等状态。
+`http`协议中是支持`cookie`设置的，服务器可以通过`Set-Cookie:`字段对浏览器设置`cookie`，并且还可以指定过期时间、域名等。这些在`Chrome`这些浏览器中比较适用，但是如果在客户端内进行显示，就需要客户端传一些参数过去，可以让`H5`获取到登录等状态。
 
 苹果虽然提供了一些`Cookie`管理的`API`，但在`WKWebView`的使用上还是有很多坑的，最后我会给出一个比较通用的方案。
 
@@ -331,7 +331,7 @@ Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_2 like Mac OS X) AppleWebKit/603.2.4 (KH
 
 #### WKWebsiteDataStore
 
-`Cookie`的管理一直都是`WKWebView`的一个弊端，对于`Cookie`的处理很不方便。在`iOS9`中可以通过`WKWebsiteDataStore`对`Cookie`进行管理，但是用起来并不直观，需要进行`dataType`进行筛选并删除。而且`WKWebsiteDataStore`自身功能并不具备添加功能，所以对`cookie`的处理也只有删除，不能添加`cookie`。
+在`iOS9`中可以通过`WKWebsiteDataStore`对`Cookie`进行管理，但是用起来并不直观，需要进行`dataType`进行筛选并删除。而且`WKWebsiteDataStore`自身功能并不具备添加功能，所以对`cookie`的处理也只有删除，不能添加`cookie`。
 
 ```
 if (@available(iOS 9.0, *)) {
@@ -346,7 +346,7 @@ if (@available(iOS 9.0, *)) {
 
 在`iOS11`中苹果在`WKWebsiteDataStore`的基础上，为其增加了`WKHTTPCookieStore`类专门进行`cookie`的处理，并且支持增加、删除、查询三种操作，还可以注册一个`observer`对`cookie`的变化进行监听，当`cookie`发生变化后通过回调的方法通知监听者。
 
-`WKWebsiteDataStore`可以获取`H5`页面通过`document.cookie`的方式写入的`cookie`，以及服务器通过`Set-Cookie`的方式写入的`cookie`，所以还是很推荐使用这个类来管理`cookie`的，可惜只支持`iOS11`。
+`WKWebsiteDataStore`可以获取`H5`页面通过`document.cookie`的方式写入的`cookie`，以及服务器通过`Set-Cookie`的方式写入的`cookie`，所以推荐使用这个类来管理`cookie`的。
 
 下面是给`WKWebView`添加`cookie`的一段代码。
 
@@ -371,7 +371,7 @@ NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties:params];
 
 对于网络请求的`cookie`，通过`NSHTTPCookieStorage`直接将`cookie`种到根域名下的，可以对根域名下所有子域名生效，这里的处理比较简单。
 
-```
+```objective-c
 SVREQUEST.type(SVRequestTypePost).parameters(params).success(^(NSDictionary *cookieDict) {
     self.cookieData = [cookieDict as:[NSDictionary class]];
     [self addCookieWithDict:cookieDict forHost:@".google.com"];
@@ -406,7 +406,7 @@ SVREQUEST.type(SVRequestTypePost).parameters(params).success(^(NSDictionary *coo
 
 这种方案种`cookie`是同步执行的，而且对`webView`的影响很小，经过我的测试，平均添加一次`cookie`只需要消耗28ms的时间。从用户的角度来看是无感知的，并不会有页面的卡顿或重新刷新。
 
-```
+```objc
 - (void)setCookieWithUrl:(NSURL *)url {
     NSString *host = [url host];
     if ([self.cookieURLs containsObject:host]) {
@@ -426,7 +426,7 @@ SVREQUEST.type(SVRequestTypePost).parameters(params).success(^(NSDictionary *coo
 
 删除`cookie`的处理则相对比较简单，`NSHTTPCookieStorage`通过`cookies`属性遍历到自己需要删除的`NSHTTPCookie`，调用方法将其删除即可。`webView`的删除方法更是简单粗暴，直接调用`removeAllUserScripts`删除所有`WKUserScript`即可。
 
-```
+```objc
 - (void)removeWKWebviewCookie {
     self.webviewCookie = nil;
     [self.cookieWebview.configuration.userContentController removeAllUserScripts];
@@ -511,7 +511,7 @@ SVREQUEST.type(SVRequestTypePost).parameters(params).success(^(NSDictionary *coo
 html文件不是永远不变的， 后台那边可能会调整一些样式等，所以需要先使用header请求去 请求header判断一下缓存的html文件有没有修改过。
 对应的代码如下：
 
-```
+```objc
 /**
  header请求，获取头部的信息
 
@@ -646,7 +646,7 @@ https://blog.csdn.net/u013583789/article/details/52129316
 
 ### 适配深色模式闪白色背景色
 
-在创建WKWebView的时候直接先隐藏WKWebView
+在创建WKWebView的时候直接先隐 藏WKWebView
 
 ```objectivec
 #pragma mark - WKNavigationDelegate

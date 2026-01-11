@@ -1,15 +1,5 @@
 # flutter
 
-## RN和flutter
-
-### RN
-
-调的系统的UIKit。原生更新的话，RN也需要更新。
-
-### flutter
-
-界面不依赖原生UI，有自己独立的渲染引擎，iOS和安卓UI高度统一。iOS和安卓都有渲染引擎去解析Dart代码。flutter包大，因为有渲染引擎，效率高。
-
 ## website
 
 flutter中文网
@@ -97,9 +87,7 @@ https://github.com/flutter/flutter/issues/119927#issuecomment-1415858226
 
 ### 🔧 配置Gradle包装器下载源
 
-这个配置直接解决你遇到的Gradle压缩包下载超时问题。
-
-找到你Flutter项目中的 `android/gradle/wrapper/gradle-wrapper.properties` 文件，将 `distributionUrl` 这一行注释掉（行首加`#`），并修改为国内镜像地址。
+找到你Flutter项目中的 `android/gradle/wrapper/gradle-wrapper.properties` 文件，将 `distributionUrl`修改为国内镜像地址。
 
 ```properties
 # 这是原来的配置
@@ -184,11 +172,6 @@ Engine revision：引擎版本
 系统属性--高级系统设置--环境变量--系统变量--双击Path--新建--把flutter的bin路径复制进来`"C:\Users\micha\hhsoftware\flutter\bin\"`
 
 打开终端--flutter doctor
-
-## 创建flutter项目
-
-- Project name 不能用驼峰命名，需要用下划线，全用小写字母。
-- flutter写的dart代码在lib文件中。
 
 ## 强制退出AS
 

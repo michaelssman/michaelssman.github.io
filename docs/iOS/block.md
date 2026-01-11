@@ -1,12 +1,12 @@
 # block
 
-Block是一个对象，内存结构中是一个结构体，它封装了一段代码，这段代码可以在任何时候执行。
+Block是一个对象，内存结构中是一个结构体。
 
 Block可以作为函数参数或者函数的返回值，而其本身又可以带输入参数或返回值。它是对C语言的扩展，用来实现匿名函数的特性。
 
 ## Block与函数指针的区别
 
-- 函数指针只是一个指向函数的地址，不携带上下文。
+- 函数指针只是一个指向函数的地址。
 - Block不仅实现函数的功能，还能捕获外部变量（形成闭包）。
 
 ## block分类
@@ -20,10 +20,10 @@ Block可以作为函数参数或者函数的返回值，而其本身又可以带
 不需retain和copy，即使copy，也不会copy到堆区，内存不会发生变化，操作都无效。
 
 ```objective-c
-   void (^globalBlock)(int, int) = ^(int a, int b){
-        NSLog(@"%d",a+b);
-    };
-    NSLog(@"globalBlock:%@",globalBlock);//__NSGlobalBlock__
+void (^globalBlock)(int, int) = ^(int a, int b){
+    NSLog(@"%d",a+b);
+};
+NSLog(@"globalBlock:%@",globalBlock);//__NSGlobalBlock__
 ```
 
 特点：命长，应用程序在它就在。
@@ -37,12 +37,12 @@ Block可以作为函数参数或者函数的返回值，而其本身又可以带
 如果想让它获得比stack更久的生命，那就调用`Block_copy()`，或者copy修饰，拷贝到堆内存上，这也是为什么用copy修饰Block的原因。
 
 ```objective-c
-		int a = 10;
-    void (^block)(void) = ^{//copy
-        //保存一份代码块
-        NSLog(@"hello %d",a);
-    };
-    NSLog(@"block:%@--%@",block,[block copy]);
+int a = 10;
+void (^block)(void) = ^{//copy
+    //保存一份代码块
+    NSLog(@"hello %d",a);
+};
+NSLog(@"block:%@--%@",block,[block copy]);
 ```
 
 MRC下：
@@ -55,7 +55,7 @@ ARC下：
 
 `__NSMallocBlock__ __NSMallocBlock__`
 
-分析结果：在ARC下，生成的Block默认也是NSStackBlock类型，只是在变量赋值的时候，系统默认对其进行了copy，从NSStackBlock给copy到堆区的NSMallocBlock类型。而在mrc中，则需要手动copy。
+在ARC下，生成的Block默认也是NSStackBlock类型，只是在变量赋值的时候，系统默认对其进行了copy，从NSStackBlock给copy到堆区的NSMallocBlock类型。而在mrc中，则需要手动copy。
 
 ### 3、NSMallocBlock
 
@@ -73,11 +73,11 @@ ARC下：
 - block引用了栈里的临时变量, 才会被创建在stack区。
 - **stack区的block只要赋值给strong类型的变量, 就会自动copy到堆里**。所以要不要写copy都没关系
 
-**block在创建的时候，内存是分配在栈上的。**MRC使用copy的目的是将block创建默认放在栈区拷贝一份到堆区，**因为栈区中的变量管理是由它自己管理的，随时可能被销毁，一旦被销毁后续再次调用空对象就可能会造成程序崩溃问题**， block放在了堆中，block有个指针指向了栈中的block代码块。
+**block在创建的时候，内存默认是分配在栈上的。因为栈区中的变量管理是由它自己管理的，随时可能被销毁，一旦被销毁后续再次调用空对象就可能会造成程序崩溃问题。**MRC使用copy的目的是将block创建默认放在栈区拷贝一份到堆区。block放在了堆中，block有个指针指向了栈中的block代码块。
 
 在ARC模式下，系统会默认使用copy进行修饰。
 
-1. 如果访问了外部处于栈区的变量（比如局部变量），或处于堆区的变量。都会存放在堆区，如果访问的是内部创建的变量还是存储在全局区
+1. 如果访问了外部处于栈区的变量（比如局部变量），或处于堆区的变量。都会存放在堆区，如果访问的是内部创建的变量还是存储在全局区。
 2. 在ARC中做了特殊的处理，自动的做了copy操作，所以为`__NSMallocBlock__`在MRC中是`__NSStackBlock__`。
 
 ## 内存管理
@@ -100,9 +100,9 @@ self.block = ^{
 };
 ```
 
-分析：Block是当前self属性，self强引用Block。当在Block内部捕获了self（使用_一样也是引用了self），Block便强引用了self，两者相互持有，无法释放。  
+分析：Block是当前self属性，self强引用Block。当在Block内部捕获了self，Block便强引用了self，两者相互持有，无法释放。  
 
-解决方法是ARC 下`__weak`修饰self：__`weak Class *weakSelf = self;` MRC下`__weak`改为`__block`。
+解决方法是ARC 下`__weak`修饰self：`__weak Class *weakSelf = self;` MRC下`__weak`改为`__block`。
 
 **只有双方持有的时候才会造成循环引用。**
 
@@ -192,7 +192,7 @@ vc.refreshFuZhu = ^{
 
 #### 1、基本数据类型
 
-Block会copy该局部变量的值，在Block中作为常量使用，不允许修改。所以即使变量的值在Block外改变，也不影响他在Block中的值。
+Block会copy该局部变量的值，不允许修改。所以即使变量的值在Block外改变，也不影响他在Block中的值。
 
 ```objective-c
     int a = 100;
@@ -256,7 +256,7 @@ self.num = 1;
 self.num ++;  
 
 void (^block3) () = ^ {
-		self.num++;
+    self.num++;
 };
 block3();
 NSLog(@"%d",self.num);	//输出结果为 3
@@ -528,9 +528,9 @@ _Block_copy在lib system_blocks.dylib库libclosure-master
   // 2.memmove会拷贝到堆上
   // 3.引用计数初始化为 1
   // 4.调用 copy helper 方法（如果存在的话）；
-	// 5.isa标记堆block
-	// 参数 arg 就是 Block_layout 对象，
-	// 返回值是拷贝后的 block 的地址
+  // 5.isa标记堆block
+  // 参数 arg 就是 Block_layout 对象，
+  // 返回值是拷贝后的 block 的地址
 void *_Block_copy(const void *arg) {
     struct Block_layout *aBlock;
 
@@ -794,7 +794,7 @@ struct Block_layout {
         cmd方法编号        
     */
   	//存储block附加信息
-    volatile int32_t flags; // contains ref count//标识符 存数据信息，是否正在析构，是否有keep函数，是否有析构函数 等等很多
+    volatile int32_t flags; // contains ref count//标识符 存数据信息，是否正在析构、是否有keep函数、是否有析构函数、等等
   
     int32_t reserved;//保留的变量（暂时不用）
   
