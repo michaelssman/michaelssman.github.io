@@ -95,11 +95,9 @@ Flutter使用pubspec文件管理应用程序的assets(资源，如图片、packa
 
 ## 关于import
 
-在您输入时，Android Studio会为您提供有关库导入的建议。然后它将呈现灰色的导入字符串，让您知道导入的库尚未使用（到目前为止）
-
 使用http的时候
 
-- as关键字 给库起别名
+- as关键字，给库起别名
 
 ​		http里有get请求，其它库可能也有get方法，http.get
 

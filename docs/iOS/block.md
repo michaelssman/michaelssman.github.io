@@ -301,56 +301,11 @@ int main0(){
 }
 ```
 
-进入该文件目录下
-
-clang编译 看底层实现
-
-` clang -rewrite-objc block.c -o block.cpp`进行编译成C++
-
-在底部找到int main0()函数 三行代码 .cpp的三行代码对应上面的三个代码 定义 调用 和return0.
+进入该文件目录下：` clang -rewrite-objc block.c -o block.cpp`，编译成C++。
 
 block就是__main0_block_impl_0这个函数，是一个struct。
 
 对象在底层是结构体
-
-```c++
-int main0(){
-    //首先去除类型转换的代码
-    //__main0_block_impl_0 函数
-    //两个参数__main0_block_func_0  __main0_block_desc_0_DATA
-    void(*block)(void) = __main0_block_impl_0(__main0_block_func_0, &__main0_block_desc_0_DATA));
-
-    //去除类型强转 下面一行可以简写：block->FuncPtr(block)
-    ((void (*)(__block_impl *))((__block_impl *)block)->FuncPtr)((__block_impl *)block);
-    return 0;
-}
-
-//__block_impl结构体
-struct __block_impl {
-  void *isa;	//指向 Block 的类型（全局/栈/堆）
-  int Flags;	//枚举类型
-  int Reserved;
-  void *FuncPtr;// Block 的函数指针
-};
-//block结构体
-struct __main0_block_impl_0 {
-  struct __block_impl impl;
-  struct __main0_block_desc_0* Desc;
-  //void *fp就是第一个参数
-  //结构体的构造函数
-  __main0_block_impl_0(void *fp, struct __main0_block_desc_0 *desc, int flags=0) {
-    impl.isa = &_NSConcreteStackBlock;//栈区的block
-    impl.Flags = flags;
-    impl.FuncPtr = fp; //编程思想：函数式。先保存，在block调用的时候执行。
-    Desc = desc;
-  }
-};
- 
- //第一个参数__main0_block_func_0就是下面的方法，里面就是block里面的代码 所以block能够保存代码就是因为在底层这样实现保存代码。
- static void __main0_block_func_0(struct __main0_block_impl_0 *__cself) {
-     printf("Hello hh");
- }
-```
 
 ### 捕获变量  
 
@@ -377,20 +332,25 @@ int main1(){
 ```
 
 ```c++
- int main1(){
+int main1(){
      int a = 10;
- 		 //比之前多个一个参数a  3个参数
+     //首先去除类型转换的代码
+     //__main1_block_impl_0 函数
      //参数1：block的实现函数
+     //参数2：__main1_block_desc_0_DATA
+     //参数3：a
      void(*block)(void) = (__main1_block_impl_0(__main1_block_func_0, &__main1_block_desc_0_DATA, a));
+     //去除类型强转 下面一行可以简写：block->FuncPtr(block)
      ((void (*)(__block_impl *))((__block_impl *)block)->FuncPtr)((__block_impl *)block);
      return 0;
  }
  
+ //第一个参数__main1_block_func_0就是下面的方法，里面就是block里面的代码 所以block能够保存代码。
  //block代码块 是一个函数
  static void __main1_block_func_0(struct __main1_block_impl_0 *__cself) {
- int a = __cself->a; // bound by copy  值拷贝 生成了一个新的变量a，值相同，地址不同。
-       printf("Hello hh - %d",a);
-   }
+    int a = __cself->a; // bound by copy  值拷贝 生成了一个新的变量a，值相同，地址不同。
+    printf("Hello hh - %d",a);
+ }
 
 static void __main1_block_copy_0(struct __main1_block_impl_0*dst, struct __main1_block_impl_0*src) {
   _Block_object_assign((void*)&dst->a, (void*)src->a, 8/*BLOCK_FIELD_IS_BYREF*/);
@@ -408,9 +368,7 @@ static struct __main1_block_desc_0 {
 } __main1_block_desc_0_DATA = { 0, sizeof(struct __main1_block_impl_0), __main1_block_copy_0, __main1_block_dispose_0};
 ```
 
-block捕获外界变量，会根据外界变量编译的时候自动生成相应的成员变量。
-
-block把a的值传了进去，里面生成了一个新的变量a。
+block捕获外界变量a，编译的时候会根据外界变量在里面自动生成相应的成员变量a，把a的值传了进去。
 
 #### 2、__block原理
 
@@ -425,12 +383,12 @@ block创建的时候是在栈上的，在将栈block拷⻉到堆上的时候，�
 这样在block内部修改的时候虽然是修改堆上的对象的值，但是因为栈上的对象的`__forwarding`指针将堆和栈的对象链接起来。因此就可以达到修改的⽬的。
 
 ```c++
- int main1(){
- //__block修饰的变量
- //先声明一个a 的结构体，对a赋值。结构体a有了外部int a的值和地址空间。
- //对结构体赋值 初始化
- //结构体在堆里。int a在栈，结构体a在堆区。
-   //结构体初始化
+ int main1() {
+     //__block修饰的变量
+     //先声明一个a 的结构体，对a赋值。结构体a有了外部int a的值和地址空间。
+     //对结构体赋值 初始化
+     //结构体在堆里。int a在栈，结构体a在堆区。
+     //结构体初始化
      __Block_byref_a_0 a = { //假象 拷贝到堆
          (void*)0,
          (__Block_byref_a_0 *)&a, //地址空间 取a的地址
@@ -438,7 +396,6 @@ block创建的时候是在栈上的，在将栈block拷⻉到堆上的时候，�
          sizeof(__Block_byref_a_0),
          10//a的值
     };
-     
      
      void(*block)(void) = ((void (*)())&__main1_block_impl_0((void *)__main1_block_func_0, &__main1_block_desc_0_DATA, (__Block_byref_a_0 *)&a, 570425344));//数字570425344是一个flag
      
@@ -449,38 +406,46 @@ block创建的时候是在栈上的，在将栈block拷⻉到堆上的时候，�
  //__Block_byref_a_0是一个结构体
  struct __Block_byref_a_0 {
    void *__isa;
- 	__Block_byref_a_0 *__forwarding;//__forwarding指针指向结构体本身（栈或堆上的副本）
-  int __flags;
-  int __size;
-  int a; // 原始变量
+   __Block_byref_a_0 *__forwarding;//__forwarding指针指向结构体本身（栈或堆上的副本）
+   int __flags;
+   int __size;
+   int a; // 原始变量
  };
 
- static void __main1_block_func_0(struct __main1_block_impl_0 *__cself) {
- __Block_byref_a_0 *a = __cself->a; // bound by ref  指针拷贝 指向同一个内存空间
-
-       printf("Hello hh - %d",(a->__forwarding->a));
-   }
+static void __main1_block_func_0(struct __main1_block_impl_0 *__cself) {
+	__Block_byref_a_0 *a = __cself->a; // bound by ref  指针拷贝 指向同一个内存空间
+    printf("Hello hh - %d",(a->__forwarding->a));
+}
 ```
 
 - 通过 `__forwarding` 指针保证无论变量在栈还是堆上，都能正确访问。
 
-### block本质就是一个结构体
+### block结构体
 
 ```c++
- //没有用__block修饰a
- //a就传到了__main1_block_impl_0里面
- struct __main1_block_impl_0 {
-   struct __block_impl impl;
-   struct __main1_block_desc_0* Desc;
-   int a; //捕获的外部变量a，栈block可以捕获外部变量。
-   //fp是一个函数
-   __main1_block_impl_0(void *fp, struct __main1_block_desc_0 *desc, int _a, int flags=0) : a(_a) {
-     impl.isa = &_NSConcreteStackBlock;//block在创建的时候是一个StackBlock
-     impl.Flags = flags;
-     impl.FuncPtr = fp;
-     Desc = desc;
-   }
- };
+//__block_impl结构体
+struct __block_impl {
+  void *isa;	//指向 Block 的类型（全局/栈/堆）
+  int Flags;	//枚举类型
+  int Reserved;
+  void *FuncPtr;// Block 的函数指针
+}; 
+
+//没有用__block修饰a
+//a就传到了__main1_block_impl_0里面
+struct __main1_block_impl_0 {
+  struct __block_impl impl;
+  struct __main1_block_desc_0* Desc;
+  int a; //捕获的外部变量a，栈block可以捕获外部变量。
+  //void *fp就是第一个参数，fp是一个函数
+  //结构体的构造函数
+  __main1_block_impl_0(void *fp, struct __main1_block_desc_0 *desc, int _a, int flags=0) : a(_a) {
+    impl.isa = &_NSConcreteStackBlock;//block在创建的时候是一个StackBlock
+    impl.Flags = flags;
+    impl.FuncPtr = fp; //编程思想：函数式。先保存，在block调用的时候执行。
+    Desc = desc;
+  }
+};
 
 //用__block修饰a
 struct __main1_block_impl_0 {
@@ -497,7 +462,7 @@ struct __main1_block_impl_0 {
 };
 ```
 
-在 Block 的底层实现中，`__Block_byref_xxx` 是一个自动生成的结构体名称，其中的 `byref` 是 **"by reference"（按引用）** 的缩写，表示这个结构体用于实现 **通过引用捕获变量** 的机制。
+在 Block 的底层实现中，`__Block_byref_xxx` 是一个自动生成的结构体名称，`byref` 是 **by reference（按引用）** 的缩写，表示这个结构体用于实现**通过引用捕获变量**的机制。
 
 ## block 底层copy处理
 
