@@ -755,8 +755,6 @@ void (^myBlock)(void) = ^{
 
 ## block结构
 
-### Block_layout
-
 block本质是Block_layout结构体
 
 block其实是一个对象，需要一个初始化过程。
@@ -770,8 +768,8 @@ struct Block_layout {
   
     /**
     Flags 枚举类型
-      BLOCK_HAS_COPY_DISPOSE 捕获外界变量的时候 这个是有值的。
-      BLOCK_HAS_SIGNATURE 签名
+      BLOCK_HAS_COPY_DISPOSE：捕获外界变量的时候 这个是有值的。
+      BLOCK_HAS_SIGNATURE：签名
       方法有签名v@: 普通签名
         v 返回值
         @ 对象
@@ -786,42 +784,142 @@ struct Block_layout {
     BlockInvokeFunction invoke;//block实现的函数指针
   
     // block其它描述信息：存储copy、dispose函数、block大小、block描述信息、捕获外界信息、block方法签名
-  	/**
-  	签名
-		block签名是 @?
-		hook：invoke消息 消息机制 转发需要先获取签名 然后invocation处理
-  	*/
     struct Block_descriptor_1 *descriptor;
-  
+    //连续的内存空间
     // imported variables  //还有可选变量
 };
 ```
 
-### Block_descriptor_（结构体可选）
+### Block_descriptor_1
 
 ```c++
 #define BLOCK_DESCRIPTOR_1 1
-struct Block_descriptor_1 {//连续的内存空间
-    uintptr_t reserved;
-    uintptr_t size;
+struct Block_descriptor_1 {
+    uintptr_t reserved;         // 保留字段，通常为0
+    uintptr_t size;             // Block 的总大小（包括所有部分），用于内存分配和释放
 };
+```
 
+### Block_descriptor_2 
+
+```c++
 //捕获int变量时，没有copy和dispose。捕获对象才有。
 //copy和dispose函数是⽤来对block内部的对象进⾏内存管理的，block拷⻉到堆上会调⽤copy函数，在block从堆上释放的时候会调⽤dispose函数。
 //内存平移Block_descriptor_1大小就得到Block_descriptor_2
 #define BLOCK_DESCRIPTOR_2 1
 struct Block_descriptor_2 {
     // requires BLOCK_HAS_COPY_DISPOSE
-    BlockCopyFunction copy;
-    BlockDisposeFunction dispose;
+    BlockCopyFunction copy;			//当 Block 被复制到堆时调用，处理捕获变量的内存管理
+    BlockDisposeFunction dispose;	//当 Block 从堆中释放时调用，清理捕获的资源
+};
+```
+
+**何时存在？**
+当 Block 捕获了需要特殊内存管理的对象时：
+
+- Objective-C 对象（MRC 下）
+- 其他 Block
+- `__block` 变量
+- C++ 对象等
+
+**示例代码**
+
+```c++
+// 捕获 NSString 对象
+NSString *str = @"Hello";
+void (^block)(void) = ^{
+    NSLog(@"%@", str);  // 需要管理 str 的内存
 };
 
+// 编译器生成的描述符
+static void __main_block_copy_0(struct __main_block_impl_0 *dst, 
+                               struct __main_block_impl_0 *src) {
+    // 处理 str 的 retain
+    _Block_object_assign(&dst->str, src->str, BLOCK_FIELD_IS_OBJECT);
+}
+
+static void __main_block_dispose_0(struct __main_block_impl_0 *src) {
+    // 处理 str 的 release
+    _Block_object_dispose(src->str, BLOCK_FIELD_IS_OBJECT);
+}
+
+// Descriptor2
+static struct __main_block_desc_0 {
+    size_t reserved;
+    size_t Block_size;
+    void (*copy)(struct __main_block_impl_0*, struct __main_block_impl_0*);
+    void (*dispose)(struct __main_block_impl_0*);
+} __main_block_desc_0_DATA = {
+    0,
+    sizeof(struct __main_block_impl_0),
+    __main_block_copy_0,
+    __main_block_dispose_0
+};
+```
+
+### Block_descriptor_3
+
+```c++
 #define BLOCK_DESCRIPTOR_3 1
 struct Block_descriptor_3 {
     // requires BLOCK_HAS_SIGNATURE
-    const char *signature;
+    const char *signature;    // Block 的方法签名（类型编码），包含参数和返回值类型
     const char *layout;     // contents depend on BLOCK_HAS_EXTENDED_LAYOUT
 };
+// hook：invoke消息 消息机制 转发需要先获取签名 然后invocation处理
+```
+
+**何时存在？**
+当需要额外的运行时信息时：
+
+- 有方法签名需求（如用 Block 实现 delegate）
+- 捕获了弱引用对象
+- 复杂的捕获变量布局
+
+#### 示例：Block 类型编码
+
+```c
+// Block: int (^)(int, NSString *)
+signature = "i32@?0i8@\"NSString\"16"
+
+// 解析：
+// i32     - 返回值 int (32位)
+// @?      - 这是一个 Block 类型，block签名是 @?
+// 0       - 从偏移 0 开始
+// i8      - 第一个参数 int
+// @"NSString"16 - 第二个参数 NSString*，从偏移16开始
+```
+
+### 实际使用场景：
+
+### 场景1：简单 Block（无捕获）
+
+```objective-c
+void (^block)(void) = ^{ NSLog(@"Hello"); };
+// 只需要 Descriptor1（size）
+```
+
+### 场景2：捕获对象
+
+```objective-c
+NSObject *obj = [[NSObject alloc] init];
+void (^block)(void) = ^{ NSLog(@"%@", obj); };
+// 需要 Descriptor1 + Descriptor2（copy/dispose）
+```
+
+### 场景3：捕获弱引用
+
+```objective-c
+__weak NSObject *weakObj = obj;
+void (^block)(void) = ^{ NSLog(@"%@", weakObj); };
+// 需要 Descriptor1 + Descriptor2 + Descriptor3（layout）
+```
+
+### 场景4：有类型签名的 Block
+
+```objective-c
+int (^block)(int, int) = ^int(int a, int b) { return a + b; };
+// 需要 Descriptor1 + Descriptor3（signature）
 ```
 
 ### 捕获变量
