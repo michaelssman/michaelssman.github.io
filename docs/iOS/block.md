@@ -576,7 +576,7 @@ void _Block_object_assign(void *destArg, const void *object, const int flags) {
         [^{ object; } copy];
         ********/
 
-       // 使 dest 指向的拷贝到堆上object
+        // 使 dest 指向的拷贝到堆上object
         *dest = _Block_copy(object);
         break;
     
