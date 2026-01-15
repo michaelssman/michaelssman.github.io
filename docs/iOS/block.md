@@ -499,8 +499,7 @@ void *_Block_copy(const void *arg) {
     else if (aBlock->flags & BLOCK_IS_GLOBAL) {
         return aBlock;
     }
-    else {//编译期：栈block
-        // block 现在在栈上，现在需要将其拷贝到堆上
+    else {//编译期：栈block，现在需要将其拷贝到堆上
         // 在堆上重新开辟一块和 aBlock 相同大小的内存
         struct Block_layout *result =
             (struct Block_layout *)malloc(aBlock->descriptor->size);
@@ -549,38 +548,41 @@ static void _Block_call_copy_helper(void *result, struct Block_layout *aBlock)
 
 ### _Block_object_assign
 
-_Block_object_assign 里面有对捕获变量类型的处理：例 是否有加__block
+`_Block_object_assign` 在 Block 被复制到堆时调用，用于处理 Block 捕获的各种类型变量的内存管理。例 是否有加__block
 
 ```c++
 // 注释: Block 捕获外界变量的操作
 // 当 block 和 byref 要持有对象时，它们的 copy helper 函数会调用这个函数来完成 assignment，
-// 参数 destAddr 其实是一个二级指针，指向真正的目标指针
+// destArg: 二级指针，指向要赋值的真正的目标指针位置
+// object: 要处理的被捕获对象
+// flags: 标志位，表示对象的类型和内存管理方式
 void _Block_object_assign(void *destArg, const void *object, const int flags) {
     const void **dest = (const void **)destArg;
     switch (os_assumes(flags & BLOCK_ALL_COPY_DISPOSE_FLAGS)) {
-      case BLOCK_FIELD_IS_OBJECT:
+      case BLOCK_FIELD_IS_OBJECT:	// Objective-C 对象
         /*******
         id object = ...;
         [^{ object; } copy];
         ********/
         // 默认什么都不干，但在 _Block_use_RR() 中会被 Objc runtime 或者 CoreFoundation 设置 retain 函数，
         // 其中，可能会与 runtime 建立联系，操作对象的引用计数什么的
+        // 增加引用计数（在启用ARC时可能为空操作）
         _Block_retain_object(object);
         // 使 dest 指向的目标指针指向 object，浅拷贝
         *dest = object;
         break;
 
-      case BLOCK_FIELD_IS_BLOCK:
+      case BLOCK_FIELD_IS_BLOCK:	// 嵌套Block
         /*******
         void (^object)(void) = ...;
         [^{ object; } copy];
         ********/
 
-       // 使 dest 指向的拷贝到堆上object
+        // 使 dest 指向的拷贝到堆上object
         *dest = _Block_copy(object);
         break;
     
-      case BLOCK_FIELD_IS_BYREF | BLOCK_FIELD_IS_WEAK:
+      case BLOCK_FIELD_IS_BYREF | BLOCK_FIELD_IS_WEAK:// 弱引用 __block 变量
       case BLOCK_FIELD_IS_BYREF:
         /*******
          // copy the onstack __block container to the heap
@@ -645,18 +647,23 @@ static struct Block_byref *_Block_byref_copy(const void *arg) {
     // arg 强转为 Block_byref * 类型
     struct Block_byref *src = (struct Block_byref *)arg;
 
-    // 引用计数等于 0
+    // 判断条件：引用计数为 0，说明变量在栈上。栈上变量 -> 堆上拷贝
     if ((src->forwarding->flags & BLOCK_REFCOUNT_MASK) == 0) {
-        // src points to stack
         // 为新的 byref 在堆中分配内存
         struct Block_byref *copy = (struct Block_byref *)malloc(src->size);
         copy->isa = NULL;
+      
+      	// 设置标志：
+      	 // BLOCK_BYREF_NEEDS_FREE: 标记需要释放
+      	 // 4: 设置引用计数为 2（实际是 2，因为低2位是标志位）
         // byref value 4 is logical refcount of 2: one for caller, one for stack
         // 新 byref 的 flags 中标记了它是在堆上，且引用计数为 2。
         // 为什么是 2 呢？注释说的是 non-GC one for caller, one for stack
         // one for caller 很好理解，那 one for stack 是为什么呢？
         // 看下面的代码中有一行 src->forwarding = copy。src 的 forwarding 也指向了 copy，相当于引用了 copy
         copy->flags = src->flags | BLOCK_BYREF_NEEDS_FREE | 4;
+      
+      	//更新 forwarding 指针：
         // 堆上 byref 的 forwarding 指向自己
         copy->forwarding = copy; // patch heap copy to point to itself
         // 原来栈上的 byref 的 forwarding 现在也指向堆上的 byref
@@ -664,7 +671,9 @@ static struct Block_byref *_Block_byref_copy(const void *arg) {
         // 拷贝 size
         copy->size = src->size;
 
-        // 如果 src 有 copy/dispose helper
+      	// 处理辅助函数
+      	// 如果 src 变量有自定义的 copy/dispose helper 函数（如对象类型），调用 byref_keep 来执行特定的内存管理
+      	// 展布局信息（用于 ARC 弱引用等）
         if (src->flags & BLOCK_BYREF_HAS_COPY_DISPOSE) {
             // Trust copy helper to copy everything of interest
             // If more than one field shows up in a byref block this is wrong XXX
@@ -706,11 +715,43 @@ static struct Block_byref *_Block_byref_copy(const void *arg) {
 }
 ```
 
-block创建的时候在栈上，block拷贝到堆时会将变量一起拷贝到堆。
-
-__block修饰的变量：**Block_byref结构体中的forwording原来指向栈上的结构体，此时指向堆上的结构体。**
-
 block不能修改外部变量指针地址。
+
+#### 内存布局示例
+
+```tex
+栈上的 Block_byref:
+[ flags | forwarding | size | data... ]
+          ↓
+堆上的 Block_byref copy:
+[ flags | forwarding | size | data... ]
+          ↑
+```
+
+#### 实际使用场景
+
+```objc
+// 示例代码
+__block int counter = 0;
+__block NSObject *obj = [[NSObject alloc] init];
+
+void (^myBlock)(void) = ^{
+    counter++;  // 修改 __block 变量
+    NSLog(@"%@", obj);
+};
+
+// 当 Block 被复制到堆时，_Block_byref_copy 会被调用
+// 确保 counter 和 obj 在栈帧销毁后仍然有效
+```
+
+#### __block修饰变量的关键点
+
+1. **forwarding 指针**：保证无论访问栈还是堆上的变量，最终都访问堆上的结构体。
+2. **延迟复制**：block创建的时候在栈上，只在 Block 被拷贝到堆时才触发将变量一起拷贝到堆。
+3. **引用计数管理**：堆上的 byref 有独立引用计数
+4. **类型支持**：通过 copy/dispose 函数支持 Objective-C 对象等复杂类型
+
+这是 Block 实现的重要部分，实现了 `__block` 变量的自动内存管理。
 
 ## block结构
 
