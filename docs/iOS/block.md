@@ -34,7 +34,7 @@ NSLog(@"globalBlock:%@",globalBlock);//__NSGlobalBlock__
 
 捕获了外界变量，或者OC的属性，并且**赋值给弱引用**。
 
-如果想让它获得比stack更久的生命，那就调用`Block_copy()`，或者copy修饰，拷贝到堆内存上，这也是为什么用copy修饰Block的原因。
+如果想让它获得比stack更久的生命，那就调用`Block_copy()`，或者copy修饰，拷贝到堆上。
 
 ```objective-c
 int a = 10;
@@ -61,7 +61,7 @@ ARC下：
 
 捕获了外界变量，或者OC的属性，并且**赋值给强引用**
 
-当我们定义的Block要在外部回调使用的时候，在MRC下，我们需要copy的堆区，永远的持有，不让释放。
+定义的Block要在外部回调使用时，在MRC下，我们需要copy的堆区，永远的持有，不让释放。
 
 在堆区的NSMallocBlock，我们可以对其retain，release，copy（等价于retain，引用计数的加1）。
 
@@ -75,7 +75,9 @@ ARC下：
 - block引用了栈里的临时变量, 才会被创建在stack区。
 - **stack区的block只要赋值给strong类型的变量, 就会自动copy到堆里**。所以要不要写copy都没关系
 
-**block在创建的时候，默认是分配在栈上的。因为栈区中的变量管理是由它自己管理的，随时可能被销毁，一旦被销毁后续再次调用空对象就可能会造成程序崩溃问题。**MRC使用copy的目的是将block创建默认放在栈区拷贝一份到堆区。block放在了堆中，block有个指针指向了栈中的block代码块。
+**block在创建的时候，默认是分配在栈上的。因为栈区中的变量管理是由它自己管理的，随时可能被销毁，一旦被销毁后续再次调用空对象就可能会造成程序崩溃问题。**
+
+MRC使用copy的目的是将创建默认放在栈区的block拷贝一份到堆区。block放在了堆中，block有个指针指向了栈中的block代码块。
 
 在ARC模式下，系统会默认使用copy进行修饰。
 
@@ -197,25 +199,25 @@ vc.refreshFuZhu = ^{
 Block会copy该局部变量的值，不允许修改。所以即使变量的值在Block外改变，也不影响他在Block中的值。
 
 ```objective-c
-    int a = 100;
-    void(^block)() = ^{
-        NSLog(@"%d",a);//打印100
-//        a = 300;//编译会报错
-    };
-    a = 200;
-    block();
+int a = 100;
+void(^block)() = ^{
+    NSLog(@"%d",a);//打印100
+	//a = 300;//编译会报错
+};
+a = 200;
+block();
 ```
 
 block内部修改外界变量的值直接报错，如果想要修改，可以在int a = 0前面加上关键字__block，此时i等效于全局变量或静态变量
 
 ```objective-c
-    __block int b = 0;   
-    void (^block2) () = ^ {
-        NSLog(@"b = %d",b); // 输出结果 b = 0;
-        b = 2;
-    };
-    block2();
-    NSLog(@"b = %d",b); //输出结果 b = 2;
+__block int b = 0;   
+void (^block2) () = ^ {
+    NSLog(@"b = %d",b); // 输出结果 b = 0;
+    b = 2;
+};
+block2();
+NSLog(@"b = %d",b); //输出结果 b = 2;
 ```
 
 #### 2、指针类型
@@ -223,14 +225,14 @@ block内部修改外界变量的值直接报错，如果想要修改，可以在
 block会copy一份指针并强引用指针所指对象，不能修改指针的指向，但是可以修改指针所指向对象的值。
 
 ```objective-c
-　　NSMutableString *str = @"abc".mutableCopy; 
-     void (^block4) () = ^ { 
-//        str = @"def"; 报错
-      [str appendString:@"def"];
-      NSLog(@"str = %@",str);
-    };
-    str = @"123".mutableCopy;
-    block4(); //输出结果为 "adbdef"
+NSMutableString *str = @"abc".mutableCopy; 
+ void (^block4) () = ^ { 
+//    str = @"def"; 报错
+  [str appendString:@"def"];
+  NSLog(@"str = %@",str);
+};
+str = @"123".mutableCopy;
+block4(); //输出结果为 "adbdef"
 ```
 
 ### 2、全局变量
@@ -240,13 +242,13 @@ block会copy一份指针并强引用指针所指对象，不能修改指针的�
 因为全局变量或静态变量在内存中的地址是固定的，Block在读取该变量值的时候是直接从其所在内存读出，获取到的是最新值，而不是在定义时copy的常量.
 
 ```objective-c
-    static int a = 100;
-    void(^block)() = ^{
-        a += 100;
-        NSLog(@"%d",a);//打印300
-    };
-    a = 200;
-    block();
+static int a = 100;
+void(^block)() = ^{
+    a += 100;
+    NSLog(@"%d",a);//打印300
+};
+a = 200;
+block();
 ```
 
 2、基本数据类型：成员变量（实例变量），全局变量
@@ -495,7 +497,7 @@ void *_Block_copy(const void *arg) {
         latching_incr_int(&aBlock->flags);
         return aBlock;
     }
-    // 如果 block 在全局区，不用加引用计数，也不用拷贝，直接返回 block 本身
+    // 如果 block 在全局区，直接返回 block 本身
     else if (aBlock->flags & BLOCK_IS_GLOBAL) {
         return aBlock;
     }
@@ -559,7 +561,7 @@ static void _Block_call_copy_helper(void *result, struct Block_layout *aBlock)
 void _Block_object_assign(void *destArg, const void *object, const int flags) {
     const void **dest = (const void **)destArg;
     switch (os_assumes(flags & BLOCK_ALL_COPY_DISPOSE_FLAGS)) {
-      case BLOCK_FIELD_IS_OBJECT:	// Objective-C 对象
+      case BLOCK_FIELD_IS_OBJECT:	// 捕获的对象
         /*******
         id object = ...;
         [^{ object; } copy];
@@ -572,7 +574,7 @@ void _Block_object_assign(void *destArg, const void *object, const int flags) {
         *dest = object;
         break;
 
-      case BLOCK_FIELD_IS_BLOCK:	// 嵌套Block
+      case BLOCK_FIELD_IS_BLOCK:	// 捕获的Block
         /*******
         void (^object)(void) = ...;
         [^{ object; } copy];
@@ -634,7 +636,7 @@ void _Block_object_assign(void *destArg, const void *object, const int flags) {
 
 ### _Block_byref_copy
 
-__block修饰的会走`_Block_byref_copy`
+__block修饰的（除了对象和block）会走`_Block_byref_copy`
 
 ```c++
 // 注释: __Block 捕获外界变量的操作 内存拷贝 以及常规处理
@@ -653,11 +655,10 @@ static struct Block_byref *_Block_byref_copy(const void *arg) {
         struct Block_byref *copy = (struct Block_byref *)malloc(src->size);
         copy->isa = NULL;
       
-      	// 设置标志：
-      	 // BLOCK_BYREF_NEEDS_FREE: 标记需要释放
+      	// 新的 byref 设置标志flags：
+      	 // BLOCK_BYREF_NEEDS_FREE: 标记需要释放（即标识堆上）
       	 // 4: 设置引用计数为 2（实际是 2，因为低2位是标志位）
         // byref value 4 is logical refcount of 2: one for caller, one for stack
-        // 新 byref 的 flags 中标记了它是在堆上，且引用计数为 2。
         // 为什么是 2 呢？注释说的是 non-GC one for caller, one for stack
         // one for caller 很好理解，那 one for stack 是为什么呢？
         // 看下面的代码中有一行 src->forwarding = copy。src 的 forwarding 也指向了 copy，相当于引用了 copy
@@ -692,9 +693,9 @@ static struct Block_byref *_Block_byref_copy(const void *arg) {
                 // 没有将 layout 字符串拷贝到堆上，是因为它是 const 常量，不在栈上
                 copy3->layout = src3->layout;
             }
-          
+          	
             // 调用 copy helper，因为 src 和 copy 的 copy helper 是一样的，所以用谁的都行，调用的都是同一个函数
-        	  //捕获到了外界变量 进行相关内存处理 生命周期的保存
+          	//捕获到了外界变量 进行相关内存处理 生命周期的保存
             (*src2->byref_keep)(copy, src);
         }
         else {
@@ -761,7 +762,6 @@ block其实是一个对象，需要一个初始化过程。
 
 ```c++
 //block在底层 结构体
-// 注释:Block 结构体
 struct Block_layout {
   
     void *isa; //isa指向（栈block、堆block、全局block），有isa说明block也是一个对象
@@ -809,7 +809,7 @@ struct Block_descriptor_1 {
 #define BLOCK_DESCRIPTOR_2 1
 struct Block_descriptor_2 {
     // requires BLOCK_HAS_COPY_DISPOSE
-    BlockCopyFunction copy;			//当 Block 被复制到堆时调用，处理捕获变量的内存管理
+    BlockCopyFunction copy;		    //当 Block 被复制到堆时调用，处理捕获变量的内存管理
     BlockDisposeFunction dispose;	//当 Block 从堆中释放时调用，清理捕获的资源
 };
 ```
@@ -863,7 +863,7 @@ static struct __main_block_desc_0 {
 #define BLOCK_DESCRIPTOR_3 1
 struct Block_descriptor_3 {
     // requires BLOCK_HAS_SIGNATURE
-    const char *signature;    // Block 的方法签名（类型编码），包含参数和返回值类型
+    const char *signature;  // Block 的方法签名（类型编码），包含参数和返回值类型
     const char *layout;     // contents depend on BLOCK_HAS_EXTENDED_LAYOUT
 };
 // hook：invoke消息 消息机制 转发需要先获取签名 然后invocation处理
@@ -892,7 +892,7 @@ signature = "i32@?0i8@\"NSString\"16"
 
 ### 实际使用场景：
 
-### 场景1：简单 Block（无捕获）
+### 场景1：无捕获
 
 ```objective-c
 void (^block)(void) = ^{ NSLog(@"Hello"); };
