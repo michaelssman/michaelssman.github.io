@@ -61,12 +61,10 @@
     [self.viewModel.fetchListCommand.executionSignals.switchToLatest subscribeNext:^(id  _Nullable x) {
         NSLog(@"接收数据 - %@",x);//x打印是一个信号
     }];
-    
 
     [self.viewModel.fetchListCommand.errors subscribeNext:^(NSError * _Nullable x) {
         NSLog(@"出错");
     }];
-    
     
     //监听命令执行状态
     [[self.viewModel.fetchListCommand.executing skip:1] subscribeNext:^(NSNumber * _Nullable x) {

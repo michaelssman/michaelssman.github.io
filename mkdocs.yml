@@ -141,9 +141,6 @@ nav:
     - iOS/数据持久化/CoreData.md
     - iOS/UniversalLink.md
     - iOS/绘制图形.md
-    - iOS/快捷键.md
-    - iOS/控制器生命周期.md
-    - iOS/版本更新.md
     - iOS/数据精确度.md
   - 音视频:
     - 图像:
@@ -281,6 +278,7 @@ nav:
     - flutter/Navigator.md
     - flutter/widget/NotificationListener.md
     - flutter/app密码保护.md
+    - flutter/字符串管理.md
     - 异步和多线程:
       - flutter/异步和多线程/异步Future.md
       - flutter/异步和多线程/异步和多线程.md
@@ -346,7 +344,7 @@ nav:
       - 设计模式/创建型模式/工厂模式.md
       - 设计模式/创建型模式/建造者模式.md
       - 设计模式/创建型模式/04创建者模式和工厂模式的区别.md
-      - 设计模式/创建型模式/05原型模式Prototype.md
+      - 设计模式/创建型模式/原型模式Prototype.md
     - 结构型模式:
       - 设计模式/结构型模式/代理模式Proxy.md
       - 设计模式/结构型模式/07装饰模式Decorator Pattern.md
@@ -405,10 +403,12 @@ nav:
     - 数据库连接:
       - Java/数据库连接/JDBC.md
       - Java/数据库连接/MyBatis.md
+      - Java/数据库连接/泛型和抽象类封装service.md
     - Java/Spring.md
     - Java/SSM.md
     - Java/SpringBoot.md
     - Java/SpringMVC和WebFlux.md
+    - Java/分布式.md
     - Java/分布式id.md
     - Java/序列化.md
     - Java/plugins.md
