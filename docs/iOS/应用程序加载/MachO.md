@@ -1,10 +1,10 @@
 # Mach-O
 
-打开了一个App，可以理解在手机的操作系统上运行了一个App进程。
+打开了一个App，相当于在操作系统上运行了一个App进程。
 
 进程是特殊文件在内存中加载得到的结果，这种特殊文件必须是操作系统可理解的。
 
-Mach-O 其实是Mach Object文件格式的缩写，是 mac 以及 iOS 上可执行文件的格式， 类似于 windows上的 PE 格式 (Portable Executable ), linux 上的 ElF 格式 (Executable and Linking Format) 。
+Mach-O（Mach Object）是 mac 以及 iOS 上**可执行文件的格式**， 类似于 windows上的 PE 格式 (Portable Executable ), linux 上的 ElF 格式 (Executable and Linking Format) 。
 
 但是Mach-O不仅仅是只是可执行文件的格式标准，**还是macOS和iOS中一些其他文件标准的格式**。
 
@@ -16,18 +16,14 @@ Mach-O 其实是Mach Object文件格式的缩写，是 mac 以及 iOS 上可执�
 - bundle资源文件
 - 目标文件(编译输出的.0文件)
 
-以下以可执行文件为重点去讲述Mach-O
-
 ## 可执行文件
 
 开发的app，编译打包后，就会生成一个可执行的，Mach-O格式的二进制文件。
 
 对于macOS和iOS中的App，其生成可执行二进制文件从支持的架构分为两种：
 
-1. 单架构的二进制文件
-2. 胖二进制文件
-
-单架构的二进制文件就是运行于单个架构(如x86,ARM64等)的二进制文件。而胖二进制就是一个二进制文件里面包含多个单架构的二进制文件。
+1. 单架构的二进制文件：运行于单个架构(如x86,ARM64等)的二进制文件。
+2. 胖二进制文件：二进制文件里面包含多个单架构的二进制文件。
 
 ## Mach-O内容
 
