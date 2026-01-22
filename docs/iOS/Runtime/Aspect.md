@@ -374,7 +374,7 @@ static Class aspect_hookClass(NSObject *self, NSError **error) {
 
 ```objective-c
 static NSString *const AspectsForwardInvocationSelectorName = @"__aspects_forwardInvocation:";
-//hook forwardInvocation方法，用来拦截消息的发送
+//hook forwardInvocation方法，替换成 __ASPECTS_ARE_BEING_CALLED__
 static void aspect_swizzleForwardInvocation(Class klass) {
     NSCParameterAssert(klass);
     // If there is no method, replace will act like class_addMethod.
