@@ -22,10 +22,9 @@ brew install cocoapods
 
 pod install 命令功能：
 
-1. 安装并显示Podfile指定的第三方库以及对应的版本号，
-   如果Podfile删除了某个库，执行pod install 命令的时候也会删除对应的库。
-   命令执行完毕后，新增的库会绿色显示，删除的话会红色显示。
-2. 显示项目中安装的第三方库对应的名字和版本号。如果之前已经安装过了某个第三方库，则只显示库的名字和版本号，不进行更新操作。
+1. 安装并显示Podfile指定的第三方库以及对应的版本号。
+2. 如果Podfile删除了某个库，执行pod install 命令的时候也会删除对应的库。
+3. 如果之前已经安装过了某个第三方库，则不进行更新安装操作。
 
 默认情况下`pod install`不会发生`pod repo update`。
 
@@ -37,13 +36,15 @@ pod install 命令功能：
 
 安装并更新库。本地仓库repo里面可能没有想要安装的库，需要从远端更新这个库。
 
+## pod outdated
+
+用pod outdated命令来查看有哪些pod有了更新的版本。这个命令会检查Podfile.lock中列出的pod的版本。
+
 ## pod update
 
-更新pod的所有库。
+`pod update`：更新所有Podfile中的pod。
 
 `pod update *podname*`：更新某个pod至最新版本。
-
-`pod update`：更新所有Podfile中的pod。
 
 update命令并不会理会Podfile.lock中的版本信息（新版本仍然遵守在Podfile中做的限制）。
 
@@ -52,10 +53,6 @@ update命令并不会理会Podfile.lock中的版本信息（新版本仍然遵�
 `pod update --no-repo-update`
 
 注：不建议加入--no-repo-update 参数，若添加后仅从本地Cocoapods库中查找SDK，不再更新线上SDK。如果本地存在SDK会直接使用本地SDK版本(不是线上最新版本)，若本地不存在SDK会产生错误。 
-
-## pod outdated
-
-用pod outdated命令来查看有哪些pod有了更新的版本。这个命令会检查Podfile.lock中列出的pod的版本。
 
 ## pod repo list
 
@@ -98,7 +95,4 @@ source 'https://github.com/michael/HHSpecs.git'
 
 自有库
 source 'http://192.168.84.67/ios/lib/showself_pods_spec.git'
-
-github 库
-source 'http://192.168.84.67/ios/github/scienjoyspecs.git'
 ```
