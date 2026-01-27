@@ -1,4 +1,4 @@
-# class与struct
+# class和struct
 
 ## class 、struct的相同点
 
@@ -231,7 +231,7 @@ class LGPerson{
   
   	// 便捷创建LGTeacher
     convenience init(_ age: Int) {
-        self.init(18, "dfkk") // 必须先调用初始化器，然后才能再赋值。
+        self.init(18, "dfkk") // 必须先调用初始化器，然后才能设置实例属性。
         self.age = age
         self.name = ""
     }
@@ -307,9 +307,9 @@ class LGTeacher: LGPerson{
 
 ### 可失败初始化器
 
-当前因为参数的不合法或者外部条件的不满足，存在初始化失败的情况。
+因参数的不合法或条件不满足，存在初始化失败的情况。
 
-`return nil`语句来表明可失败初始化器在何种情况下会触发初始化失败。
+`return nil`表明可失败初始化器在何种情况下会触发初始化失败。
 
 ```swift
 class LGPerson{
