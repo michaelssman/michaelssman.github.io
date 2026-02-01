@@ -284,7 +284,7 @@ block5();
 
 ### 3、__block修饰的变量
 
-对外界进行修改的时候需要加__block，拷贝到堆区
+对外界变量的值进行修改的时候需要加__block，拷贝到堆区
 
 ### 修改外部变量
 
@@ -354,9 +354,7 @@ static struct __main1_block_desc_0 {
 
 block捕获外界变量，把变量的值传了进去，编译的时候**block底层会生成了一个新的同名成员变量。**。
 
-#### 2、__block原理
-
-如果要修改a的值，需要在前面加__block。
+#### 2、__block
 
 **`__block`不能修饰静态变量和全局变量，因为存在全局区。**
 
@@ -478,8 +476,8 @@ _Block_copy在lib system_blocks.dylib库libclosure-master
   // 3.引用计数初始化为 1
   // 4.调用 copy helper 方法（如果存在的话）；
   // 5.isa标记堆block
-  // 参数 arg 就是 Block_layout 对象，
-  // 返回值是拷贝后的 block 的地址
+// 参数 arg 就是 Block_layout 对象，
+// 返回值是拷贝后的 block 的地址
 void *_Block_copy(const void *arg) {
     struct Block_layout *aBlock;
 
