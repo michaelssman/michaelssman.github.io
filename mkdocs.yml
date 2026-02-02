@@ -51,7 +51,7 @@ nav:
   - iOS:
     - Swift:
       - iOS/Swift/数据类型.md 
-      - iOS/Swift/类与结构体.md
+      - iOS/Swift/class和struct.md
       - iOS/Swift/属性.md
       - iOS/Swift/defer.md
       - iOS/Swift/泛型和关联类型.md
