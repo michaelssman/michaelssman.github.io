@@ -47,7 +47,7 @@ func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> U
         .subscribe(onNext: { [weak self] in
             self?.selectedIndex?(1)
         })
-        .disposed(by: cell.cellDisposeBag) // 绑定到 Cell 的 DisposeBag
+        .disposed(by: cell.disposeBag) // 绑定到 Cell 的 DisposeBag
 
     return cell
 }
