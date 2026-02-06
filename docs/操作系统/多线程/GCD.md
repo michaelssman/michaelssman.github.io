@@ -2,9 +2,7 @@
 
 纯C语言
 
-GCD是苹果公司为多核的并发运算提出的解决方案
-
-GCD会自动管理线程的生命周期（创建线程，调度任务，销毁线程），程序员只需要告诉GCD想要执行什么任务，不需要编写任何线程管理代码。
+GCD会自动管理线程的生命周期（创建线程，调度任务，销毁线程），程序员只需要告诉GCD想要执行什么任务，不需要编写线程管理代码。
 
 ## 多线程控制最大并发数
 
@@ -136,8 +134,8 @@ getter读操作：`dispatch_sync`同步。
 
   里面封装了dispatch_group_enter和dispatch_group_leave（callout执行完毕）
 
-  - dispatch_group_enter 进组     --
-  - dispatch_group_leave 出组     ++
+  - dispatch_group_enter 进组 --
+  - dispatch_group_leave 出组 ++
 
   类似信号量的加减，搭配使用。
 
@@ -153,8 +151,8 @@ getter读操作：`dispatch_sync`同步。
 
 ```objc
 dispatch_semaphore_create(0);	//创建一个初始计数值为 0 的信号量
-dispatch_semaphore_wait				//信号量等待 -- do while死循环 等待信号量为正
-dispatch_semaphore_signal			//信号量释放 ++
+dispatch_semaphore_wait		    //信号量等待 -- do while死循环 等待信号量为正
+dispatch_semaphore_signal		//信号量释放 ++
 ```
 
 **信号量的计数值表示可以并发访问的资源数量。当计数值为 0 时，任何试图减少信号量的线程（通过 `dispatch_semaphore_wait` 函数）都会阻塞，直到信号量的计数值增加。**
@@ -278,9 +276,9 @@ NSLog(@"Continue with the main thread tasks...");
 
 通过条件控制block执行。
 
-在任一线程上调用它的一个函数 dispatch_source_merge_data 后，会执行 Dispatch Source 事先定义好的句柄(可以把句柄简单理解为一个 block ) 这个过程叫`Custom event`用户事件。是`dispatch source`支持处理的一种事件
+在任一线程上调用它的一个函数`dispatch_source_merge_data`后，会执行 Dispatch Source 事先定义好的句柄(可以把句柄简单理解为一个 block ) 这个过程叫`Custom event`用户事件。是`dispatch source`支持处理的一种事件
 
-句柄是一种指向指针的指针 它指向的就是一个类或者结构，它和系统有很密切的关系 HINSTANCE(实例句柄)，HBITMAP(位图句柄)，HDC(设备表述句柄)，HICON (图标句柄)等。这当中还有一个通用的句柄，就是HANDLE
+句柄是一种指向指针的指针，它指向的就是一个类或者结构，它和系统有很密切的关系 HINSTANCE(实例句柄)，HBITMAP(位图句柄)，HDC(设备表述句柄)，HICON (图标句柄)等。这当中还有一个通用的句柄，就是HANDLE
 
 - dispatch_source_create 创建源 
 - dispatch_source_set_event_handler 设置源事件回调
