@@ -6,17 +6,13 @@
 
 调用方法 底层 objc_msgSend imp
 
-方法有方法缓存 第一次查找优先查找缓存 没有命中则方法列表遍历
-
-方法存在 cache_t	类对象
-
-对象通过isa指针查找到类
+对象通过isa指针查找到类，类中有`cache_t`。优先查找缓存，没有命中则方法列表遍历。
 
 ## runtime使用
 
 - 方法交换
-- class_addMethod. 动态添加方法
-- KVO：观察属性   创建类的一个子类
+- class_addMethod：动态添加方法
+- KVO：观察属性，创建类的一个子类
 - runtime  成员变量、私有属性、方法列表
   - fmdb 获取model属性列表。
 - 字典转模型

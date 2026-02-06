@@ -2,8 +2,6 @@
 
 原文地址：https://mp.weixin.qq.com/s/O8Pbhz0OBN9PGwquw1mRBA
 
-`WKWebView`是一个多进程组件，`Network`、`UI Render`都在独立的进程中完成。
-
 `WKWebView`和`App`不在同一个进程，如果`WKWebView`进程崩溃并不会导致应用崩溃，仅仅是页面白屏等异常。页面的载入、渲染等消耗内存和性能的操作，都在`WKWebView`的进程中处理，处理后再将结果交给`App`进程用于显示，所以`App`进程的性能消耗会小很多。
 
 ## 网页加载流程
