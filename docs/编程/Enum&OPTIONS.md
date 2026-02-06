@@ -78,16 +78,6 @@ enum LGEnum {
 }
 ```
 
-在 C 或者 OC 中默认受整数支持，下面的例子中：A、B、C分别默认代表0、1、2
-
-```objective-c
-typedef NS_ENUM(NSUInteger, LGEnum) { 
-  A,
-  B,
-  C, 
-};
-```
-
 Swift中**不需给枚举中的每一个成员都提供值**。如果一个值（所谓“原始”值）要被提供给每一个枚举成员，那么这个值可以是字符串、字符、整数、或者浮点类型。
 
 ```swift
@@ -143,30 +133,6 @@ switch shape {
 ```
 
 ### 模式匹配 switch
-
-```swift
-enum Weak: String {
-  case MONDAY
-  case TUEDAY
-  case WEDDAY
-  case THUDAY
-  case FRIDAY
-  case SATDAY
-  case SUNDAY
-}
-
-let currentWeak: Weak
-
-switch currentWeak{
-  case .MONDAY: print(Weak.MONDAY.rawValue)
-  case .TUEDAY: print(Weak.TUEDAY.rawValue)
-  case .WEDDAY: print(Weak.WEDDAY.rawValue)
-  case .THUDAY: print(Weak.THUDAY.rawValue)
-  case .FRIDAY: print(Weak.FRIDAY.rawValue)
-  case .SUNDAY: print(Weak.SUNDAY.rawValue)
-  case .SATDAY: print(Weak.SUNDAY.rawValue)
-}
-```
 
 如果不想匹配所有的 case ，使用 defalut 关键字 
 
@@ -280,8 +246,6 @@ print(MemoryLayout<LGEnum2>.size)//打印结果是1
 print(MemoryLayout<LGEnum2>.stride)
 ```
 
-上面这个例子中，有两个 Bool 类型的负载，这个时候我们打印当前的 enum 大小，发现其大小仍然为 1，这个时候我们来看一下内存当中的存储情况 
-
 当前一般来说，有多个负载的枚举时，当前枚举类型的大小取决于当前最大关联值的大小。 
 
 来看一个例子 
@@ -326,7 +290,7 @@ enum LGEnumTest {
 
 ### indirect关键字
 
-indirect修饰enum 分配到**堆**上
+`indirect`修饰`enum`分配到**堆**上
 
 ```swift
 //二叉树
@@ -350,7 +314,9 @@ var x = List.node(10, next: List.node(20, next: List.node(30, next: List.end)))/
 
 可以有多个值。
 
-`NS_OPTIONS` 是 Objective-C 语言中用于定义**位掩码**类型的宏，它用于创建一个可以包含多个选项的自定义类型，通常用于配置或状态标志。这些选项可以单独使用，也可以组合使用，通常通过按位 OR 运算符`|`组合。
+`NS_OPTIONS` 是 Objective-C 语言中用于定义**位掩码**类型的宏，它用于创建一个可以包含多个选项的自定义类型，通常用于配置或状态标志。
+
+**这些选项可以单独使用，也可以组合使用，通常通过按位 OR 运算符`|`组合。**
 
 `NS_OPTIONS` 宏定义的类型实际上是一个整数类型（如 `NSUInteger` 或 `NSInteger`），其中每个位可以代表不同的选项。这种类型的好处是可以**高效地存储和比较多个布尔值**。
 
@@ -390,7 +356,5 @@ view.borderOptions = UIViewBorderOptionTop | UIViewBorderOptionBottom; // 设置
 // 或者，如果你想要所有边框：
 view.borderOptions = UIViewBorderOptionTop | UIViewBorderOptionRight | UIViewBorderOptionBottom | UIViewBorderOptionLeft;
 ```
-
-在这个例子中，`UIViewBorderOptions` 是一个使用 `NS_OPTIONS` 定义的类型，它允许你通过按位`OR`运算符组合不同的边框选项。然后在 `CustomView` 的 `-setBorderOptions:` 方法中，你可以检查哪些选项被设置，并相应地更新视图的边框。
 
 使用 `NS_OPTIONS` 可以让你的 API 更清晰，并且确保类型安全，因为编译器知道这个类型是用来表示一组选项的。

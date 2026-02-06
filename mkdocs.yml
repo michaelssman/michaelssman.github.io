@@ -115,8 +115,6 @@ nav:
     - crash分析:
       - iOS/crach分析/crash分析.md
       - iOS/crach分析/处理bug.md
-    - iOS/KVO.md
-    - iOS/KVC.md
     - iOS/Animation.md
     - SDWebImage:
       - iOS/SDWebImage/SDImageCache.md
@@ -196,7 +194,7 @@ nav:
     - 编程/编译流程.md
     - 编程/方法调度.md
     - 编程/注解.md
-    - 编程/继承多态接口.md
+    - 编程/面向对象编程.md
     - 模块和访问权限:
       - 编程/模块&访问权限/访问权限.md
       - 编程/模块&访问权限/模块.md
