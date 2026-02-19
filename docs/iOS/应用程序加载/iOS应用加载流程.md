@@ -1,112 +1,122 @@
-# 应用程序加载
+# iOS 应用程序加载流程
 
-## image镜像文件
+## 一、基础概念
 
-并不是所有的都是从0开始写的。例如：UIKit，Foundation，libObjc，libDispath，libSystem等，库映射到内存中，就叫镜像images。
+### 1. image 镜像文件
 
-## 物理内存和虚拟内存
+iOS 应用程序并不是从零开始构建全部代码的。`UIKit`、`Foundation`、`libObjc`、`libDispatch`、`libSystem` 等系统库，在被映射到内存之后，统称为**镜像（image）**。每一个 Mach-O 格式的可执行文件或动态库，都是一个 image。
 
+---
+
+### 2. 物理内存与虚拟内存
 ![image-20210512215147699](iOS应用加载流程.assets/image-20210512215147699.png)
 
-0x7fee81409190 是虚拟地址
+在 lldb 调试中，打印出的地址（如 `0x7fee81409190`）是**虚拟地址**，并非物理地址。
 
-0x7fee81409190-ASLR不是真实物理地址
+`虚拟地址 - ASLR 偏移 = 文件中的偏移地址`（并非物理地址）
 
-### 物理内存时代
+#### 2.1 物理内存时代
 
-早期启动一个应用程序是将整块加载进内存里。
+早期系统启动应用程序时，会将整个程序直接加载到物理内存。
 
-#### 优点
+**优点：**
+- 实现简单，代码在内存中的位置与文件中的偏移地址一一对应。
 
-- 代码在当前程序中的**偏移地址确定**，物理地址不知道。只有运行之后才知道。代码的访问：基地址加偏移地址。比较安全。
+**缺点：**
 
-#### 缺点
+- **安全问题**：直接使用物理地址进行数据读写，一个应用可以直接读取其他应用的内存数据，存在严重安全隐患。
+- **内存不足**：将整个程序加载到物理内存，多个应用同时运行时内存会很快耗尽。
 
-- 安全问题：因为用的物理地址进行的数据读写，所以**一个应用可以读取别的应用的数据**。
-- 内存不足：将整个应用程序加载到内存中，是物理地址，加载应用程序多的时候会内存不够用。每一个应用在内存中的位置不确定，随机的。
+#### 2.2 虚拟内存
 
-### 虚拟内存
+引入虚拟内存后，每个应用程序拥有独立的虚拟地址空间，地址从固定值（如 `0x000000`）开始。应用访问的都是虚拟地址，由操作系统和 CPU 中的 **MMU（内存管理单元）** 负责将虚拟地址翻译为真实物理地址。
 
-虚拟地址固定，应用程序访问数据永远都是从0x000fcc（举例）开始。所以只要知道偏移地址，通过内存地址访问，安全系数降低了。因为安全漏洞所以出现了ASLR。
+由于虚拟地址是固定且连续的，攻击者可以轻松预测函数地址，因此进一步引入了 **ASLR（地址空间布局随机化）**。
 
-在每次启动程序的时候在地址前加ASLR。ASLR值是随机的。虚拟内存加一个偏移值，像早期物理地址有一个随机的开始位置。
+**优点：**
+- 解决了应用间内存隔离的安全问题（不同进程各自拥有独立的虚拟地址空间）。
 
-程序访问的是虚拟地址。CPU访问的是物理地址。
+#### 2.3 虚拟内存的分段与分页管理
 
-#### 优点
+**分段（懒加载）：**
+应用程序加载到内存时采用**懒加载**策略，只加载启动所需的代码，用到新功能时再按需加载。这解决了内存不够用的问题，但会导致物理内存中数据不连续。
 
-解决安全问题（app之间隔离）
+**分页（Page）：**
+为解决物理地址不连续带来的访问效率问题，系统引入了**分页机制**，通过 MMU 维护虚拟地址到物理地址的映射表。
 
-#### 虚拟内存的分段管理
+- iOS 每页大小为 **16KB**，macOS 每页大小为 **4KB**。
+- 程序访问的是连续的虚拟地址，实际物理地址可以是乱序的，中间由 MMU 和操作系统协同完成地址翻译。
+- 每次只能访问当前进程映射页内的地址，无法访问其他进程的物理地址，实现了进程隔离。
 
-好处：解决内存不够用问题，内存更大化的利用
+#### 2.4 共享缓存区（dyld shared cache）
 
-应用程序加载到内存的时候 使用**懒加载**。启动应用的时候，把启动时候需要的代码载入内存中，用到新的功能的时候再把新的功能代码载入内存。
+`UIKit`、`Foundation` 等系统库是所有 App 公用的，操作系统将它们预先加载到一块共享内存区域（dyld shared cache）。
 
-用户用到哪一块就加载哪一块儿，分段就会造成不连续的问题：
+- 不同 App 访问共享缓存区时，**物理地址相同**（真正共享），但**虚拟地址不同**（因为各自的 ASLR 偏移不同）。
 
-用户打开一个应用，会将用到的载入到内存。不会整个的载入。用户打开另一个应用，同理将用到的载入内存。用户来回切换不同的应用，不同应用不同模块就会载入到内存。内存地址不连续。不知道分配到内存的哪个地方。
+---
 
-在内存条里面排列的数据是打开的不同应用程序的不同模块。随机的。应用程序访问内存中数据的时候在内存中就是乱序的。物理地址是乱序的，不连续的。
+## 二、加载流程总览
 
-#### 虚拟表（分页加载）
+```
+点击 App 图标
+    → exec() 系统调用
+        → 内核创建进程，开辟虚拟内存空间
+            → 将 Mach-O 可执行文件映射进虚拟内存
+                → 启动 dyld 动态链接器
+                    → Load dylibs（递归加载依赖动态库）
+                    → Rebase（重定向，修复内部指针）
+                    → Bind（绑定，修复外部符号指针）
+                    → ObjC Runtime 初始化（_objc_init → map_images → load_images）
+                    → Initializers（C++ 构造函数、+load 方法）
+                        → main()
+                            → UIApplicationMain
+                                → AppDelegate
+```
 
-CPU有一个硬件MMU（内存管理单元），作用是翻译地址。虚拟地址映射到物理地址。
+---
 
-程序找映射表，虚拟地址和物理地址的映射关系。虚拟地址连续的。虚拟地址从表中找到对应的物理地址中的数据。一块儿一块儿的映射，速度快 提升执行效率。所以需要一个分页page。iOS一页是16K，mac一页是4K。
+## 三、加载到内存
 
-需要时才加载，并且本身有内存覆盖的算法。
+点击 App 图标后，操作系统会通过 `exec()` 系统调用，为程序创建进程并开辟虚拟内存空间，然后将 **Mach-O** 格式的可执行二进制文件映射进去。
 
-程序访问内存数据的时候是连续的，实际的地址是乱序的。中间有一个表格：应用程序访问的虚拟内存地址 做映射，地址翻译，寻找真实物理地址。 翻译工作是CPU和操作系统配合处理的。
+### ASLR（地址空间布局随机化）
 
-安全问题：
+Mach-O 文件编译完成后，其内部各段的偏移地址是固定的。为了防止攻击者预测函数地址进行精准攻击，iOS 引入了 **ASLR（Address Space Layout Randomization）** 技术：
 
-每次只能访问一页地址。
+- 每次 App 启动时，在 Mach-O 的起始地址前加上一个随机的 **PAGEZERO 偏移量**。
+- 这样，即使攻击者知道某函数在文件中的偏移，也无法预测其在内存中的实际地址。
+- 真实地址 = ASLR 偏移（基地址）+ 函数在 Mach-O 中的偏移值。
 
-应用程序访问的是虚拟地址，接触不了物理地址。当前应用程序只映射了当前应用的地址，访问不了别的应用的地址。进程和进程之间通过**地址映射表**做了相对的隔离。
+> 使用 lldb 命令 `image list` 可查看当前进程的基地址（即第一个条目对应的地址）。
 
-### 共享缓存区
+---
 
-保证进程数据独立，iOS的共享缓存库UIKit foundation 是共有的，每个进程都可以访问。共享缓存也是放内存中的。在内存的一个位置。
+## 四、dyld 动态链接器
 
-不同app访问共享缓存区的物理地址一样，虚拟地址不一样（因为ASLR）。
+> 在 `+load` 方法中打断点，执行 `bt` 打印调用堆栈，最底层即为 `dyld_start`，说明整个流程由 dyld 发起。
 
-## 1、加载到内存
+点击应用程序图标后，系统调用 `exec()` 函数，随后启动 **dyld（dynamic linker）** 进程。
 
-点击App，操作系统会在手机上为程序开辟一段虚拟内存空间，然后加载Mach-O格式的可执行二进制文件。
+dyld 将 Mach-O 文件作为 image 加载到虚拟内存后，根据 `Load Commands` 中的指令，将所有依赖的动态库也加载到虚拟内存。
 
-### ASLR（随机偏移地址）
+### dyld 的主要工作
 
-内存有一个PAGEZERO的区域，这是苹果的ASLR（Address Space Layout Random：地址空间布局随机化），也就是**随机偏移地址**。是一种针对缓冲区溢出的安全保护技术，通过对堆、栈、共享库映射等线性区布局的随机化，增加攻击者预测目的地址的难度，防止攻击者指针定位攻击代码位置，达到阻止溢出攻击的一种技术。
+1. **递归加载所依赖的动态库**
+   - 按依赖顺序加载动态库
+   - `libSystem` 最先被初始化，随后调用 `libdispatch`，再由 `libdispatch` 调用 `libObjc` 中的 `_objc_init`
+   - `_objc_init` 中调用 `_dyld_objc_notify_register(&map_images, load_images, unmap_image)` 注册三个回调，驱动后续 ObjC 运行时初始化
+2. **Rebase 重定向** — 修复内部函数指针
+3. **Bind 绑定** — 修复外部符号指针
+4. **调用 main 函数**
 
-当编译出一个App的时候，生成的Mach-O文件的内容地址是固定的。ASLR技术在每次App运行在内存中的时候，都会加上一个PAGEZERO，PAGEZERO的大小都是随机的。加上PAGEZERO以后，Mach-O里面的地址都会需要加上相对的偏移，在内存的首地址都会发生变化，基地址不一样。在虚拟地址前面加一个偏移量（ASLR），增加App的攻击难度。
+---
 
-在虚拟内存地址出现之后就出现了ASLR。
+## 五、ObjC 运行时初始化
 
-`image list`查看第一个就是程序运行的基地址（起始地址），项目本身在内存中的地址（machO地址）。
+### 5.1 _objc_init
 
-## 2、dyld动态链接器
-
-在load方法中打断点，然后bt，查看堆栈，最下面的是`dyld_start`。
-
-点击应用程序的时候，系统调用exec函数。
-
-调用dyld进程加载dylib，链接库。
-
-把Mach-O当作一个image加载到虚拟内存后，会启动dyld进程，dyld根据`load commonds`中的加载命令把需要的动态库加载到虚拟内存中。
-
-### dyld具体的工作
-
-1. 递归加载所依赖的动态库
-   1. 加载动态库和可执行文件的初始化
-   2. libsystem第一个被初始化，libsystem调libdispatch，libdispatch调libObjc初始化`_objc_init`
-   3. `_objc_init`里面调`_dyld_objc_notify_register(&map_images, load_images, unmap_image);`,关于类的加载。
-2. rebase和binding
-3. 调起main函数
-
-重写load方法，可以查看main之前打调用。
-
-### _objc_init
+`_objc_init` 是 ObjC 运行时的入口初始化函数，由 `libSystem` 间接触发调用。
 
 ```c++
 void _objc_init(void)
@@ -115,22 +125,24 @@ void _objc_init(void)
     if (initialized) return;
     initialized = true;
     
-    // fixme defer initialization until an objc-using image is found?
-    environ_init();		//环境变量初始化
-    tls_init();		    //创建线程的析构函数
-    static_init();		//运⾏C++静态构造函数
-    runtime_init();		//分类表初始化，类表初始化
-    exception_init();	//异常处理的初始化(数组越界，方法找不到的报错)
+    environ_init();      // 读取并处理影响 ObjC 运行时行为的环境变量（如 OBJC_PRINT_LOAD_METHODS）
+    tls_init();          // 初始化线程本地存储（Thread Local Storage），创建线程的析构函数
+    static_init();       // 运行 C++ 静态构造函数（在 dyld 调用它们之前，ObjC 需要先初始化）
+    runtime_init();      // 初始化分类表（unattachedCategories）和类表（allocatedClasses）
+    exception_init();    // 初始化异常处理（数组越界、方法找不到等运行时错误的处理）
 #if __OBJC2__
-    cache_t::init();	//缓存的初始化
+    cache_t::init();     // 初始化方法缓存（用于 objc_msgSend 的缓存机制）
 #endif
-    _imp_implementationWithBlock_init();//Mac OS的
+    _imp_implementationWithBlock_init(); // 初始化 Block-IMP 转换支持（主要用于 macOS）
     
-    //&map_images引用传递，load_images值传递，加载load方法
-    _dyld_objc_notify_register(&map_images, load_images, unmap_image);//3个函数
+    // 向 dyld 注册三个关键回调函数：
+    // - map_images：当 dyld 加载镜像时调用，负责类的注册与初始化
+    // - load_images：负责调用所有类和分类的 +load 方法
+    // - unmap_image：当镜像被卸载时调用，做清理工作
+    _dyld_objc_notify_register(&map_images, load_images, unmap_image);
 
 #if __OBJC2__
-    didCallDyldNotifyRegister = true;//标识对_dyld_objc_notify_register的调⽤已完成
+    didCallDyldNotifyRegister = true; // 标识 _dyld_objc_notify_register 调用已完成
 #endif
 }
 ```
@@ -140,43 +152,43 @@ void _objc_init(void)
 ```c++
 void runtime_init(void)
 {
-  	//初始化两张表
-    objc::unattachedCategories.init(32);//分类表的初始化
-    objc::allocatedClasses.init();	    //类表的初始化，类表里面存的所有的类
+    objc::unattachedCategories.init(32); // 初始化"未附加到类"的分类表（容量初始为32）
+    objc::allocatedClasses.init();       // 初始化全局类表，存储所有已分配的类
 }
 ```
 
-#### _dyld_objc_notify_register(&map_images, load_images, unmap_image);
+---
 
-#### 1、load_images
+### 5.2 load_images — 调用 +load 方法
+
+`load_images` 由 dyld 在每次映射新镜像时触发，负责找到并执行所有 `+load` 方法。
 
 ```c++
-void
-load_images(const char *path __unused, const struct mach_header *mh)
+void load_images(const char *path __unused, const struct mach_header *mh)
 {
+    // 第一次调用时，先加载所有分类
     if (!didInitialAttachCategories && didCallDyldNotifyRegister) {
         didInitialAttachCategories = true;
         loadAllCategories();
     }
 
-    // Return without taking locks if there are no +load methods here.
+    // 如果当前镜像没有 +load 方法，直接返回，提升性能
     if (!hasLoadMethods((const headerType *)mh)) return;
 
     recursive_mutex_locker_t lock(loadMethodLock);
 
-    // Discover load methods
+    // 第一步：收集所有需要执行 +load 的类和分类（加运行时锁）
     {
         mutex_locker_t lock2(runtimeLock);
-        //找load方法
-        prepare_load_methods((const headerType *)mh);
+        prepare_load_methods((const headerType *)mh); // 找到所有 +load 方法并排序
     }
 
-    // Call +load methods (without runtimeLock - re-entrant)
-    call_load_methods();//执行load方法
+    // 第二步：执行所有 +load 方法（不持有 runtimeLock，支持可重入）
+    call_load_methods();
 }
 ```
 
-##### 1、prepare_load_methods
+#### prepare_load_methods — 收集 +load 方法
 
 ```c++
 void prepare_load_methods(const headerType *mhdr)
@@ -184,51 +196,51 @@ void prepare_load_methods(const headerType *mhdr)
     size_t count, i;
 
     runtimeLock.assertLocked();
-    //找所有的非懒加载类（重写了load就是非懒加载类）
-    classref_t const *classlist = 
-        _getObjc2NonlazyClassList(mhdr, &count);
+    
+    // 获取所有非懒加载类（即实现了 +load 方法的类）列表
+    classref_t const *classlist = _getObjc2NonlazyClassList(mhdr, &count);
     for (i = 0; i < count; i++) {
+        // schedule_class_load 会递归处理父类，确保父类的 +load 先入队
         schedule_class_load(remapClass(classlist[i]));
     }
 
-  	//找完类的load，然后找分类的load
+    // 再处理非懒加载分类（实现了 +load 的分类），分类的 +load 在类之后执行
     category_t * const *categorylist = _getObjc2NonlazyCategoryList(mhdr, &count);
     for (i = 0; i < count; i++) {
         category_t *cat = categorylist[i];
         Class cls = remapClass(cat->cls);
-        if (!cls) continue;  // category for ignored weak-linked class
+        if (!cls) continue;  // 跳过被忽略的弱链接类的分类
         if (cls->isSwiftStable()) {
+            // Swift 类不允许其 ObjC 分类或扩展中有 +load 方法
             _objc_fatal("Swift class extensions and categories on Swift "
                         "classes are not allowed to have +load methods");
         }
-        realizeClassWithoutSwift(cls, nil);
+        realizeClassWithoutSwift(cls, nil); // 确保类已初始化（realized）
         ASSERT(cls->ISA()->isRealized());
-        add_category_to_loadable_list(cat);
+        add_category_to_loadable_list(cat); // 将分类加入待执行 +load 列表
     }
 }
 ```
 
-###### schedule_class_load
+##### schedule_class_load — 递归调度类的 +load
 
 ```c++
 static void schedule_class_load(Class cls)
 {
-    //不需要super load，父类的load优先子类的load
     if (!cls) return;
-    ASSERT(cls->isRealized());  // _read_images should realize
+    ASSERT(cls->isRealized());  // 类必须已经过 realize 处理
 
-    if (cls->data()->flags & RW_LOADED) return;
+    if (cls->data()->flags & RW_LOADED) return; // 已加入队列则跳过，避免重复
 
-    // Ensure superclass-first ordering
-    //递归，会先找父类的load
+    // 递归调用，先处理父类，保证父类 +load 优先于子类执行
     schedule_class_load(cls->getSuperclass());
 
-    add_class_to_loadable_list(cls);
-    cls->setInfo(RW_LOADED); 
+    add_class_to_loadable_list(cls);  // 将当前类加入待执行 +load 列表
+    cls->setInfo(RW_LOADED);          // 标记为已加入，防止重复处理
 }
 ```
 
-##### 2、call_load_methods
+#### call_load_methods — 执行 +load 方法
 
 ```c++
 void call_load_methods(void)
@@ -238,23 +250,23 @@ void call_load_methods(void)
 
     loadMethodLock.assertLocked();
 
-    // Re-entrant calls do nothing; the outermost call will finish the job.
+    // 防止重入：如果已经在执行 +load，直接返回，最外层调用会处理所有任务
     if (loading) return;
     loading = YES;
 
-    void *pool = objc_autoreleasePoolPush();
+    void *pool = objc_autoreleasePoolPush(); // 创建自动释放池，防止 +load 中的对象泄漏
 
     do {
-        // 1. Repeatedly call class +loads until there aren't any more
+        // 1. 循环执行类的 +load，直到队列为空（类的 +load 优先于分类）
         while (loadable_classes_used > 0) {
-            call_class_loads();//类的load
+            call_class_loads();
         }
 
-        // 2. Call category +loads ONCE
-        more_categories = call_category_loads();//分类的load
+        // 2. 执行分类的 +load（每轮循环只调用一次）
+        more_categories = call_category_loads();
 
-        // 3. Run more +loads if there are classes OR more untried categories
-    } while (loadable_classes_used > 0  ||  more_categories);
+        // 3. 如果执行分类 +load 的过程中又触发了新的类 +load，则继续循环
+    } while (loadable_classes_used > 0 || more_categories);
 
     objc_autoreleasePoolPop(pool);
 
@@ -262,152 +274,106 @@ void call_load_methods(void)
 }
 ```
 
-##### +load方法执行顺序
+#### +load 方法执行顺序总结
 
-1. +load方法调用顺序是：`SuperClass -->SubClass --> SuperClassCategaryClass --> SubClassCategaryClass`。
-2. 不同的类按照编译先后顺序调用+load方法（后编译，先执行）；
-3. 分类顺序按照编译先后顺序调用+load（后编译，先执行）；
+1. **父类早于子类**：`SuperClass +load → SubClass +load`
+2. **类早于分类**：所有类的 +load 执行完毕后，再执行分类的 +load
+3. **编译顺序**：同级别的类或分类，**先编译的后执行**（Build Phases 中排在前面的文件反而后执行）
+4. 完整顺序：`父类 → 子类 → 父类的分类 → 子类的分类`
 
-##### 总结
+#### +load 方法使用注意事项
 
-1. load方法是在main函数执行前执行的。iOS应用启动的时候，就会加载所有的类，就会调用这个方法。
-2. +load方法是在加载类和分类时系统调用，一般不手动调用，如果想要在类或分类加载时做一些事情，可以重写类或分类的+load方法。
-3. 不需要[super load]，因为会自动的找superClass的load。
-4. 类、分类的加载和+load方法有关，在程序运行过程只调用一次。
-5. load是线程安全的，都有加锁操作。
+1. `+load` 在 main 函数执行**之前**由系统自动调用，应用启动时会加载所有实现了 `+load` 的类。
+2. `+load` 由系统调用，**无需也不应手动调用**，也不需要调用 `[super load]`（父类会被自动处理）。
+3. 每个类和分类的 `+load` 在整个进程生命周期内**只执行一次**。
+4. `+load` 的实现内部有加锁操作，是**线程安全**的，但在其内部调用其他方法时需注意死锁风险。
+5. `+load` 执行时机过早，应尽量减少其中的工作量，避免影响启动性能。
 
-##### load和initialize
+#### +load 与 +initialize 的区别
 
-想在类加载进内存的时候调用，就用load方法
+| 特性 | `+load` | `+initialize` |
+|---|---|---|
+| 调用时机 | 类被加载到内存时（main 之前） | 类第一次收到消息时（按需，懒加载） |
+| 调用次数 | 每个类只调用一次 | 每个类只调用一次，但若子类未实现会继承父类实现 |
+| 是否需要 super | 不需要，自动处理 | 通常不需要，但子类未覆盖时会调用父类 |
+| 调用方式 | 直接调用函数指针（不走消息发送） | 通过 objc_msgSend 消息机制调用 |
+| 适用场景 | Method Swizzle、注册操作等 | 类第一次使用前的初始化工作 |
 
-想在第一次加载使用类的时候调用，就用initialized方法，也是只会调用一次。
+---
 
-#### 2、map_images
+### 5.3 map_images — 镜像映射与类注册
+
+`map_images` 是 ObjC 运行时处理镜像文件的核心入口，最终调用 `_read_images` 完成所有类、协议、分类的注册与初始化。
 
 ```c++
-void
-map_images(unsigned count, const char * const paths[],
-           const struct mach_header * const mhdrs[])
+void map_images(unsigned count, const char * const paths[],
+                const struct mach_header * const mhdrs[])
 {
-    mutex_locker_t lock(runtimeLock);
+    mutex_locker_t lock(runtimeLock); // 加运行时锁，保证线程安全
     return map_images_nolock(count, paths, mhdrs);
 }
 ```
 
 ```c++
-void 
-map_images_nolock(unsigned mhCount, const char * const mhPaths[],
-                  const struct mach_header * const mhdrs[])
+void map_images_nolock(unsigned mhCount, const char * const mhPaths[],
+                       const struct mach_header * const mhdrs[])
 {
     static bool firstTime = YES;
     header_info *hList[mhCount];
     uint32_t hCount;
     size_t selrefCount = 0;
 
-    // Perform first-time initialization if necessary.
-    // This function is called before ordinary library initializers. 
-    // fixme defer initialization until an objc-using image is found?
     if (firstTime) {
-        preopt_init();//共享缓存有关
+        preopt_init(); // 初始化与 dyld 共享缓存（shared cache）相关的预优化数据
     }
 
-    if (PrintImages) {
-        _objc_inform("IMAGES: processing %u newly-mapped images...\n", mhCount);
-    }
-
-
-    // Find all images with Objective-C metadata.
+    // 统计所有镜像中的类数量（包括可执行文件和所有动态库中的类）
+    // 可执行文件和动态库都是 Mach-O 格式的文件
     hCount = 0;
-
-  	//统计所有类（可执行文件中类，动态库中的类）。可执行文件、动态库都是Mach O格式的文件
-    // Count classes. Size various table based on the total.
     int totalClasses = 0;
     int unoptimizedTotalClasses = 0;
     {
         uint32_t i = mhCount;
-        while (i--) {//找到所有的类
+        while (i--) {
             const headerType *mhdr = (const headerType *)mhdrs[i];
-            //从头部文件读
+            // 从 Mach-O 头部读取 ObjC 相关段信息，统计类数量
             auto hi = addHeader(mhdr, mhPaths[i], totalClasses, unoptimizedTotalClasses);
             if (!hi) {
-                // no objc data in this entry
-                continue;
+                continue; // 该镜像中没有 ObjC 数据，跳过
             }
             
             if (mhdr->filetype == MH_EXECUTE) {
-                // Size some data structures based on main executable's size
+                // 主可执行文件：统计 selector 引用数量，用于初始化 selector 表的容量
 #if __OBJC2__
-                // If dyld3 optimized the main executable, then there shouldn't
-                // be any selrefs needed in the dynamic map so we can just init
-                // to a 0 sized map
-                if ( !hi->hasPreoptimizedSelectors() ) {
-                  size_t count;
-                  _getObjc2SelectorRefs(hi, &count);
-                  selrefCount += count;
-                  _getObjc2MessageRefs(hi, &count);
-                  selrefCount += count;
+                if (!hi->hasPreoptimizedSelectors()) {
+                    size_t count;
+                    _getObjc2SelectorRefs(hi, &count);
+                    selrefCount += count;
+                    _getObjc2MessageRefs(hi, &count);
+                    selrefCount += count;
                 }
 #else
                 _getObjcSelectorRefs(hi, &selrefCount);
 #endif
-                
-#if SUPPORT_GC_COMPAT
-                // Halt if this is a GC app.
-                if (shouldRejectGCApp(hi)) {
-                    _objc_fatal_with_reason
-                        (OBJC_EXIT_REASON_GC_NOT_SUPPORTED, 
-                         OS_REASON_FLAG_CONSISTENT_FAILURE, 
-                         "Objective-C garbage collection " 
-                         "is no longer supported.");
-                }
-#endif
             }
             
             hList[hCount++] = hi;
-            
-            if (PrintImages) {
-                _objc_inform("IMAGES: loading image for %s%s%s%s%s\n", 
-                             hi->fname(),
-                             mhdr->filetype == MH_BUNDLE ? " (bundle)" : "",
-                             hi->info()->isReplacement() ? " (replacement)" : "",
-                             hi->info()->hasCategoryClassProperties() ? " (has class properties)" : "",
-                             hi->info()->optimizedByDyld()?" (preoptimized)":"");
-            }
         }
     }
 
-    // Perform one-time runtime initialization that must be deferred until 
-    // the executable itself is found. This needs to be done before 
-    // further initialization.
-    // (The executable may not be present in this infoList if the 
-    // executable does not contain Objective-C code but Objective-C 
-    // is dynamically loaded later.
     if (firstTime) {
-        sel_init(selrefCount);//C++的构造函数和析构方法。
-        arr_init();
-
-#if SUPPORT_GC_COMPAT
-        /**
-        关于Mac OS的，不用管。
-        */
-#endif
-
-#if TARGET_OS_OSX
-        /**
-        关于Mac OS的，不用管。
-        */
-#endif
-      
+        sel_init(selrefCount); // 初始化 selector 表，预分配容量以提升性能
+        arr_init();            // 初始化自动释放池、散列表、关联对象等基础设施
     }
 
-  	//所有类初始化完成之后
+    // 所有头部信息收集完毕后，调用 _read_images 完成核心初始化
     if (hCount > 0) {
         _read_images(hList, hCount, totalClasses, unoptimizedTotalClasses);
     }
 
     firstTime = NO;
     
-    // Call image load funcs after everything is set up.
+    // 调用通过 objc_addLoadImageFunc 注册的回调（供第三方框架使用）
     for (auto func : loadImageFuncs) {
         for (uint32_t i = 0; i < mhCount; i++) {
             func(mhdrs[i]);
@@ -416,39 +382,36 @@ map_images_nolock(unsigned mhCount, const char * const mhPaths[],
 }
 ```
 
-##### arr_init
+#### arr_init
 
 ```c++
 void arr_init(void) 
 {
-    AutoreleasePoolPage::init();//自动释放池
-    SideTablesMap.init();	    //散列表
-    _objc_associations_init();	//关联对象的初始化操作
+    AutoreleasePoolPage::init(); // 初始化自动释放池（基于双向链表的 Page 结构）
+    SideTablesMap.init();        // 初始化 SideTables 散列表（存储引用计数和弱引用信息）
+    _objc_associations_init();   // 初始化关联对象（objc_setAssociatedObject）所需的数据结构
     if (DebugScanWeakTables)
-    	startWeakTableScan();
+        startWeakTableScan();    // 调试模式：开启弱引用表扫描
 }
 ```
 
-##### _read_images
+---
 
-_read_images镜像文件，llvm编译阶段SEL和IMP绑定修复。
+### 5.4 _read_images — 核心初始化
 
-_read_images里面有很多的fix up，因为虚拟内存（ASLR）。地址空间随机布局。app每次启动内存地址都不固定。需要dyld的rebase和binding，修改镜像指针地址。
+`_read_images` 是整个运行时初始化中工作量最重的函数，完成类、协议、分类的注册，以及 ASLR 导致的指针修复。
 
-作用：进行类的初始化。
+**主要流程：**
 
-流程：
-
-1. 加载所有类到类的gdb_objc_realized_classes表中。 
-2. 对所有类做重映射。
-3. 将所有SEL都注册到namedSelectors表中。
-4. 修复函数指针遗留。
-5. 将所有Protocol都添加到protocol_map表中。
-6. 对所有Protocol做重映射。
-7. 初始化所有非懒加载的类，进行rw、ro等操作。 
-8. 遍历已标记的懒加载的类，并做初始化操作。
-9. 处理所有Category，包括Class和Meta Class。 
-10. 初始化所有未初始化的类。
+1. 初始化全局类表 `gdb_objc_realized_classes`，预分配容量
+2. 修复所有 SEL 引用（Rebase，将 selector 指针修正为正确的内存地址）
+3. 发现并注册所有类（`readClass`），加入类表
+4. 对所有类引用和父类引用做重映射（remap）
+5. 修复旧版 `objc_msgSend_fixup` 调用点
+6. 发现并注册所有 Protocol，修复协议引用
+7. 发现并加载分类（Category）
+8. **初始化所有非懒加载类**（实现了 `+load` 的类），执行 `realizeClassWithoutSwift`
+9. 初始化所有已解析的 future classes
 
 ```c++
 void _read_images(header_info **hList, uint32_t hCount, int totalClasses, int unoptimizedTotalClasses)
@@ -474,89 +437,24 @@ void _read_images(header_info **hList, uint32_t hCount, int totalClasses, int un
         doneOnce = YES;
         launchTime = YES;
 
-#if SUPPORT_NONPOINTER_ISA
-        // Disable non-pointer isa under some conditions.
-
-# if SUPPORT_INDEXED_ISA
-        // Disable nonpointer isa if any image contains old Swift code
-        //默认开启isa指针优化
-        for (EACH_HEADER) {
-            if (hi->info()->containsSwift()  &&
-                hi->info()->swiftUnstableVersion() < objc_image_info::SwiftVersion3)
-            {
-                DisableNonpointerIsa = true;
-                if (PrintRawIsa) {
-                    _objc_inform("RAW ISA: disabling non-pointer isa because "
-                                 "the app or a framework contains Swift code "
-                                 "older than Swift 3.0");
-                }
-                break;
-            }
-        }
-# endif
-
-# if TARGET_OS_OSX
-        // Disable non-pointer isa if the app is too old
-        // (linked before OS X 10.11)
-        // Note: we must check for macOS, because Catalyst and Almond apps
-        // return false for a Mac SDK check! rdar://78225780
-//        if (dyld_get_active_platform() == PLATFORM_MACOS && !dyld_program_sdk_at_least(dyld_platform_version_macOS_10_11)) {
-//            DisableNonpointerIsa = true;
-//            if (PrintRawIsa) {
-//                _objc_inform("RAW ISA: disabling non-pointer isa because "
-//                             "the app is too old.");
-//            }
-//        }
-
-        // Disable non-pointer isa if the app has a __DATA,__objc_rawisa section
-        // New apps that load old extensions may need this.
-        for (EACH_HEADER) {
-            if (hi->mhdr()->filetype != MH_EXECUTE) continue;
-            unsigned long size;
-            if (getsectiondata(hi->mhdr(), "__DATA", "__objc_rawisa", &size)) {
-                DisableNonpointerIsa = true;
-                if (PrintRawIsa) {
-                    _objc_inform("RAW ISA: disabling non-pointer isa because "
-                                 "the app has a __DATA,__objc_rawisa section");
-                }
-            }
-            break;  // assume only one MH_EXECUTE image
-        }
-# endif
-
-#endif
-
-        if (DisableTaggedPointers) {
-            disableTaggedPointers();
-        }
+        // 如果存在 Swift 2.x 以下的旧代码，禁用 non-pointer ISA 优化
+        // 默认情况下 non-pointer ISA 是开启的
         
-        initializeTaggedPointerObfuscator();
-
-        if (PrintConnecting) {
-            _objc_inform("CLASS: found %d classes during launch", totalClasses);
-        }
-
-        // namedClasses
-        // Preoptimized classes don't go in this table.
-        // 4/3 is NXMapTable's load factor
+        // 初始化全局类表（gdb_objc_realized_classes）
+        // 容量 = 类总数 × 4/3（NXMapTable 的负载因子）
         int namedClassesSize = 
             (isPreoptimized() ? unoptimizedTotalClasses : totalClasses) * 4 / 3;
         gdb_objc_realized_classes =
             NXCreateMapTable(NXStrValueMapPrototype, namedClassesSize);
-
-        ts.log("IMAGE TIMES: first time tasks");
     }
 
-    // Fix up @selector references
-    // Note this has to be before anyone uses a method list, as relative method
-    // lists point to selRefs, and assume they are already fixed up (uniqued).
-    //修复selector。rebase过程，sel修改为正确的内存地址。
+    // 修复 selector 引用（Rebase 阶段的 SEL 修复）
+    // 将所有 SEL 指针统一注册到全局 selector 表，确保同名 SEL 地址唯一
     static size_t UnfixedSelectors;
     {
         mutex_locker_t lock(selLock);
         for (EACH_HEADER) {
-            if (hi->hasPreoptimizedSelectors()) continue;
-
+            if (hi->hasPreoptimizedSelectors()) continue; // 已被 dyld 预优化，跳过
             bool isBundle = hi->isBundle();
             SEL *sels = _getObjc2SelectorRefs(hi, &count);
             UnfixedSelectors += count;
@@ -564,181 +462,67 @@ void _read_images(header_info **hList, uint32_t hCount, int totalClasses, int un
                 const char *name = sel_cname(sels[i]);
                 SEL sel = sel_registerNameNoLock(name, isBundle);
                 if (sels[i] != sel) {
-                    sels[i] = sel;
+                    sels[i] = sel; // 将本地 SEL 指针修正为全局唯一的 SEL 地址
                 }
             }
         }
     }
 
-    ts.log("IMAGE TIMES: fix up selector references");
-
-    // Discover classes. Fix up unresolved future classes. Mark bundle classes.
-    bool hasDyldRoots = dyld_shared_cache_some_image_overridden();
-
+    // 发现并注册类：将所有类加入全局类表
     for (EACH_HEADER) {
-        if (! mustReadClasses(hi, hasDyldRoots)) {
-            // Image is sufficiently optimized that we need not call readClass()
-            continue;
-        }
-
         classref_t const *classlist = _getObjc2ClassList(hi, &count);
-
-        bool headerIsBundle = hi->isBundle();
-        bool headerIsPreoptimized = hi->hasPreoptimizedClasses();
-
         for (i = 0; i < count; i++) {
             Class cls = (Class)classlist[i];
             Class newCls = readClass(cls, headerIsBundle, headerIsPreoptimized);
-
-            if (newCls != cls  &&  newCls) {
-                // Class was moved but not deleted. Currently this occurs 
-                // only when the new class resolved a future class.
-                // Non-lazily realize the class below.
-                resolvedFutureClasses = (Class *)
-                    realloc(resolvedFutureClasses, 
-                            (resolvedFutureClassCount+1) * sizeof(Class));
+            // 如果类被移动（如解析了 future class），记录下来以便后续非懒加载初始化
+            if (newCls != cls && newCls) {
                 resolvedFutureClasses[resolvedFutureClassCount++] = newCls;
             }
         }
     }
 
-    ts.log("IMAGE TIMES: discover classes");
-
-    // Fix up remapped classes
-    // Class list and nonlazy class list remain unremapped.
-    // Class refs and super refs are remapped for message dispatching.
-    
+    // 修复类引用和父类引用的重映射（处理 future class 替换等情况）
     if (!noClassesRemapped()) {
         for (EACH_HEADER) {
             Class *classrefs = _getObjc2ClassRefs(hi, &count);
-            for (i = 0; i < count; i++) {
-                remapClassRef(&classrefs[i]);
-            }
-            // fixme why doesn't test future1 catch the absence of this?
+            for (i = 0; i < count; i++) remapClassRef(&classrefs[i]);
             classrefs = _getObjc2SuperRefs(hi, &count);
-            for (i = 0; i < count; i++) {
-                remapClassRef(&classrefs[i]);
-            }
+            for (i = 0; i < count; i++) remapClassRef(&classrefs[i]);
         }
     }
 
-    ts.log("IMAGE TIMES: remap classes");
-
-#if SUPPORT_FIXUP
-    // Fix up old objc_msgSend_fixup call sites
+    // 发现并注册所有 Protocol
     for (EACH_HEADER) {
-        message_ref_t *refs = _getObjc2MessageRefs(hi, &count);
-        if (count == 0) continue;
-
-        if (PrintVtables) {
-            _objc_inform("VTABLES: repairing %zu unsupported vtable dispatch "
-                         "call sites in %s", count, hi->fname());
-        }
-        for (i = 0; i < count; i++) {
-            fixupMessageRef(refs+i);
-        }
-    }
-
-    ts.log("IMAGE TIMES: fix up objc_msgSend_fixup");
-#endif
-
-
-    // Discover protocols. Fix up protocol refs.
-    for (EACH_HEADER) {
-        extern objc_class OBJC_CLASS_$_Protocol;
-        Class cls = (Class)&OBJC_CLASS_$_Protocol;
-        ASSERT(cls);
-        NXMapTable *protocol_map = protocols();
-        bool isPreoptimized = hi->hasPreoptimizedProtocols();
-
-        // Skip reading protocols if this is an image from the shared cache
-        // and we support roots
-        // Note, after launch we do need to walk the protocol as the protocol
-        // in the shared cache is marked with isCanonical() and that may not
-        // be true if some non-shared cache binary was chosen as the canonical
-        // definition
-        if (launchTime && isPreoptimized) {
-            if (PrintProtocols) {
-                _objc_inform("PROTOCOLS: Skipping reading protocols in image: %s",
-                             hi->fname());
-            }
-            continue;
-        }
-
-        bool isBundle = hi->isBundle();
-
         protocol_t * const *protolist = _getObjc2ProtocolList(hi, &count);
         for (i = 0; i < count; i++) {
-            readProtocol(protolist[i], cls, protocol_map, 
-                         isPreoptimized, isBundle);
+            readProtocol(protolist[i], cls, protocol_map, isPreoptimized, isBundle);
         }
     }
 
-    ts.log("IMAGE TIMES: discover protocols");
-
-    // Fix up @protocol references
-    // Preoptimized images may have the right 
-    // answer already but we don't know for sure.
+    // 修复 @protocol 引用（将 protocol 引用指向统一的 canonical 定义）
     for (EACH_HEADER) {
-        // At launch time, we know preoptimized image refs are pointing at the
-        // shared cache definition of a protocol.  We can skip the check on
-        // launch, but have to visit @protocol refs for shared cache images
-        // loaded later.
-        if (launchTime && hi->isPreoptimized())
-            continue;
         protocol_t **protolist = _getObjc2ProtocolRefs(hi, &count);
-        for (i = 0; i < count; i++) {
-            remapProtocolRef(&protolist[i]);
-        }
+        for (i = 0; i < count; i++) remapProtocolRef(&protolist[i]);
     }
 
-    ts.log("IMAGE TIMES: fix up @protocol references");
-
-    // Discover categories. Only do this after the initial category
-    // attachment has been done. For categories present at startup,
-    // discovery is deferred until the first load_images call after
-    // the call to _dyld_objc_notify_register completes. rdar://problem/53119145
+    // 加载分类（在初次 attach 完成后才执行，避免竞争条件）
     if (didInitialAttachCategories) {
-        for (EACH_HEADER) {
-            load_categories_nolock(hi);
-        }
+        for (EACH_HEADER) load_categories_nolock(hi);
     }
 
-    ts.log("IMAGE TIMES: discover categories");
-
-    // Category discovery MUST BE Late to avoid potential races
-    // when other threads call the new category code before
-    // this thread finishes its fixups.
-
-    // +load handled by prepare_load_methods()
-
-    // Realize non-lazy classes (for +load methods and static instances)
-  //处理非懒加载类的加载
+    // 初始化所有非懒加载类（实现了 +load 方法的类）
+    // 非懒加载类在 App 启动时立即完成 realize，而不是等到第一次使用
     for (EACH_HEADER) {
         classref_t const *classlist = hi->nlclslist(&count);
         for (i = 0; i < count; i++) {
             Class cls = remapClass(classlist[i]);
             if (!cls) continue;
-
             addClassTableEntry(cls);
-
-            if (cls->isSwiftStable()) {
-                if (cls->swiftMetadataInitializer()) {
-                    _objc_fatal("Swift class %s with a metadata initializer "
-                                "is not allowed to be non-lazy",
-                                cls->nameForLogging());
-                }
-                // fixme also disallow relocatable classes
-                // We can't disallow all Swift classes because of
-                // classes like Swift.__EmptyArrayStorage
-            }
-            realizeClassWithoutSwift(cls, nil);
+            realizeClassWithoutSwift(cls, nil); // 对类做 realize 初始化
         }
     }
 
-    ts.log("IMAGE TIMES: realize non-lazy classes");
-
-    // Realize newly-resolved future classes, in case CF manipulates them
+    // 初始化已解析的 future classes
     if (resolvedFutureClasses) {
         for (i = 0; i < resolvedFutureClassCount; i++) {
             Class cls = resolvedFutureClasses[i];
@@ -750,241 +534,116 @@ void _read_images(header_info **hList, uint32_t hCount, int totalClasses, int un
         }
         free(resolvedFutureClasses);
     }
-
-    ts.log("IMAGE TIMES: realize future classes");
-
-    if (DebugNonFragileIvars) {
-        realizeAllClasses();
-    }
-
-
-    // Print preoptimization statistics
-    if (PrintPreopt) {
-        static unsigned int PreoptTotalMethodLists;
-        static unsigned int PreoptOptimizedMethodLists;
-        static unsigned int PreoptTotalClasses;
-        static unsigned int PreoptOptimizedClasses;
-
-        for (EACH_HEADER) {
-            if (hi->hasPreoptimizedSelectors()) {
-                _objc_inform("PREOPTIMIZATION: honoring preoptimized selectors "
-                             "in %s", hi->fname());
-            }
-            else if (hi->info()->optimizedByDyld()) {
-                _objc_inform("PREOPTIMIZATION: IGNORING preoptimized selectors "
-                             "in %s", hi->fname());
-            }
-
-            classref_t const *classlist = _getObjc2ClassList(hi, &count);
-            for (i = 0; i < count; i++) {
-                Class cls = remapClass(classlist[i]);
-                if (!cls) continue;
-
-                PreoptTotalClasses++;
-                if (hi->hasPreoptimizedClasses()) {
-                    PreoptOptimizedClasses++;
-                }
-                
-                const method_list_t *mlist;
-                if ((mlist = cls->bits.safe_ro()->baseMethods)) {
-                    PreoptTotalMethodLists++;
-                    if (mlist->isFixedUp()) {
-                        PreoptOptimizedMethodLists++;
-                    }
-                }
-                if ((mlist = cls->ISA()->bits.safe_ro()->baseMethods)) {
-                    PreoptTotalMethodLists++;
-                    if (mlist->isFixedUp()) {
-                        PreoptOptimizedMethodLists++;
-                    }
-                }
-            }
-        }
-
-        _objc_inform("PREOPTIMIZATION: %zu selector references not "
-                     "pre-optimized", UnfixedSelectors);
-        _objc_inform("PREOPTIMIZATION: %u/%u (%.3g%%) method lists pre-sorted",
-                     PreoptOptimizedMethodLists, PreoptTotalMethodLists, 
-                     PreoptTotalMethodLists
-                     ? 100.0*PreoptOptimizedMethodLists/PreoptTotalMethodLists 
-                     : 0.0);
-        _objc_inform("PREOPTIMIZATION: %u/%u (%.3g%%) classes pre-registered",
-                     PreoptOptimizedClasses, PreoptTotalClasses, 
-                     PreoptTotalClasses 
-                     ? 100.0*PreoptOptimizedClasses/PreoptTotalClasses
-                     : 0.0);
-        _objc_inform("PREOPTIMIZATION: %zu protocol references not "
-                     "pre-optimized", UnfixedProtocolReferences);
-    }
-
-#undef EACH_HEADER
 }
 ```
 
-##### 修复处理
+---
 
-##### 1、Rebase重定向
+## 六、Rebase 与 Bind
 
-**针对本地函数，例如viewDidLoad:**
+### 6.1 Rebase 重定向（针对内部符号）
 
-在编译过程中，Mach-O文件的文件引用。由于签名和ASLR技术加载了PAGEZERO区域，所以文件里面的内容都会有偏移。这时候就需要修正文件里面的指针引用。Rebase过程就是对于文件里面的指针一个修正过程。
+**适用场景：** 本地函数，如 `viewDidLoad`、自定义的 `testFunc` 等。
 
-文件中的数据访问内存地址都是随机的，虚拟内存出现后，虚拟内存地址是固定的从0开始，不安全，通过偏移地址就可以访问，所以出现ASLR。每次生成的虚拟页表不从0开始，从一个随机值起始位置开始。每次应用起始位置都不同。
+由于 ASLR，Mach-O 文件中所有内部函数的地址都需要在运行时修正：
 
-ASLR+`viewDidLoad在mach-o文件中的偏移值`就可以得到`viewDidLoad`地址，自定义test函数同样。
+```
+函数在内存中的地址 = ASLR（基地址）+ 函数在 Mach-O 文件中的偏移值
+```
 
-外部的函数`NSLog`得不到，`NSLog`在Fundation里面，和machO文件无关。
+Rebase 过程就是将 Mach-O 中所有**内部**指针加上这个 ASLR 偏移，修正为正确的虚拟地址。
 
-image镜像文件通过dyld（动态链接器）加载。Fundation通过dyld加载。`NSLog`地址通过dyld得到。
+### 6.2 Bind 绑定（针对外部符号）
 
-**通过ASLR+偏移就可以找到代码的动作就叫rebase重定位动作。**
+**适用场景：** 外部动态库中的函数，如 `NSLog`（位于 Foundation.framework）。
 
-##### 2、binding绑定（懒加载绑定）
+外部函数的地址在编译时未知，Mach-O 中只保留了符号名称。在运行时，dyld 加载对应动态库后，将符号的实际地址写入 Mach-O 的符号表指针处，这一过程称为 **Bind（绑定）**。
 
-**针对外部的函数，例如NSLog。**
+- **懒绑定（Lazy Binding）：** 大多数外部符号采用懒绑定，第一次调用时才完成绑定（如 `NSLog`）。
+- **非懒绑定（Non-lazy Binding）：** 少数符号在启动时立即绑定，如 `dyld_stub_binder`。
 
-执行的时候把函数地址和项目中符号绑定。
+### 6.3 PIC 技术（位置无关代码）
 
-NSLog是懒绑定，用的时候才绑定。
+Mach-O 内部通过 **桩（stub）** 和**符号指针表**间接调用外部函数，而不是直接跳转到外部地址。这使得可执行文件本身与外部库的地址无关，支持动态链接和 ASLR。
 
-生成本地macho文件 代码和数据。里面有符号表，是一个指针。执行的时候发现外部符号会找符号。如果符号没绑定地址则在内存共享缓存空间找外部动态库，然后绑定。以后就可以直接找。
+---
 
-##### PIC技术
+## 七、非懒加载类的初始化 — realizeClassWithoutSwift
 
-内部文件访问函数的时候，通过内部符号访问外部。外部地址绑定，外部符号表绑定。
-
-一般除了`dyld_stub_binder`是非懒加载绑定，其它的都是懒加载绑定。
-
-**外部函数都会生成符号表。通过符号表就可以找到绑定的空间。**
-
-在编译过程，可执行文件对动态库的方法调用是只声明了符号。在调用dyld把这些动态库在加载到内存后，需要去相应的动态库中链接对应的方法，找到其指针，然后对可执行文件中的指针执行修复。Bind过程中就是把这些指向动态库的指针进行修复。
-
-#### ⾮懒加载类的初始化
-
-关键函数： realizeClassWithoutSwift
+`realizeClassWithoutSwift` 是类首次初始化的核心函数，将只读的 `class_ro_t` 数据"升级"为可读写的 `class_rw_t`，并完成继承链的初始化。
 
 ```c++
-/***********************************************************************
-* realizeClassWithoutSwift
-* Performs first-time initialization on class cls, 
-* including allocating its read-write data.
-* Does not perform any Swift-side initialization.
-* Returns the real class structure for the class. 
-* Locking: runtimeLock must be write-locked by the caller
-**********************************************************************/
 static Class realizeClassWithoutSwift(Class cls, Class previously)
 {
-    /**
- 		 省略代码
- 		 */
+    // ... 省略部分代码
+    
     if (ro->flags & RO_FUTURE) {
-        // This was a future class. rw data is already allocated.
+        // Future class：rw 数据已提前分配好
         rw = cls->data();
         ro = cls->data()->ro();
-        ASSERT(!isMeta);
-        cls->changeInfo(RW_REALIZED|RW_REALIZING, RW_FUTURE);
+        cls->changeInfo(RW_REALIZED | RW_REALIZING, RW_FUTURE);
     } else {
-        // Normal class. Allocate writeable class data.
-      	//给rw开辟内存空间，然后将ro的数据“拷⻉”到rw⾥⾯。
-        rw = objc::zalloc<class_rw_t>();
-        rw->set_ro(ro);
-        rw->flags = RW_REALIZED|RW_REALIZING|isMeta;
-        cls->setData(rw);
+        // 普通类：为 rw 分配可读写内存，并将 ro 中的数据关联到 rw
+        // class_ro_t（只读）存储编译期确定的数据（方法列表、属性、协议等）
+        // class_rw_t（可读写）是运行时动态扩展的数据结构
+        rw = objc::zalloc<class_rw_t>(); // 分配并清零 class_rw_t 内存
+        rw->set_ro(ro);                   // 将只读数据关联到 rw
+        rw->flags = RW_REALIZED | RW_REALIZING | isMeta;
+        cls->setData(rw);                 // 将 rw 设置为类的 data
     }
 
-    cls->cache.initializeToEmptyOrPreoptimizedInDisguise();
+    cls->cache.initializeToEmptyOrPreoptimizedInDisguise(); // 初始化方法缓存
 
-#if FAST_CACHE_META
-    if (isMeta) cls->cache.setBit(FAST_CACHE_META);
-#endif
+    cls->chooseClassArrayIndex(); // 为类分配在类数组中的索引，用于 non-pointer ISA
 
-    // Choose an index for this class.
-    // Sets cls->instancesRequireRawIsa if indexes no more indexes are available
-    cls->chooseClassArrayIndex();
-
-    if (PrintConnecting) {
-        _objc_inform("CLASS: realizing class '%s'%s %p %p #%u %s%s",
-                     cls->nameForLogging(), isMeta ? " (meta)" : "", 
-                     (void*)cls, ro, cls->classArrayIndex(),
-                     cls->isSwiftStable() ? "(swift)" : "",
-                     cls->isSwiftLegacy() ? "(pre-stable swift)" : "");
-    }
-
-    // Realize superclass and metaclass, if they aren't already.
-    // This needs to be done after RW_REALIZED is set above, for root classes.
-    // This needs to be done after class index is chosen, for root metaclasses.
-    // This assumes that none of those classes have Swift contents,
-    //   or that Swift's initializers have already been called.
-    //   fixme that assumption will be wrong if we add support
-    //   for ObjC subclasses of Swift classes.
-  	//递归调⽤realizeClassWithoutSwift，对⽗类和元类进⾏初始化
+    // 递归地对父类和元类也执行 realize（如果尚未 realize）
+    // 必须在 RW_REALIZED 标志设置之后才调用，防止循环
     supercls = realizeClassWithoutSwift(remapClass(cls->getSuperclass()), nil);
-    metacls = realizeClassWithoutSwift(remapClass(cls->ISA()), nil);
+    metacls  = realizeClassWithoutSwift(remapClass(cls->ISA()), nil);
 
-#if SUPPORT_NONPOINTER_ISA
-    if (isMeta) {
-        // Metaclasses do not need any features from non pointer ISA
-        // This allows for a faspath for classes in objc_retain/objc_release.
-        cls->setInstancesRequireRawIsa();
-    } else {
-        // Disable non-pointer isa for some classes and/or platforms.
-        // Set instancesRequireRawIsa.
-        bool instancesRequireRawIsa = cls->instancesRequireRawIsa();
-        bool rawIsaIsInherited = false;
-        static bool hackedDispatch = false;
+    // 根据父类等条件，决定是否禁用 non-pointer ISA 优化
+    // （non-pointer ISA 在 isa 指针的低位中编码了引用计数等额外信息）
 
-        if (DisableNonpointerIsa) {
-            // Non-pointer isa disabled by environment or app SDK version
-            instancesRequireRawIsa = true;
-        }
-        else if (!hackedDispatch  &&  0 == strcmp(ro->getName(), "OS_object"))
-        {
-            // hack for libdispatch et al - isa also acts as vtable pointer
-            hackedDispatch = true;
-            instancesRequireRawIsa = true;
-        }
-        else if (supercls  &&  supercls->getSuperclass()  &&
-                 supercls->instancesRequireRawIsa())
-        {
-            // This is also propagated by addSubclass()
-            // but nonpointer isa setup needs it earlier.
-            // Special case: instancesRequireRawIsa does not propagate
-            // from root class to root metaclass
-            instancesRequireRawIsa = true;
-            rawIsaIsInherited = true;
-        }
-
-        if (instancesRequireRawIsa) {
-            cls->setInstancesRequireRawIsaRecursively(rawIsaIsInherited);
-        }
-    }
-// SUPPORT_NONPOINTER_ISA
-#endif
-
-    // Update superclass and metaclass in case of remapping
-  	//设置⽗类，isa指针的初始化
+    // 设置父类指针和 ISA 指针，完成继承链的连接
     cls->setSuperclass(supercls);
     cls->initClassIsa(metacls);
-  
-    /**
- 		 省略代码
- 		 */
+    
+    // ... 省略分类附加、属性继承等后续操作
+
     return cls;
 }
 ```
 
-### Objc
+---
 
-大部分修复操作都已经在Rebase和Bind中做了，这一部分的工作主要是做Objc运行时的处理。如加载category里面的方法到类中，这一部分在苹果开源的objc库中可以找到相关内容。
+## 八、Initializers 阶段
 
-### Initalizers
+在 Rebase、Bind、ObjC 运行时初始化完成后，进入 Initializers 阶段：
 
-这一个阶段基本就是执行c++的初始化，OC load方法。执行完以后。由dyld调用程序中的main函数
+1. 执行所有 **C++ 静态对象的构造函数**（`__attribute__((constructor))` 修饰的函数）
+2. 执行所有类和分类的 **`+load` 方法**
 
-## 3、执行main函数
+全部完成后，dyld 调用程序的 **`main()` 函数**，正式进入应用代码。
 
-执行main函数，开始一个RunLoop，保持程序的不断运行，然后开始执行程序中AppDelegate中的代码。
+---
 
-加载可程序后执行的总体步骤如下：
+## 九、执行 main 函数
 
->Load dylibs --- Rebase --- Bind --- ObjC --- Initializers
+`main()` 函数执行后，通过 `UIApplicationMain` 启动一个 **RunLoop**，保持程序持续运行，随后执行 `AppDelegate` 中的代码（如 `application:didFinishLaunchingWithOptions:`）。
+
+---
+
+## 十、完整加载流程总结
+
+```
+Load dylibs → Rebase → Bind → ObjC → Initializers → main()
+```
+
+| 阶段 | 主要工作 |
+|---|---|
+| **Load dylibs** | dyld 递归加载所有依赖的动态库 |
+| **Rebase** | 修复 Mach-O 内部指针（加上 ASLR 偏移） |
+| **Bind** | 将外部符号绑定到动态库中的实际地址 |
+| **ObjC** | 注册类、协议、分类；修复 SEL；realize 非懒加载类 |
+| **Initializers** | 执行 C++ 构造函数和 `+load` 方法 |
+| **main()** | 启动 RunLoop，执行应用代码 |

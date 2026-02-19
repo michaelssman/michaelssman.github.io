@@ -1,7 +1,5 @@
 # fishhook
 
-Hook意思是钩子，像钩子一样挂钩程序，来扩展程序的功能或者改变程序运行的流程。
-
 Facebook 提供的一个动态修改链接 mach-O 文件的工具 fishhook。它利用 MachO 文件加载原理，通过修改懒加载和非懒加载两个表的指针达到 C 函数 HOOK 的目的。
 
 ## fishhook简单使用
@@ -42,7 +40,7 @@ int rebind_symbols_image(void*header,intptr_t slide,struct rebinding rebindings[
 static void(*sys_nslog)(NSString *format,...);
 
 //定义一个新函数。HOOK成功后NSLog调用时，会来到这里
-void myNSLog(NSString *format,...) {
+void myNSLog(NSString *format, ...) {
     format = [format stringByAppendingString:@"\n 勾上了\n"];
     //调用系统的NSLog，HOOK成功后sys_nslog指针保存的是Fundation中NSLog的地址
     sys_nslog(format);
@@ -92,7 +90,7 @@ void newFunc(const char *str){
 
 ## MachO
 
-我们写好的代码，生成的 iOS 程序其实是一个可执行文件。这个文件格式是 MachO 格式，所以一般我们称其为 **MachO** 文件。
+我们写好的代码，生成的 iOS 程序其实是一个可执行文件。这个文件格式是 MachO 格式，一般我们称其为 **MachO** 文件。
 
 这个文件里面包含的就是数据和指令。比如你定义的类、方法、全局变量、方法实现等等。
 
@@ -125,7 +123,7 @@ fishhook 之所以 HOOK 不了自定义的函数，就是因为**自定义的函
 
 ##### Lazy Symbol Pointers懒加载符号表
 
-将刚才的 MachO 文件放入到 MachOView 里面分析一下：
+将 MachO 文件放入到 MachOView 里面分析一下：
 
 ![图片](fishhook.assets/640.jpeg)
 

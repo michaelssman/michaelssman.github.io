@@ -73,16 +73,14 @@ ARC下：
 
 - **没有引用临时变量的block是放在global区**, 是不会被释放的。
 - block引用了栈里的临时变量, 才会被创建在stack区。
-- **stack区的block只要赋值给strong类型的变量, 就会自动copy到堆里**。所以要不要写copy都没关系
+- **stack区的block只要赋值给strong类型的变量, 就会自动copy到堆里**。
 
 **block在创建的时候，默认是分配在栈上的。因为栈区中的变量管理是由它自己管理的，随时可能被销毁，一旦被销毁后续再次调用空对象就可能会造成程序崩溃问题。**
 
 MRC使用copy的目的是将创建默认放在栈区的block拷贝一份到堆区。block放在了堆中，block有个指针指向了栈中的block代码块。
 
-在ARC模式下，系统会默认使用copy进行修饰。
-
 1. 如果访问了外部处于栈区的变量（比如局部变量），或处于堆区的变量。都会存放在堆区，如果访问的是内部创建的变量还是存储在全局区。
-2. 在ARC中做了特殊的处理，自动的做了copy操作，所以为`__NSMallocBlock__`在MRC中是`__NSStackBlock__`。
+2. 在ARC模式下，系统自动的做了copy操作，所以为`__NSMallocBlock__`在MRC中是`__NSStackBlock__`。
 
 ## 内存管理
 
@@ -151,11 +149,8 @@ vc.refreshFuZhu = ^{
 
 在这个修改后的代码中：
 
-1. 使用 `__weak` 关键字创建一个弱引用 `weakVC`。
-2. 在 block 内部，使用 `__strong` 关键字重新创建一个强引用 `strongVC`，以确保在 block 执行期间 `vc` 不会被释放。
-3. 在调用 `refreshFuzhu:` 方法时，使用 `strongVC` 作为参数。
-
-这样可以避免 retain cycle，同时确保在 block 执行期间 `vc` 不会被释放。
+1. 使用 `__weak` 关键字创建一个弱引用 `weakVC`，这样可以避免 retain cycle。
+2. 在 block 内部，使用 `__strong` 关键字重新创建一个强引用 `strongVC`，以确保在 **block 执行期间 `vc` 不会被释放**。
 
 ### 2. 局部变量
 
@@ -239,7 +234,7 @@ block4(); //输出结果为 "adbdef"
 
 1、static修饰符的全局变量，静态变量，或者全局属性
 
-因为全局变量或静态变量在内存中的地址是固定的，Block在读取该变量值的时候是直接从其所在内存读出，获取到的是最新值，而不是在定义时copy的常量.
+全局变量或静态变量在内存中的地址是固定的，Block在读取该变量值的时候是直接从其所在内存读出，获取到的是最新值，而不是在定义时copy的常量。
 
 ```objective-c
 static int a = 100;
@@ -282,14 +277,10 @@ block5();
 //输出结果为 staticStr = 123  staticStr = def
 ```
 
-### 3、__block修饰的变量
-
-对外界变量的值进行修改的时候需要加__block，拷贝到堆区
-
 ### 修改外部变量
 
 - 默认 Block 捕获的外部变量是值拷贝（不能修改）。
-- 使用 `__block` 修饰的变量会被包装成对象（`__Block_byref_xxx`），从而可以在 Block 内部修改。
+- 使用 `__block` 修饰的变量会被包装成对象`__Block_byref_xxx`，拷贝到堆区，从而可以在 Block 内部修改。
 
 ## block底层原理分析
 

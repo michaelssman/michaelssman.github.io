@@ -204,7 +204,7 @@ GROUP BY
 
 ------
 
-## SQL JOIN 关系总结
+## JOIN 关系总结
 
 ### 1、INNER JOIN（内连接）
 
@@ -354,7 +354,6 @@ ON
 
 在这个查询中：
 
-- `MC_DETAIL_TEXT` 表被别名为 `d`。
 - `MC_TEXT` 表被别名为 `f` 当它与 `from_ac_id` 关联时。
 - `MC_TEXT` 表也被别名为 `t` 当它与 `to_ac_id` 关联时。
 - `INNER JOIN` 用于连接表，确保只有当账户ID在账户表中存在时，明细表的记录才会被返回。
