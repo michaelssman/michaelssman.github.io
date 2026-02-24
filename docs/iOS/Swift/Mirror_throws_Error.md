@@ -7,7 +7,6 @@
 **.self: 如果T是实例对象，T.self返回的就是他本身；如果T是类，T.self 返回的就是元类型**
 
 ```swift
-// MARK: self在方法中的表现
 //类LGTeacherM
 //元类LGTeacherM.Type类型 通过LGTeacherM.self获取
 class LGTeacherM{

@@ -2,7 +2,7 @@
 
 ## 函数是引用类型
 
-函数本身也有自己的类型，它由形式参数类型，返回类型组成。
+函数有自己的类型，它由形式参数类型，返回类型组成。
 
 ```swift
 func addTwoInts(_ a: Int, _ b: Int) -> Int {
@@ -156,9 +156,9 @@ height = 1.85
 closure() //输出结果为0, 1.85
 ```
 
-创建闭包时，将初始化捕获列表中的条目。对于捕获列表中的每个条目，将常量初始化为在周围范围内具有相同名称的常量或变量的值。例如，在上面的代码中，捕获列表中包含age，但捕获列表中未包含height，这使它们具有不同的行为。
+创建闭包时，将初始化捕获列表中的条目。对于捕获列表中的每个条目，将常量初始化为在周围范围内具有相同名称的常量或变量的值。
 
-创建闭包时，内部作用域中的 age 会用外部作用域中的 age 的值进行初始化，但它们的值未以任何特殊方式连接。这意味着更改外部作用域中的age的值不会影响内部作用域中的age的值，也不会更改封闭内部的值，也不会影响封闭外部的值。相比之下，只有一个名为height的变量（外部作用域中的height），因此在闭包内部或外部进行的更改在两个地方均可见。
+创建闭包时，内部作用域中的 age 会用外部作用域中的 age 的值进行初始化，但它们的值未以任何特殊方式连接。这意味着更改外部作用域中的age的值不会影响内部作用域中的age的值，也不会更改封闭内部的值，也不会影响封闭外部的值。
 
 
 接下来我们在看下面的例子
@@ -167,7 +167,7 @@ closure() //输出结果为0, 1.85
 struct LGTeacher {
     var age: Int
   	//test()返回值是一个函数（闭包）
-    func test() -> () -> Int{
+    func test() -> () -> Int {
         return {
             self.age
         }
@@ -204,13 +204,13 @@ t.age = 20
 print(closure())
 ```
 
-此时此刻，当前闭包捕获的是 self，他是一个引用类型，所以我们修改当前 `age` 变量的过程中， `closure()` 打印出来的也会改变成 `20` 。这里我们也可以还原当前的捕获捕获过程看一下闭包本质：
+此时此刻，当前闭包捕获的是 self，他是一个引用类型，所以修改当前 `age` 变量的过程中， `closure()` 打印出来的也会改变成 `20` 。这里我们也可以还原当前的捕获捕获过程看一下闭包本质：
 
 ## 闭包本质
 
 闭包是`函数 + 捕获了上下文的常量或者变量`。
 
-通过 `IR` 的分析来看一下他的底层数据结构：
+通过 `IR` 的分析来看一下它的底层数据结构：
 
 ```swift
 //实例对象内存地址
@@ -370,18 +370,18 @@ debugOutPrint(true, "Application Error Occured")
 当闭包表达式作为函数的最后一个参数，如果当前的闭包表达式很长，可以通过尾随闭包的书写方式来提高代码的可读性。 
 
 ```swift
-    //尾随闭包
-    func test(_ a: Int, _ b: Int, _ c: Int, by: (_ item1: Int, _ item2: Int, _ item3: Int) -> Bool) -> Bool{
-        return by(a, b, c)
-    }
-    //直接传闭包 可读性不好
-    test(10, 20, 30, by: {(_ item1: Int, _ item2: Int, _ item3: Int) -> Bool in
-        return (item1 + item2 < item3)
-    })
-    //尾随闭包
-    test(10, 20, 30) { item1, item2, item3 in
-        return (item1 + item2 < item3)
-    }
+//尾随闭包
+func test(_ a: Int, _ b: Int, _ c: Int, by: (_ item1: Int, _ item2: Int, _ item3: Int) -> Bool) -> Bool{
+    return by(a, b, c)
+}
+//直接传闭包 可读性不好
+test(10, 20, 30, by: {(_ item1: Int, _ item2: Int, _ item3: Int) -> Bool in
+    return (item1 + item2 < item3)
+})
+//尾随闭包
+test(10, 20, 30) { item1, item2, item3 in
+    return (item1 + item2 < item3)
+}
 ```
 
 其中闭包表达式是 Swift 语法。使用闭包表达式能更简洁的传达信息。当然闭包表达式的好处有很多： 
@@ -392,14 +392,14 @@ debugOutPrint(true, "Application Error Occured")
 - 尾随闭包表达式
 
 ```swift
-    var array = [1, 2, 3]
-    array.sort(by: {(item1 : Int, item2: Int) -> Bool in return item1 < item2 })
-    array.sort(by: {(item1, item2) -> Bool in return item1 < item2 })//闭包省略参数类型
-    array.sort(by: {(item1, item2) in return item1 < item2 })//省略闭包返回值类型：-> Bool
-    array.sort{(item1, item2) in item1 < item2 }//单表达式可以隐式返回，既省略 return 关键字
-    array.sort{ return $0 < $1 }//参数名称的简写（比如编译器起好名字 $0）
-    array.sort{ $0 < $1 }
-    array.sort(by: <)
+var array = [1, 2, 3]
+array.sort(by: {(item1 : Int, item2: Int) -> Bool in return item1 < item2 })
+array.sort(by: {(item1, item2) -> Bool in return item1 < item2 })//闭包省略参数类型
+array.sort(by: {(item1, item2) in return item1 < item2 })//省略闭包返回值类型：-> Bool
+array.sort{(item1, item2) in item1 < item2 }//单表达式可以隐式返回，既省略 return 关键字
+array.sort{ return $0 < $1 }//参数名称的简写（比如编译器起好名字 $0）
+array.sort{ $0 < $1 }
+array.sort(by: <)
 ```
 
 ## 逃逸闭包
