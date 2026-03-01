@@ -4,7 +4,7 @@
 
 ## 流程
 
-1. /opsx:propose：创建提案
+1. /opsx:proposal：创建提案
 2. /opsx:apply：让AI实现代码
 3. /opsx:archive：归档
 4. 完成部署spec更新。归档完成会更新spec说明。
@@ -59,3 +59,33 @@
 | **棕地优先**         | 设计上优先考虑对现有复杂项目的修改和维护，而非仅适用于从零开始的新项目。 |
 | **工具无关**         | 支持主流的AI编程助手，不锁定特定工具。                       |
 | **适用场景**         | 适合团队使用AI进行中大型项目开发、需要高可预测性和代码质量的场景，尤其适合迭代和维护现有代码库。 |
+
+## 命令
+
+所有的命令都是在commands文件夹下。
+
+`/opsx-new`：新建需求提案。
+
+创建skill工作流：spec-driven（提案 --> 设计 --> 规格 -->任务）
+
+1. proposal：提案（草案）
+2. design：设计（将提案详细化，做成一个设计）
+3. specs：规格
+4. tasks：任务清单
+
+`/opsx-continue`：一步一步去做。
+
+`/opsx-ff`：fast forward一次性全部做完。
+
+`/opsx-apply`：实现task.md里的任务。
+
+`/opsx-archive`：讲上面四步的文件放到archive文件夹。
+
+```
+简单明确需求:
+/opsx:new ──► /opsx:ff ──► /opsx:apply ──► /opsx:verify ──► /opsx:archive
+需求表达不出来:
+/opsx:explore ──► /opsx:new ──► /opsx:continue ──► ... ──► /opsx:apply ──► /opsx:archive
+```
+
+推荐开发流程： 1. 先 /opsx:explore，提出完整需求，让AI帮助补充意见。 2. 然后 /opsx:ff 创建好所有 artifact 文档，并人工审核，继续和AI沟通调整，AI会修改所有 artifact，直到没有需要调整的点。 3. /opsx:apply 让AI写代码。 4. 人工测试验证，继续修改需求或debug，如果AI更新代码后没有同步更新 artifact 文档，最后要人工补充一句：“更新所有文档”，以确保和代码同步。 5. 所有测试验证完毕后，手工将 tasks.md 中的 测试验证部分 标记为 【x】，再 /opsx:archive。注意：一旦 archive 后，就只能新开一个 change 了。

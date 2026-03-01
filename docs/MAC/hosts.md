@@ -15,7 +15,7 @@ sudo vi /etc/hosts
 
 ## Windows清除DNS缓存：
 
-修改hosts文件后，你可能需要清除DNS缓存才能让更改生效。打开命令提示符（以管理员身份）并输入`ipconfig /flushdns`。
+修改hosts文件后，可能需要清除DNS缓存才能让更改生效。打开命令提示符（以管理员身份）并输入`ipconfig /flushdns`。
 
 ##  设置终端代理
 
@@ -78,14 +78,4 @@ PS C:\Users\micha> git config --global http.proxy http://127.0.0.1:10809
    除`github.com`外，还需添加`github.global.ssl.fastly.net`以解决SSL证书加载问题。
 3. **系统兼容性**  
    Windows 10/11需以管理员权限操作，否则修改可能失败。
-
----
-
-### **验证失败时的排查**
-- **防火墙/杀毒软件**：临时禁用以排除干扰。
-- **网络路由**：使用`tracert github.com`检查网络节点是否中断。
-
----
-
-通过上述方法，可解决大多数因DNS解析导致的GitHub访问超时问题。若仍无法解决，建议检查本地网络环境或联系网络管理员。
 
