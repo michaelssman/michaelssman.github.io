@@ -50,8 +50,8 @@
 - `/opsx:explore`：无结构地思考想法
 - `/opsx-new`：新建需求提案。
   - 创建skill工作流：spec-driven（提案 --> 设计 --> 规格 -->任务）
-    1. proposal：提案（草案）
-    2. design：设计（将提案详细化，做成一个设计）
+    1. proposal.md：提案（草案）
+    2. design.md：设计（将提案详细化，做成一个设计）
     3. specs：规格
     4. tasks：任务清单
 - `/opsx-continue`：一步一步去做。
@@ -215,6 +215,6 @@ rules:
 
 ## 代码提交
 
-open spec版本可能不一样，所以.github文件夹不需要提交。只提交openspec。
+`.github`文件夹不需要提交，因为`OpenSpec`版本可能不一样。只提交openspec文件夹。
 
 ![企业微信截图_6826938d-8234-4cd2-b616-0bf0bb0ec2a2](./assets/企业微信截图_6826938d-8234-4cd2-b616-0bf0bb0ec2a2.png)

@@ -238,7 +238,6 @@ nav:
       - flutter/Dart/高阶函数.md
       - flutter/Dart/集合控制流.md
     - flutter/flutter简介.md
-    - flutter/AS快捷键.md
     - flutter/pubspec.yaml.md
     - flutter/本地资源和工程配置.md
     - flutter/生命周期.md
@@ -450,11 +449,8 @@ nav:
     - MAC/软件包管理系统.md
     - MAC/linux.md
     - MAC/hosts.md
-    - MAC/Mac快捷键.md
     - MAC/搭建网站.md
-    - MAC/清理Xcode.md
     - MAC/software.md
-    - MAC/vscode.md
   - app:
     - app/jizhanghelp.md
     - app/jizhangpp.md
