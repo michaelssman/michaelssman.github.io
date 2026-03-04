@@ -38,7 +38,7 @@
 
 ## XMPPFramwork中使用的多播代理GCDMulticastDelegate
 
-iOS中通常的delegate模式只能有一个被委托的对象，这样当需要有多个被委托的对象时，实现起来就略为麻烦，在开源库XMPPFramework中提供了一个GCDMulticastDelegate类，使用它可以为一个对象添加多个被委托的对象，用起来也比较方便，用法简单小结如下：
+通常的delegate模式只能有一个被委托的对象。当需要有多个被委托的对象时，实现起来就略为麻烦，在开源库XMPPFramework中提供了一个GCDMulticastDelegate类，使用它可以为一个对象添加多个被委托的对象，用起来也比较方便，用法简单小结如下：
 
 ```objective-c
 #import "HHMulDelegateVC.h"

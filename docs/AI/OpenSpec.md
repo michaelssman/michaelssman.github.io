@@ -54,6 +54,8 @@
     2. design.md：设计（将提案详细化，做成一个设计）
     3. specs：规格
     4. tasks：任务清单
+    
+       注：`proposal.md` 只是一个初始草案，目的是快速搭建框架。自己可以根据实际需求调整内容，使其更贴合项目目标。后续的 `design.md`、`specs` 和 `tasks` 也是同理——它们都是可编辑的，并且鼓励你迭代完善，以确保最终实现符合预期。只需注意保持各阶段文档的一致性即可。
 - `/opsx-continue`：一步一步去做。
 - `/opsx-ff`：fast forward一次性全部做完。
 - `/opsx-apply`：实现task.md里的任务。
