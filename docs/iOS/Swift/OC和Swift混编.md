@@ -2,7 +2,7 @@
 
 ## swift调OC
 
-使用`项目名-Bridging-Header.h`桥接文件，一组暴露给swift的头文件。类似散头文件，通过一个头文件映射一组头文件。
+使用`XXX-Bridging-Header.h`桥接文件，一组暴露给swift的头文件。类似散头文件，通过一个头文件映射一组头文件。
 
 桥接文件中引入OC头文件用`#import`，引入C头文件用`#include`。
 
@@ -81,23 +81,21 @@ func swiftC() {
 
 ## OC调swift
 
-通过`项目名 -Swift.h`文件。把swift代码翻译了头文件。编译的时候放到macho中变成OC符号。
+通过`XXX-Swift.h`文件。把swift代码翻译了头文件。编译的时候放到MachO中变成OC符号。
 
-名字可以修改，例：`SCM-Swift.h`。
+OC调用的时候`#import <XXX-Swift.h>`引入头文件即可。
 
-OC调用的时候`#import <SCM-Swift.h>`引入头文件即可。
-
-![image-20221228142857089](OC和Swift混编.assets/image-20221228142857089.png)
+![image-20260305145056391](./assets/image-20260305145056391.png)
 
 注：
 
 不继承NSObject的纯swift类不能被OC所访问
 
-swift中的属性和方法如果需要给OC使用，需要前面加`@objc`修饰（用@objcMembers直接修饰在class前面，系统会自自动给class对象的属性、方法前面添加@objec来表明它们是可以被OC访问的）。
+swift中的属性和方法如果需要给OC使用，需要前面加`@objc`修饰（用@objcMembers直接修饰在class前面，系统会自动给class对象的属性、方法前面添加@objec来表明它们是可以被OC访问的）。
 
 ### OC调用swift的enum
 
-必须定义出`Int`类型，前面加`@objc`才能调用(毕竟swift的枚举比OC强大太多)
+必须定义出`Int`类型，前面加`@objc`才能调用。
 
 ```swift
 @objc enum CPLineType: Int {

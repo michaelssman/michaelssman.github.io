@@ -16,11 +16,11 @@
 
 ### 2、工程配置
 
-`targets->Capabilites->Associated Domains`，在其中的`Domains`中填入你想支持的域名，必须以`applinks:`为前缀，如：`applinks:m.nmkjxy.com` 
+`targets->Capabilites->Associated Domains`，在其中的`Domains`中填入你想支持的域名，必须以`applinks:`为前缀。如：
 
 配的suniversalLink是https://m.nmkjxy.com/app/
 
-则project配置Signing&capabilities下的`Associated Domains`设置applinks:m.nmkjxy.com。
+则project配置Signing&capabilities下的`Associated Domains`设置`applinks:m.nmkjxy.com`。
 
 `applinks:`是固定的，后面的要和universalLink的地址保持一致
 
