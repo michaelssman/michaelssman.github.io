@@ -48,9 +48,9 @@
 所有的命令都是在commands文件夹下。
 
 - `/opsx:explore`：无结构地思考想法
-- `/opsx-new`：新建需求提案。
+- `/opsx-propose`：新建需求提案。
   - 创建skill工作流：spec-driven（提案 --> 设计 --> 规格 -->任务）
-    1. proposal.md：提案（草案）
+    1. proposal.md：提案
     2. design.md：设计（将提案详细化，做成一个设计）
     3. specs：规格
     4. tasks：任务清单
@@ -60,13 +60,6 @@
 - `/opsx-apply`：实现task.md里的任务。
 - `/opsx-archive`：讲上面四步的文件放到archive文件夹。
 - 完成部署spec更新。归档完成会更新spec说明。
-
-```
-简单明确需求:
-/opsx:new ──► /opsx:ff ──► /opsx:apply ──► /opsx:verify ──► /opsx:archive
-需求表达不出来:
-/opsx:explore ──► /opsx:new ──► /opsx:continue ──► ... ──► /opsx:apply ──► /opsx:archive
-```
 
 推荐开发流程： 
 
