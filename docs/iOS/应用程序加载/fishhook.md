@@ -31,10 +31,9 @@ int rebind_symbols_image(void*header,intptr_t slide,struct rebinding rebindings[
 
 ### HOOK一下NSLog
 
-新建一个项目。在 ViewDidLoad 中对系统的 **NSLog** 函数进行 HOOK 。
+在 ViewDidLoad 中对系统的 **NSLog** 函数进行 HOOK 。
 
 ```objective-c
-
 #pragma mark - 更改系统的NSLog函数
 //函数指针，用来保存原始的函数地址
 static void(*sys_nslog)(NSString *format,...);
@@ -46,16 +45,6 @@ void myNSLog(NSString *format, ...) {
     sys_nslog(format);
 }
 
-#pragma mark -
-void func(const char *str){
-    printf("%s",str);
-}
-
-static void(*funcP)(const char *);
-void newFunc(const char *str){
-    printf("勾上了");
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -64,12 +53,6 @@ void newFunc(const char *str){
     nslog.name = "NSLog";//需要HOOK的函数名称
     nslog.replacement = myNSLog;//新函数的地址
     nslog.replaced = (void *)&sys_nslog;//保存 原始函数地址 的指针
-
-    struct rebinding refunc;
-    refunc.name = "func";
-    refunc.replacement = newFunc;
-    refunc.replaced = (void *)&funcP;
-//    struct rebinding rebs[1] = {refunc};
 
     //准备数组，将一个或多个 rebinding 结构体放进去。
     struct rebinding rebs[1] = {nslog};
@@ -83,7 +66,6 @@ void newFunc(const char *str){
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    func("hello");
     NSLog(@"hello");
 }
 ```
@@ -92,7 +74,7 @@ void newFunc(const char *str){
 
 我们写好的代码，生成的 iOS 程序其实是一个可执行文件。这个文件格式是 MachO 格式，一般我们称其为 **MachO** 文件。
 
-这个文件里面包含的就是数据和指令。比如你定义的类、方法、全局变量、方法实现等等。
+这个文件里面包含数据和指令。比如你定义的类、方法、全局变量、方法实现等等。
 
 ## HOOK不到自定义的函数
 
@@ -107,13 +89,13 @@ void newFunc(const char *str){
 
 PIC翻译过来就是位置独立代码。
 
-> 说人话：比如当你的程序要调用一个 MachO 外部函数的时候，编译器是没办法知道该函数的地址的。所以它在 MachO 文件里面生成一个列表，列表里面放指针。让当前的系统函数调用指向这个列表里面对应的指针。等到我们的 MachO 文件加载进入内存时，再将系统函数的真实地址，一个一个的赋值给列表中的指针。
+> 当你的程序要调用一个 MachO 外部函数的时候，编译器是没办法知道该函数的地址。所以它在 MachO 文件里面生成一个列表，列表里面放指针。让当前的系统函数调用指向这个列表里面对应的指针。等到我们的 MachO 文件加载进入内存时，再将系统函数的真实地址，一个一个的赋值给列表中的指针。
 
 - 那么这个列表，就是**符号表**。
 - 这里面的指针，就是**符号**。
 - 给里面的指针赋值的过程，就是**符号绑定**。
 
-fishhook 之所以 HOOK 不了自定义的函数，就是因为**自定义的函数没有通过符号寻找地址这个过程，而系统函数是通过符号去绑定实现地址的**。fishhook 就是利用这一点，去修改了系统函数的符号达到 HOOK 的目的。通过fishhook 的函数名称就可以看出来 **rebind_symbols** 符号重绑定。
+fishhook 之所以 HOOK 不了自定义的函数，是因为**自定义的函数没有通过符号寻找地址这个过程，而系统函数是通过符号去绑定实现地址的**。fishhook 就是利用这一点，去修改了系统函数的符号达到 HOOK 的目的。通过fishhook 的函数名称就可以看出来 **rebind_symbols** 符号重绑定。
 
 ## fishHook原理探索
 
