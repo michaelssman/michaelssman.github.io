@@ -444,7 +444,11 @@ nav:
     - 数据库/SQL.md
     - 数据库/MySQL.md
     - 数据库/设计表.md
-    - 数据库/事务.md
+    - 数据库/事务Transaction.md
+  - AI:
+    - AI/Claude.md
+    - AI/OpenSpec.md
+    - AI/技巧.md
   - Mac:
     - MAC/软件包管理系统.md
     - MAC/linux.md

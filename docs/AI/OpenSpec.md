@@ -131,6 +131,8 @@ schema: spec-driven  # 使用 spec-driven 工作流
 
 # 项目背景信息 - 会注入到所有 AI 生成的指令中
 context: |
+  - 所有的回答使用中文
+  
   # 技术栈要求
   - 编程语言: Swift
   - UI 布局: SnapKit (纯代码布局，不使用 Storyboard 或 XIB)
