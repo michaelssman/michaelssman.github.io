@@ -14,7 +14,7 @@ NSObject *objc = [NSObject alloc];
 id __weak obj = objc;
 ```
 
-弱引用表和引用计数表是两张独立的表。**weak 所引用对象的引用计数不会加 1**，对引用计数没有任何影响。
+弱引用表和引用计数表是两张独立的表。**weak 所引用对象的引用计数不会加 1**。
 
 ---
 
@@ -133,7 +133,7 @@ storeWeak(id *location, objc_object *newObj)
 
         // 在引用计数表中设置"已被弱引用"标志位
         // TaggedPointer 对象不使用 SideTable，无需处理
-        if (newObj  &&  !newObj->isTaggedPointer()) {
+        if (newObj && !newObj->isTaggedPointer()) {
             newObj->setWeaklyReferenced_nolock();
         }
 
