@@ -2,17 +2,10 @@
 
 ## weak 对象存储原理和销毁为什么会置 nil
 
-weak 在底层维护了一张全局的**弱引用表（weak_table_t 结构的哈希表）**，保存了所有的弱引用对象。
+weak 在底层维护了一张全局的**weak_table_t弱引用表（哈希表）**，保存了所有的弱引用对象。
 
 - **key**：对象的内存地址（对象在内存中的地址是固定不变的，因此适合作为 key）。
 - **value**：weak 指针的地址数组，存储所有指向该对象的弱引用指针。weak 指针的地址指向当前对象的地址。
-
-```objective-c
-NSObject *objc = [NSObject alloc];
-// 如果原来已有 weak 引用指向旧对象，需要先从弱引用表中注销旧引用（unregister old）
-// 然后再将新的弱引用注册到弱引用表（register new）
-id __weak obj = objc;
-```
 
 弱引用表和引用计数表是两张独立的表。**weak 所引用对象的引用计数不会加 1**。
 
@@ -275,7 +268,7 @@ static void append_referrer(weak_entry_t *entry, objc_object **new_referrer)
 
 ### 6. setWeaklyReferenced_nolock
 
-`storeWeak` 中执行完 `weak_register_no_lock` 之后，还会调用 `setWeaklyReferenced_nolock`，将当前对象 isa 中的 `weakly_referenced` 标志位置为 `true`，表明该对象存在弱引用，在 dealloc 时需要处理弱引用表。
+`storeWeak` 中执行完 `weak_register_no_lock` 之后，还会调用 `setWeaklyReferenced_nolock`，将当前对象 isa 中的标志位`weakly_referenced`置为 `true`，表明该对象存在弱引用，在`dealloc`时需要处理弱引用表。
 
 ---
 
@@ -287,6 +280,7 @@ static void append_referrer(weak_entry_t *entry, objc_object **new_referrer)
 4. 若对象正常且可被 weak 引用，调用 `weak_entry_for_referent` 根据**被弱引用对象的地址**从弱引用表中查找对应的 `weak_entry_t`：
    - **找到**：调用 `append_referrer` 将 weak 指针地址追加进去。
    - **未找到**：创建新的 `weak_entry_t`，放入 `weak_table`：
+     
      ```c++
      weak_entry_t new_entry(referent, referrer);   // 创建新 entry
      weak_grow_maybe(weak_table);                  // 必要时对 weak_table 扩容
