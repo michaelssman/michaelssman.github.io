@@ -4,7 +4,7 @@
 
 weak 在底层维护了一张全局的**weak_table_t弱引用表（哈希表）**，保存了所有的弱引用对象。
 
-- **key**：对象的内存地址（对象在内存中的地址是固定不变的，因此适合作为 key）。
+- **key**：对象的内存地址（对象在内存中的地址是固定不变的，适合作为 key）。
 - **value**：weak 指针的地址数组，存储所有指向该对象的弱引用指针。weak 指针的地址指向当前对象的地址。
 
 弱引用表和引用计数表是两张独立的表。**weak 所引用对象的引用计数不会加 1**。
@@ -40,6 +40,7 @@ objc_initWeak(id *location, id newObj)
     return storeWeak<DontHaveOld, DoHaveNew, DoCrashIfDeallocating>
         (location, (objc_object*)newObj);
 }
+
 // storeWeak：weak 引用的核心存储函数（C++ 模板函数）
 // 模板参数：
 //   haveOld              —— 是否存在旧的 weak 引用（需要先注销）
