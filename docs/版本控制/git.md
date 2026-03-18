@@ -50,8 +50,6 @@ git checkout <commit-hash>
 
 可以查看哪些文件修改了或者冲突了。
 
-命令的输出十分详细
-
 git status --short或git status -s 格式更为紧凑的输出。
 
 ## git commit -m "注释"
@@ -308,18 +306,9 @@ git revert -m 1 abc1234  # 替换为实际的提交哈希
 - `-m 1` 表示接收合并的分支，即你的 release 分支
 - `-m 2` 表示被合并的分支，即 develop 或 feature/inform
 
-## iOS合并代码
+## 舍弃本地修改
 
-只处理project.pbxproj。
-
-### 不需要解决的文件
-
-1. pod
-   - pod的冲突会很多，不需要处理`ProjectName/Pods/Pods.xcodeproj`，删除pod冲突的文件，重新pod解决。
-2. **用户状态文件**：
-   - `AccCollege/AccCollege.xcworkspace/xcuserdata/michael.xcuserdatad/UserInterfaceState.xcuserstate`：这个文件与用户的个人设置相关，通常不需要合并。
-3. **Xcode Schemes**：
-   - `AccCollege/Pods/xcuserdata/michael.xcuserdatad/xcschememanagement.plist`：这个文件包含用户特定的Scheme设置，通常可以忽略。
-4. **Target Support Files**：
-   - `AccCollege/Pods/Target Support Files/Pods-AccCollege/Pods-AccCollege.debug.xcconfig`
-   - `AccCollege/Pods/Target Support Files/Pods-AccCollege/Pods-AccCollege.release.xcconfig`：这些是配置文件，通常不需要解决。
+| 命令            | 作用                                                         |
+| --------------- | ------------------------------------------------------------ |
+| `git restore .` | 撤销当前目录下所有已跟踪文件的本地修改（新写法，Git 2.23+ 推荐） |
+| `git clean -fd` | 删除所有未跟踪的文件和文件夹（-f 强制，-d 包含文件夹）       |

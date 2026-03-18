@@ -90,7 +90,7 @@ storeWeak(id *location, objc_object *newObj)
 
     // 防止 weak 引用机制与 +initialize 机制之间产生死锁：
     // 确保被弱引用的对象的类已经完成了 +initialize 初始化（isa 不能是未初始化状态）
-    if (haveNew  &&  newObj) {
+    if (haveNew && newObj) {
         // 通过对象的 isa 指针找到当前类
         Class cls = newObj->getIsa();
         if (cls != previouslyInitializedClass  &&  
@@ -153,18 +153,18 @@ storeWeak(id *location, objc_object *newObj)
 
 ### 1. objc_initWeak
 
-`objc_initWeak` 调用 `storeWeak` 存储 weak 引用。
+`objc_initWeak` 调用 `storeWeak`（存储 weak 引用）。
 
 ### 2. storeWeak
 
-1. 先找到最外层的 SideTable 散列表，SideTable 用来管理引用计数和弱引用表。**根据当前对象的指针通过哈希运算取出对应的 SideTable。**
+1. **根据当前对象的指针通过哈希运算取出最外层的 SideTable 散列表。**SideTable 用来管理引用计数和弱引用表。
 2. 确保类已完成 `class_initialize` 初始化。
 3. 若 `haveOld` 为 true，说明 weak 指针之前已指向某个对象，先将其从旧 SideTable 的 `weak_table` 中移除（调用 `weak_unregister_no_lock`）。
 4. 若 `haveNew` 为 true，调用 `weak_register_no_lock` 将弱引用注册到新对象对应的弱引用表。
 
 ### 3. weak_register_no_lock —— 注册到 weak 引用表
 
-注册之前，因为 `weak_table` 里维护着 Person、Dog、Student、Car 等多种类的弱引用，为了避免数据混乱，引入了 `weak_entry_t`（类似数组，实际是哈希结构）。`weak_entry_t` 内部有 `referrers` 数组，用于存储指向同一个对象的所有 weak 指针地址。
+因为 `weak_table` 里维护着 Person、Dog、Student、Car 等多种类的弱引用，为了避免数据混乱，引入了 `weak_entry_t`（哈希结构）。`weak_entry_t` 内部有 `referrers` 数组，用于存储指向同一个对象的所有 weak 指针地址。
 
 `weak_register_no_lock` 的参数：当前对象的**弱引用表（weak_table）**、**当前被弱引用的对象**、**weak 指针地址**。
 
@@ -306,7 +306,7 @@ SideTables（全局多张散列表）
 
 ## 弱引用表释放
 
-当对象的引用计数降为 0 时，其所有 weak 指针将被自动置为 nil。整个过程从对象的 dealloc 方法开始。
+当对象的引用计数为 0 时，其所有 weak 指针将被自动置为 nil。整个过程从对象的 dealloc 方法开始。
 
 ### 1. dealloc
 
@@ -333,10 +333,8 @@ _objc_rootDealloc(id obj)
 
 ### 3. rootDealloc()
 
-尝试快速释放，不满足条件则走完整释放流程：
-
 ```c++
-// rootDealloc：尝试快速释放对象，否则走完整销毁流程
+// rootDealloc：尝试快速释放对象，不满足条件则走完整销毁流程
 inline void
 objc_object::rootDealloc()
 {

@@ -90,6 +90,8 @@ Claude code本质是一个终端里面的智能开发工具，自己不产生智
 
 claude code会发送代码片段到anthropic服务器处理，需要注意隐私与安全。可以在项目全局的`settings.json`文件中设置，用permissons中的deny来防止Claude读取密钥。
 
+`~/.claude/settings.json`
+
 ## CC-Switch接口管理工具
 
 购买多个服务商的不同的模型，CC-Switch帮助管理这些模型，点一下启动按钮就可以切换模型。
