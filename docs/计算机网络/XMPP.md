@@ -38,7 +38,7 @@
 
 ## XMPPFramwork中使用的多播代理GCDMulticastDelegate
 
-通常的delegate模式只能有一个被委托的对象。当需要有多个被委托的对象时，实现起来就略为麻烦，在开源库XMPPFramework中提供了一个GCDMulticastDelegate类，使用它可以为一个对象添加多个被委托的对象，用起来也比较方便，用法简单小结如下：
+通常的delegate模式只能有一个被委托的对象。当需要有多个被委托的对象时，实现起来就略为麻烦，在XMPPFramework中提供了一个GCDMulticastDelegate类，使用它可以为一个对象添加多个被委托的对象，用起来也比较方便，用法简单小结如下：
 
 ```objective-c
 #import "HHMulDelegateVC.h"
@@ -80,7 +80,7 @@
 @end
 ```
 
-多播的delegate与通常的delegate不同，multiDelegate并没有实现协议中的方法，而是将协议中的方法转发到自己delegate链中的对象。  对multiDelegate对象调用`runTo`方法时，由于GCDMulticastDelegate没有实现`runTo`方法，因此该类的`methodSignatureForSelector`和`forwardInvocation`函数会被触发，在该函数中会遍历delegate链，对每一个delegate对象调用`runTo`方法，从而实现了多个delegate。
+多播的delegate与通常的delegate不同，multiDelegate并没有实现协议中的方法，而是将协议中的方法转发到自己delegate链中的对象。对multiDelegate对象调用`runTo`方法时，由于GCDMulticastDelegate没有实现`runTo`方法，因此该类的`methodSignatureForSelector`和`forwardInvocation`函数会被触发，在该函数中会遍历delegate链，对每一个delegate对象调用`runTo`方法，从而实现了多个delegate。
 
 同时，在对multiDelegate调用协议方法时，采用的是异步的方式，协议方法会立刻返回，不会阻碍当前函数。
 

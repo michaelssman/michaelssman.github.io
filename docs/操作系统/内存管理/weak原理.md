@@ -5,7 +5,7 @@
 weak 在底层维护了一张全局的**weak_table_t弱引用表（哈希表）**，保存了所有的弱引用对象。
 
 - **key**：对象的内存地址（对象在内存中的地址是固定不变的，适合作为 key）。
-- **value**：weak 指针的地址数组，存储所有指向该对象的弱引用指针。weak 指针的地址指向当前对象的地址。
+- **value**：**weak 指针的地址**数组，存储所有指向该对象的弱引用指针。weak 指针的地址指向当前对象的地址。
 
 弱引用表和引用计数表是两张独立的表。**weak 所引用对象的引用计数不会加 1**。
 
@@ -117,10 +117,10 @@ storeWeak(id *location, objc_object *newObj)
     }
 
     // ---- 处理新值 ----
-    // 如果存在新的弱引用，将其注册到 SideTable 的 weak_table（弱引用表）中
+    // 如果存在新的弱引用，将其注册到 SideTable 的 weak_table 中
     if (haveNew) {
         newObj = (objc_object *)
-            // weak_register_no_lock：将弱引用指针注册到 weak_table
+            // 将弱引用指针注册到 weak_table
             weak_register_no_lock(&newTable->weak_table, (id)newObj, location, 
                                   crashIfDeallocating);
         // weak_register_no_lock 若注册失败（对象不可被弱引用）则返回 nil
@@ -158,9 +158,9 @@ storeWeak(id *location, objc_object *newObj)
 ### 2. storeWeak
 
 1. **根据当前对象的指针通过哈希运算取出最外层的 SideTable 散列表。**SideTable 用来管理引用计数和弱引用表。
-2. 确保类已完成 `class_initialize` 初始化。
+2. 确保类已完成初始化`class_initialize`。
 3. 若 `haveOld` 为 true，说明 weak 指针之前已指向某个对象，先将其从旧 SideTable 的 `weak_table` 中移除（调用 `weak_unregister_no_lock`）。
-4. 若 `haveNew` 为 true，调用 `weak_register_no_lock` 将弱引用注册到新对象对应的弱引用表。
+4. 若 `haveNew` 为 true，调用 `weak_register_no_lock` 将弱引用注册到**新对象对应的弱引用表**。
 
 ### 3. weak_register_no_lock —— 注册到 weak 引用表
 
@@ -172,7 +172,7 @@ storeWeak(id *location, objc_object *newObj)
 
 ### 4. weak_entry_for_referent —— 查找实体引用
 
-`weak_entry_for_referent` 通过哈希运算在弱引用表中找到当前对象对应的 `weak_entry_t` 地址，然后将 weak 指针插入其中。
+`weak_entry_for_referent` 通过哈希运算在`weak_table`中找到当前对象对应的 `weak_entry_t` 地址，然后将 weak 指针插入其中。
 
 ```c++
 // weak_register_no_lock：将弱引用指针注册到弱引用表
@@ -300,7 +300,7 @@ SideTables（全局多张散列表）
                           └── entry->referrers[index]（具体的 weak 指针地址）
 ```
 
-> ⚠️ **性能提示**：声明 weak 变量需要不断通过哈希运算定位地址、查找表结构，开销较大。应仅在解决**循环引用**时使用 weak，避免滥用。
+> ⚠️ **性能提示**：声明 weak 变量需要不断通过哈希运算定位地址、查找表结构，开销较大。仅在解决**循环引用**时使用 weak，避免滥用。
 
 ---
 
@@ -322,7 +322,7 @@ SideTables（全局多张散列表）
 ### 2. _objc_rootDealloc
 
 ```c++
-// _objc_rootDealloc：dealloc 的 C 层实现入口
+// C 层实现入口
 void
 _objc_rootDealloc(id obj)
 {
