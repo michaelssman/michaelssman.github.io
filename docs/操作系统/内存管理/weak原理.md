@@ -34,9 +34,6 @@ objc_initWeak(id *location, id newObj)
     }
 
     // 调用 C++ 模板函数 storeWeak 执行实际的存储逻辑
-    // DontHaveOld：第一次初始化，不存在旧值
-    // DoHaveNew：存在新值需要注册
-    // DoCrashIfDeallocating：若对象正在析构则 crash
     return storeWeak<DontHaveOld, DoHaveNew, DoCrashIfDeallocating>
         (location, (objc_object*)newObj);
 }
