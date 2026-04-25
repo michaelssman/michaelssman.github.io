@@ -115,7 +115,6 @@ nav:
     - crash分析:
       - iOS/crach分析/crash分析.md
       - iOS/crach分析/处理bug.md
-    - iOS/Animation.md
     - SDWebImage:
       - iOS/SDWebImage/SDImageCache.md
       - iOS/SDWebImage/SDWebImage.md
