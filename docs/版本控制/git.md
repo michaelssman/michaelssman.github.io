@@ -312,3 +312,40 @@ git revert -m 1 abc1234  # 替换为实际的提交哈希
 | --------------- | ------------------------------------------------------------ |
 | `git restore .` | 撤销当前目录下所有已跟踪文件的本地修改（新写法，Git 2.23+ 推荐） |
 | `git clean -fd` | 删除所有未跟踪的文件和文件夹（-f 强制，-d 包含文件夹）       |
+
+## 在错误的分支上开发和提交代码
+
+有分支Develop和分支Feature。
+正常的流程是在Feature分支上面进行开发修改，提交代码，然后合到Develop分支。
+但是我不小心在Develop分支上进行了开发修改，提交push到Develop，现在Feature分支上面没有刚才修改的代码。
+
+可以用 **cherry-pick**。
+
+做法是：把你误提交到 `Develop` 的那几个 commit，单独拣到 `Feature` 分支上。
+
+1. 切到 Develop，找到误提交的 commit，记下你刚才提交的 commit hash。
+2. 切到 Feature，把 Develop 上误提交的 commit 拣过来
+
+```bash
+# 把 develop 上误提交的 commit 拣过来
+git cherry-pick abc1234
+git cherry-pick def5678
+```
+
+如果这几个 commit 是连续的，也可以：
+
+```bash
+git cherry-pick 起始commit^..结束commit
+```
+
+例如：
+
+```bash
+git cherry-pick abc1234^..def5678
+```
+
+然后推送：
+
+```bash
+git push origin Feature
+```

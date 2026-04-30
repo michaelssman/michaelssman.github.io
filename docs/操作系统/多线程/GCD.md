@@ -14,15 +14,13 @@ GCD使用信号量手动去控制并发数。
 
 ## barrier
 
-把异步任务分开两半，前面的先执行，后面的后执行。起到控制流程效果。
-
-最直接的作用: 控制任务执行顺序，起到同步加锁效果。
+把异步任务分开两半，**前面的先执行，后面的后执行**。起到控制流程效果。
 
 dispatch_barrier_async 前面的任务执行完毕才会来到这里
 
 dispatch_barrier_sync 作用相同，**但是这个会堵塞线程，影响后面的任务执行，后面的任务会等待栅栏函数。**
 
-判断队列queue中有没有栅栏函数，没有的话就是普通的执行流程，一旦有栅栏函数，就会发生等待，把队列中的任务都执行完毕，等待栅栏函数执行完，然后才会走后面的任务。
+队列queue中一旦有栅栏函数，就会发生等待，把队列中的任务都执行完毕，等待栅栏函数执行完，然后才会走后面的任务。
 
 执行barrier任务，必须把队列中的前面任务清空，才会执行barrier任务。
 
@@ -120,17 +118,17 @@ getter读操作：`dispatch_sync`同步。
 @end
 ```
 
-## group调度组
+## group
 
 ### 控制任务执行顺序
 
-- dispatch_group_create 创建组 
+- `dispatch_group_create`创建组 
 
-- dispatch_group_notify 进组任务执行完毕通知 
+- `dispatch_group_notify`进组任务执行完毕通知 
 
-- dispatch_group_wait 进组任务执行等待时间
+- `dispatch_group_wait`进组任务执行等待时间
 
-- dispatch_group_async 进组任务 
+- `dispatch_group_async`进组任务 
 
   里面封装了dispatch_group_enter和dispatch_group_leave（callout执行完毕）
 
@@ -157,7 +155,7 @@ dispatch_semaphore_signal		//信号量释放 ++
 
 **信号量的计数值表示可以并发访问的资源数量。当计数值为 0 时，任何试图减少信号量的线程（通过 `dispatch_semaphore_wait` 函数）都会阻塞，直到信号量的计数值增加。**
 
-这是一个同步工具，可以用来控制线程间的同步，例如，当你需要一个线程等待另一个线程完成某项工作时。在这个例子中，`dispatch_semaphore_create(0)` 创建的信号量可以被用来阻塞一个线程，直到某个条件被满足，此时其他线程会增加信号量的计数值（通过 `dispatch_semaphore_signal` 函数），解除阻塞。
+可以用来控制线程间的同步，例如，当你需要一个线程等待另一个线程完成某项工作时。在这个例子中，`dispatch_semaphore_create(0)` 创建的信号量可以被用来阻塞一个线程，直到某个条件被满足，此时其他线程会增加信号量的计数值（通过 `dispatch_semaphore_signal` 函数），解除阻塞。
 
 这里是一个简单的例子，展示了如何使用信号量来同步线程：
 
@@ -184,7 +182,7 @@ dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
 NSLog(@"Continue with the main thread tasks...");
 ```
 
-在上面的代码中，主线程将会在 `dispatch_semaphore_wait` 处阻塞，直到后台线程完成工作并通过 `dispatch_semaphore_signal` 发送信号量。这确保了主线程会等待后台任务完成后才继续执行。
+在上面的代码中，主线程将会在 `dispatch_semaphore_wait` 处阻塞，直到后台线程完成工作并通过`dispatch_semaphore_signal`发送信号量。这确保了主线程会等待后台任务完成后才继续执行。
 
 ```objective-c
 - (void)semaphoreDemo {
@@ -212,21 +210,13 @@ NSLog(@"Continue with the main thread tasks...");
         dispatch_semaphore_signal(sem); // 发信号
     });
     
-    //任务3
+    //任务3，不会执行
     dispatch_async(queue, ^{
         dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
         sleep(2);
         NSLog(@"执行任务3");
         dispatch_semaphore_signal(sem);
-    });
-    
-    //任务4
-    dispatch_async(queue, ^{
-        dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
-        sleep(2);
-        NSLog(@"执行任务4");
-        dispatch_semaphore_signal(sem);
-    });
+    });    
 }
 ```
 
