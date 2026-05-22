@@ -330,7 +330,6 @@ nav:
     - 版本控制/git.md
     - 版本控制/git_config.md
     - 版本控制/git_ignore.md
-    - 版本控制/代码审查.md
   - 设计模式:
     - 设计模式/README.md
     - 创建型模式:
@@ -431,7 +430,9 @@ nav:
   - AI:
     - AI/Claude.md
     - AI/OpenSpec.md
+    - AI/OpenClaw.md
     - AI/技巧.md
+    - AI/代码评审.md
   - Mac:
     - MAC/软件包管理系统.md
     - MAC/linux.md
