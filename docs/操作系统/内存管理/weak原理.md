@@ -48,7 +48,7 @@ template <HaveOld haveOld, HaveNew haveNew,
 static id 
 storeWeak(id *location, objc_object *newObj)
 {
-    ASSERT(haveOld  ||  haveNew);
+    ASSERT(haveOld || haveNew);
     if (!haveNew) ASSERT(newObj == nil);
 
     Class previouslyInitializedClass = nil;
