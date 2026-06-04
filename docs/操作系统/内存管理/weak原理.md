@@ -40,8 +40,8 @@ objc_initWeak(id *location, id newObj)
 
 // storeWeak：weak 引用的核心存储函数（C++ 模板函数）
 // 模板参数：
-//   haveOld              —— 是否存在旧的 weak 引用（需要先注销）
-//   haveNew              —— 是否存在新的 weak 引用（需要注册）
+//   haveOld              —— 是否存在旧的 weak 引用（先注销）
+//   haveNew              —— 是否存在新的 weak 引用（再注册）
 //   crashIfDeallocating  —— 若对象正在析构是否触发 crash
 template <HaveOld haveOld, HaveNew haveNew,
           enum CrashIfDeallocating crashIfDeallocating>
@@ -187,7 +187,7 @@ weak_register_no_lock(weak_table_t *weak_table, id referent_id,
     */
 
     // 尝试在 weak_table 中查找被弱引用对象对应的 weak_entry_t
-    // 层次结构：散列表(SideTable) → weak_table → weak_entry_t → 引用数组
+    // 层次结构：SideTable → weak_table → weak_entry_t → referrers
     weak_entry_t *entry;
     if ((entry = weak_entry_for_referent(weak_table, referent))) {
         // 已存在对应的 entry，直接将新 weak 指针追加进去
@@ -266,7 +266,7 @@ static void append_referrer(weak_entry_t *entry, objc_object **new_referrer)
 
 ### 6. setWeaklyReferenced_nolock
 
-`storeWeak` 中执行完 `weak_register_no_lock` 之后，还会调用 `setWeaklyReferenced_nolock`，将当前对象 isa 中的标志位`weakly_referenced`置为 `true`，表明该对象存在弱引用，在`dealloc`时需要处理弱引用表。
+将当前对象 isa 中的标志位`weakly_referenced`置为 `true`，表明该对象存在弱引用，在`dealloc`时需要处理弱引用表。
 
 ---
 
@@ -285,7 +285,7 @@ static void append_referrer(weak_entry_t *entry, objc_object **new_referrer)
      weak_entry_insert(weak_table, &new_entry);    // 将 new_entry 插入 weak_table
      ```
 
-**数据层次结构：**
+## 数据层次结构：
 
 ```
 SideTables（全局多张散列表）
@@ -336,11 +336,11 @@ inline void
 objc_object::rootDealloc()
 {
     // 1. 判断是否是 TaggedPointer
-    //    Tagged Pointer 不使用堆内存，无需维护引用计数，直接返回
+    // Tagged Pointer 不使用堆内存，无需维护引用计数，直接返回
     if (isTaggedPointer()) return;
 
-    // 2. 判断是否满足快速释放的 5 个条件（全部满足才能 free(this) 快速释放）：
-    if (fastpath(isa.nonpointer              &&   // 条件1：使用了优化的非指针 isa
+    // 2. rootDealloc 快速释放的 5 个判断条件：
+    if (fastpath(isa.nonpointer              &&   // 条件1：使用优化的非指针 isa
                  !isa.weakly_referenced      &&   // 条件2：没有 weak 指针指向该对象
                  !isa.has_assoc             &&   // 条件3：没有设置过关联对象
 #if ISA_HAS_CXX_DTOR_BIT
@@ -348,7 +348,7 @@ objc_object::rootDealloc()
 #else
                  !isa.getClass(false)->hasCxxDtor() &&
 #endif
-                 !isa.has_sidetable_rc))          // 条件5：引用计数未溢出到 SideTable（未使用额外散列表存储计数）
+                 !isa.has_sidetable_rc))          // 条件5：引用计数未溢出至 SideTable
     {
         // 满足全部条件，直接 free 内存（快速路径）
         assert(!sidetable_present());
@@ -381,24 +381,19 @@ object_dispose(id obj)
 void *objc_destructInstance(id obj) 
 {
     if (obj) {
-        // 一次性读取所有标志位，提升性能
-        bool cxx = obj->hasCxxDtor();              // 是否存在 C++ 析构函数（负责清理 C++ 成员变量）
-        bool assoc = obj->hasAssociatedObjects();  // 是否有关联对象
-
-        // 以下顺序非常重要，不能随意调换
-
-        // Step 1：若有 C++ 析构函数，调用 object_cxxDestruct 销毁 C++ 成员变量
-        //         object_cxxDestruct 最终会调用 objc_storeStrong 逐个释放成员变量（实例变量）
+				// 是否存在 C++ 析构函数（清理 C++ 成员变量）
+        bool cxx = obj->hasCxxDtor();            
+	      // 是否有关联对象
+        bool assoc = obj->hasAssociatedObjects();
+        // Step 1：销毁 C++ 成员变量
+        // object_cxxDestruct 最终会调用 objc_storeStrong 逐个释放成员变量（实例变量）
         if (cxx) object_cxxDestruct(obj);
-
-        // Step 2：若有关联对象，调用 _object_remove_assocations 移除所有关联对象
-        //         常用于 category 中通过 objc_setAssociatedObject 添加的属性
+        // Step 2：移除所有关联对象
+        // 常用于 category 中通过 objc_setAssociatedObject 添加的属性
         if (assoc) _object_remove_assocations(obj, /*deallocating*/true);
-
         // Step 3：清理弱引用表和引用计数表
         obj->clearDeallocating();
     }
-
     return obj;
 }
 ```
@@ -414,13 +409,12 @@ objc_object::clearDeallocating()
         // 慢速路径：isa 是原始指针（非优化 isa），直接清理 SideTable
         sidetable_clearDeallocating();
     }
-    else if (slowpath(isa.weakly_referenced  ||  isa.has_sidetable_rc)) {
+    else if (slowpath(isa.weakly_referenced || isa.has_sidetable_rc)) {
         // 慢速路径：优化 isa，但存在 weak 引用 或 引用计数溢出到了 SideTable
         clearDeallocating_slow();
     }
     // 其他情况（nonpointer isa 且无 weak 引用、无 sidetable 引用计数）：
     // 无需清理，直接返回（已由 rootDealloc 的快速路径处理）
-
     assert(!sidetable_present());
 }
 ```
@@ -434,7 +428,6 @@ objc_object::sidetable_clearDeallocating()
 {
     // 通过对象地址从全局 SideTables 中取出对应的 SideTable
     SideTable& table = SideTables()[this];
-
     table.lock();
     // 在引用计数表（refcnts）中查找当前对象
     RefcountMap::iterator it = table.refcnts.find(this);
@@ -458,10 +451,10 @@ objc_object::sidetable_clearDeallocating()
 
 ### 6. weak_clear_no_lock
 
-通过 for 循环遍历 `referrers` 数组，将所有 weak 指针（即 `referrers[i]`）的内存空间直接置为 nil；最后将该 `entry` 从 `weak_table` 中移除（与该对象相关的所有弱引用记录全部销毁）。
+1. 通过 for 循环遍历 `referrers` 数组，将所有 weak 指针（即 `referrers[i]`）置为 nil。
+2. 将该`entry`从`weak_table`中移除（与该对象相关的所有弱引用记录全部销毁）。
 
 ```c++
-// weak_clear_no_lock：将指向指定对象的所有 weak 指针置为 nil，并从弱引用表中移除对应 entry
 // 参数：
 //   weak_table   —— 对象所在 SideTable 的弱引用表
 //   referent_id  —— 即将销毁的对象
@@ -472,10 +465,6 @@ weak_clear_no_lock(weak_table_t *weak_table, id referent_id)
 
     // 通过哈希运算在 weak_table 中找到该对象对应的 weak_entry_t
     weak_entry_t *entry = weak_entry_for_referent(weak_table, referent);
-    if (entry == nil) {
-        // 正常情况下不应为空；可能是 CF/ObjC 混用导致的不匹配（已知 bug）
-        return;
-    }
 
     // 根据 entry 的存储模式，获取 weak 指针数组及其数量
     weak_referrer_t *referrers;
@@ -537,18 +526,6 @@ dealloc
                                 └── clearDeallocating_slow()       // 优化 isa（有 weak 或 sidetable rc）
                                       └── weak_clear_no_lock()     // 将 weak 指针置 nil
 ```
-
-**rootDealloc 快速释放的 5 个判断条件：**
-
-| 条件 | 字段 | 含义 |
-|---|---|---|
-| 1 | `isa.nonpointer` | 使用了优化的非指针 isa |
-| 2 | `!isa.weakly_referenced` | 无 weak 指针指向该对象 |
-| 3 | `!isa.has_assoc` | 未设置过关联对象 |
-| 4 | `!isa.has_cxx_dtor` | 无 C++ 析构函数 |
-| 5 | `!isa.has_sidetable_rc` | 引用计数未溢出至 SideTable |
-
----
 
 ## 移除弱引用流程总结
 
