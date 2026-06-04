@@ -265,10 +265,11 @@ nav:
     - flutter/数据持久化.md
     - flutter/拷贝.md
     - flutter/混合开发与引擎.md
-    - flutter/渲染原理.md
+    - flutter/底层渲染原理.md
     - flutter/热重载.md
     - flutter/网络.md
     - flutter/动画.md
+    - flutter/页面切换过渡动画.md
     - flutter/Navigator.md
     - flutter/widget/NotificationListener.md
     - flutter/app密码保护.md
