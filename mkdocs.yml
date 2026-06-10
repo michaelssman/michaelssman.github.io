@@ -445,10 +445,6 @@ nav:
     - MAC/hosts.md
     - MAC/搭建网站.md
     - MAC/software.md
-  - app:
-    - app/jizhanghelp.md
-    - app/jizhangpp.md
-
 # [Extensions]
 plugins:
   - search: # 现在还不支持中文搜索 支持之后可以设置语言
