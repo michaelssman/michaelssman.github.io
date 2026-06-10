@@ -15,7 +15,7 @@ sudo vi /etc/hosts
 
 ## Windows清除DNS缓存：
 
-修改hosts文件后，可能需要清除DNS缓存才能让更改生效。打开命令提示符（以管理员身份）并输入`ipconfig /flushdns`。
+修改hosts文件后需要清除DNS缓存才能让更改生效。打开命令提示符（以管理员身份）并输入`ipconfig /flushdns`。
 
 ##  设置终端代理
 
@@ -76,6 +76,3 @@ PS C:\Users\micha> git config --global http.proxy http://127.0.0.1:10809
    GitHub的IP地址可能频繁变动，需定期查询更新Hosts文件。
 2. **多域名关联**  
    除`github.com`外，还需添加`github.global.ssl.fastly.net`以解决SSL证书加载问题。
-3. **系统兼容性**  
-   Windows 10/11需以管理员权限操作，否则修改可能失败。
-
