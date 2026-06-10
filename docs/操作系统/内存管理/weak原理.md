@@ -33,7 +33,7 @@ objc_initWeak(id *location, id newObj)
         return nil;
     }
 
-    // 调用 C++ 模板函数 storeWeak 执行实际的存储逻辑
+    // storeWeak 执行实际的存储逻辑
     return storeWeak<DontHaveOld, DoHaveNew, DoCrashIfDeallocating>
         (location, (objc_object*)newObj);
 }
