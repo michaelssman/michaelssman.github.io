@@ -1,555 +1,631 @@
 # Codex
 
+> 本文根据 OpenAI Codex 官方文档重新整理，用于替换原视频笔记中可能过时、错误或无法确认的内容。
+> 更新时间：2026-06-18
+> 官方入口：[Codex docs](https://developers.openai.com/codex/)
+
 ---
 
 ## 目录
 
-1. [课程总览与知识体系](#1-课程总览与知识体系)
-2. [Codex 核心能力与工程化设计思想](#2-codex-核心能力与工程化设计思想)
-3. [Codex 安装与开发环境搭建](#3-codex-安装与开发环境搭建)
-4. [Codex CLI 高效交互指南](#4-codex-cli-高效交互指南)
-5. [Codex 内置斜杠指令体系与业务场景实战](#5-codex-内置斜杠指令体系与业务场景实战)
-6. [agents.md 配置与架构设计](#6-agentsmd-配置与架构设计)
-7. [实战案例：贪吃蛇游戏开发全流程](#7-实战案例贪吃蛇游戏开发全流程)
-8. [代码审查（Review）实战](#8-代码审查review实战)
-9. [Web 搜索与信息整合](#9-web-搜索与信息整合)
-10. [进阶功能预览](#10-进阶功能预览)
-11. [核心总结与最佳实践](#11-核心总结与最佳实践)
+1. [Codex 是什么](#1-codex-是什么)
+2. [使用入口与适用场景](#2-使用入口与适用场景)
+3. [安装、登录与模型选择](#3-安装登录与模型选择)
+4. [CLI 常用工作流](#4-cli-常用工作流)
+5. [斜杠命令速查](#5-斜杠命令速查)
+6. [权限、沙箱与安全边界](#6-权限沙箱与安全边界)
+7. [AGENTS.md 项目指令](#7-agentsmd-项目指令)
+8. [Skills、MCP、Plugins、Subagents](#8-skillsmcppluginssubagents)
+9. [Codex App 重点能力](#9-codex-app-重点能力)
+10. [实践建议与避坑](#10-实践建议与避坑)
+11. [官方资料索引](#11-官方资料索引)
 
 ---
 
-## 1. 课程总览与知识体系
+## 1. Codex 是什么
 
-本课程是 Codex 从入门到精通的实战教程（上篇），共 **11 大模块**，覆盖了 Codex 的核心能力、工程化思想、安装部署、CLI 使用、内置指令、agents.md 规范、MCP 协议、多智能体协作、插件开发、企业级扩展以及 RAG 系统全流程开发。
+Codex 是 OpenAI 面向软件开发的编码智能体，可以在本地或云端理解代码、修改文件、运行命令、审查改动、调试问题，并和 Git、终端、浏览器、MCP、插件、Skills 等能力协作。
 
-### 1.1 课程知识图谱
+学习 Codex 时，不要把它只当成“更会写代码的聊天框”。更准确的理解是：
 
-<iframe title="Codex 课程知识体系" src="diagrams/codex_knowledge_map.html" loading="lazy" style="width: 100%; min-height: 620px; border: 1px solid #e2e8f0; border-radius: 8px;"></iframe>
-
-[打开 Codex 课程知识体系图表](diagrams/codex_knowledge_map.html)
-
-### 1.2 课程 11 大模块速览
-
-| 编号 | 模块 | 核心内容 |
-|:---:|------|----------|
-| 1 | Codex 核心能力与工程化设计思想 | 多任务处理、Git WorkTree、远程连接、插件系统 |
-| 2 | 快速安装与搭建 | CLI、APP、IDE插件三种部署方式 |
-| 3 | CLI 高效交互指南 | 斜杠命令、exec、resume、模型切换 |
-| 4 | 内置斜杠指令体系 | permission、plan、goal、review、copy 等高频指令 |
-| 5 | agents.md 配置与架构设计 | 全局层 vs 项目层、规范驱动开发 |
-| 6 | Codex MCP 核心协议 | 集成外部工具与业务系统对接 |
-| 7 | 从需求到落地的 Scaling | 企业级 Skill 开发流程 |
-| 8 | Sabre Agents | 多智能体协同与复杂任务分发 |
-| 9 | 高阶插件整合 | 插件使用、开发与打包分发 |
-| 10 | 企业级专属插件 | 定制化开发与外部共享 |
-| 11 | 全流程 RAG 系统开发 | 从0到1的企业级客户系统 |
+- **它能读项目上下文**：包括当前目录、Git 状态、打开文件、`AGENTS.md`、配置文件和历史线程。
+- **它能执行工程动作**：编辑文件、运行测试、查看命令输出、生成 diff、做代码审查。
+- **它受权限边界约束**：默认不会无限制访问整台机器，越过沙箱或使用网络等行为通常需要审批。
+- **它可以被定制**：通过 `AGENTS.md`、`config.toml`、Skills、MCP、插件、子智能体和自动化任务，让 Codex 更贴近个人或团队工作流。
 
 ---
 
-## 2. Codex 核心能力与工程化设计思想
+## 2. 使用入口与适用场景
 
-### Codex 三种使用方式
-
-<iframe title="Codex 三种使用方式" src="diagrams/codex_usage_modes.html" loading="lazy" style="width: 100%; min-height: 520px; border: 1px solid #e2e8f0; border-radius: 8px;"></iframe>
-
-[打开 Codex 三种使用方式图表](diagrams/codex_usage_modes.html)
-
-| 方式 | 适用场景 | 特点 |
-|------|----------|------|
-| **APP（桌面版）** | 日常开发、项目管理 | 图形界面、内置预览、自动化任务 |
-| **CLI（命令行）** | 脚本集成、自动化流水线 | 非交互式 exec 模式、可 piped |
-| **IDE 插件** | VS Code / Cursor 内嵌 | 编辑器内无缝切换、代码内联交互 |
-
-### 核心应用场景
-
-1. **写代码** — 采用对话式快速生成，支持快捷指令
-2. **学习开源项目** — 快速分析项目结构、理解代码逻辑
-3. **审查代码（Review）** — 未提交代码 / 已提交 PR 自动审查
-4. **线上问题排查** — 日志丢给 Codex，快速定位 Bug 并给出修复方案
-5. **自动化开发任务** — 从需求分析到功能拆解到编码测试全流程自动化
-
-### 核心能力
-
-<iframe title="Codex 核心能力架构" src="diagrams/codex_core_capabilities.html" loading="lazy" style="width: 100%; min-height: 620px; border: 1px solid #e2e8f0; border-radius: 8px;"></iframe>
-
-[打开 Codex 核心能力架构图表](diagrams/codex_core_capabilities.html)
-
-| 能力 | 说明 |
-|------|------|
-| **多任务处理（多线程）** | 可同时启动多个线程开发不同项目，最终汇总 |
-| **Git WorkTree 机制** | 同一分支下并行开发，代码相互隔离，无需多分支 |
-| **远程连接** | 手机端远程操控电脑端 Codex |
-| **应用操作** | macOS 上调用各种应用、浏览器操作、截图识别 |
-| **图片生成与编辑** | 集成 DALL-E 3、GPT-Image2 等模型 |
-| **全自动化** | 自动调用工具链完成复杂任务 |
-| **Skill 搭建** | 企业级 Skill 开发与使用 |
-| **插件系统** | 高度可扩展，甚至可生成视频 |
-
-### 工程化设计思想
-
-#### 规范工程取代提示词工程
-
-> 传统 AI 编程：写提示词 → 生成代码  
-> Codex 模式：写规范（agents.md） → AI 按规范生成代码
-
-**核心转变**：从自然语言的模糊性走向**结构化输入**，即有规则 vs 无规则的质变。
-
-#### 意图拆解与 Agent 循环
-
-Codex 通过 **Agent 循环机制**模拟人类开发流程：
-
-1. **Plan（规划）** — 清楚写出执行计划
-2. **确认** — 工程师确认计划
-3. **执行** — 细粒度拆分到每个函数/模块
-4. **审查** — 结合上下文分析潜在 Bug、安全问题、性能瓶颈
-5. **修复** — 自动定位日志、修复错误
-
-> **结果**：生成的代码基本上可直接使用，无需二次修改。
-
-#### 上下文工程
-
-- **精简线索**：对代码库进行切片，只注入与当前任务相关的文件
-- **AST 抽象语法树**：理解代码间的依赖引用关系，而非简单拼凑
-- Rely on 代码的**数据结构**理解依赖
-
-#### 外部工具集成
-
-Codex 拥有**超强命令行交互能力**，在超级管理员权限下可：
-
-- 调用编译器、调试器、包管理器
-- 自动读取日志 → 定位原因 → 自动修复
-- 操作浏览器（Chrome）
-- 执行终端命令
+| 入口 | 适合场景 | 关键特点 |
+| --- | --- | --- |
+| **Codex App** | 多项目并行、图形化审查、自动化任务、Worktree 隔离、浏览器/桌面应用验证 | macOS 和 Windows 可用，内置线程、Git diff、终端、自动化、Worktree 等能力 |
+| **IDE Extension** | 在 VS Code、Cursor、Windsurf 等编辑器内协作编码 | 默认 Agent mode，可读写项目、运行命令，并利用 IDE 当前上下文 |
+| **Codex CLI** | 终端交互、脚本化、CI、批处理、远程 TUI | `codex` 进入交互模式，`codex exec` 用于非交互执行 |
+| **Codex Cloud/Web** | 托管环境中的后台任务、PR 协作、云端执行 | 可在浏览器中启动任务，也可在 GitHub PR 中通过 `@codex` 委派任务 |
 
 ---
 
-## 3. Codex 安装与开发环境搭建
+## 3. 安装、登录与模型选择
 
-### 3.1 安装方式
+### 3.1 App
 
-#### CLI（命令行版）
+Codex App 支持 macOS 和 Windows。官方 Quickstart 提供 macOS Apple Silicon、macOS Intel 和 Windows 安装入口。安装后可使用 ChatGPT 账号或 OpenAI API key 登录；使用 API key 登录时，部分功能可能不可用。
+
+### 3.2 IDE Extension
+
+官方支持在这些编辑器中安装 Codex 扩展：
+
+- Visual Studio Code
+- Cursor
+- Windsurf
+- Visual Studio Code Insiders
+
+扩展安装后会在侧边栏出现 Codex 面板。官方文档说明 IDE 扩展默认以 Agent mode 启动，允许 Codex 读取文件、运行命令并在项目目录内写入改动。
+
+### 3.3 CLI
+
+macOS / Linux 官方 standalone installer：
 
 ```bash
-# macOS / Linux
-curl -fsSL https://codex-install.example.com/install.sh | sh
-
-# Windows (PowerShell 管理员模式)
-irm https://codex-install.example.com/install.ps1 | iex
+curl -fsSL https://chatgpt.com/codex/install.sh | sh
 ```
 
-> ⚠️ **重点**：必须用**管理员/root 权限**启动终端，否则可能出现权限报错。
+Windows PowerShell：
 
-**验证安装**：
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"
+```
+
+无人值守安装：
+
+```bash
+curl -fsSL https://chatgpt.com/codex/install.sh | CODEX_NON_INTERACTIVE=1 sh
+```
+
+也可以用 npm 或 Homebrew：
+
+```bash
+npm install -g @openai/codex
+brew install --cask codex
+```
+
+安装后运行：
+
 ```bash
 codex
-# 显示版本号即成功（视频中版本：0.135.0）
 ```
 
-#### APP（桌面版）
+首次启动会提示使用 ChatGPT 账号或 API key 登录。
 
-| 平台 | 安装方式 |
-|------|----------|
-| macOS | DMG 安装包 / Mac App Store |
-| Windows | EXC 安装包 |
-| 版本 | 视频中：26.519.81530 |
+### 3.4 模型选择
 
-#### IDE 插件版
+官方当前推荐：
 
-- VS Code / Cursor → 插件市场搜索 "Codex" → 安装（版本：26.227.314）
-- 左侧聊天窗口界面，功能大同小异
+| 模型 | 官方定位 |
+| --- | --- |
+| `gpt-5.5` | Codex 中大多数任务的推荐模型，适合复杂编码、Computer Use、知识工作和研究工作流 |
+| `gpt-5.4` | 面向专业工作的旗舰模型，适合编码、推理、工具使用和 agentic 工作流 |
+| `gpt-5.4-mini` | 更快、更经济，适合轻量编码任务和子智能体 |
+| `gpt-5.3-codex-spark` | ChatGPT Pro 用户的研究预览模型，优化近实时编码迭代 |
 
-### 3.2 登录与配置
+临时指定模型：
 
-**两种认证方式**：
+```bash
+codex -m gpt-5.5
+codex --model gpt-5.5
+```
 
-| 方式 | 操作 |
-|------|------|
-| OpenAI 账号登录 | 跳转 OAuth 页面授权，自动配置 API |
-| API Key | 设置环境变量 `OPENAI_API_KEY=sk-xxx`，无需登录 |
+配置默认模型可写入 `~/.codex/config.toml`：
 
-> 使用**第三方 API** 需额外配置 Base URL（中转站地址）。
-
-### 3.3 模型选择
-
-| 模型 | 适用场景 |
-|------|----------|
-| **GPT-5.3 Codex** 🏆 | **写代码专用**——针对代码调优，推荐用于 Review |
-| **GPT-5.5** | 推理任务、文档编写、任务规划 |
+```toml
+model = "gpt-5.5"
+```
 
 ---
 
-## 4. Codex CLI 高效交互指南
+## 4. CLI 常用工作流
 
-### 4.1 启动项目
+### 4.1 交互模式
+
+在项目目录启动：
 
 ```bash
-cd /path/to/my_project
-codex        # 进入交互模式
+cd /path/to/project
+codex
 ```
 
-或在 APP 中 **Open Folder** 打开项目目录。
+也可以直接带初始提示：
 
-### 4.2 核心 CLI 命令
+```bash
+codex "Explain this codebase to me"
+```
 
-<iframe title="Codex CLI 命令体系" src="diagrams/codex_cli_commands.html" loading="lazy" style="width: 100%; min-height: 620px; border: 1px solid #e2e8f0; border-radius: 8px;"></iframe>
+常见能力：
 
-[打开 Codex CLI 命令体系图表](diagrams/codex_cli_commands.html)
+- 在终端 TUI 中对话式开发。
+- 查看 Codex 的计划、命令、diff 和输出。
+- 粘贴截图或通过 `--image` 附加图片。
+- 通过 `/model` 切换模型。
+- 通过 `/permissions` 调整权限模式。
+- 通过 `/review` 运行本地代码审查。
+
+### 4.2 恢复会话
+
+Codex 会在本地保存 transcript，可用 `resume` 恢复：
+
+```bash
+codex resume
+codex resume --all
+codex resume --last
+codex resume <SESSION_ID>
+```
+
+非交互模式也可以恢复：
+
+```bash
+codex exec resume --last "继续修复刚才发现的问题"
+codex exec resume <SESSION_ID> "实现刚才的计划"
+```
+
+### 4.3 非交互模式
+
+适合脚本、CI、流水线、定时任务：
+
+```bash
+codex exec "summarize the repository structure and list the top 5 risky areas"
+```
+
+管道输出：
+
+```bash
+codex exec "generate release notes for the last 10 commits" | tee release-notes.md
+```
+
+JSONL 输出：
+
+```bash
+codex exec --json "summarize the repo structure" | jq
+```
+
+权限示例：
+
+```bash
+codex exec --sandbox workspace-write "update docs and run tests"
+codex exec --sandbox danger-full-access "run this in an isolated CI runner"
+```
+
+**注意**：官方说明 `codex exec` 默认运行在 read-only sandbox 中。
+
+### 4.4 远程 TUI / App Server
+
+Codex CLI 支持连接远程 app server：
+
+```bash
+codex app-server --listen ws://127.0.0.1:4500
+codex --remote ws://127.0.0.1:4500
+```
+
+如果要从另一台机器访问，需要配置 WebSocket 鉴权，并优先放在 TLS 后面。不要把未鉴权的远程端点暴露到公网。
+
+### 4.5 Web Search
+
+Codex CLI 官方内置 first-party web search。默认本地任务使用 OpenAI 维护的搜索缓存，而不是每次实时抓取网页。这样可以降低任意网页内容带来的 prompt injection 风险，但搜索结果仍应视为不可信外部输入。
+
+需要最新结果时：
+
+```bash
+codex --search "查找某个库的最新官方迁移说明"
+```
+
+或在配置里设置：
+
+```toml
+web_search = "live"
+```
+
+也可以关闭：
+
+```toml
+web_search = "disabled"
+```
+
+如果要限制搜索工具范围，可使用 `tools.web_search` 配置允许域名、上下文大小和近似位置。
+
+---
+
+## 5. 斜杠命令速查
+
+### 5.1 CLI 常用斜杠命令
 
 | 命令 | 用途 |
-|------|------|
-| `exec <prompt>` | **非交互式执行**，直接返回结果；适合脚本集成 |
-| `clear` | 清理当前对话上下文 |
-| `resume` | 恢复最近对话；`resume <session_id>` 指定恢复 |
-| `resume --all` | 列出所有历史对话 |
-| `stats` | 查看当前 Token 用量等信息 |
-| `model` | 切换模型（5.3 Codex ↔ 5.5） |
-| `help` | 查看所有命令帮助（可要求中文输出） |
+| --- | --- |
+| `/permissions` | 调整 Codex 无需询问即可执行的权限范围 |
+| `/model` | 选择活动模型和可用 reasoning effort |
+| `/fast` | 在支持的模型上切换 Fast service tier |
+| `/plan` | 切换到计划模式，让 Codex 先做方案设计 |
+| `/goal` | 设置、查看、暂停、恢复或清除持续目标 |
+| `/review` | 审查当前工作树、未提交改动、commit 或分支 diff |
+| `/status` | 查看线程配置、模型、审批策略、可写目录和 token 使用 |
+| `/statusline` | 配置 TUI 底部状态栏字段 |
+| `/title` | 配置终端窗口或 tab 标题字段 |
+| `/raw` | 查看最近一次 assistant 消息的原始 markdown |
+| `/compact` | 压缩/总结长对话，释放上下文 |
+| `/copy` | 复制最近一次完成的 Codex 输出，快捷键 `Ctrl+O` |
+| `/diff` | 查看 Git diff，包括未跟踪文件 |
+| `/approve` | 对最近一次 auto review 拒绝的动作允许重试一次 |
+| `/init` | 为当前目录生成 `AGENTS.md` scaffold |
+| `/mcp` | 查看 MCP 工具和服务器状态 |
+| `/skills` | 浏览和使用本地 Skills |
+| `/plugins` | 浏览、安装、启用或管理插件 |
+| `/apps` | 浏览 app/connectors，并把 `$app-slug` 插入提示 |
+| `/hooks` | 查看和管理 lifecycle hooks |
+| `/agent` | 切换/查看子智能体线程 |
+| `/side` 或 `/btw` | 开启临时侧边对话，不打断主线 |
+| `/fork` | 从当前会话派生新线程 |
+| `/new` | 在同一 CLI 会话里开启新对话 |
+| `/resume` | 从会话列表恢复历史对话 |
+| `/clear` | 清屏并开启新的对话；不同于 `Ctrl+L` 只清屏 |
+| `/ide` | 拉取 IDE 打开的文件、选择区等上下文 |
+| `/keymap` | 查看和保存 TUI 快捷键映射 |
+| `/sandbox-add-read-dir` | Windows 上给 sandbox 额外增加只读目录 |
+| `/debug-config` | 调试配置层级和生效策略 |
+| `/theme` | 选择并保存终端语法高亮主题 |
+| `/vim` | 切换 composer 的 Vim 模式 |
+| `/memories` | 配置 memory 注入或生成 |
+| `/experimental` | 切换实验功能，必要时重启 Codex |
+| `/feedback` | 向 Codex 维护者发送反馈和日志 |
+| `/exit` 或 `/quit` | 退出 CLI |
 
-### 4.3 非交互式模式（exec）
+**修正原笔记**：
 
-非常适合**传统运维脚本**、**CI/CD 流水线**场景：
+- `/personality` 官方当前支持 `friendly`、`pragmatic` 和 `none`，不是 “Programmatic / Friendly”。
 
-```bash
-# 直接给结果，不进入交互界面
-codex exec "帮我分析当前目录结构" --path /d/codex/myproject
+### 5.2 App 斜杠命令
 
-# 基于之前对话继续执行
-codex exec --resume <session_id> "继续分析刚才的结果"
-```
+Codex App 也支持在 composer 中输入 `/` 使用命令。官方列出的常见命令包括：
 
-### 4.4 权限模式
-
-| 模式 | 说明 |
-|------|------|
-| **Read-Only** | 只能读文件，不能编辑——适合文档分析 |
-| **Sandbox（非管理员）** | 执行敏感命令需授权（推荐默认） |
-| **Auto Review** | 自动评估风险，危险操作仍需人工确认 |
-| **Full Access** | 完全放权给 Codex，无需确认（演示用） |
-
-> ⚠️ 涉及**删除文件**等高危操作时，建议关闭 Full Access。
-
----
-
-## 5. Codex 内置斜杠指令体系与业务场景实战
-
-### 5.1 高频指令总览
-
-| 指令 | 用途 |
-|------|------|
-| `/permission` | 动态切换权限模式 |
-| `/plan` | **规划模式**——只做计划，不写代码 |
-| `/goal` | **目标模式**——设定目标后异步执行 |
-| `/personality` | 切换对话风格（Programmatic / Friendly） |
-| `/review` | **代码审查**——未提交/已提交 PR 均可 |
-| `/copy` | 复制上次回复（快捷键：`Ctrl+O`） |
-| `/compact` | 压缩上下文——总结历史对话释放 Token |
-| `/new` | 开启新对话 |
-| `/resume` | 恢复历史对话 |
-| `/fork` | 基于当前对话开新分支对话 |
-| `/side` | 开启侧边对话（临时频道，不影响主线） |
-| `/init` | 初始化生成 agents.md |
-| `/mcp` | 查看/管理 MCP 服务 |
-| `/packages` | 插件管理 |
-| `/loud` | 详情输出模式（默认） |
-| `/silent` | 简洁输出模式——直接给结果，方便复制 |
-| `/stats` | 查看 Token 用量 |
-| `/status` | 配置底部状态栏 |
-| `/model` | 模型切换 |
-| `/diff` | 查看代码差异（建议直接用 git diff） |
-| `/vim` | 切换到 Vim 编辑模式 |
-| `/quit` / `/exit` | 退出对话 |
-| `/stop` | 中断所有后台任务 |
-| `/memories` | 配置/关闭对话记忆 |
-| `/feedback` | 向官方反馈问题 |
-| `/ps` | 查看后台进程 |
-
-### 5.2 规划模式（Plan Mode）
-
-```bash
-/plan
-
-# 然后提需求
-帮我生成一个俄罗斯方块小游戏的需求规划和架构设计
-
-# 输出：详细计划 + 3个选项
-# 1️⃣ 帮我实现这个计划（切换到编码模式执行）
-# 2️⃣ 清理上下文后实现
-# 3️⃣ 继续保持规划模式
-```
-
-**适用场景**：项目初期需求分析、架构设计规划阶段。
-
-### 5.3 目标模式（Goal Mode）
-
-```bash
-/goal 帮我开发一个俄罗斯方块小游戏
-```
-
-**特点**：
-
-- 设定目标后异步执行（后台线程）
-- 可查看目标进度、暂停、恢复、移除
-- 适合**长耗时任务**，你可以去干其他事
-
-### 5.4 对话风格切换
-
-```bash
-/personality    # 查看/切换风格
-```
-
-| 风格 | 特点 |
-|------|------|
-| **Programmatic（工程写作型）** | 严谨、偏开发人员角色 |
-| **Friendly（友好型）** | 温暖、有温度、偏助理角色 |
-
-### 5.5 简洁输出模式
-
-```bash
-/silent   # 切换简洁模式
-/loud     # 切换回详细模式
-```
-
-**作用**：简洁模式直接输出关键结果，省略中间过程，**方便复制粘贴**。
+| 命令 | 用途 |
+| --- | --- |
+| `/feedback` | 打开反馈对话框 |
+| `/goal` | 设置持续目标 |
+| `/init` | 为当前项目生成 `AGENTS.md` |
+| `/mcp` | 查看 MCP 连接状态 |
+| `/plan` | 切换计划模式 |
+| `/review` | 审查未提交改动或对比 base branch |
+| `/status` | 查看 thread ID、上下文使用量和 rate limits |
 
 ---
 
-## 6. agents.md 配置与架构设计
+## 6. 权限、沙箱与安全边界
 
-### 6.1 什么是 agents.md？
+Codex 的安全模型由两层共同组成：
 
-agents.md 是 Codex **规范化编程**的核心文件，它定义了项目的：
+- **Sandbox**：技术边界，决定 Codex 运行命令时能读写哪些文件、是否能联网、是否能越过工作区。
+- **Approval policy**：审批策略，决定 Codex 何时必须停下来询问用户或自动审查者。
 
-- 开发规范
-- 项目结构
-- 编码风格
-- 关键文件路径
-- 后端配置/数据库信息
+### 6.1 常见 sandbox mode
 
-> Codex 启动时 **优先读取 agents.md**，相当于项目的"代码地图"。
+| 模式 | 含义 |
+| --- | --- |
+| `read-only` | Codex 可以查看文件，但不能不经审批编辑文件或运行命令 |
+| `workspace-write` | Codex 可以读取文件、在 workspace 内编辑，并在边界内运行常规本地命令 |
+| `danger-full-access` | 取消沙箱限制，拥有更广泛的文件系统和网络访问能力，只应在隔离环境中使用 |
 
-### 6.2 层级优先级
+### 6.2 常见 approval policy
 
-<iframe title="agents.md 层级结构" src="diagrams/codex_agents_md_layers.html" loading="lazy" style="width: 100%; min-height: 620px; border: 1px solid #e2e8f0; border-radius: 8px;"></iframe>
+| 策略 | 含义 |
+| --- | --- |
+| `untrusted` | 不在 trusted set 中的命令需要询问 |
+| `on-request` | 在沙箱内自动运行，越界时请求审批 |
+| `never` | 不弹出审批请求 |
 
-[打开 agents.md 层级结构图表](diagrams/codex_agents_md_layers.html)
+默认本地工作通常是 `workspace-write` + `on-request`。官方称 Full access 对应 `sandbox_mode = "danger-full-access"` 和 `approval_policy = "never"`，不要在真实项目里随手开启。
 
-| 层级 | 路径 | 作用范围 | 适用场景 |
-|------|------|----------|----------|
-| **全局层** | `~/.codex/agents.overwrite.md` → `~/.codex/agents.md` | 所有项目 | 个人编码风格统一 |
-| **项目层** | `{project}/.codex/agents.overwrite.md` → `{project}/.codex/agents.md` | 单个项目 | 项目特定规范 |
+### 6.3 平台差异
 
-**优先级规则**：
-1. 先找 `.codex/agents.overwrite.md`（可覆盖默认）
-2. 再找 `.codex/agents.md`
-3. 两层级都写：**项目层 > 全局层**（越靠近当前目录优先级越高）
-4. 两层级都会读取，项目层覆盖全局层
+- macOS 使用系统内置 Seatbelt 沙箱，通常开箱即用。
+- Windows 原生 PowerShell 使用 Windows sandbox；WSL2 使用 Linux 沙箱实现。
+- Linux / WSL2 建议安装 `bubblewrap`，如 Ubuntu/Debian 使用 `sudo apt install bubblewrap`。
 
-### 6.3 自动生成 agents.md
+---
 
-```bash
-cd 你的项目目录
-codex
-/init    # 自动分析项目并生成 agents.md
-```
+## 7. AGENTS.md 项目指令
 
-> ⚠️ 生成后可能为英文，可使用 `/init 请生成中文版` 指定语言。
+`AGENTS.md` 是 Codex 的持久项目指导文件。它适合放“每次进入这个仓库都要遵守”的规则，例如：
 
-### 6.4 agents.md 典型内容
+- 构建和测试命令。
+- Review 关注点。
+- 仓库特定编码约定。
+- 目录级说明和路由。
+
+### 7.1 官方发现顺序
+
+Codex 每次启动或每个 TUI 会话开始时构建 instruction chain：
+
+1. **全局层**：默认读取 `~/.codex/AGENTS.override.md`，如果不存在则读取 `~/.codex/AGENTS.md`。这一层只取第一个非空文件。
+2. **项目层**：从项目根目录向当前工作目录逐层查找，每层按 `AGENTS.override.md`、`AGENTS.md`、`project_doc_fallback_filenames` 中的文件名顺序加载，且每个目录最多取一个。
+3. **合并顺序**：从上层到更靠近当前目录的文件拼接。越靠近当前目录的文件越晚出现，因此优先级更高。
+
+默认合并上限是 `project_doc_max_bytes = 32768` 字节。文件过大可能被截断，应拆到更靠近业务目录的 `AGENTS.md` 中。
+
+**修正原笔记**：
+
+- 官方文件名是 `AGENTS.md` / `AGENTS.override.md`，不是 `agents.md` / `agents.overwrite.md`。
+- 项目级文件通常在仓库根或子目录直接放 `AGENTS.md`，不是 `{project}/.codex/agents.md`。
+- `AGENTS.override.md` 会替代同目录的 `AGENTS.md`，不是两个都读。
+
+### 7.2 推荐写法
 
 ```markdown
-# 项目概述
-- 项目名称：XXX
-- 技术栈：Python 3.12 + FastAPI + PostgreSQL
-- 目录结构：...
+# AGENTS.md
 
-# 编码规范
-- 命名：snake_case
-- 注释：中文 docstring
-- 测试：pytest覆盖率 > 80%
+## Repository expectations
 
-# 关键文件
-- src/main.py - 入口
-- src/api/ - 接口层
-- src/models/ - 数据模型
+- 修改 JavaScript 文件后运行 `npm test`。
+- 提交 PR 前运行 `npm run lint`。
+- 公共工具函数行为变化时同步更新 `docs/`。
+
+## Review expectations
+
+- 代码审查优先关注正确性、安全、行为回归和缺失测试。
+- 不把纯风格问题作为高优先级发现，除非它掩盖真实风险。
 ```
 
----
+### 7.3 什么时候更新 AGENTS.md
 
-## 7. 实战案例：贪吃蛇游戏开发全流程
-
-视频完整演示了从**0 到 1**用 Codex 开发贪吃蛇游戏的整个过程，这是理解 Codex 工作流程的**最佳入门案例**。
-
-### 7.1 开发步骤
-
-| 步骤 | 操作 | 代码/指令 |
-|------|------|-----------|
-| 1. 新建项目目录 | `mkdir snake-game && cd snake-game` | CLI |
-| 2. 启动 Codex | `codex` | 交互模式 |
-| 3. 提出需求 | "帮我实现一个经典的贪吃蛇游戏，基于HTML5实现" | 自然语言 |
-| 4. Codex 生成代码 | 自动创建 HTML/CSS/JS | 包含完整游戏逻辑 |
-| 5. 自动化测试 | Codex 自己运行并截图验证 | 内置测试循环 |
-| 6. 发现问题 | 点击「开始/重开」按钮无响应 | 人工验证 |
-| 7. 反馈 Bug | "我测试了一下，点击开始重开没有响应" | 描述问题 |
-| 8. 自动修复 | Codex 诊断并修复编码问题 | Agent 循环 |
-| 9. 再次测试 | 方向键可控制蛇移动 | 迭代验证 |
-| 10. 发现新问题 | 蛇没有去吃食物 | 持续反馈 |
-| 11. 持续修复 | 反复迭代直到游戏完美运行 | 完成开发 |
-
-### 7.2 关键洞察
-
-- **Codex 生成代码后会自动测试**，并截图为证
-- **发现问题后丢给 Codex，它会自动诊断 + 修复**
-- 整个修复过程展示了 Codex 的 **工程化 Agent 循环**：
-  - 生成 → 测试 → 发现问题 → 诊断 → 修复 → 再次测试
-- 开发者和 Codex 是**迭代协作**关系，而非一次性交付
+- Codex 反复犯同一个错误。
+- Codex 找到了文件，但总是读太多无关资料。
+- PR 中重复出现同类 review feedback。
+- 团队形成了稳定约定，希望以后每次自动继承。
 
 ---
 
-## 8. 代码审查（Review）实战
+## 8. Skills、MCP、Plugins、Subagents
 
-### 8.1 Review 的两种场景
+### 8.1 Skills
 
-| 场景 | 指令 | 说明 |
-|------|------|------|
-| **未提交代码** | `Review 帮我审查一下当前更改` | 分析未 commit 的变更 |
-| **已提交 PR** | `Review 帮我审查这个PR链接` | 分析 GitHub PR（需配置 Token） |
+Skills 用来给 Codex 增加任务专用能力、领域知识和可复用流程。一个 Skill 是一个目录，至少包含 `SKILL.md`：
 
-### 8.2 审查流程
+```text
+my-skill/
+  SKILL.md       # 必需：metadata + instructions
+  scripts/       # 可选：可执行脚本
+  references/    # 可选：参考文档
+  assets/        # 可选：模板、图片、资源
+  agents/
+    openai.yaml  # 可选：UI metadata、依赖、触发策略
+```
+
+`SKILL.md` 必须包含：
+
+```markdown
+---
+name: skill-name
+description: Explain exactly when this skill should and should not trigger.
+---
+
+Skill instructions for Codex to follow.
+```
+
+触发方式：
+
+- 显式触发：在 CLI / IDE 中使用 `/skills` 或输入 `$skill-name`。
+- 隐式触发：任务匹配 `description` 时由 Codex 自动选择。
+
+Skill 存放位置：
+
+| Scope | 位置 | 用途 |
+| --- | --- | --- |
+| Repo | `$CWD/.agents/skills` 到 `$REPO_ROOT/.agents/skills` | 仓库或子目录专用技能 |
+| User | `$HOME/.agents/skills` | 个人通用技能 |
+| Admin | `/etc/codex/skills` | 机器或容器内共享技能 |
+| System | Codex 内置 | OpenAI 随 Codex 提供的技能，如 skill creator |
+
+### 8.2 MCP
+
+MCP 用于把 Codex 连接到第三方工具和上下文，例如文档系统、浏览器、Figma、Sentry、GitHub 等。
+
+配置方式：
 
 ```bash
-# 在项目目录中
-codex
-> Review 帮我审查当前代码变更
-
-# Codex 自动分析，输出审查报告（默认英文）
-# ⚠️ 可在对话中要求 "请使用中文输出审查结果"
-
-# 审查后自动修复
-> 参考上述审查结果，帮我修复代码
-
-# 输出修复对照表
-> 帮我输出修复对照表格，包括：原问题、修复关键点、修复代码行
+codex mcp add context7 -- npx -y @upstash/context7-mcp
 ```
 
-### 8.3 审查输出示例
+或写入 `~/.codex/config.toml` / 受信任项目的 `.codex/config.toml`：
 
-| 原问题 | 修复关键点 | 修复代码行 | 状态 |
-|--------|-----------|-----------|:----:|
-| 空格与双引号未规范化 | 统一为单引号 + 空格规范 | `game.js:45-48` | ✅ 已修复 |
-| 游戏规则存在误判 | 修正碰撞检测逻辑 | `game.js:102-110` | ✅ 已修复 |
-| 编码问题导致显示乱码 | 声明 UTF-8 编码 | `index.html:1` | ✅ 已修复 |
-
-### 8.4 自定义审查
-
-```bash
-> Review 重点关注安全性问题和性能瓶颈，用中文输出
-> 审查完成后输出一个对照表格
+```toml
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
+env_vars = ["LOCAL_TOKEN"]
 ```
 
----
+CLI 和 IDE Extension 共享 MCP 配置。TUI 中可用 `/mcp` 查看当前 MCP 服务器状态。
 
-## 9. Web 搜索与信息整合
+### 8.3 Plugins
 
-### 9.1 联网搜索模式
+插件是 Codex 的可安装分发单元，可以打包：
 
-```bash
-# 开启 Your 模式 + Search 参数
-codex --your --search
+- Skills
+- App integrations
+- MCP servers
+- 生命周期 hooks
+- 展示资产和 marketplace metadata
 
-# 或在对话中添加
-> --search 帮我抓取最热门的10条AI资讯
+使用上：
+
+- App 里从 Plugins 页面浏览和安装。
+- CLI 里输入 `/plugins` 打开插件浏览器。
+- 安装后可以让 Codex 自行选择，也可以用 `@plugin` 明确指定。
+
+自己构建插件时，官方建议优先使用 `@plugin-creator`。最小插件需要 `.codex-plugin/plugin.json` manifest。
+
+### 8.4 Subagents
+
+子智能体用于并行处理复杂任务，尤其适合：
+
+- 大型代码库探索。
+- 多角度代码审查。
+- 多步骤功能实现中的独立子任务。
+
+官方要点：
+
+- 当前 Codex 版本默认启用 subagent workflow。
+- Codex 只会在你明确要求时生成子智能体。
+- 子智能体会消耗额外 token，因为每个子智能体都会做自己的模型和工具工作。
+- 子智能体继承当前 sandbox policy；也可以为自定义 agent 单独覆盖沙箱配置。
+
+自定义 agent 文件位置：
+
+```text
+~/.codex/agents/       # 个人 agent
+.codex/agents/         # 项目 agent
 ```
 
-### 9.2 注意事项
+每个自定义 agent TOML 至少需要：
 
-- Codex 内置搜索可能**命中缓存**，不一定是最新数据
-- 建议**指定具体搜索引擎**（如 Tavily Search、Bing Search）
-- 若需完全以内部文档为准，**关闭 Web Search** 避免外部干扰
-
----
-
-## 10. 进阶功能预览
-
-### 10.1 图片输入与输出
-
-- **输入截图分析**：`分析一下这张截图`（支持 jpg/png）
-- **生成图片**：`帮我生成一张猫的图片`（调用 DALL-E 3 / GPT-Image2）
-
-### 10.2 语法高亮与主题
-
-- `主题` 命令可切换编辑器颜色主题（亮色/暗色）
-- `语法` 命令可调整代码高亮风格
-
-### 10.3 脚本化集成
-
-```bash
-# 将 Codex 整合到传统脚本
-codex exec "帮我分析日志目录下的文件" --path /var/log
-
-# 与 grep/sed 等命令组合使用
-codex exec "找出项目中所有的 TODO 注释" | grep -i "TODO"
-```
-
-### 10.4 多目录支持
-
-```bash
-# 在对话中指定多个工作目录
-@/path/to/frontend 分析前端项目结构
-@/path/to/backend  分析后端API
+```toml
+name = "reviewer"
+description = "PR reviewer focused on correctness, security, and missing tests."
+developer_instructions = """
+Review code like an owner.
+Prioritize correctness, security, behavior regressions, and missing test coverage.
+"""
 ```
 
 ---
 
-## 11. 核心总结与最佳实践
+## 9. Codex App 重点能力
 
-### 11.1 Codex 使用原则
+### 9.1 线程与项目
 
-1. **规范先行**：先写 agents.md，再让 AI 生成代码。规范的代码质量远高于随意提示。
-2. **选对模型**：写代码 → GPT-5.3 Codex；写文档/推理 → GPT-5.5
-3. **善用 Review**：开发过程中频繁做 Review，让 AI 自我纠错
-4. **迭代开发**：不是一次性交付，而是"生成 → 测试 → 反馈 → 修复"循环
-5. **异步执行**：用 Goal 模式设定目标后做自己的事，让 Codex 后台干活
+Codex App 是面向并行线程的桌面体验。一个项目类似在特定目录启动一个 Codex 会话。多个项目或多个包建议拆成独立项目，让 sandbox 边界更清晰。
 
-### 11.2 效率提升技巧
+### 9.2 Local / Worktree / Cloud
 
-| 技巧 | 说明 |
-|------|------|
-| **提前配好环境** | 预装 Python/node 环境，避免浪费 Token 在环境检查上 |
-| **多目录授权** | 提前授权多个工作目录，让 Codex 能跨目录操作 |
-| **用简洁模式** | `/silent` 减少无关输出，方便复制 |
-| **利用 Plan 模式** | 大型项目先 Plan 再执行，避免方向错误 |
-| **压缩上下文** | 对话过长时用 `/compact` 压缩，释放 Token 空间 |
-| **侧边对话** | `/side` 开临时频道问问题，不影响主对话流 |
-| **Fork 对话** | `/fork` 基于当前对话开分支，做不同方向的探索 |
+App 新线程可选择：
 
-### 11.3 避免的坑
+| 模式 | 含义 |
+| --- | --- |
+| Local | 直接在当前项目目录工作 |
+| Worktree | 创建 Git worktree 隔离改动 |
+| Cloud | 在配置好的云环境远程运行 |
 
-- ❌ 一次性给太多需求，不设边界
-- ❌ 忽略 agents.md 规范，纯自然语言交互
-- ❌ 不做 Review 直接上线
-- ❌ 在 Full Access 下操作敏感文件
-- ❌ 不提前准备开发环境
+Worktree 依赖 Git 仓库。它是 Git worktree 机制下的独立 checkout，不会干扰你的本地 checkout，适合并行探索或后台任务。
 
-### 11.4 下篇预告
+Git worktree 允许多个 checkout 并行，通常会涉及不同 branch 或 detached HEAD；重点是隔离工作区。
 
-本视频为**上篇**，覆盖了核心能力、安装部署、CLI 使用、内置指令、agents.md 等基础体系。**下篇**将继续深入：
+### 9.3 Review pane
 
-- Codex MCP 核心协议与业务系统改造
-- 从需求到落地的 Scaling 搭建
-- Sabre Agents 多智能体协同
-- 高阶插件开发与集成
-- 企业级插件定制化开发
-- 全流程 RAG 系统开发实战
+Review pane 展示 Git 仓库中的改动，不只展示 Codex 改的内容，还包括用户自己改的和其他未提交改动。
+
+可切换 scope：
+
+- Uncommitted changes
+- All branch changes
+- Last turn changes
+
+可做的事：
+
+- 查看 diff。
+- 给具体行添加 inline comments。
+- stage 或 revert change。
+- 让 Codex 根据 inline comments 修复。
+
+CLI 中 `/review` 的结果也可以在 App review pane 中以内联评论形式显示。
+
+### 9.4 Automations
+
+Automations 用于定期运行后台任务。适合：
+
+- 定期检查 telemetry 错误并建议修复。
+- 定期总结代码库变化。
+- 结合 Skills 执行复杂例行流程。
+
+项目级 automation 要求运行本地 Codex App 的机器开机、Codex 正在运行、项目目录仍然存在。Git 仓库中 automation 可以运行在本地项目或新的 background worktree；非 Git 项目会直接在项目目录运行。
+
+### 9.5 In-app browser 与 Browser Use
+
+In-app browser 给你和 Codex 一个共享页面视图，适合本地开发服务器、文件预览、无需登录的公开页面。
+
+限制：
+
+- 不支持登录流程。
+- 不使用你的浏览器 profile、cookies、扩展或已打开 tab。
+- 需要登录态或浏览器扩展时，应使用普通浏览器或 Codex Chrome extension。
+
+Browser Use 让 Codex 操作 in-app browser，例如点击、输入、截图、检查渲染状态和验证修复。使用前需要安装并启用 Browser plugin。
+
+### 9.6 Computer Use
+
+Computer Use 让 Codex 操作 macOS 或 Windows 的图形界面。适合命令行或结构化工具无法覆盖的任务，例如：
+
+- 测试桌面应用。
+- 复现 GUI 中才出现的问题。
+- 操作需要点击的设置界面。
+- 跨多个应用执行流程。
+
+macOS 需要授予 Screen Recording 和 Accessibility 权限。由于它会影响项目之外的 app 或系统状态，应尽量给出明确边界并审查权限提示。
 
 ---
 
-> 📌 **配套资源**
-> - 课件文档（近百页 PDF）
-> - 配套代码仓库
-> - 联系作者获取：视频中提及的联系方式
->
-> 📌 **学习建议**
-> 1. 先看完本总结建立全局认知
-> 2. 动手安装 Codex 并完成贪吃蛇案例
-> 3. 在自己的项目中逐步应用 agents.md + Review 流程
-> 4. 结合实际需求逐步探索 MCP、Skill 等进阶能力
+## 10. 实践建议与避坑
+
+### 10.1 推荐工作流
+
+1. **从小任务开始**：先让 Codex 解释项目、定位文件、列出风险，再让它修改。
+2. **先 Plan 再做大改动**：复杂任务用 `/plan`，确认路线后再执行。
+3. **用 Git 保护自己**：重要任务前后创建 Git checkpoint；App 中可用 diff、stage、commit、push 和 PR。
+4. **用 Review 做第二视角**：开发完成后跑 `/review`，重点看正确性、安全、回归和测试缺口。
+5. **把重复反馈写进 AGENTS.md**：不要每次口头重复团队约定。
+6. **用最小权限跑任务**：默认使用 sandbox；只有隔离环境或明确需要时才用 `danger-full-access`。
+7. **需要外部知识时配置 MCP 或 Web Search**：不要让模型凭记忆猜 API、版本或产品行为。
+
+### 10.2 常见误区
+
+- ❌ 把 Codex 当一次性代码生成器。
+  ✅ 更好的方式是“计划 → 修改 → 验证 → review → 反馈 → 迭代”。
+
+- ❌ 一上来开 Full Access。
+  ✅ 大多数本地工作用 `workspace-write` + `on-request` 已足够。
+
+- ❌ 把所有规则塞到全局 `AGENTS.md`。
+  ✅ 个人偏好放全局，团队/项目/目录规则放最近的仓库 `AGENTS.md`。
+
+- ❌ 使用过时模型名或网上教程里的私有命令。
+  ✅ 以 `/model`、`codex -m` 和官方 Models 页面为准。
+
+- ❌ 让 Codex 联网查“最新资料”但不说明来源要求。
+  ✅ 明确要求使用官方文档、指定 MCP 或指定可信来源。
+
+---
+
+## 11. 官方资料索引
+
+- [Codex Quickstart](https://developers.openai.com/codex/quickstart)
+- [Codex CLI](https://developers.openai.com/codex/cli)
+- [Codex CLI features](https://developers.openai.com/codex/cli/features)
+- [Slash commands in Codex CLI](https://developers.openai.com/codex/cli/slash-commands)
+- [Non-interactive mode](https://developers.openai.com/codex/noninteractive)
+- [Codex Models](https://developers.openai.com/codex/models)
+- [Sandbox](https://developers.openai.com/codex/concepts/sandboxing)
+- [Customization](https://developers.openai.com/codex/concepts/customization)
+- [Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md)
+- [Configuration Reference](https://developers.openai.com/codex/config-reference)
+- [Model Context Protocol](https://developers.openai.com/codex/mcp)
+- [Agent Skills](https://developers.openai.com/codex/skills)
+- [Plugins](https://developers.openai.com/codex/plugins)
+- [Build plugins](https://developers.openai.com/codex/plugins/build)
+- [Subagents](https://developers.openai.com/codex/subagents)
+- [Codex app features](https://developers.openai.com/codex/app/features)
+- [Codex app review](https://developers.openai.com/codex/app/review)
+- [Codex app automations](https://developers.openai.com/codex/app/automations)
+- [Codex app worktrees](https://developers.openai.com/codex/app/worktrees)
+- [Codex app in-app browser](https://developers.openai.com/codex/app/browser)
+- [Codex app computer use](https://developers.openai.com/codex/app/computer-use)
+- [Codex app commands](https://developers.openai.com/codex/app/commands)
+
+---
+
+## 
