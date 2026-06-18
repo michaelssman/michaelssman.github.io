@@ -1,7 +1,7 @@
 # copy
 
 - copy的结果都是不可变，mutableCopy的结果都是可变
-- 只有不可变的copy是浅拷贝（指针拷贝，对象内存地址相同），其它的都是深拷贝（内容拷贝，对象内存地址不一样）。
+- 不可变对象的copy是浅拷贝（对象内存地址相同），其它的都是深拷贝（对象内存地址不一样）。
 
 两个数组  一个数组里面的元素是另外一个数组里面的元素。改变其中一个数组中的元素另一个数组也会改变。
 
@@ -32,10 +32,6 @@ array1 = [[NSMutableArray alloc]initWithArray:array0 copyItems:**YES**];
 model.copy浅拷贝
 
 model.mutableCopy需要实现copy协议，model里面的子model也会拷贝。属于深拷贝。
-
-## swift
-
-A页面进入B页面，B页面的属性值由A页面传进来，要想B页面的属性修改，不影响A页面。需要拷贝。
 
 ```swift
 prodPrices = prodPrices.map({$0.mutableCopy() as! SCMPriceModel})

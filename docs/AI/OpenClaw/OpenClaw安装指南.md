@@ -1,4 +1,4 @@
-# OpenClaw macOS 安装指南
+# OpenClaw安装指南
 
 ## 1. 系统环境检查
 
@@ -25,16 +25,13 @@ brew --version
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-安装脚本会自动检测 macOS 环境，并通过 npm 安装 OpenClaw。记录中的成功安装版本为：
+安装脚本会自动检测 macOS 环境，并通过 npm 安装 OpenClaw。
 
 | 项目 | 详情 |
 |------|------|
 | 安装方式 | npm 全局安装 |
-| 安装版本 | OpenClaw 2026.5.27 (commit: 27ae826) |
 | 可执行文件 | `/opt/homebrew/bin/openclaw` |
 | npm 包位置 | `/opt/homebrew/lib/node_modules/openclaw` |
-| 安装大小 | 约 784 MB |
-| 安装状态 | 成功 |
 
 ### 备用方式：npm 直接安装
 
@@ -117,19 +114,6 @@ openclaw onboard \
 openclaw status
 ```
 
-记录中的状态示例：
-
-```text
-OS:        macos 26.5 (arm64) · node 25.6.1
-Dashboard: http://127.0.0.1:18789/
-Gateway:   local · ws://127.0.0.1:18789 (loopback) · reachable · auth token
-Service:   LaunchAgent installed · loaded · running
-Agent:     1 · main · default
-Model:     deepseek-v4-flash (1000k ctx)
-Sessions:  0 active
-Channels:  No channels configured
-```
-
 也可以进一步检查 Gateway 和健康状态：
 
 ```bash
@@ -150,20 +134,7 @@ Gateway 默认配置：
 
 ---
 
-## 6. 目录结构
-
-```text
-~/.openclaw/
-├── openclaw.json
-├── workspace/
-├── plugins/
-├── credentials/
-└── agents/
-    └── main/
-        └── sessions/
-```
-
-常见路径说明：
+## 6. 目录路径
 
 | 路径 | 说明 |
 |------|------|
@@ -179,7 +150,7 @@ Gateway 默认配置：
 
 ---
 
-## 7. 常用命令速查
+## 7. 常用命令
 
 | 命令 | 说明 |
 |------|------|

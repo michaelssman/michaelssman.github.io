@@ -1,0 +1,113 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>agents.md 层级结构</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f8fafc;
+    --fg: #172033;
+    --muted: #5b6475;
+    --line: #64748b;
+    --neutral: #e2e8f0;
+    --input: #bfdbfe;
+    --process: #c7d2fe;
+    --storage: #99f6e4;
+    --external: #fde68a;
+    --risk: #fecaca;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f172a;
+      --fg: #e5e7eb;
+      --muted: #a3adbd;
+      --line: #94a3b8;
+      --neutral: #334155;
+      --input: #1d4ed8;
+      --process: #4338ca;
+      --storage: #0f766e;
+      --external: #92400e;
+      --risk: #991b1b;
+    }
+  }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.4 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+  main { max-width: 980px; margin: 32px auto; padding: 0 20px; }
+  svg { width: 100%; height: auto; display: block; }
+  .title { font-size: 20px; font-weight: 650; fill: var(--fg); }
+  .label { font-size: 14px; font-weight: 600; fill: var(--fg); }
+  .hl { font-size: 12px; fill: var(--fg); }
+  .small { font-size: 11px; fill: var(--muted); }
+  .node { stroke: var(--line); stroke-width: 1; rx: 6; ry: 6; }
+  .neutral { fill: var(--neutral); }
+  .input { fill: var(--input); }
+  .process { fill: var(--process); }
+  .storage { fill: var(--storage); }
+  .external { fill: var(--external); }
+  .risk { fill: var(--risk); }
+  .edge { stroke: var(--line); stroke-width: 1.5; fill: none; }
+  .edge2 { stroke: var(--line); stroke-width: 1.5; fill: none; stroke-dasharray: 6 4; }
+  .zone { fill: none; stroke: var(--line); stroke-width: 1; stroke-dasharray: 6 5; opacity: 0.8; rx: 10; ry: 10; }
+</style>
+<main>
+  <svg viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg">
+    <text x="450" y="40" class="title" text-anchor="middle">agents.md 层级优先级结构</text>
+
+    <!-- Global Layer -->
+    <rect class="zone" x="30" y="70" width="840" height="130" />
+    <text x="450" y="95" class="label" text-anchor="middle">🌍 全局层（Global Layer）</text>
+    
+    <rect class="node" x="100" y="110" width="280" height="40" />
+    <text x="240" y="129" class="hl" text-anchor="middle">~/.codex/agents.md</text>
+    <rect class="small" x="100" y="155" width="280" height="30" />
+    <text x="240" y="174" class="small" text-anchor="middle">📌 个人编码风格统一</text>
+
+    <path d="M 380 130 L 420 130" class="edge" />
+    
+    <rect class="node external" x="420" y="110" width="180" height="40" />
+    <text x="510" y="129" class="hl" text-anchor="middle">优先级低</text>
+
+    <!-- Arrow down -->
+    <path d="M 450 200 L 450 240" class="edge" marker-end="url(#arrow)" />
+
+    <rect class="zone" x="30" y="240" width="840" height="130" />
+    <text x="450" y="265" class="label" text-anchor="middle">📁 项目层（Project Layer）</text>
+
+    <rect class="node" x="100" y="280" width="280" height="40" />
+    <text x="240" y="299" class="hl" text-anchor="middle">{project}/.codex/agents.md</text>
+    <rect class="small" x="100" y="325" width="280" height="30" />
+    <text x="240" y="344" class="small" text-anchor="middle">📌 项目特定规范、框架信息</text>
+
+    <path d="M 380 300 L 420 300" class="edge" />
+    
+    <rect class="node external" x="420" y="280" width="180" height="40" />
+    <text x="510" y="299" class="hl" text-anchor="middle">优先级高 ✅</text>
+
+    <!-- Arrow down to override -->
+    <path d="M 450 370 L 450 410" class="edge2" />
+
+    <rect class="node risk" x="140" y="410" width="620" height="40" />
+    <text x="450" y="435" class="label" text-anchor="middle">⚠️ agents.overwrite.md 可覆盖对应层级的 agents.md</text>
+
+    <!-- Bottom: flow explanation -->
+    <rect class="zone" x="30" y="470" width="840" height="90" />
+    <text x="450" y="495" class="label" text-anchor="middle">📐 加载流程</text>
+    
+    <rect class="node input" x="60" y="505" width="180" height="40" />
+    <text x="150" y="530" class="hl" text-anchor="middle" font-size="11">查找全局 overwrite</text>
+    <path d="M 240 525 L 280 525" class="edge" />
+    <rect class="node process" x="280" y="505" width="180" height="40" />
+    <text x="370" y="530" class="hl" text-anchor="middle" font-size="11">查找全局 agents.md</text>
+    <path d="M 460 525 L 500 525" class="edge" />
+    <rect class="node storage" x="500" y="505" width="180" height="40" />
+    <text x="590" y="530" class="hl" text-anchor="middle" font-size="11">查找项目层文件</text>
+    <path d="M 680 525 L 740 525" class="edge" />
+    <rect class="node external" x="740" y="505" width="110" height="40" />
+    <text x="795" y="530" class="hl" text-anchor="middle" font-size="11">合并加载</text>
+
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--line)" />
+      </marker>
+    </defs>
+  </svg>
+</main>

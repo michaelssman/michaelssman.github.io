@@ -1,0 +1,123 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Codex 三种使用方式</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f8fafc;
+    --fg: #172033;
+    --muted: #5b6475;
+    --line: #64748b;
+    --neutral: #e2e8f0;
+    --input: #bfdbfe;
+    --process: #c7d2fe;
+    --storage: #99f6e4;
+    --external: #fde68a;
+    --risk: #fecaca;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f172a;
+      --fg: #e5e7eb;
+      --muted: #a3adbd;
+      --line: #94a3b8;
+      --neutral: #334155;
+      --input: #1d4ed8;
+      --process: #4338ca;
+      --storage: #0f766e;
+      --external: #92400e;
+      --risk: #991b1b;
+    }
+  }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.4 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+  main { max-width: 980px; margin: 32px auto; padding: 0 20px; }
+  svg { width: 100%; height: auto; display: block; }
+  .title { font-size: 20px; font-weight: 650; fill: var(--fg); }
+  .label { font-size: 14px; font-weight: 600; fill: var(--fg); }
+  .hl { font-size: 12px; fill: var(--fg); }
+  .small { font-size: 12px; fill: var(--muted); }
+  .node { stroke: var(--line); stroke-width: 1; rx: 8; ry: 8; }
+  .neutral { fill: var(--neutral); }
+  .input { fill: var(--input); }
+  .process { fill: var(--process); }
+  .storage { fill: var(--storage); }
+  .external { fill: var(--external); }
+  .risk { fill: var(--risk); }
+  .edge { stroke: var(--line); stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+  .edge2 { stroke: var(--line); stroke-width: 1; fill: none; stroke-dasharray: 5 4; }
+</style>
+<main>
+  <svg viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--line)" />
+      </marker>
+    </defs>
+
+    <text x="450" y="40" class="title" text-anchor="middle">Codex 三种使用方式</text>
+
+    <!-- Column 1: CLI -->
+    <rect x="30" y="70" width="260" height="380" class="node neutral" />
+    <text x="160" y="100" class="label" text-anchor="middle">💻 CLI 命令行</text>
+
+    <rect x="50" y="115" width="220" height="34" class="node input" />
+    <text x="160" y="137" class="hl" text-anchor="middle">交互式对话模式</text>
+    <rect x="50" y="155" width="220" height="34" class="node process" />
+    <text x="160" y="177" class="hl" text-anchor="middle">exec 非交互式执行</text>
+    <rect x="50" y="195" width="220" height="34" class="node external" />
+    <text x="160" y="217" class="hl" text-anchor="middle">脚本集成 &amp; 管道</text>
+    <rect x="50" y="235" width="220" height="34" class="node storage" />
+    <text x="160" y="257" class="hl" text-anchor="middle">CI/CD 流水线适配</text>
+
+    <text x="160" y="310" class="small" text-anchor="middle">✅ 适合自动化</text>
+    <text x="160" y="328" class="small" text-anchor="middle">✅ 适合运维脚本</text>
+    <text x="160" y="346" class="small" text-anchor="middle">⚠️ 需要 Terminal</text>
+    <text x="160" y="364" class="small" text-anchor="middle">⚠️ 无图形界面</text>
+
+    <!-- Column 2: APP -->
+    <rect x="320" y="70" width="260" height="380" class="node neutral" />
+    <rect x="430" y="70" width="260" height="380" class="node neutral" fill="none" />
+    <text x="450" y="100" class="label" text-anchor="middle">🖥️ APP 桌面版</text>
+
+    <rect x="340" y="115" width="220" height="34" class="node input" />
+    <text x="450" y="137" class="hl" text-anchor="middle">图形界面操作</text>
+    <rect x="340" y="155" width="220" height="34" class="node process" />
+    <text x="450" y="177" class="hl" text-anchor="middle">内置 HTML 预览</text>
+    <rect x="340" y="195" width="220" height="34" class="node external" />
+    <text x="450" y="217" class="hl" text-anchor="middle">自动化定时任务</text>
+    <rect x="340" y="235" width="220" height="34" class="node storage" />
+    <text x="450" y="257" class="hl" text-anchor="middle">项目管理 &amp; Skill</text>
+
+    <text x="450" y="310" class="small" text-anchor="middle">✅ 可视化操作</text>
+    <text x="450" y="328" class="small" text-anchor="middle">✅ 内置浏览器预览</text>
+    <text x="450" y="346" class="small" text-anchor="middle">✅ 任务异步执行</text>
+    <text x="450" y="364" class="small" text-anchor="middle">✅ 多线程管理</text>
+
+    <!-- Column 3: Plugin -->
+    <rect x="610" y="70" width="260" height="380" class="node neutral" />
+    <text x="740" y="100" class="label" text-anchor="middle">🔌 IDE 插件版</text>
+
+    <rect x="630" y="115" width="220" height="34" class="node input" />
+    <text x="740" y="137" class="hl" text-anchor="middle">VS Code / Cursor</text>
+    <rect x="630" y="155" width="220" height="34" class="node process" />
+    <text x="740" y="177" class="hl" text-anchor="middle">内联代码交互</text>
+    <rect x="630" y="195" width="220" height="34" class="node external" />
+    <text x="740" y="217" class="hl" text-anchor="middle">编辑器无缝切换</text>
+    <rect x="630" y="235" width="220" height="34" class="node storage" />
+    <text x="740" y="257" class="hl" text-anchor="middle">Git 深度集成</text>
+
+    <text x="740" y="310" class="small" text-anchor="middle">✅ 编码体验最佳</text>
+    <text x="740" y="328" class="small" text-anchor="middle">✅ 代码内嵌帮助</text>
+    <text x="740" y="346" class="small" text-anchor="middle">✅ 最适合日常编码</text>
+    <text x="740" y="364" class="small" text-anchor="middle">⚠️ 需安装 IDE</text>
+
+    <!-- Codex Core at bottom -->
+    <rect x="250" y="470" width="400" height="40" class="node process" />
+    <text x="450" y="496" class="label" text-anchor="middle">Codex 核心引擎（同一底层能力）</text>
+
+    <path d="M 160 450 L 160 470" class="edge" />
+    <path d="M 450 450 L 450 470" class="edge" />
+    <path d="M 740 450 L 740 470" class="edge" />
+  </svg>
+</main>

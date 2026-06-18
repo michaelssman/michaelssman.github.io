@@ -56,6 +56,10 @@ claude /init
 
 Claude code会互动式的提问，从而自动生成配置文件，这会产生一个claude.md文件。
 
+- 项目规则文件：~/CLAUDE.md
+- 持久记忆文件：~/.claude/projects/-Users-michael/memory/MEMORY.md
+- 设置文件：~/.claude/settings.json
+
 ### claude.md
 
 claude.md是Claude code最核心的记忆文件，作用是让Claude code记住并严格遵守你的项目个人规则，相当于给AI一个**持久的个人偏好级**，每次启动Claude的会话时，它会自动把相关的claude.md文件加载到上下文里，它的优先级比你临时输入的提示词要高很多，这样Claude就能更好的理解你的代码库，遵守规范，减少反复说明，大幅提升输出质量和一致性。
