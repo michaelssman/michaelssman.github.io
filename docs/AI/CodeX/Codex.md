@@ -1,8 +1,6 @@
 # Codex
 
-> 本文根据 OpenAI Codex 官方文档重新整理，用于替换原视频笔记中可能过时、错误或无法确认的内容。
-> 更新时间：2026-06-18
-> 官方入口：[Codex docs](https://developers.openai.com/codex/)
+官方入口：[Codex docs](https://developers.openai.com/codex/)
 
 ---
 
