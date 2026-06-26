@@ -1,6 +1,6 @@
 # mixins
 
-`mixins`是在多个类层次结构中重用类代码的一种方式。与继承不同，`mixins`允许您将一个类的行为插入另一个类，而不形成亲子关系。当您想在许多类中共享一个功能时，这特别有用。
+`mixins`是在多个类层次结构中重用类代码的一种方式。与继承不同，`mixins`允许将一个类的行为插入另一个类，而不形成亲子关系。当您想在许多类中共享一个功能时，这特别有用。
 
 在Dart中，通过用`mixin`关键字定义一个类来创建一个`mixin`。然后使用`with`关键字在其他类中使用此混合。
 
@@ -34,9 +34,7 @@ Log: Data fetched successfully
 
 ## `mixins`与Inheritance
 
-`mixins`和`Inheritance`都是Dart和Flutter中重用代码的机制，但它们服务于不同的目的，具有不同的特征。
-
-**代码重用**
+**代码重用机制**
 
 - `Inheritance`：通过允许子类从超类继承方法和属性来提供代码重用
 - `mixins`：通过允许类合并来自多个Mixin的方法和属性来实现代码重用
@@ -89,7 +87,7 @@ Dog is barking
 Swimming
 ```
 
-在这个例子中，Dog继承自Animal，并使用Swimmer Mixin来获得游泳行为。Dog类可以调用从Animal继承的eat方法、在Dog中定义的bark方法和从Swimmer混合的swim方法。这演示了如何将继承和Mixin结合起来，以创建更灵活和可重用的代码。
+在这个例子中，Dog继承自Animal，并使用Swimmer Mixin来获得游泳行为。
 
 ## `mixins`状态管理
 
@@ -264,8 +262,6 @@ void main() {
 }
 ```
 
-在此示例中，EnhancedLogger Mixin扩展了Logger Mixin并添加了`logError`方法。NetworkManager类使用EnhancedLogger Mixin来获取`log`和`logError`方法。这演示了一个Mixin如何扩展另一个Mixin，从而允许更多
-
 ## on关键字
 
 Dart中的on关键字在Mixin中用于指定约束，这意味着Mixin只能应用于扩展或实现指定类的类。这允许更多的控制，并确保在适当的上下文中使用 Mixin。
@@ -297,4 +293,4 @@ void main() {
 
 在此示例中，由于对LoggerBase的约束，Logger Mixin只能用于扩展LoggerBase的类。
 
-Flutter中的Mixin提供了一种强大的代码重用机制，可以显著提高代码库的模块化和可维护性。通过理解和有效利用Mixin，您可以在Flutter应用程序中创建更灵活和可重用的组件。无论是管理状态、记录日志还是处理重复任务，mixin都为许多场景提供了一个强大的解决方案。
+Mixin提供了一种强大的代码重用机制，可以显著提高代码库的模块化和可维护性。通过理解和有效利用Mixin，您可以在Flutter应用程序中创建更灵活和可重用的组件。无论是管理状态、记录日志还是处理重复任务，mixin都为许多场景提供了一个强大的解决方案。

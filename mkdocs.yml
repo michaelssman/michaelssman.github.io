@@ -430,6 +430,7 @@ nav:
     - 数据库/事务Transaction.md
   - AI:
     - AI/Claude.md
+    - AI/Claude-Hooks指南.md
     - AI/Agent.md
     - AI/OpenSpec.md
     - OpenClaw:
