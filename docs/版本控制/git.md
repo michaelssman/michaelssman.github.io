@@ -313,7 +313,7 @@ git revert -m 1 abc1234  # 替换为实际的提交哈希
 | `git restore .` | 撤销当前目录下所有已跟踪文件的本地修改（新写法，Git 2.23+ 推荐） |
 | `git clean -fd` | 删除所有未跟踪的文件和文件夹（-f 强制，-d 包含文件夹）       |
 
-## 在错误的分支上开发和提交代码
+## cherry-pick
 
 有分支Develop和分支Feature。
 正常的流程是在Feature分支上面进行开发修改，提交代码，然后合到Develop分支。

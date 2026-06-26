@@ -693,3 +693,15 @@ echo ".claude/settings.local.json" >> .gitignore
 - [claude-awesome-stack - Hook 精选示例](https://github.com/giacomogaglione/claude-awesome-stack)
 - [GUVI - Claude Code Hooks 配置指南](https://www.guvi.in/blog/claude-code-hooks-how-to-configure-them/)
 - [Skywork - Claude CLI Hooks 终极指南](https://skywork.ai/blog/slide-template/the-ultimate-guide-to-claude-cli-hooks-in-2026/)
+
+
+
+> 请帮我创建一个 Claude Code Stop hook。
+>
+> 作用：Claude 准备结束前做交付验收。
+>
+> 规则：如果本轮改了代码、配置或文档，但没有说明测试、lint、typecheck、功能验证或TODO检查结果，就不允许结束，继续工作，并让 Claude 继续完成验证。
+>
+> 如果已经验证，允许结束。
+>
+> 创建完成后，告诉我怎么用/hooks 检查
