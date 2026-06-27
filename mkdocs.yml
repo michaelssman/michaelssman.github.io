@@ -468,9 +468,8 @@ markdown_extensions:
 extra_javascript:
   # latex支持
   # check https://squidfunk.github.io/mkdocs-material/reference/mathjax/?h=math for more information
-  # notice `curl https://polyfill.io/v3/polyfill.min.js?features=es6 > mkjavascripts/polyfill.min.js && curl https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js > mkjavascripts/tex-mml-chtml.js` not works... because there are other resources that need to load
+  # Do not load legacy polyfill CDNs here. They are unnecessary for modern browsers and can introduce third-party script risk.
   - mkdocs/javascripts/mathjax.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js # https://cdn.bytedance.com/?query=mathjax&version=3.2.0
 extra_css:
   - mkdocs/css/no-footer.css # 不使用底部的翻页
