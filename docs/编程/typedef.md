@@ -18,3 +18,10 @@ typedef int Object;
 typedef long __darwin_intptr_t;
 ```
 
+## swift
+
+```swift
+/// 语音识别结果回调。
+typealias SpeechRecognitionHandler = (String?, Error?) -> Void
+```
+
