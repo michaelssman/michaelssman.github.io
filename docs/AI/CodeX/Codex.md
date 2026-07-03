@@ -112,7 +112,7 @@ codex exec --sandbox workspace-write "update docs and run tests"
 codex exec --sandbox danger-full-access "run this in an isolated CI runner"
 ```
 
-**注意**：官方说明 `codex exec` 默认运行在 read-only sandbox 中。
+`codex exec` 默认运行在 read-only sandbox 中。
 
 ### 3.4 远程 TUI / App Server
 
@@ -281,7 +281,7 @@ Codex 每次启动或每个 TUI 会话开始时构建 instruction chain：
 
 ---
 
-## 7. Skills、MCP、Plugins、Subagents
+## 7. Skills、MCP、Plugins
 
 ### 7.1 Skills
 
@@ -360,39 +360,6 @@ CLI 和 IDE Extension 共享 MCP 配置。TUI 中可用 `/mcp` 查看当前 MCP 
 - 安装后可以让 Codex 自行选择，也可以用 `@plugin` 明确指定。
 
 自己构建插件时，官方建议优先使用 `@plugin-creator`。最小插件需要 `.codex-plugin/plugin.json` manifest。
-
-### 7.4 Subagents
-
-子智能体用于并行处理复杂任务，尤其适合：
-
-- 大型代码库探索。
-- 多角度代码审查。
-- 多步骤功能实现中的独立子任务。
-
-官方要点：
-
-- 当前 Codex 版本默认启用 subagent workflow。
-- Codex 只会在你明确要求时生成子智能体。
-- 子智能体会消耗额外 token，因为每个子智能体都会做自己的模型和工具工作。
-- 子智能体继承当前 sandbox policy；也可以为自定义 agent 单独覆盖沙箱配置。
-
-自定义 agent 文件位置：
-
-```text
-~/.codex/agents/       # 个人 agent
-.codex/agents/         # 项目 agent
-```
-
-每个自定义 agent TOML 至少需要：
-
-```toml
-name = "reviewer"
-description = "PR reviewer focused on correctness, security, and missing tests."
-developer_instructions = """
-Review code like an owner.
-Prioritize correctness, security, behavior regressions, and missing test coverage.
-"""
-```
 
 ---
 
