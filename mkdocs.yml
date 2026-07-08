@@ -83,6 +83,7 @@ nav:
     - iOS/block.md
     - Runtime:
       - iOS/Runtime/category.md
+      - iOS/Runtime/Associate关联对象.md
       - iOS/Runtime/runtime.md
       - iOS/Runtime/消息机制.md
       - iOS/Runtime/Aspect.md
@@ -445,7 +446,6 @@ nav:
     - MAC/linux.md
     - MAC/hosts.md
     - MAC/搭建网站.md
-    - MAC/software.md
 # [Extensions]
 plugins:
   - search: # 现在还不支持中文搜索 支持之后可以设置语言

@@ -6,8 +6,6 @@ defer {} 里的代码会在当前代码块返回的时候执行，无论当前*�
 
 如果多个 defer 语句出现在同一作用域中，则它们出现的顺序与它们执行的顺序相反，也就是先出现的后执行。 
 
-这里我们看一个简单的例子：
-
 ```swift
 func f() {
     defer { print("First defer") }
@@ -47,7 +45,6 @@ func append(string: String, terminator: String = "\n", toFileAt url: URL) throws
     let fileHandle = try FileHandle(forUpdating: url)
     fileHandle.seekToEndOfFile()
     fileHandle.write(data)
-    
 }
 
 let url = URL(fileURLWithPath: NSHomeDirectory() + "/Desktop/swift.txt")
@@ -91,12 +88,11 @@ defer要在guard前面
 
 ```swift
 func test() {
-  guard false else { return }
+  guard false else { return } // 如果guard返回了，就不会执行defer
   defer {
     print("defer excute")
   }
 }
-//test()//调用test，如果guard返回了，就不会执行defer，所以要避免这样写
 ```
 
 同样的，有的 `Swift` 初学者在刚开始写 `Swift` 的时候可能会写这样的代码

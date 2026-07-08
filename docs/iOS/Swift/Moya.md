@@ -30,7 +30,6 @@ struct Reminder: Codable {
     var reminderId: Int
 }
 
-
 /// 转模型
 JSONDecoder().decode(ReminderData.self, from: r as! Data)
 ```
