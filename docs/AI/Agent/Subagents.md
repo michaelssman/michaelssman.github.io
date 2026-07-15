@@ -158,27 +158,9 @@ Prioritize correctness, security, behavior regressions, and missing test coverag
 
 可以把它理解为：把“你希望某类子智能体怎么工作”沉淀成固定配置。
 
-## 8 和 Skills、MCP 的关系
+子智能体与 Skills、外部工具的组合方式参见 [MCP](../MCP.md#mcp-skills-subagents)。
 
-子智能体、Skills、MCP 经常一起使用，但职责不同：
-
-| 能力 | 主要作用 |
-| --- | --- |
-| Subagent | 拆分任务、隔离上下文、并行处理 |
-| Skill | 提供可复用流程、领域知识和操作规范 |
-| MCP | 连接外部工具、数据源和系统 |
-
-组合示例：
-
-```text
-主智能体负责整体需求。
-子智能体 A 使用 code-review Skill 审查代码。
-子智能体 B 通过 MCP 查询线上错误日志。
-子智能体 C 使用 docs Skill 整理变更说明。
-最后主智能体汇总结果并给出修改方案。
-```
-
-## 9. 实用提示词模板
+## 8. 实用提示词模板
 
 ### 代码审查
 

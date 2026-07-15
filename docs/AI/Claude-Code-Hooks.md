@@ -34,7 +34,7 @@ Hooks（钩子）是 Claude Code 中的**事件驱动脚本/程序**，在 Claud
 
 | 事件 | 触发时机 | Matcher 过滤依据 |
 |------|---------|-----------------|
-| `PreToolUse` | 工具调用执行**前** | 工具名称（如 `Bash`, `Edit\|Write`, `mcp__.*`） |
+| `PreToolUse` | 工具调用执行**前** | 工具名称（如 `Bash`, `Edit\|Write`, `^Notebook`） |
 | `PermissionRequest` | 权限对话框出现时 | 工具名称 |
 | `PermissionDenied` | 自动模式拒绝工具调用时 | 工具名称 |
 | `PostToolUse` | 工具调用**成功后** | 工具名称 |
@@ -91,14 +91,7 @@ Hooks（钩子）是 Claude Code 中的**事件驱动脚本/程序**，在 Claud
 | `PreCompact` | 上下文压缩前 |
 | `PostCompact` | 上下文压缩完成后 |
 
-### 2.11 MCP 交互
-
-| 事件 | 触发时机 |
-|------|---------|
-| `Elicitation` | MCP 服务器请求用户输入时 |
-| `ElicitationResult` | 用户响应 MCP 请求时 |
-
-### 2.12 通知
+### 2.11 通知
 
 | 事件 | 触发时机 |
 |------|---------|
@@ -106,15 +99,16 @@ Hooks（钩子）是 Claude Code 中的**事件驱动脚本/程序**，在 Claud
 
 ---
 
-## 三、Hook 类型（5 种）
+## 三、Hook 类型
 
 | 类型 | 描述 | 适用场景 |
 |------|------|---------|
 | `command` | 运行 shell 命令；通过 stdin 接收 JSON，通过退出码和 stdout 通信 | 本地脚本、格式化、安全检查 |
 | `http` | 将 JSON 作为 HTTP POST 发送到远端；从响应体获取结果 | 远程服务调用、企业审批 |
-| `mcp_tool` | 调用已连接的 MCP 服务器上的工具 | MCP 生态集成 |
 | `prompt` | 发送提示词给 Claude 模型进行单轮是/否评估 | AI 辅助决策 |
 | `agent` | 生成可调用工具（Read, Grep, Glob）的子代理来验证条件（实验性） | 复杂的代码审查逻辑 |
+
+MCP 专用事件和 `mcp_tool` 类型统一整理在 [MCP：Claude Code Hooks](MCP.md#claude-hooks-mcp) 中。
 
 ---
 
@@ -203,15 +197,7 @@ Hooks（钩子）是 Claude Code 中的**事件驱动脚本/程序**，在 Claud
 
 **注意**：HTTP hooks 需在 settings 中配置 `allowedHttpHookUrls` 白名单才能使用。
 
-### 5.5 MCP Tool Hook 字段
-
-| 字段 | 必须 | 描述 |
-|------|------|------|
-| `server` | **是** | 已配置的 MCP 服务器名称 |
-| `tool` | **是** | 要在该服务器上调用的工具名称 |
-| `input` | 否 | 传递给工具的参数。支持 `${path}` 替换 |
-
-### 5.6 Prompt & Agent Hook 字段
+### 5.5 Prompt & Agent Hook 字段
 
 | 字段 | 必须 | 描述 |
 |------|------|------|
@@ -234,9 +220,7 @@ Hooks（钩子）是 Claude Code 中的**事件驱动脚本/程序**，在 Claud
 |-----------|------|------|
 | `*`, `""`, 或省略 | 匹配所有事件 | 每次触发都执行 |
 | 仅字母、数字、`_`、`\|` | 精确字符串或 `\|` 分隔的列表 | `Bash` 只匹配 Bash；`Edit\|Write` 匹配两者 |
-| 包含其他字符 | JavaScript 正则表达式 | `^Notebook`, `mcp__memory__.*` |
-
-**MCP 工具命名规则**：`mcp__<服务器名>__<工具名>`，例如 `mcp__memory__create_entities`。
+| 包含其他字符 | JavaScript 正则表达式 | `^Notebook.*` |
 
 ---
 

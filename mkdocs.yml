@@ -433,6 +433,7 @@ nav:
     - 数据库/事务Transaction.md
   - AI:
     - AI/Claude.md
+    - AI/MCP.md
     - AI/OpenSpec.md
     - OpenClaw:
       - AI/OpenClaw/OpenClaw.md

@@ -1,0 +1,155 @@
+# MCP（Model Context Protocol）
+
+MCP 用于把智能体或 AI 应用连接到外部工具、数据源和系统。模型需要访问文档系统、数据库、浏览器、Figma、Sentry、GitHub、Notion 等外部上下文时，可以通过 MCP 服务器获得对应的工具和数据。
+
+## 1. 一句话理解
+
+MCP 负责提供连接能力：
+
+```text
+智能体或 AI 应用
+    ↓
+MCP 客户端
+    ↓
+MCP 服务器
+    ↓
+外部工具、数据源或业务系统
+```
+
+MCP 本身不规定智能体应该怎样完成业务流程，它主要解决“如何连接并调用外部能力”的问题。
+
+## 2. MCP、工具、Skills 和子智能体 { #mcp-skills-subagents }
+
+| 能力 | 主要作用 |
+| --- | --- |
+| 工具 | 提供读取文件、执行命令、搜索或调用接口等底层操作能力 |
+| MCP | 将外部系统提供的工具和数据接入智能体 |
+| Skill | 提供可复用流程、领域知识和操作规范 |
+| 子智能体 | 拆分任务、隔离上下文并并行处理 |
+| Plugin | 将 Skills、MCP 服务器、Hooks 等能力打包分发 |
+
+可以把工具理解为锤子、锯子和钉子，把 Skill 理解为“如何建造书架”的操作方法。MCP 将外部系统中的工具和数据带进来，Skill 再告诉智能体如何组合这些能力，形成稳定且可重复的工作流。
+
+工具定义通常会持续占用上下文；Skill 则通过渐进式披露按需加载。MCP 提供的工具与内置工具、自定义工具一样，最终都由智能体根据任务调用。
+
+组合示例：
+
+```text
+主智能体负责整体需求。
+子智能体 A 使用 code-review Skill 审查代码。
+子智能体 B 通过 MCP 查询线上错误日志。
+子智能体 C 使用 docs Skill 整理变更说明。
+最后由主智能体汇总结果并给出修改方案。
+```
+
+## 3. Codex 中的 MCP { #codex-mcp }
+
+### 3.1 添加服务器
+
+可以通过 Codex CLI 添加 MCP 服务器：
+
+```bash
+codex mcp add context7 -- npx -y @upstash/context7-mcp
+```
+
+也可以写入用户级 `~/.codex/config.toml`，或受信任项目中的 `.codex/config.toml`：
+
+```toml
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
+env_vars = ["LOCAL_TOKEN"]
+```
+
+CLI 和 IDE Extension 共享 MCP 配置。
+
+### 3.2 查看连接状态
+
+| 使用位置 | 命令 | 用途 |
+| --- | --- | --- |
+| Codex CLI | `/mcp` | 查看 MCP 工具和服务器状态 |
+| Codex App | `/mcp` | 查看 MCP 连接状态 |
+
+### 3.3 与 Plugin 的关系
+
+Codex Plugin 是可安装的分发单元，可以把 Skills、App integrations、MCP servers、生命周期 Hooks 和展示资产打包在一起。MCP 定义外部连接，Plugin 负责分发一整套可安装能力。
+
+### 3.4 使用建议
+
+- 模型需要外部知识、实时数据或私有系统内容时，再配置 MCP。
+- 明确指定可信服务器和数据来源，不要让模型根据记忆猜测 API、版本或产品行为。
+- MCP 工具仍然受 Sandbox、审批策略和项目权限边界约束。
+
+## 4. Claude Code Hooks 与 MCP { #claude-hooks-mcp }
+
+Claude Code Hooks 可以监听 MCP 交互，也可以直接调用已连接 MCP 服务器上的工具。
+
+### 4.1 MCP 交互事件
+
+| 事件 | 触发时机 |
+| --- | --- |
+| `Elicitation` | MCP 服务器请求用户输入时 |
+| `ElicitationResult` | 用户响应 MCP 请求时 |
+
+工具执行类事件也可以通过 Matcher 匹配 MCP 工具，例如 `mcp__.*`。
+
+### 4.2 MCP Tool Hook
+
+`mcp_tool` 类型用于调用已连接的 MCP 服务器工具，适合把 Claude Code Hooks 接入外部系统。
+
+| 字段 | 必须 | 描述 |
+| --- | --- | --- |
+| `server` | 是 | 已配置的 MCP 服务器名称 |
+| `tool` | 是 | 要在该服务器上调用的工具名称 |
+| `input` | 否 | 传递给工具的参数，支持 `${path}` 替换 |
+
+MCP 工具命名规则：
+
+```text
+mcp__<服务器名>__<工具名>
+```
+
+例如：
+
+```text
+mcp__memory__create_entities
+```
+
+该名称可以用于 `PreToolUse`、`PostToolUse` 等工具事件的 Matcher，例如 `mcp__memory__.*`。
+
+## 5. Claude Agent SDK 与 Notion MCP { #claude-agent-sdk-notion-mcp }
+
+一个研究智能体可以组合 Skill、子智能体和 MCP：
+
+1. 主智能体加载 `learning-a-tool` Skill 并制定研究计划。
+2. Docs Researcher、Repo Analyzer 和 Web Researcher 等子智能体并行收集资料。
+3. 主智能体综合结果，生成学习指南、资源列表和代码示例。
+4. Notion MCP 服务器把最终结果写入 Notion 页面。
+
+配置时需要定义 Notion MCP 服务器，并使用通配符模式将对应 MCP 工具加入主智能体的允许工具列表。子智能体继续使用各自更受限的工具集，以符合最小权限原则。
+
+当用户要求写入 Notion 时，主智能体读取本地 `resources.md`，转换为 Notion 富文本块，再通过 MCP 工具提交。各部分职责如下：
+
+| 组成 | 职责 |
+| --- | --- |
+| Skill | 提供结构化、可重复的研究流程 |
+| 子智能体 | 并行执行专注的研究任务 |
+| MCP 服务器 | 提供 Notion 等外部系统连接 |
+| Agent SDK | 以可编程方式编排完整工作流 |
+
+## 6. 什么时候使用 MCP
+
+- 需要访问模型上下文之外的实时或私有数据。
+- 需要调用第三方系统提供的工具。
+- 希望不同智能体客户端复用统一的外部能力。
+- 希望把 MCP 与 Skills、子智能体或 Plugin 组合成完整工作流。
+
+如果任务只需要固定说明和可重复步骤，优先考虑 Skill；如果只是拆分任务或隔离上下文，使用子智能体；只有需要连接外部系统时，才需要 MCP。
+
+## 7. 相关文档
+
+- [Agent Skills](Skills/Agent%20Skills.md)
+- [Subagents 子智能体](Agent/Subagents.md)
+- [Claude Code Hooks](Claude-Code-Hooks.md)
+- [Codex](CodeX/Codex.md)
+- [Codex MCP 官方文档](https://developers.openai.com/codex/mcp)

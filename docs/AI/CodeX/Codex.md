@@ -12,7 +12,7 @@
 4. [斜杠命令速查](#4-斜杠命令速查)
 5. [权限、沙箱与安全边界](#5-权限沙箱与安全边界)
 6. [AGENTS.md 项目指令](#6-agentsmd-项目指令)
-7. [Skills、MCP、Plugins、Subagents](#7-skillsmcppluginssubagents)
+7. [Skills、Plugins](#7-skillsplugins)
 8. [Codex App 重点能力](#8-codex-app-重点能力)
 9. [实践建议与避坑](#9-实践建议与避坑)
 10. [官方资料索引](#10-官方资料索引)
@@ -21,7 +21,7 @@
 
 ## 1. Codex 是什么
 
-- **它可以被定制**：通过 `AGENTS.md`、`config.toml`、Skills、MCP、插件、子智能体和自动化任务，让 Codex 更贴近个人或团队工作流。
+- **它可以被定制**：通过 `AGENTS.md`、`config.toml`、Skills、插件、子智能体和自动化任务，让 Codex 更贴近个人或团队工作流。
 
 ---
 
@@ -172,7 +172,6 @@ web_search = "disabled"
 | `/diff` | 查看 Git diff，包括未跟踪文件 |
 | `/approve` | 对最近一次 auto review 拒绝的动作允许重试一次 |
 | `/init` | 为当前目录生成 `AGENTS.md` scaffold |
-| `/mcp` | 查看 MCP 工具和服务器状态 |
 | `/skills` | 浏览和使用本地 Skills |
 | `/plugins` | 浏览、安装、启用或管理插件 |
 | `/apps` | 浏览 app/connectors，并把 `$app-slug` 插入提示 |
@@ -203,7 +202,6 @@ Codex App 也支持在 composer 中输入 `/` 使用命令。官方列出的常�
 | `/feedback` | 打开反馈对话框 |
 | `/goal` | 设置持续目标 |
 | `/init` | 为当前项目生成 `AGENTS.md` |
-| `/mcp` | 查看 MCP 连接状态 |
 | `/plan` | 切换计划模式 |
 | `/review` | 审查未提交改动或对比 base branch |
 | `/status` | 查看 thread ID、上下文使用量和 rate limits |
@@ -281,7 +279,9 @@ Codex 每次启动或每个 TUI 会话开始时构建 instruction chain：
 
 ---
 
-## 7. Skills、MCP、Plugins
+MCP 命令和配置统一整理在 [MCP](../MCP.md#codex-mcp) 中。
+
+## 7. Skills、Plugins
 
 ### 7.1 Skills
 
@@ -322,34 +322,12 @@ Skill 存放位置：
 | Admin | `/etc/codex/skills` | 机器或容器内共享技能 |
 | System | Codex 内置 | OpenAI 随 Codex 提供的技能，如 skill creator |
 
-### 7.2 MCP
-
-MCP 用于把 Codex 连接到第三方工具和上下文，例如文档系统、浏览器、Figma、Sentry、GitHub 等。
-
-配置方式：
-
-```bash
-codex mcp add context7 -- npx -y @upstash/context7-mcp
-```
-
-或写入 `~/.codex/config.toml` / 受信任项目的 `.codex/config.toml`：
-
-```toml
-[mcp_servers.context7]
-command = "npx"
-args = ["-y", "@upstash/context7-mcp"]
-env_vars = ["LOCAL_TOKEN"]
-```
-
-CLI 和 IDE Extension 共享 MCP 配置。TUI 中可用 `/mcp` 查看当前 MCP 服务器状态。
-
-### 7.3 Plugins
+### 7.2 Plugins
 
 插件是 Codex 的可安装分发单元，可以打包：
 
 - Skills
 - App integrations
-- MCP servers
 - 生命周期 hooks
 - 展示资产和 marketplace metadata
 
@@ -447,7 +425,7 @@ macOS 需要授予 Screen Recording 和 Accessibility 权限。由于它会影�
 4. **用 Review 做第二视角**：开发完成后跑 `/review`，重点看正确性、安全、回归和测试缺口。
 5. **把重复反馈写进 AGENTS.md**：不要每次口头重复团队约定。
 6. **用最小权限跑任务**：默认使用 sandbox；只有隔离环境或明确需要时才用 `danger-full-access`。
-7. **需要外部知识时配置 MCP 或 Web Search**：不要让模型凭记忆猜 API、版本或产品行为。
+7. **需要外部知识时使用 Web Search 或可信数据源**：不要让模型凭记忆猜 API、版本或产品行为。
 
 ### 9.2 常见误区
 
@@ -464,7 +442,7 @@ macOS 需要授予 Screen Recording 和 Accessibility 权限。由于它会影�
   ✅ 以 `/model`、`codex -m` 和官方 Models 页面为准。
 
 - ❌ 让 Codex 联网查“最新资料”但不说明来源要求。
-  ✅ 明确要求使用官方文档、指定 MCP 或指定可信来源。
+  ✅ 明确要求使用官方文档或指定可信来源。
 
 ---
 
@@ -479,7 +457,6 @@ macOS 需要授予 Screen Recording 和 Accessibility 权限。由于它会影�
 - [Customization](https://developers.openai.com/codex/concepts/customization)
 - [Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md)
 - [Configuration Reference](https://developers.openai.com/codex/config-reference)
-- [Model Context Protocol](https://developers.openai.com/codex/mcp)
 - [Agent Skills](https://developers.openai.com/codex/skills)
 - [Plugins](https://developers.openai.com/codex/plugins)
 - [Build plugins](https://developers.openai.com/codex/plugins/build)

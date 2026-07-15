@@ -8,7 +8,7 @@ Skills 对智能体是**渐进式披露**的，Skill 的名称和描述始终存
 
 要使用 Skill，你的智能体需要一组基本工具：用于读写文件的文件系统访问权限和用于执行代码的 bash 工具。这些工具使智能体能够执行 Skill 所需的任何命令。
 
-智能体可以将 Skills 与 MCP 和子智能体结合，创建强大的智能工作流。例如，它可以使用 MCP 从外部源获取数据，然后依靠 Skill 知道如何处理这些数据或如何高效检索数据。它还可以将任务委托给具有隔离上下文的子智能体，而子智能体本身也可以使用 Skills 获取专业知识。
+智能体可以将 Skills 与子智能体结合，创建强大的智能工作流。它可以将任务委托给具有隔离上下文的子智能体，而子智能体本身也可以使用 Skills 获取专业知识。外部工具和数据连接统一整理在 [MCP](../MCP.md) 中。
 
 每个 Skill 都有一个必需的 SKILL.md 文件，其中包含 YAML 前置元数据，名称、描述和主要指令。主要指令还可以引用其他文件，如脚本、额外的 Markdown 文件以及模板和图片等资源。
 
@@ -46,24 +46,15 @@ Skills 是可组合的。我们可以将自定义 Skills 与内置 Skills 结合
 
 ---
 
-## 3、Skill、工具、MCP
+## 3、Skill 与工具
 
-- 引入 MCP 服务器来获取所需的上下文。
-- **引入 Skills 来实现可重复的工作流。**
-
-### MCP
-
-当我们比较 Skills 与 MCP 时，主要考虑的是与外部数据系统的协作以及引入所需的工具和资源。MCP 将我们的智能体或 AI 应用与外部系统和数据连接起来。可以是外部数据库、Google Drive 的数据等各类系统。任何时候需要模型不知道的外部数据和上下文时，MCP 都非常有用。
-
-你的 Skills 可以利用 MCP 提供的底层工具和数据，教会你的智能体如何处理这些数据。可以把 MCP 想象成带来所有底层工具，而 Skill 则是将这些工具组合起来构建特定工作流的指令集，这些工作流是可重复的，并能产生你期望的数据。
-
-### 工具
+### Skill 与工具的关系
 
 关于 Skills 与工具的对比，我喜欢用比喻：工具有点像更底层的概念。想象你有锤子、锯子和钉子。而你有技能，比如如何建造书架。
 
 工具本身是访问系统和为智能体提供完成任务所需能力的底层方式。实际上，工具在底层驱动着生成 Skills、读取 Skills，甚至创建用于执行代码和加载这些 Skills 的文件系统的能力。
 
-Skills 通过专业知识扩展能力，引入需要执行的额外文件和脚本。但执行这些底层脚本、加载文件和文件夹的能力是由工具提供的。有内置在某些智能体生态系统中的工具，有我们自己编写的工具，还有通过 MCP 加载的工具。
+Skills 通过专业知识扩展能力，引入需要执行的额外文件和脚本。但执行这些底层脚本、加载文件和文件夹的能力是由工具提供的。工具可以由智能体生态系统内置，也可以由我们自己编写。
 
 工具定义始终存在于上下文窗口中，而 Skills 在必要时逐步加载。
 
@@ -107,79 +98,22 @@ skill-creator 是一个以编程方式为你创建 Skills 的 Skill。
 
 ## 6、在 Claude API 中使用 Skills
 
-要在 Claude API 中使用 Skills，需要使用代码执行工具和 Files API。这将使 Claude 具备文件系统访问权限（用于读写文件）和 bash（用于执行代码）。
-
-我们从 Claude AI 和 Claude Desktop 中的 Skills 开始，现在转向如何通过 Claude Messages API 使用 Skills。
+要在 Claude API 中使用 Skills，需要使用 bash `代码执行`和 Files API `读写文件`。
 
 有几点需要确保我们理解。
 
-第一，你在 Claude AI 和 Claude Desktop 中创建的 Skills 不会与 Claude API 或 Claude Code 共享。
-
-第二，要使用 Skills，我们需要让 Claude 具备执行代码、创建和编辑文档、演示文稿、PDF、数据报告以及与文件系统交互的能力。当使用 Claude API 时，这些都需要手动配置，而在使用 Claude AI 和 Claude Desktop 时，这些是为您直接配置好的。
-
-在 Claude Desktop 或 Claude AI 中，如果我进入设置查看功能配置，你会看到一个叫做"代码执行和文件创建"的部分。这是我们在直接使用 API 时要深入探讨的部分。这个设置默认开启，允许 Claude 执行代码、创建文档、电子表格、演示文稿等。这本质上为 Claude AI 和 Claude Desktop 提供了一台计算机或虚拟机来执行代码并完成使 Skills 工作的所有事情。如果禁用此功能，我们需要在使用 Skills 前将其打开。
-
-现在我们对代码执行工具和文件创建在 Claude AI 和 Desktop 中的工作原理有了更好的理解，我们来谈谈它在底层是如何工作的，因为在使用 API 时需要手动启用。
+1. 你在 Claude AI 和 Claude Desktop 中创建的 Skills 不会与 Claude API 或 Claude Code 共享。
+2. 要使用 Skills，需要让 Claude 具备执行代码、创建和编辑文档、演示文稿、PDF、数据报告以及与文件系统交互的能力。当使用 Claude API 时，这些都需要手动配置，而在使用 Claude AI 和 Claude Desktop 时，这些是为您直接配置好的。
 
 - 在使用 Claude Code 和 Claude 智能体产品等工具时，你可以直接访问文件系统。
 - 使用 Claude API 时，你没有直接访问权限，我们需要一个容器来执行代码，同时搭配一个文件系统。
 - 在 Claude AI 和 Claude Desktop 中，这种容器化环境和文件系统是直接提供给你的，你不需要自己实现。
 
-当我们开始探索 Messages API 时，我们将使用代码执行工具。代码执行工具允许 Claude 运行 bash 或 shell 命令，完成我们在使用 Skills 时看到的所有操作——在沙箱环境中创建、查看和编辑文件、编写代码。
+**代码执行工具**允许 Claude 运行 bash 或 shell 命令。
 
-代码执行工具使我们的应用拥有一个仅供我们自己使用的专属容器，我们可以在其中执行代码和处理文件系统。正如你看到的 Skills 功能，这对于读取 Skills、在 Skills 中执行代码以及处理其他我们可能想编辑、查看和创建的文件至关重要。
+在沙箱或容器环境中创建、查看和编辑文件、编写代码，该环境内存、磁盘、CPU 有限，最重要的是没有互联网访问权限，并且有一些开箱即用的库。
 
-实际上，当我们集成代码执行工具时，我们基本上给了 Claude 一个用于执行的沙箱或容器。
-
-当我们要求 Claude 创建和执行文件时，这些操作发生在安全且隔离的环境中。该环境内存、磁盘、CPU 有限，最重要的是没有互联网访问权限，并且有一些开箱即用的库。因此它并不适用于所有类型的编码环境。有一些注意事项和限制。
-
-同时，我们可以访问一个文件系统并开始在其中添加目录。你在使用 Claude Desktop 和 Claude AI 时可能已经看到了一些相关迹象。
-
-代码执行工具与 Claude API 提供的另一组 API 配合得很好。正如我们可以想象的，当处理文件时——添加、创建、写入、修改文件——我们需要某种机制来实际存储底层文件。Claude API 包含一组称为 Files API 的接口，用于上传和下载可以在容器内执行和处理的文件。
-
-可以想象这样一个场景：用户要求总结一些输入内容并将其保存到文本文件中。我们上传输入文件，发送到容器，然后通过 Files API 下载结果文件。
-
-我们很快会在代码中看到这一点。当我们看到上传和下载文件返回的 ID，以及它们如何与我们的 Skills 和代码执行工具完美配合时，我们就会明白 Skills 如何协同工作。
-
-你可以使用的 Skills 仓库——无论是来自 Claude AI 等工具的内置技能组，还是你通过 API 手动添加的——都存储在容器中的一个目录中。
-
-这就是 Skills 发挥作用的地方：当我们开始从这个 Skills 目录中读取内容、向 Skills 中添加信息，并使用这些底层 Skills 来创建我们可以下载或上传的新文件。你还会注意到，在所有 API 和使用中，当你想使用 Skills 时，也需要使用代码执行工具。
-
-现在我们了解了代码执行工具和 Files API 的功能，让我们看看如何实际使用它们。我们将重新审视之前创建的两个自定义 Skills：用于生成练习题的 Skills 和用于分析时间序列的 Skills。
-
-现在进入 Jupyter Notebook 探索。这里有我们之前使用的两个自定义 Skills、一个用于分析时间序列数据的数据文件夹，以及一个在使用生成练习题 Skill 时会用到的讲义笔记文件夹。
-
-看看 Notebook 的第一部分。我们将设置 API 客户端和代码执行工具。配置客户端使用代码执行工具，然后发送关于我们需要什么的消息。
-
-我们首先会先测试一下代码执行工具和 Files API。上传时间序列数据 CSV，确保连接正常。
-
-使用代码执行工具查看在上传 Skill 文件后创建的 skills 目录内部。上传自定义 Skill 并直接在代码执行容器中解压。
-
-将两个 Skills 上传到容器并解压到 skills 目录后，确保一切正常。查看目录内容。
-
-可以看到自定义 Skills 按预期出现在这里：analyzing-time-series 和 generating-practice-questions。
-
-然后上传要使用的数据 CSV。上传后，使用代码执行工具测试时间序列分析 Skill。给 Claude 一个描述我们需求的提示，指定使用这个 Skill。
-
-运行提示时，可以看到 Claude 正在使用这个 Skill 文件，读取其中的指令，然后执行我们指定的工作流。
-
-查看我们给出的提示：要求 Claude 使用 analyzing-time-series Skill 分析时间序列数据，描述数据及其特征，告诉我们是否可预测。
-
-我们看到 Claude 读取 Skill 文件，提取指令，然后开始工作流：第一步，通过 Python 脚本运行诊断，然后总结发现。
-
-然后我们看到结果。可以看到运行的诊断、文本文件、甚至生成的图表图像。Skill 的流程完全按照我们在 SKILL.md 中编写的方式执行。
-
-对于第二个 Skill，生成练习题。上传讲义笔记（这次是 PDF），然后使用 generating-practice-questions Skill。
-
-要求 Claude 使用这个 Skill 基于上传的 PDF 讲义笔记生成练习题，并将结果保存到 LaTeX 和 markdown 文件。
-
-我们看到 Claude 再次读取 Skill 文件，然后发送我们要求的期望输出格式（在提示中指定）。然后按预期生成问题，从讲义笔记中获取学习目标。
-
-对于输出，我们看到它引用了 assets 文件夹，查看模板 markdown 文件以了解如何以 markdown 格式输出问题。对 LaTeX 也做了同样的事情。
-
-然后，它使用 markdown 模板和 LaTeX 模板创建文件，我们可以通过 Files API 从代码执行容器中下载。
-
-完整的代码示例可以在 GitHub 上找到。
+Claude API 包含一组称为 Files API 的接口，用于上传和下载可以在容器内执行和处理的文件。
 
 在本课中，我们结合了 Messages API、代码执行工具、Files API 和 Skills，最终实现了以编程方式处理自定义 Skills 的能力。在下一课中，我们将转向 Claude Code，在 .claude 文件夹中添加自己的自定义 Skills，并构建更复杂的命令行应用。
 
@@ -256,15 +190,13 @@ Skills 和子智能体一起允许一个极其强大的工作流：你可以让�
 
 三个子智能体各有专长：Docs Researcher 负责阅读文档；Repo Analyzer 负责克隆仓库和分析代码；Web Researcher 负责查找教程、YouTube 视频和其他外部资源。
 
-主智能体还可以访问 Notion 的 MCP 服务器，因此可以将最终结果写入 Notion 页面。
+外部系统写入部分统一整理在 [MCP：Claude Agent SDK 与 Notion](../MCP.md#claude-agent-sdk-notion-mcp) 中。
 
 我们使用的 Skill 叫做"learning-a-tool"。这个 Skill 提供了如何学习新开源工具的计划。Skill 有元数据——名称和描述——并引用了一个包含详细说明的 progressive_learning.md 文件。这就是渐进式披露的实际应用：Skill 描述始终加载，但详细说明只在 Skill 被触发时才加载。
 
 看看项目结构。agent.py 是主入口。agents 目录有定义子智能体的 markdown 文件：docs_researcher.md、repo_analyzer.md 和 web_researcher.md。还有一个 .claude/skills/learning-a-tool 目录，包含 SKILL.md 和 progressive_learning.md 文件。
 
 让我们浏览代码。首先，导入必要的模块并配置工具。SDK 默认是只读且安全的，所以我们需要显式允许某些工具。我们允许写入、bash、网络搜索和网络抓取。这些是使智能体能够完成工作的工具。
-
-接下来，配置 MCP 服务器。我们定义一个 Notion MCP 服务器，让智能体可以将结果写入 Notion 页面。我们使用通配符模式将 MCP 工具名称添加到允许的工具列表中。
 
 然后配置 Skill tool 和 Task tool。Skill tool 从项目的 .claude/skills 目录加载 Skills。Task tool 加载子智能体定义，允许我们向它们分派任务。
 
@@ -276,9 +208,7 @@ Skills 和子智能体一起允许一个极其强大的工作流：你可以让�
 
 子智能体返回发现的结果，主智能体将所有内容综合成全面的学习指南。它创建一个本地文件结构，包含学习路径和时间预估的 README.md，整理链接的 resources.md，以及带有基本代码示例的 examples 文件夹。
 
-最后，当用户要求将资源写入 Notion 时，主智能体使用 MCP 服务器将内容写入 Notion 页面。它读取本地的 resources.md 文件，自动将其转换为 Notion 的富文本块格式。
-
-这展示了结合 Skills、子智能体、MCP 和 Agent SDK 的全部力量。Skill 提供结构化的流程。子智能体提供并行、专注的研究。MCP 服务器提供外部连接。SDK 以可编程的方式将所有内容整合在一起。
+这展示了结合 Skills、子智能体和 Agent SDK 的力量。Skill 提供结构化的流程，子智能体提供并行、专注的研究，SDK 以可编程的方式将所有内容整合在一起。
 
 本课的一些重要收获：
 
