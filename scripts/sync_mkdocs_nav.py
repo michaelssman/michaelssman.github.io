@@ -83,7 +83,10 @@ def to_nav_path(repository_path: str) -> str | None:
     if not repository_path.startswith(DOCS_PREFIX):
         return None
     nav_path = repository_path[len(DOCS_PREFIX) :]
-    if PurePosixPath(nav_path).suffix.lower() not in MARKDOWN_SUFFIXES:
+    path = PurePosixPath(nav_path)
+    if any(part.startswith(".") for part in path.parts):
+        return None
+    if path.suffix.lower() not in MARKDOWN_SUFFIXES:
         return None
     return nav_path
 
