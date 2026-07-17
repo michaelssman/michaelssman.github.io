@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Commit Push"
+  short_description: "Commit, pull, and push git changes safely"
+  default_prompt: "Use $git-commit-push to stage current changes, generate a Conventional Commit message, commit, pull with rebase, and push safely."
