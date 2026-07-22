@@ -156,22 +156,6 @@ switch currentWeak{
 }
 ```
 
-如果我们要匹配关联值的话 
-
-```swift
-enum Shape{
-  case circle(radious: Double)//圆形 半径
-  case rectangle(width: Double, height: Double)//矩形
-}
-let shape = Shape.circle(radious: 10.0)
-switch shape {
-  case .circle(let radious):
-  print("Circle radious:\(radious)")
-  case .rectangle(let width, let height):
-  print("rectangle width:\(width),height\(height)")
-}
-```
-
 - 枚举值可以修改。
 - 枚举可以定义方法（mutaing 异变方法）。
 - 枚举可以定义属性。
@@ -312,13 +296,11 @@ var x = List.node(10, next: List.node(20, next: List.node(30, next: List.end)))/
 
 ## NS_OPTIONS
 
-可以有多个值。
-
-`NS_OPTIONS` 是 Objective-C 语言中用于定义**位掩码**类型的宏，它用于创建一个可以包含多个选项的自定义类型，通常用于配置或状态标志。
+`NS_OPTIONS` 是 Objective-C 语言中用于定义**位掩码**类型的宏，它用于创建可以包含多个选项的自定义类型，通常用于配置或状态标志。
 
 **这些选项可以单独使用，也可以组合使用，通常通过按位 OR 运算符`|`组合。**
 
-`NS_OPTIONS` 宏定义的类型实际上是一个整数类型（如 `NSUInteger` 或 `NSInteger`），其中每个位可以代表不同的选项。这种类型的好处是可以**高效地存储和比较多个布尔值**。
+`NS_OPTIONS` 宏定义的类型实际上是一个整数类型，其中每一个位代表不同的选项。这种类型的好处是可以**高效地存储和比较多个布尔值**。
 
 下面是一个使用 `NS_OPTIONS` 的例子，假设我们正在定义一个自定义视图，这个视图可以配置多种边框样式：
 
