@@ -157,9 +157,9 @@ A---B---C (main)
 
 使用 `--no-ff` 可以更清晰地记录分支合并的历史，可以帮助更好地理解代码的演变过程。
 
-### 当前修改创建分支
+### git stash
 
-需求：将当前的修改创建一个新的分支，不在当前分支上commit和push。
+不在当前分支上commit和push，将修改在其它分支上进行commit和push。
 
 通过 Git 的分支操作解决。以下是分步解决方案：
 
@@ -171,7 +171,7 @@ A---B---C (main)
    ```
 
 2. **创建并切换到新分支**：
-   创建一个新的分支并切换到该分支。
+   创建一个新的分 支并切换到该分支。
 
    ```bash
    git checkout -b new-feature-branch
@@ -189,13 +189,6 @@ A---B---C (main)
    ```bash
    git add .
    git commit -m "Your commit message"
-   ```
-
-5. **推送到远程仓库**：
-   将新分支推送到远程仓库。
-
-   ```bash
-   git push origin new-feature-branch
    ```
 
 这样，你就可以在新的分支上进行提交和推送，而不会影响到 `develop` 分支。
