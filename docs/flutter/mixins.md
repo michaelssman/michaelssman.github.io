@@ -1,6 +1,6 @@
 # mixins
 
-`mixins`是在多个类层次结构中重用类代码的一种方式。与继承不同，`mixins`允许将一个类的行为插入另一个类，而不形成亲子关系。当您想在许多类中共享一个功能时，这特别有用。
+与继承不同，`mixins`允许将一个类的行为插入另一个类，而不形成亲子关系。当您想在许多类中共享一个功能时，这特别有用。
 
 在Dart中，通过用`mixin`关键字定义一个类来创建一个`mixin`。然后使用`with`关键字在其他类中使用此混合。
 
@@ -29,8 +29,6 @@ void main() {
 Log: Fetching data...
 Log: Data fetched successfully
 ```
-
-在这个例子中，`NetworkManager`类继承了`Logger Mixin`中的`log`方法。
 
 ## `mixins`与Inheritance
 
@@ -88,68 +86,6 @@ Swimming
 ```
 
 在这个例子中，Dog继承自Animal，并使用Swimmer Mixin来获得游泳行为。
-
-## `mixins`状态管理
-
-`mixins`在状态管理中特别有用。让我们考虑一个场景，其中我们有多个小部件，需要从API获取数据并管理它们的加载状态。
-
-### 为API调用创建Mixin
-
-```dart
-mixin ApiFetcher {
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
-  Future<void> fetchData(Future<void> Function() apiCall) async {
-    _isLoading = true;
-    try {
-      await apiCall();
-    } finally {
-      _isLoading = false;
-    }
-  }
-}
-```
-
-### 在小部件中使用Mixin
-
-```dart
-class DataWidget extends StatefulWidget {
-  @override
-  _DataWidgetState createState() => _DataWidgetState();
-}
-
-class _DataWidgetState extends State<DataWidget> with ApiFetcher {
-  String _data;
-  
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-  
-  Future<void> _loadData() async {
-    await fetchData(() async {
-      // Simulate API call
-      await Future.delayed(Duration(seconds: 2));
-      setState(() {
-        _data = 'Fetched Data';
-      });
-    });
-  }
-  
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: isLoading
-          ? CircularProgressIndicator()
-          : Text(_data ?? 'No Data'),
-    );
-  }
-}
-```
-
-在本例中，ApiFetcher mixin处理API调用和加载状态管理。`DataWidget`小部件使用此 Mixin来获取数据并相应地更新UI。mixin中的isLoading布尔值控制是否显示加载指示符或获取的数据。
 
 ## 组合多个`mixins`
 
