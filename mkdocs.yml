@@ -236,6 +236,7 @@ nav:
       - flutter/Dart/方法.md
       - flutter/Dart/高阶函数.md
       - flutter/Dart/集合控制流.md
+      - flutter/Dart/part-usage.md
     - flutter/flutter简介.md
     - flutter/pubspec.yaml.md
     - flutter/本地资源和工程配置.md
@@ -280,7 +281,6 @@ nav:
       - flutter/异步和多线程/异步Future.md
       - flutter/异步和多线程/异步和多线程.md
       - flutter/异步和多线程/async和await.md
-    - flutter/dart-part-usage.md
   - 数据结构与算法:
     - 数据结构:
       - 数据结构与算法/数据结构/数据结构.md

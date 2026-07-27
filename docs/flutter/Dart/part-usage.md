@@ -1,4 +1,4 @@
-# Dart `part` 的作用和使用
+# `part` 的作用和使用
 
 `part` 是 Dart 用来把一个 library 拆成多个源文件的语法。它不是普通的 `import`，而是让多个文件共同组成同一个库。
 
@@ -193,46 +193,6 @@ class UserService with Loggable {
 ```
 
 `mixin` 更适合多个类复用同一组行为。
-
-## 什么时候适合使用 `part`
-
-推荐使用：
-
-- `.g.dart` 代码生成文件。
-- `freezed` / `json_serializable` / `retrofit` 等生成代码。
-- 与主文件强绑定、不会独立复用的源码片段。
-- 框架或工具链明确要求使用 `part` 的场景。
-
-谨慎使用：
-
-- 页面 Widget 拆分。
-- Controller 拆分。
-- Repository 拆分。
-- Service 拆分。
-- ViewModel / State 拆分。
-
-这些业务代码更推荐通过普通 Dart 文件和清晰的类型边界来拆分。
-
-## 判断是否该用 `part` 的问题清单
-
-使用前可以问自己：
-
-1. 这个文件是否必须访问主文件的私有成员？
-2. 它是否完全不能独立存在？
-3. 它是否是代码生成文件？
-4. 如果不用 `part`，改成普通类或组合对象是否更清晰？
-5. 未来是否可能被测试、复用或迁移到其他模块？
-
-如果答案不是“必须同库强绑定”，通常不要用 `part`。
-
-## 工程建议
-
-- 代码生成文件优先使用 `part`。
-- 业务逻辑拆分优先使用普通文件和 `import/export`。
-- 大页面优先拆成独立 Widget，而不是 `part` Widget。
-- 大 controller 优先拆成多个 controller/coordinator/state 对象。
-- 大 repository 优先拆 DAO、repository、mutator、query builder。
-- 不要为了减少单文件行数而滥用 `part`。
 
 ## 小结
 
