@@ -5,8 +5,6 @@
   <tr><td>电话：1XX-XXXX-XXXX</td><td>邮箱：michaelss_work@outlook.com</td></tr>
   <tr><td colspan=2>个人博客：https://michaelssman.github.io/</td></tr>
 </table>
-
-
 ---
 
 ## 教育背景（2011.09-2015.07）
@@ -23,34 +21,30 @@
 
 ## 技能清单
 
+- **系统与底层：** 熟悉 ARC/MRC、Block、Runtime、消息发送与转发、KVC/KVO、weak 引用和自动释放池机制，理解对象/类、isa、RunLoop、Mach-O 与 dyld 加载流程，能够结合 LLDB 和系统工具定位底层问题。
+- **架构与组件化：** 具备 MVC/MVVM、Router 解耦及响应式/函数式编程实践，能够运用策略、适配器和中介者等模式拆分复杂业务；维护 Swift/Objective-C 混编组件库 `HHUtils`，通过 CocoaPods/Podspec 对外复用。
+- **复杂 UI 与交互：** 独立开发可复用 Tab 容器、拖拽排序列表、泛型列表、相册选择与预览、自定义键盘、WKWebView、转场动画及绘制组件，具备响应者链、手势冲突、嵌套滚动和键盘避让处理经验。
+- **并发、网络与数据：** 熟悉 GCD、NSOperation、NSThread、任务依赖、并发控制和线程同步；具备 URLSession/Alamofire、并发与断点下载、OSS 文件传输，以及 FMDB、CoreData、SQLite 数据持久化实践。
+- **性能与稳定性：** 具备二进制重排启动优化、RunLoop 卡顿检测、异步预排版、列表高度缓存、图片解码与离屏渲染优化经验；
+- **工程化与交付：** 熟悉 CocoaPods 私有组件、Podspec、XCFramework、xcconfig/Scheme 多环境配置及 fastlane 自动化构建发布，具备 App Store 上架、APNs/JPush/友盟推送和 Universal Link 接入经验。
+- **Flutter/Dart：** 具备 Flutter 应用独立交付能力，完成多账本应用的产品设计、分层架构、SQLite 数据层、CustomPainter 组件、MethodChannel 原生桥接、异步/Isolate、自动化测试及 App Store 发布。
 
 
-```
-- 熟练使用 Objective-C，具备 Swift 项目开发经验，熟悉 UIKit、响应者链、事件传递及复杂列表、自定义交互组件开发。
-- 熟悉 GCD、NSOperation 等并发技术，具备任务依赖、并发控制、线程同步及异步任务状态管理经验。
-- 具备 MVC/MVVM、Router 解耦及组件化实践经验，能够结合策略、适配器和中介者等模式解决复杂业务扩展问题。
-- 具备启动、卡顿和渲染性能优化经验，包括二进制重排、RunLoop 卡顿检测、异步预排版、列表高度缓存、图片解码及离屏渲染优化。
-- 具备稳定性治理经验，能够结合异常与 Signal 日志、Xcode 及系统工具定位崩溃、页面未释放和内存访问问题。
-- 具备 Flutter/Dart 独立开发经验，完成多账本应用的产品设计、架构开发、iOS 适配、自动化测试及 App Store 发布。
-```
 
-- 熟悉 ARC/MRC、Block、Runtime、消息发送和转发及 KVC/KVO 机制，理解 weak 引用实现，具备循环引用、页面泄漏和异常内存访问问题排查经验。
-- 了解自动释放池底层原理。
+
+
 - 熟悉弱引用的实现机制，包括全局弱引用表的存储结构、对象销毁时 weak 指针自动置 nil 的完整 dealloc 调用链，以及内存管理中循环引用的规避策略（例：NSTimer、block循环引用）。
 - 了解对象的底层原理（内存对齐、alloc流程、isa指针）。
 - 了解类的原理和底层数据结构。
 - 了解Runloop
   - Runloop做性能优化卡顿检测和按需加载
-- 熟悉响应者链和事件传递。
+- 熟悉事件传递和响应者链。
 - 应用程序加载流程
   - clang插桩和二进制重排原理做启动优化。
   - 类和分类的load加载。
   - Rebase与Bind。
   - 了解动态库和静态库。
 - 熟悉代理模式、单例模式、观察者模式、工厂模式、建造者模式、策略模式、原型模式、模版模式、适配器模式、中介者模式等设计模式。
-- 熟悉MVC，MVP，MVVM软件架构模式。
-- 熟悉响应式编程、链式编程、函数式编程。
-- 熟悉GCD、NSOperation、NSThread多线程编程技术（设置依赖，并发和各种锁）。
 - 熟悉SDWebImage、fishhook、Aspects、Masonry等第三方类库，进行源码分析。
 - 了解图片的加载解码渲染流程。了解离屏渲染，并进行图片圆角的优化。
 - 音视频
@@ -58,7 +52,6 @@
     - 音视频的采集
     - 静态图片捕捉、视频录制、人脸识别、二维码和条形码扫描。设置有效的扫描区域(扫描框内的区域)。
   - H.264视频编码原理
-- 熟悉 CocoaPods 及私有组件库建设，掌握 xcconfig、Scheme 多环境配置与 fastlane 自动化构建发布；熟悉 APNs、JPush 和友盟推送。
 
 ---
 
@@ -77,6 +70,7 @@
 - 开发计算器组件。
 - 自定义键盘。根据响应者链获取当前输入框。输入框插入和删除内容。输入框遮挡键盘问题。
 - UIResponder分类查找第一响应者，UIViewController分类添加观察者，防止键盘遮挡输入框。
+- 能够通过异常/Signal 日志、内存释放检测和崩溃现场分析定位稳定性问题。
 - 项目中的崩溃处理和日志收集功能。
   - 利用消息转发解决对NSNull对象操作导致的崩溃问题。
   - 使用`NSSetUncaughtExceptionHandler`和`void(*signal(int, void (*)(int)))(int)`收集上传崩溃日志并分析。
