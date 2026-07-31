@@ -21,12 +21,14 @@
 
 ## 技能清单
 
-- **系统与底层：** 熟悉 ARC/MRC、Block、Runtime、消息发送与转发、KVC/KVO、weak 引用和自动释放池机制，理解对象/类、isa、RunLoop、Mach-O 与 dyld 加载流程，能够结合 LLDB 和系统工具定位底层问题。
-- **架构与组件化：** 具备 MVC/MVVM、Router 解耦及响应式/函数式编程实践，能够运用策略、适配器和中介者等模式拆分复杂业务；维护 Swift/Objective-C 混编组件库 `HHUtils`，通过 CocoaPods/Podspec 对外复用。
-- **复杂 UI 与交互：** 独立开发可复用 Tab 容器、拖拽排序列表、泛型列表、相册选择与预览、自定义键盘、WKWebView、转场动画及绘制组件，具备响应者链、手势冲突、嵌套滚动和键盘避让处理经验。
+- **语言与平台：** 熟练使用 Objective-C，具备 Swift 独立开发能力，能够完成 UIKit 业务、公共组件及 Swift/Objective-C 混编开发；熟悉泛型、协议、Codable、闭包和错误处理。
+- **底层原理与内存：** 熟悉 ARC/MRC、Block、Runtime、消息发送与转发、KVC/KVO、weak 引用和自动释放池机制；理解对象与类、isa、RunLoop、Mach-O、dyld、Rebase/Bind 及动态库/静态库加载过程。
+- **架构与编程范式：** 具备 MVC/MVVM、Router 解耦及响应式/函数式编程实践，能够结合代理、观察者、策略、适配器和中介者等模式拆分复杂业务并控制模块依赖。
+- **组件化与公共能力：** 维护 Swift/Objective-C 混编组件库 `HHUtils` 和 `HHSpecs` 私有 Specs 仓库，沉淀 Tab 容器、拖拽列表、泛型列表、相册选择、下载、数据库及基础扩展等能力，并通过 CocoaPods/Podspec 对外复用。
+- **UI 与系统能力：** 具备复杂列表、嵌套滚动、响应者链、手势冲突、键盘避让、自定义转场和 Core Animation/Core Graphics 绘制经验；熟悉 WKWebView、Photos、AVFoundation 音视频采集、二维码/条码扫描及 H.264 基础。
 - **并发、网络与数据：** 熟悉 GCD、NSOperation、NSThread、任务依赖、并发控制和线程同步；具备 URLSession/Alamofire、并发与断点下载、OSS 文件传输，以及 FMDB、CoreData、SQLite 数据持久化实践。
-- **性能与稳定性：** 具备二进制重排启动优化、RunLoop 卡顿检测、异步预排版、列表高度缓存、图片解码与离屏渲染优化经验；
-- **工程化与交付：** 熟悉 CocoaPods 私有组件、Podspec、XCFramework、xcconfig/Scheme 多环境配置及 fastlane 自动化构建发布，具备 App Store 上架、APNs/JPush/友盟推送和 Universal Link 接入经验。
+- **性能与稳定性：** 具备二进制重排启动优化、RunLoop 卡顿检测、异步预排版、列表高度缓存、图片解码与离屏渲染优化经验；能够结合 LLDB、异常/Signal 日志、内存释放检测和崩溃现场定位稳定性问题。
+- **工程化与交付：** 熟悉 CocoaPods 私有组件、Podspec、XCFramework、xcconfig/Scheme 多环境配置及 fastlane 自动化构建发布；具备 App Store 上架、APNs/JPush/友盟推送和 Universal Link 接入经验。
 - **Flutter/Dart：** 具备 Flutter 应用独立交付能力，完成多账本应用的产品设计、分层架构、SQLite 数据层、CustomPainter 组件、MethodChannel 原生桥接、异步/Isolate、自动化测试及 App Store 发布。
 
 
@@ -44,14 +46,8 @@
   - 类和分类的load加载。
   - Rebase与Bind。
   - 了解动态库和静态库。
-- 熟悉代理模式、单例模式、观察者模式、工厂模式、建造者模式、策略模式、原型模式、模版模式、适配器模式、中介者模式等设计模式。
 - 熟悉SDWebImage、fishhook、Aspects、Masonry等第三方类库，进行源码分析。
 - 了解图片的加载解码渲染流程。了解离屏渲染，并进行图片圆角的优化。
-- 音视频
-  - AVFoundation的简单使用
-    - 音视频的采集
-    - 静态图片捕捉、视频录制、人脸识别、二维码和条形码扫描。设置有效的扫描区域(扫描框内的区域)。
-  - H.264视频编码原理
 
 ---
 
