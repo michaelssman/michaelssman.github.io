@@ -21,8 +21,7 @@
 
 ## 技能清单
 
-- **语言与平台：** 熟练使用 Objective-C，具备 Swift 独立开发能力，能够完成 UIKit 业务、公共组件及 Swift/Objective-C 混编开发；熟悉泛型、协议、Codable、闭包和错误处理。
-- **底层原理与内存：** 熟悉 ARC/MRC、Block、Runtime、消息发送与转发、KVC/KVO、weak 引用和自动释放池机制；理解对象与类、isa、RunLoop、Mach-O、dyld、Rebase/Bind 及动态库/静态库加载过程。
+- **底层原理与内存：** 熟悉 Block、Runtime、消息发送与转发、KVC/KVO、weak 引用和自动释放池机制；理解对象与类、isa、RunLoop、Mach-O、dyld、Rebase/Bind 及动态库/静态库加载过程。
 - **架构与编程范式：** 具备 MVC/MVVM、Router 解耦及响应式/函数式编程实践，能够结合代理、观察者、策略、适配器和中介者等模式拆分复杂业务并控制模块依赖。
 - **组件化与公共能力：** 维护 Swift/Objective-C 混编组件库 `HHUtils` 和 `HHSpecs` 私有 Specs 仓库，沉淀 Tab 容器、拖拽列表、泛型列表、相册选择、下载、数据库及基础扩展等能力，并通过 CocoaPods/Podspec 对外复用。
 - **UI 与系统能力：** 具备复杂列表、嵌套滚动、响应者链、手势冲突、键盘避让、自定义转场和 Core Animation/Core Graphics 绘制经验；熟悉 WKWebView、Photos、AVFoundation 音视频采集、二维码/条码扫描及 H.264 基础。
@@ -35,9 +34,6 @@
 
 
 
-- 熟悉弱引用的实现机制，包括全局弱引用表的存储结构、对象销毁时 weak 指针自动置 nil 的完整 dealloc 调用链，以及内存管理中循环引用的规避策略（例：NSTimer、block循环引用）。
-- 了解对象的底层原理（内存对齐、alloc流程、isa指针）。
-- 了解类的原理和底层数据结构。
 - 了解Runloop
   - Runloop做性能优化卡顿检测和按需加载
 - 熟悉事件传递和响应者链。
