@@ -21,10 +21,11 @@
 
 ## 技能清单
 
-- **底层原理与内存：** 熟悉 Block、Runtime、消息发送与转发、KVC/KVO、weak 引用和自动释放池机制；理解对象与类、isa、RunLoop、Mach-O、dyld、Rebase/Bind 及动态库/静态库加载过程。
+- **底层原理与内存：** 熟悉 Block、Runtime、消息发送与转发、KVC/KVO、weak 引用和自动释放池机制；理解对象与类、isa、RunLoop。
 - **架构与编程范式：** 具备 MVC/MVVM、Router 解耦及响应式/函数式编程实践，能够结合代理、观察者、策略、适配器和中介者等模式拆分复杂业务并控制模块依赖。
-- **UI 与系统能力：** 具备复杂列表、嵌套滚动、响应者链、手势冲突、键盘避让、自定义转场和 Core Animation/Core Graphics 绘制经验；熟悉 WKWebView、Photos、AVFoundation 音视频采集、二维码/条码扫描及 H.264 基础。
-- **并发、网络与数据：** 熟悉 GCD、NSOperation、NSThread、任务依赖、并发控制和线程同步；具备 URLSession/Alamofire、并发与断点下载、OSS 文件传输，以及 FMDB、CoreData、SQLite 数据持久化实践。
+- **UI 与系统能力：** 具备复杂列表、嵌套滚动、响应者链、手势冲突、键盘避让、自定义转场和 Core Animation/Core Graphics 绘制经验；熟悉 WKWebView 及 Photos 框架。
+- **音视频与图像处理：** 熟悉 AVFoundation 音视频采集、二维码/条码扫描及 H.264 基础；了解图片加载、解码与渲染流程，具备离屏渲染和图片圆角优化经验。
+- **并发与多线程：** 熟悉 GCD、NSOperation、NSThread、任务依赖、并发控制和线程同步。
 - **性能与稳定性：** 具备二进制重排启动优化、RunLoop 卡顿检测、异步预排版、列表高度缓存、图片解码与离屏渲染优化经验；能够结合 LLDB、异常/Signal 日志、内存释放检测和崩溃现场定位稳定性问题。
 - **工程化与交付：** 熟悉 CocoaPods 私有组件、Podspec、XCFramework、xcconfig/Scheme 多环境配置及 fastlane 自动化构建发布；具备 App Store 上架、APNs/JPush/友盟推送和 Universal Link 接入经验。
 - **Flutter/Dart：** 具备 Flutter 应用独立交付能力，完成多账本应用的产品设计、分层架构、SQLite 数据层、CustomPainter 组件、MethodChannel 原生桥接、异步/Isolate、自动化测试及 App Store 发布。
@@ -36,7 +37,6 @@
 
 - 熟悉应用程序加载流程，理解类与分类的 `load` 执行时机、Rebase/Bind 及动态库与静态库加载机制，具备基于 Clang 插桩和二进制重排的启动优化经验。
 - 熟悉SDWebImage、fishhook、Aspects等第三方类库，进行源码分析。
-- 了解图片的加载解码渲染流程。了解离屏渲染，并进行图片圆角的优化。
 
 ---
 
