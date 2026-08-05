@@ -32,7 +32,7 @@ git checkout <commit-hash>
 
 注意，当切换到一个特定的提交时，你会处于一个"DETACHED HEAD"状态。这意味着任何你做的改变都不会影响任何分支。如果你想要保存你的改变，你可以创建一个新的分支。
 
-如果你想要创建一个新的分支来保存你所做的提交，你可以使用`git switch -c <new-branch-name>`命令来创建。你也可以随时使用这个命令。
+如果你想要创建一个新的分支来保存你所做的提交，你可以使用`git switch -c <new-branch-name>`命令来创建。
 
 如果你想撤销这个操作，你可以使用 `git switch -` 命令来回到你之前的状态。
 
@@ -50,7 +50,7 @@ git checkout <commit-hash>
 
 可以查看哪些文件修改了或者冲突了。
 
-git status --short或git status -s 格式更为紧凑的输出。
+`git status --short`或`git status -s`格式更为紧凑的输出。
 
 ## git commit -m "注释"
 
@@ -60,7 +60,7 @@ git status --short或git status -s 格式更为紧凑的输出。
 
 git push origin master。提交到远程的master分支。
 
-```
+```sh
 git push <远程主机名> <分支名>
 ```
 
@@ -70,11 +70,9 @@ git push <远程主机名> <分支名>
 
 ## tag
 
-`git tag`：查看所有tag。
-
-`git tag 0.1.0`：打tag。
-
-`git push --tags`：提交tag到远程。
+- `git tag`：查看所有tag。
+- `git tag 0.1.0`：打tag。
+- `git push --tags`：提交tag到远程。
 
 ## branch
 
@@ -82,7 +80,7 @@ git push <远程主机名> <分支名>
 
 没有参数时，**git branch** 会列出你在本地的分支。
 
-```
+```sh
 $ git branch
 * master
 ```
@@ -93,7 +91,7 @@ $ git branch
 
 执行 **git branch (branchname)** 即可。
 
-```
+```sh
 $ git branch testing
 $ git branch
 * master
@@ -110,7 +108,7 @@ git checkout (BranchName) 切换到要修改的分支。
 
 `git merge --no-ff '3.3.0'`：将3.3.0分支合并到当前分支。
 
-```
+```sh
 git fetch origin
 //先切换到主分支
 git checkout 'main'
@@ -122,9 +120,9 @@ git push origin 'main'
 
 **详细解释**
 
-- **快速前进（Fast-Forward）**：
+- **Fast-Forward（快速前进）**：
   - 如果目标分支（例如 `main`）直接位于源分支（例如 `feature`）的历史之前，Git 默认会执行快速前进合并。这种合并方式不会创建新的合并提交，只是简单地将目标分支的指针移动到源分支的最新提交。
-- **非快速前进（Non-Fast-Forward）**：
+- **Non-Fast-Forward（非快速前进）**：
   - 使用 `--no-ff` 选项，Git 会创建一个新的合并提交。这种方式会保留分支的合并历史，明确显示合并点。
 
 **示例**
@@ -161,22 +159,18 @@ A---B---C (main)
 
 不在当前分支上commit和push，将修改在其它分支上进行commit和push。
 
-通过 Git 的分支操作解决。以下是分步解决方案：
-
 1. **暂存当前修改**：
-   使用 `git stash` 将当前的修改暂存（适用于未提交的修改）。
-
+   
    ```bash
    git stash  # 将未提交的修改暂存起来
    ```
-
+   
 2. **创建并切换到新分支**：
-   创建一个新的分 支并切换到该分支。
-
+   
    ```bash
    git checkout -b new-feature-branch
    ```
-
+   
 3. **恢复暂存的修改**（如果执行了 stash）：
 
    ```bash

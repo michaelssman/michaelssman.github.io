@@ -71,6 +71,7 @@ ssh-add ~/.ssh/id_rsa_gitlab
 ```bash
 Host		git.nmy.cn
 	HostName        192.168.1.66
+#  Port 						8090
 	User            michael@nmy.com
 	AddKeysToAgent  yes
 	UseKeychain     yes
@@ -81,11 +82,6 @@ Host		github.com
 	AddKeysToAgent  yes
 	UseKeychain     yes
 	IdentityFile    ~/.ssh/id_rsa
-Host 		myserver
-    HostName 			192.168.1.100
-    User 					username
-    Port 					22
-    IdentityFile 	~/.ssh/private_key
 ```
 
 在上面的例子中：
@@ -101,10 +97,10 @@ Host 		myserver
 编辑`~/.ssh/config`文件保存并退出。现在可以使用SSH命令并引用配置文件中的别名来连接到相应的主机。例如：
 
 ```bash
-ssh myserver
+ssh git.nmy.cn
 ```
 
-上述命令将会连接到配置文件中定义的`myserver`主机。
+上述命令将会连接到配置文件中定义的`git.nmy.cn`主机。
 
 ```bash
 lemonacc@LemonAccdeMacBook-Pro ~ % ssh -T git@git.nmy.cn                       
