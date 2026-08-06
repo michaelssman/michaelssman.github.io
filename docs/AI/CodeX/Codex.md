@@ -65,14 +65,30 @@ codex "Explain this codebase to me"
 
 ### 3.2 恢复会话
 
-Codex 会在本地保存 transcript，可用 `resume` 恢复：
+Codex 会在本地保存会话记录（transcript）。推荐使用“先命名，再恢复”的流程：
+
+1. 退出前输入 `/rename codex-doc-update`，给当前会话设置一个容易识别的名称。
+2. 输入 `/exit` 或按 `Ctrl+C` 正常退出。普通退出不会删除会话记录。
+3. 下次先进入原项目目录，再运行 `codex resume` 打开会话选择器。
+4. 从列表中选择已命名的会话，或使用会话名称直接恢复：
 
 ```bash
-codex resume
-codex resume --all
-codex resume --last
-codex resume <SESSION_ID>
+cd /path/to/project
+codex resume codex-doc-update
 ```
+
+其他常用恢复方式：
+
+```bash
+codex resume                       # 打开当前项目的会话选择器
+codex resume --last                # 恢复当前项目最近的会话
+codex resume --all                 # 在选择器中包含其他目录的会话
+codex resume <SESSION_ID_OR_NAME>  # 按会话 ID 或名称直接恢复
+```
+
+如果已经进入一个新的 CLI 会话，可以输入 `/resume` 打开已保存会话的选择器。
+
+Codex App 中可从侧边栏重新打开历史会话，也可以按 `Cmd/Ctrl + G` 搜索会话。
 
 非交互模式也可以恢复：
 
@@ -188,21 +204,6 @@ web_search = "disabled"
 | `/experimental` | 切换实验功能，必要时重启 Codex |
 | `/feedback` | 向 Codex 维护者发送反馈和日志 |
 | `/exit` 或 `/quit` | 退出 CLI |
-
-### 4.2 App 斜杠命令
-
-Codex App 也支持在 composer 中输入 `/` 使用命令。官方列出的常见命令包括：
-
-| 命令 | 用途 |
-| --- | --- |
-| `/feedback` | 打开反馈对话框 |
-| `/goal` | 设置持续目标 |
-| `/init` | 为当前项目生成 `AGENTS.md` |
-| `/plan` | 切换计划模式 |
-| `/review` | 审查未提交改动或对比 base branch |
-| `/status` | 查看 thread ID、上下文使用量和 rate limits |
-
----
 
 ## 5. 权限、沙箱与安全边界
 

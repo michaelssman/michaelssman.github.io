@@ -38,11 +38,11 @@ NSLog(@"globalBlock:%@",globalBlock);//__NSGlobalBlock__
 
 ```objective-c
 int a = 10;
-void (^block)(void) = ^{//copy
+void (^stackBlock)(void) = ^{//copy
     //保存一份代码块
     NSLog(@"hello %d",a);
 };
-NSLog(@"block:%@--%@",block,[block copy]);
+NSLog(@"block:%@--%@",stackBlock,[stackBlock copy]);
 ```
 
 ### 3、NSMallocBlock
