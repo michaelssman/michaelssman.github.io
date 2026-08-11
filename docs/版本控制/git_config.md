@@ -22,7 +22,7 @@ mkdir ~/.ssh
 cd ~/.ssh
 ```
 
-生成 SSH 密钥对：一旦安装了 OpenSSH 客户端，你可以使用`ssh-keygen`命令在 Windows/Mac 上生成 SSH 密钥对：
+生成 SSH 密钥对：一旦安装了 OpenSSH 客户端，可以使用`ssh-keygen`命令在 Windows/Mac 上生成 SSH 密钥对：
 
 ```sh
 ssh-keygen -t rsa -b 4096 -C "xxxxx@nmy.cn"
