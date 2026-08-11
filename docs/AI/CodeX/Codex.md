@@ -63,9 +63,49 @@ codex "Explain this codebase to me"
 
 - 粘贴截图或通过 `--image` 附加图片。
 
-### 3.2 恢复会话
+### 3.2 暂停、停止与终止
 
-Codex 会在本地保存会话记录（transcript）。推荐使用“先命名，再恢复”的流程：
+Codex CLI 中的“暂停目标”“停止当前任务”“停止后台终端”和“终止 CLI”作用范围不同：
+
+| 目的 | 操作 | 结果 |
+| --- | --- | --- |
+| 暂停持续目标 | `/goal pause` | 暂停 `/goal` 设置的持续目标；之后用 `/goal resume` 恢复 |
+| 停止当前任务 | 按一次 `Esc` | 中断当前正在执行的轮次（turn），保留当前会话和 CLI，可继续输入新指令 |
+| 停止后台终端 | 先用 `/ps` 查看，再执行 `/stop` | 停止当前会话启动的全部后台终端；不等同于中断当前 Codex 轮次 |
+| 终止交互式 CLI | `Ctrl+C`、`/exit` 或 `/quit` | 退出整个 CLI；普通退出会保留会话记录，可稍后恢复 |
+| 终止非交互任务 | 在 `codex exec ...` 运行期间按 `Ctrl+C` | 终止当前非交互进程 |
+
+注意：
+
+- 普通轮次没有“冻结在当前执行点，稍后从同一点继续”的通用暂停操作。`/goal pause` 只暂停持续目标；如果当前轮次仍在执行，应先按 `Esc` 中断。
+- `Esc`、`/stop`、`Ctrl+C` 都不会自动回滚已经完成的文件修改、已执行命令或其他副作用。中断后应检查 `git diff`、后台进程和测试状态。
+- 如果按 `Esc` 后仍有后台命令运行，使用 `/ps` 确认，再用 `/stop` 停止。
+- 可用 `/keymap` 查看或修改 TUI 快捷键；当前轮次的中断动作名为 `interrupt_turn`。
+
+参考：[Codex developer commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli)、[Codex configuration schema](https://learn.chatgpt.com/docs/config-schema.json)。
+
+### 3.3 恢复会话
+
+Codex 会在本地保存会话记录（transcript）。`CODEX_HOME` 是 Codex 本地状态的根目录，未自定义时默认为 `~/.codex`。
+
+#### 会话保存位置
+
+| 内容 | 默认位置 |
+| --- | --- |
+| 活动会话 | `$CODEX_HOME/sessions`，即 `~/.codex/sessions` |
+| 已归档会话 | `$CODEX_HOME/archived_sessions`，即 `~/.codex/archived_sessions` |
+
+活动会话通常按创建日期保存为 JSONL 文件：
+
+```text
+~/.codex/sessions/YYYY/MM/DD/rollout-<TIMESTAMP>-<SESSION_ID>.jsonl
+```
+
+路径中的日期通常是会话创建日期。会话跨天继续使用时，记录仍可能保存在最初创建日期对应的目录中。
+
+JSONL 文件可能包含完整对话、指令、工作目录、工具调用及其输出。不要将其提交到 Git；分享前应先检查并移除敏感信息。使用 `/archive` 后，会话记录会移至归档目录；使用 `/delete` 则会永久删除会话。
+
+#### 推荐恢复流程
 
 1. 退出前输入 `/rename codex-doc-update`，给当前会话设置一个容易识别的名称。
 2. 输入 `/exit` 或按 `Ctrl+C` 正常退出。普通退出不会删除会话记录。
@@ -97,7 +137,7 @@ codex exec resume --last "继续修复刚才发现的问题"
 codex exec resume <SESSION_ID> "实现刚才的计划"
 ```
 
-### 3.3 非交互模式
+### 3.4 非交互模式
 
 适合脚本、CI、流水线、定时任务：
 
@@ -126,7 +166,7 @@ codex exec --sandbox danger-full-access "run this in an isolated CI runner"
 
 `codex exec` 默认运行在 read-only sandbox 中。
 
-### 3.4 远程 TUI / App Server
+### 3.5 远程 TUI / App Server
 
 Codex CLI 支持连接远程 app server：
 
@@ -137,7 +177,7 @@ codex --remote ws://127.0.0.1:4500
 
 如果要从另一台机器访问，需要配置 WebSocket 鉴权，并优先放在 TLS 后面。不要把未鉴权的远程端点暴露到公网。
 
-### 3.5 Web Search
+### 3.6 Web Search
 
 Codex CLI 官方内置 first-party web search。默认本地任务使用 OpenAI 维护的搜索缓存，而不是每次实时抓取网页。这样可以降低任意网页内容带来的 prompt injection 风险，但搜索结果仍应视为不可信外部输入。
 
@@ -163,9 +203,7 @@ web_search = "disabled"
 
 ---
 
-## 4. 斜杠命令速查
-
-### 4.1 CLI 常用斜杠命令
+## 4. 斜杠命令
 
 | 命令 | 用途 |
 | --- | --- |
@@ -174,6 +212,8 @@ web_search = "disabled"
 | `/fast` | 在支持的模型上切换 Fast service tier |
 | `/plan` | 切换到计划模式，让 Codex 先做方案设计 |
 | `/goal` | 设置、查看、暂停、恢复或清除持续目标 |
+| `/ps` | 查看当前会话的后台终端及其最近输出 |
+| `/stop` | 停止当前会话启动的全部后台终端 |
 | `/review` | 审查当前工作树、未提交改动、commit 或分支 diff |
 | `/status` | 查看线程配置、模型、审批策略、可写目录和 token 使用 |
 | `/statusline` | 配置 TUI 底部状态栏字段 |
@@ -204,6 +244,29 @@ web_search = "disabled"
 | `/experimental` | 切换实验功能，必要时重启 Codex |
 | `/feedback` | 向 Codex 维护者发送反馈和日志 |
 | `/exit` 或 `/quit` | 退出 CLI |
+
+### `/title` 用法
+
+在 Codex CLI 中输入：
+
+```text
+/title
+```
+
+- `↑/↓`：选择字段
+- `Space`：启用或禁用
+- `←/→`：调整顺序
+- `Enter`：保存
+- `Esc`：取消
+
+自定义标题示例：
+
+```text
+/rename 网络请求重构
+/title
+```
+
+然后取消 `project-name`，启用 `thread-title`，按 `Enter` 保存。
 
 ## 5. 权限、沙箱与安全边界
 

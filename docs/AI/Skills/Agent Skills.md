@@ -1,223 +1,198 @@
 # Agent Skills
 
+Agent Skills 用于把专业知识、可重复工作流、脚本和资源封装成可按需加载的能力。一个 Skill 本质上是一个目录，其中必须包含 `SKILL.md`。
+
+## 1. 核心概念
+
+### 渐进式披露
+
+智能体通常分三步加载 Skill：
+
+1. **发现**：启动时只读取 `name` 和 `description`，用于判断 Skill 的用途和触发时机。
+2. **激活**：任务匹配后加载完整的 `SKILL.md`。
+3. **执行**：根据指令按需读取 `references/`、使用 `assets/` 或运行 `scripts/`。
+
+这种机制可以同时提供多个 Skills，而不必一开始就把全部内容放入上下文窗口。
+
+### Skill 的价值
+
+- 封装团队规范、领域知识和操作步骤。
+- 将重复提示转成可复用、可版本控制的工作流。
+- 通过明确的步骤、边界和输出格式提高结果一致性。
+- 将详细资料和模板放到外部文件中，减少不必要的上下文占用。
+
+Skill 不会凭空增加系统权限。它只能使用当前智能体已经具备的工具；纯指令型 Skill 不一定需要 Bash 或文件写入权限，执行脚本或修改文件时才需要相应工具。
+
+## 2. 目录与规范
+
+典型目录结构：
+
+```text
+my-skill/
+├── SKILL.md          # 必需：元数据和主要指令
+├── scripts/          # 可选：可执行脚本
+├── references/       # 可选：详细参考资料
+└── assets/           # 可选：模板、图片、数据等资源
+```
+
+### `SKILL.md`
+
+`SKILL.md` 由 YAML frontmatter 和 Markdown 正文组成：
+
+```yaml
+---
+name: code-review
+description: Reviews code for quality, security, and project conventions. Use when the user asks for a code review or risk assessment.
 ---
 
-## 1、课程介绍
+# Code Review
 
-Skills 对智能体是**渐进式披露**的，Skill 的名称和描述始终存在于智能体的上下文窗口中，但直到用户请求与 Skill 的描述匹配时，智能体才会将剩余的指令加载到其上下文中。那时，智能体可能还会根据需要额外加载引用文件和资源文件。
+1. Read the project conventions.
+2. Inspect the relevant changes.
+3. Report findings by severity with file references.
+```
 
-要使用 Skill，你的智能体需要一组基本工具：用于读写文件的文件系统访问权限和用于执行代码的 bash 工具。这些工具使智能体能够执行 Skill 所需的任何命令。
+开放规范中的主要字段：
 
-智能体可以将 Skills 与子智能体结合，创建强大的智能工作流。它可以将任务委托给具有隔离上下文的子智能体，而子智能体本身也可以使用 Skills 获取专业知识。外部工具和数据连接统一整理在 [MCP](../MCP.md) 中。
+| 字段 | 必需 | 约束或用途 |
+| --- | --- | --- |
+| `name` | 是 | 1～64 个字符；使用小写字母、数字和连字符；与父目录同名 |
+| `description` | 是 | 1～1024 个字符；同时说明“做什么”和“何时使用” |
+| `license` | 否 | 许可证名称或许可证文件路径 |
+| `compatibility` | 否 | 最多 500 个字符；说明系统、依赖或网络要求 |
+| `metadata` | 否 | 额外的字符串键值信息 |
+| `allowed-tools` | 否 | 预批准工具列表；属于实验字段，客户端支持可能不同 |
 
-每个 Skill 都有一个必需的 SKILL.md 文件，其中包含 YAML 前置元数据，名称、描述和主要指令。主要指令还可以引用其他文件，如脚本、额外的 Markdown 文件以及模板和图片等资源。
+为了提高跨客户端兼容性，应遵循开放规范显式填写 `name` 和 `description`，不要依赖特定客户端自动推断字段。
 
-名称和描述不仅是 Claude 分析你的 Skill 功能的方式，也是检测何时使用该特定 Skill 的方式。
+### 可选目录
 
-名称有最大字符限制，描述也一样。名称通常使用动词+ing 形式。描述不仅要说明 Skill 做什么，还要说明何时使用。如果有特定关键词会导致智能体触发这个 Skill，一定要充分利用这些词。
+- `scripts/`：放置 Python、Bash、JavaScript 等脚本。脚本应说明依赖，提供清晰错误信息并处理边界情况。
+- `references/`：放置详细规范、技术资料和领域知识，仅在需要时读取。
+- `assets/`：放置输出模板、图片、数据文件和 Schema 等静态资源。
 
-除了必填字段外，Agent Skills 规范还允许可选字段。这可以是许可证、兼容性以及元数据中的任意键值对。
+建议让 `SKILL.md` 只保留决策入口和主要流程，将长篇资料移到引用文件。主文件最好不超过 500 行，文件引用尽量只深入一层。
 
-在 YAML 前置元数据之后，进入 Skill 的主体部分，我们对 Skill 的格式没有底层限制。但在构建可预测的工作流时，你需要确保有逐步说明。正如我们在其他 Skills（尤其是 skill-creator）中看到的，指定边界情况、逐步说明以及如果有理由跳过某一步，要明确说明原因。
+## 3. Skill 与其他能力的区别
 
-通常，保持在 500 行以内是最佳实践，因为我们可以在需要时引用外部文件、资源和脚本。
+| 能力 | 主要作用 | 上下文与执行方式 |
+| --- | --- | --- |
+| Skill | 可复用的知识、规范和工作流 | 匹配任务后按需加载 |
+| 工具 | 读取文件、执行命令、调用 API 等实际能力 | 由运行环境提供并受权限控制 |
+| `CLAUDE.md` | 项目长期规则和每次会话都需要的背景 | 会话启动时加载 |
+| 子智能体 | 在独立上下文中完成委派任务 | 只将任务结果返回主智能体 |
+| MCP | 连接外部服务、数据源和工具 | 通过 MCP Server 暴露结构化能力 |
 
-对于涉及多个 Skills 的更复杂工作流，将事情分解为顺序步骤总是比拥有一个试图完成所有事情的极其庞大的 Skill 更有价值。
+外部系统和数据连接统一记录在 [MCP](../MCP.md) 中。
 
-规范中有可选目录的空间，有 scripts、references 和 assets 的子文件夹。
+这些能力可以组合使用。例如，主智能体加载代码审查 Skill，再把审查任务委派给只具有读取权限的子智能体；子智能体根据 Skill 中的标准检查代码，并把结果返回主智能体。
 
-- scripts 包含需要读取和执行的代码。要确保有错误处理和清晰的文档。
-- references 参考资料。
-- assets 包含输出模板、图像、徽标、数据文件、模式等。
+## 4. 创建自定义 Skill
 
-## 2、Skills 的意义
+### 创建步骤
 
-创建 Skill 时，只要所有文件都在同一个父文件夹中，Skill 就可以引用其他文件。
+1. 明确 Skill 要解决的重复问题和不负责的范围。
+2. 创建与 `name` 同名的目录和 `SKILL.md`。
+3. 在 `description` 中写清能力、触发场景和关键词。
+4. 在正文中提供顺序步骤、判断条件、边界情况和输出要求。
+5. 将详细资料、模板和可重复执行逻辑分别放入 `references/`、`assets/` 和 `scripts/`。
+6. 使用真实任务测试触发、执行和失败处理，再根据结果迭代。
 
-Skills 是可组合的。我们可以将自定义 Skills 与内置 Skills 结合使用。我们不仅可以使用多个 Skills，还可以将它们组合起来构建复杂且可预测的工作流。
+### 编写原则
 
-为了避免用可能不需要的数据污染上下文窗口，Skills 引入了渐进式披露的概念。当从文件系统加载 Skills 时，只有 Skill 的名称和描述被添加到上下文窗口中。这对于 Claude 或任何其他系统知道 Skill 是什么以及如何触发它至关重要。
+- 使用明确、可执行的指令，避免只写宽泛目标。
+- 说明什么时候必须**停止**、**请求确认**或**跳过某一步**。
+- 输出格式要求较复杂时引用模板，不要把所有示例堆进 `SKILL.md`。
+- 一个 Skill 聚焦一个稳定职责；复杂工作流可以组合多个 Skills。
+- 脚本适合确定性操作，Markdown 指令适合需要智能体判断的步骤。
+- 涉及写入、网络、凭据或危险命令时，遵循最小权限原则。
 
-一旦 Skill 被触发，底层的 SKILL.md 被加载。这是将数据加载到上下文中的下一阶段。根据需要，如果有额外的文件或脚本需要加载和执行，它们将被逐步加载。
+## 5. 验证与测试
 
-这些额外资源可以按需加载，如果有脚本需要加载，这些脚本与上下文窗口分开加载和执行，以避免用不必要的额外 token 污染上下文。
+可以使用官方参考工具检查目录和 frontmatter：
 
-通过使用 bash 和文件系统等工具，Claude 可以只加载必要的信息，只执行必要的脚本和文件读取，并有意识地将必要的内容添加到上下文窗口中。
+```bash
+skills-ref validate ./my-skill
+```
 
----
+行为测试至少覆盖：
 
-## 3、Skill 与工具
+- 应当触发 Skill 的典型请求。
+- 不应触发 Skill 的相邻请求。
+- 缺少文件、依赖或权限时的处理。
+- 正常输入、边界输入和失败输入。
+- 输出是否符合模板和项目约定。
+- 脚本是否可重复执行，是否会产生意外副作用。
 
-### Skill 与工具的关系
+Anthropic 的 [`skills`](https://github.com/anthropics/skills) 仓库提供示例、模板和 `skill-creator`。`skill-creator` 可以辅助初始化、验证和评估 Skill，但生成结果仍需要结合真实任务检查。
 
-工具本身是访问系统和为智能体提供完成任务所需能力的底层方式。实际上，工具在底层驱动着生成 Skills、读取 Skills，甚至创建用于执行代码和加载这些 Skills 的文件系统的能力。
+## 6. 在 Claude Code 中使用
 
-Skills 通过专业知识扩展能力，引入需要执行的额外文件和脚本。但执行这些底层脚本、加载文件和文件夹的能力是由工具提供的。工具可以由智能体生态系统内置，也可以由我们自己编写。
+常见存放位置：
 
-工具定义始终存在于上下文窗口中，而 Skills 在必要时逐步加载。
+| 范围 | 路径 |
+| --- | --- |
+| 个人 | `~/.claude/skills/<skill-name>/SKILL.md` |
+| 项目 | `.claude/skills/<skill-name>/SKILL.md` |
+| 插件 | `<plugin>/skills/<skill-name>/SKILL.md` |
 
----
+Claude Code 可以根据 `description` 自动选择 Skill，也可以通过 `/skill-name` 显式调用。
 
-## 4、预建 Skills
+项目结构可以这样组织：
 
-在 github.com/anthropic/skills 仓库中，查看 skills 文件夹有哪些内置 Skills。
+```text
+.claude/
+├── CLAUDE.md
+├── skills/
+│   └── code-review/
+│       └── SKILL.md
+└── agents/
+    └── code-reviewer.md
+```
 
-skill-creator 是一个以编程方式为你创建 Skills 的 Skill。
+- 每次会话都需要遵守的项目事实和规则放入 `CLAUDE.md`。
+- 只在特定任务中需要的知识和流程放入 `.claude/skills/`。
+- 自定义子智能体定义在 `.claude/agents/`。
+- 子智能体使用独立上下文，可以通过 frontmatter 的 `skills` 字段预加载指定 Skills。
 
-在 SKILL.md 文件中，我们指定了 Skill 是什么，它提供什么，然后包含了一些与 Skills 相关的最佳实践。
+## 7. 在 Claude API 中使用
 
-在查看 skill 创建过程时，我们在这里的步骤非常明确。因为我们希望这个 Skill 创建一个可预测的工作流，所以我们对步骤、如何遵循它们以及只有在有原因的情况下才跳过哪一步非常明确。
+Claude API 支持 Anthropic 预建 Skills 和通过 Skills API 上传的自定义 Skills。调用 Messages API 时，在容器配置中指定需要使用的 Skill，并启用代码执行工具。
 
-当开始初始化 Skill 时，运行底层的 Python 脚本来执行必要的任务。在 scripts 文件夹中，有三个 Python 文件：
+Files API 主要负责上传输入文件和下载生成文件，不是注册自定义 Skill 的替代方案。不同产品有各自的安装和加载机制，不应假设 Claude.ai、Claude Code、Claude API 之间会自动同步自定义 Skills。
 
-- 初始化 Skill 并提供底层文本的脚本。初始化脚本使用现有的模板（带有 YAML 前置元数据、占位符和待办事项），并根据传入的数据填充内容。
-- 打包该 Skill 的 Python 文件。
-- 验证该 Skill 的脚本。确保 SKILL.md 存在，验证 YAML 前置元数据，并确保文件夹和文件中的内容正确。
+## 8. 在 Claude Agent SDK 中使用
 
-我们将利用这个 skill-creator Skill 将现有内容打包成可重用和模块化的脚本。
+Agent SDK 可以把 Skills、子智能体和工具组合成可编程工作流：
 
----
+1. 通过项目设置来源加载 `.claude/skills/`。
+2. 允许主智能体使用 `Skill` 工具加载 Skills。
+3. 通过 `agents` 参数定义子智能体，并允许主智能体使用 `Agent` 工具进行委派。
+4. 为每个子智能体配置完成任务所需的最小工具集。
+5. 汇总各子智能体结果，由主智能体生成最终输出。
 
-## 5、创建自定义 Skills
+例如，研究型智能体可以加载 `learning-a-tool` Skill 制定研究计划，再并行委派：
 
-如果需要扩展，我们总是可以包含底层的引用文件。
+- Docs Researcher：阅读官方文档。
+- Repo Analyzer：分析源码和项目结构。
+- Web Researcher：补充教程和外部资料。
 
-对于输出格式，我们指定它取决于用户请求。我们没有直接给出每种输出类型的例子，而是引用了 assets 文件夹中的模板。
+生产环境中应对 Bash、写入、网络访问和外部系统操作设置权限边界；高风险操作应暂停并请求人工确认。Claude Agent SDK 与 Notion 的外部写入示例见 [MCP：Claude Agent SDK 与 Notion](../MCP.md#claude-agent-sdk-notion-mcp)。
 
-如果需要特定的输出格式，不要把所有内容都放在 SKILL.md 中，而是在外部资源或文件中引用。记住，这些模板只有在需要时才会加载。因此，我们可以通过只加载所需数据格式的特定文件来高效使用 token 和上下文窗口。
+## 9. 总结
 
-使用 skill-creator 来评估 Skills 对最佳实践的遵循情况。使用并行子智能体来加速评估。
+- Skill 用于封装按需加载的专业知识和可重复工作流。
+- `description` 决定 Skill 能否在正确场景被发现，应同时写清“做什么”和“何时使用”。
+- `SKILL.md` 保持精简，详细资料、脚本和模板按需拆分。
+- Skill 提供方法，工具提供执行能力，子智能体提供上下文隔离，MCP 提供外部连接。
+- 使用真实任务验证触发准确性、输出质量、权限边界和失败处理。
 
-评估 Skills 的一个好方法是通过 skill-creator 运行它们。但如何确保 Skills 按预期工作呢？
+## 官方资料
 
-我们可以为 Skills 编写单元测试，就像为软件编写单元测试一样。
-
----
-
-## 6、在 Claude API 中使用 Skills
-
-要在 Claude API 中使用 Skills，需要使用 bash `代码执行`和 Files API `读写文件`。
-
-有几点需要确保我们理解。
-
-1. 你在 Claude AI 和 Claude Desktop 中创建的 Skills 不会与 Claude API 或 Claude Code 共享。
-2. 要使用 Skills，需要让 Claude 具备执行代码、创建和编辑文档、演示文稿、PDF、数据报告以及与文件系统交互的能力。当使用 Claude API 时，这些都需要手动配置，而在使用 Claude AI 和 Claude Desktop 时，这些是为您直接配置好的。
-
-- 在使用 Claude Code 和 Claude 智能体产品等工具时，你可以直接访问文件系统。
-- 使用 Claude API 时，你没有直接访问权限，我们需要一个容器来执行代码，同时搭配一个文件系统。
-- 在 Claude AI 和 Claude Desktop 中，这种容器化环境和文件系统是直接提供给你的，你不需要自己实现。
-
-**代码执行工具**允许 Claude 运行 bash 或 shell 命令。
-
-在沙箱或容器环境中创建、查看和编辑文件、编写代码，该环境内存、磁盘、CPU 有限，最重要的是没有互联网访问权限，并且有一些开箱即用的库。
-
-Claude API 包含一组称为 Files API 的接口，用于上传和下载可以在容器内执行和处理的文件。
-
-在本课中，我们结合了 Messages API、代码执行工具、Files API 和 Skills，最终实现了以编程方式处理自定义 Skills 的能力。在下一课中，我们将转向 Claude Code，在 .claude 文件夹中添加自己的自定义 Skills，并构建更复杂的命令行应用。
-
----
-
-## 7、在 Claude Code 中使用 Skills
-
-现在我们将转向 Claude Code，使用 Skills 进行代码生成、审查和测试。我们还将设置子智能体并为它们配备 Skills。
-
-`.claude/CLAUDE.md`在每次对话开始时加载。它添加 Claude 在每个对话中都需要知道的关于这个项目的上下文。
-
-`.claude/skills`提供了额外的领域专业知识、可重复的工作流和新能力，这些是逐步加载的，只在需要时加载。
-
-所以任何你希望 Claude 在每个对话中都了解的内容，放在 CLAUDE.md 中。而只在需要时才加载的知识，则使用 Skills。
-
-在这个 skills 文件夹中，我有几个 Skills：一个代码审查 Skill、一个生成测试的 Skill 和一个生成代码的 Skill。
-
-在代码审查 Skill 中，有熟悉的 YAML 前置元数据。名称 code-review，描述指定了做什么以及何时使用。我希望 Claude 在任何需要代码审查的时候使用这个 Skill，提到代码质量、最佳实践、安全性和其他关键词。
-
-在主体中，我指定了希望 Claude 遵循的步骤。审查侧重于安全性、Python 最佳实践、项目约定等。我指定了一些关于审查什么和不审查什么的具体内容。这部分确保了代码审查精确按照我或我的团队希望的方式进行，而不需要我每次都指定规则。
-
-我还有一个生成测试的 Skill。描述了它的功能和何时使用。这里我指定了来自 CLAUDE.md 的一些关于项目约定的相同内容，但这部分只在需要生成测试时加载。对于生成测试，我指定了特定的测试框架和其他设置。
-
-最后一个 Skill 是代码生成 Skill。有描述和何时使用，指定了一些关于生成内容的特定要求。
-
-现在看看这些 Skills 如何与 Claude Code 一起使用。
-
-首先在我的项目目录中启动 Claude Code，要求它使用代码生成 Skill 生成一些代码。
-
-我想让 Claude 使用这个 Skill 给我的待办应用添加一个新功能——允许在特定待办事项上设置提醒。要求 Claude 添加这个功能，使待办事项有一个可选的提醒字段。
-
-在 Claude Code 中运行。Claude 立即根据我们提供的描述识别出 Skill，并按照我们指定的工作流执行。它给出了发现的摘要，并根据 Skill 的标准审查生成的代码。我可以查看生成的代码，看到 Claude 考虑了安全性、边界情况、错误处理等。
-
-当需要代码审查时，我也可以使用那个 Skill。让 Claude 审查现有代码。Claude 读取 Skill 文件并执行审查，遵循我列出的具体标准：安全性、性能、边界情况等。它还会标记潜在问题并推荐改进。
-
-当需要测试时，使用测试生成 Skill。Claude 读取 Skill 并按照我指定的框架和约定生成测试，不需要我每次都重新解释。
-
-这里一个非常强大的概念是将子智能体与 Skills 结合使用。在 Claude Code 中，我可以生成自己的 Skills、自己的隔离上下文并且可以并行执行任务的子智能体。
-
-设置一个用于代码审查的子智能体。该子智能体将使用我们创建的 code-review Skill。当我运行更复杂的任务时，可以让 Claude 生成这个子智能体来审查我的代码，同时主智能体继续处理其他任务。这种隔离意味着子智能体的上下文不会污染主对话。
-
-其工作方式是，在 skills 目录中，有一个 subagents 文件夹。在其中，我使用 markdown 文件定义子智能体，指定它们的角色、Skills 和工具。
-
-例如，我可以有一个只对文件系统有读取权限并使用 code-review Skill 的代码审查子智能体。当 Claude 检测到可能需要代码审查时，就会生成这个子智能体。
-
-在演示中，当我输入/提示一个新功能实现时，Claude 可以生成一个代码审查子智能体来并行审查生成的代码，同时主智能体继续实现功能。子智能体返回发现的结果，主智能体可以据此采取行动。这对于在不减慢开发速度的情况下维护代码质量非常强大。
-
-更广泛地看子智能体在 Claude Code 中的工作方式。当你有需要深度关注特定领域的任务时，子智能体非常完美。它们具有有限的工具权限和隔离的上下文，因此不会消耗你的主上下文窗口。你可以精确指定每个子智能体可以访问哪些 Skills。
-
-假设我有一个大型代码库，想在多个文件中进行代码审查。主智能体不需要读取所有这些文件并消耗上下文，我可以生成一个具有 code-review Skill 的代码审查子智能体。子智能体审查代码，生成摘要，并将其返回给主智能体。主智能体只使用摘要继续工作，节省大量 token。
-
-另一个例子——我可以有一个专门专注于测试、配备测试生成 Skill 的子智能体。当我添加新功能时，这个子智能体可以自动生成相应的测试。
-
-Skills 和子智能体一起允许一个极其强大的工作流：你可以让主智能体编排多个专业工作者，每个都有自己的专业知识，在同一个项目的不同方面并行工作。
-
-在 Claude Code 中，我可以在 .claude/subagents 目录中配置我的子智能体，类似于 Skills 的配置方式。每个子智能体都有自己的系统提示、工具权限和可以加载的 Skills。
-
-总结一下，当你在 Claude Code 中使用 Skills 时：
-- Skills 提供专业知识、可重复的工作流和新能力
-- 子智能体使用自己的 Skills 和工具提供隔离的执行
-- 两者结合使用，可以创建强大的并行工作流，维护代码质量和一致性
-
----
-
-## 8、Claude Agent SDK 中的 Skills
-
-使用 Claude Agent SDK 创建一个研究智能体。该智能体将使用一个 Skill，基于工具的技术文档、GitHub 仓库和网络搜索，为该开源工具创建学习指南。
-
-我们已经了解了如何在网页端使用 Skills、使用 Messages API 和 Claude Code，现在来谈谈如何在 Claude Agent SDK 中使用 Skills。回顾一下，Claude Agent SDK 是一种以编程方式构建你自己的智能体应用的方法，利用 Claude 的底层智能来构建复杂且非确定性的智能体。
-
-在本课中，我们将构建一个研究智能体。把它想象成一个通用研究智能体，其主要职责是接收任务，使用 Skill 制定计划，然后将任务分派给各自有专长的子智能体。让我们看看架构。
-
-这个智能体的架构类似于指挥官带领专业士兵。我们有主智能体，即指挥官。指挥官可以访问 skill tool，该工具加载一个用于学习工具的 Skill。指挥官使用这个 Skill 制定计划，然后使用 task tool 将工作分派给三个子智能体。
-
-三个子智能体各有专长：Docs Researcher 负责阅读文档；Repo Analyzer 负责克隆仓库和分析代码；Web Researcher 负责查找教程、YouTube 视频和其他外部资源。
-
-外部系统写入部分统一整理在 [MCP：Claude Agent SDK 与 Notion](../MCP.md#claude-agent-sdk-notion-mcp) 中。
-
-我们使用的 Skill 叫做"learning-a-tool"。这个 Skill 提供了如何学习新开源工具的计划。Skill 有元数据——名称和描述——并引用了一个包含详细说明的 progressive_learning.md 文件。这就是渐进式披露的实际应用：Skill 描述始终加载，但详细说明只在 Skill 被触发时才加载。
-
-看看项目结构。agent.py 是主入口。agents 目录有定义子智能体的 markdown 文件：docs_researcher.md、repo_analyzer.md 和 web_researcher.md。还有一个 .claude/skills/learning-a-tool 目录，包含 SKILL.md 和 progressive_learning.md 文件。
-
-让我们浏览代码。首先，导入必要的模块并配置工具。SDK 默认是只读且安全的，所以我们需要显式允许某些工具。我们允许写入、bash、网络搜索和网络抓取。这些是使智能体能够完成工作的工具。
-
-然后配置 Skill tool 和 Task tool。Skill tool 从项目的 .claude/skills 目录加载 Skills。Task tool 加载子智能体定义，允许我们向它们分派任务。
-
-允许的工具被组合并传递给主智能体。子智能体有自己更受限的工具集。例如，Repo Analyzer 需要 bash 权限来克隆仓库，但 Docs Researcher 只需要网络搜索和抓取。这遵循最小权限原则——每个智能体只能访问它需要的工具。
-
-当用户给出任务时，比如"为 MinerU 创建学习指南"，主智能体首先使用 Skill 制定计划。Skill 逐步披露——首先只是名称和描述，触发后加载完整的 SKILL.md，当计划引用更深入的指令时，加载 progressive_learning.md。
-
-计划创建后，主智能体并行向三个子智能体分派任务。每个子智能体使用自己的上下文和工具独立工作。Docs Researcher 阅读网页文档。Repo Analyzer 克隆 GitHub 仓库并分析代码结构。Web Researcher 查找教程和视频。
-
-子智能体返回发现的结果，主智能体将所有内容综合成全面的学习指南。它创建一个本地文件结构，包含学习路径和时间预估的 README.md，整理链接的 resources.md，以及带有基本代码示例的 examples 文件夹。
-
-这展示了结合 Skills、子智能体和 Agent SDK 的力量。Skill 提供结构化的流程，子智能体提供并行、专注的研究，SDK 以可编程的方式将所有内容整合在一起。
-
-本课的一些重要收获：
-
-1. Claude Code CLI 和 Claude Agent SDK 有重要区别。Claude Code 是用于辅助编码和一次性任务的交互式工具。SDK 是用于构建可扩展 AI 应用的编程框架，可以对系统提示、工具集和错误处理进行精细控制。
-2. 安全性至关重要。在生产环境中，对于 bash 和 write 等高风险工具，需要人工参与的审批流程。SDK 允许你实现权限请求，智能体在执行危险操作前暂停并请求确认。
-3. 可移植性是一个关键优势。你在 .claude/skills 目录中创建的 Skills 遵循开放标准。你可以将为 SDK 编写的 Skill 在 Claude Desktop 或其他任何兼容 Skills 的智能体中使用，无需修改。
-
----
-
-## 9、总结
-
-在创建 Skill 时，从基础的 markdown 指令开始，然后按照渐进式披露的原则逐步扩展。监控你的智能体在真实场景中如何使用你的 Skill，并根据观察进行迭代。确保描述包含足够的细节，让你的智能体知道何时使用它。
-
-别忘了，Claude 非常了解 Skills 是什么。所以你可以随时从一个简单的对话开始创建 Skills，然后使用 skill-creator 遵循最佳实践。
+- [Agent Skills 开放规范](https://agentskills.io/specification)
+- [Anthropic Skills 示例仓库](https://github.com/anthropics/skills)
+- [Claude Code：Skills](https://code.claude.com/docs/en/skills)
+- [Claude Code：子智能体](https://code.claude.com/docs/en/sub-agents)
+- [Claude API：Agent Skills](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview)
+- [Claude Agent SDK：Skills](https://code.claude.com/docs/en/agent-sdk/skills)
+- [Claude Agent SDK：子智能体](https://code.claude.com/docs/en/agent-sdk/subagents)

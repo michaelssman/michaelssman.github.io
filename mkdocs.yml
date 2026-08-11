@@ -439,7 +439,6 @@ nav:
       - AI/OpenClaw/OpenClaw.md
       - AI/OpenClaw/OpenClaw安装指南.md
     - AI/技巧.md
-    - AI/代码评审.md
     - Agent:
       - AI/Agent/Agent.md
       - AI/Agent/Subagents.md
