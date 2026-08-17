@@ -1,9 +1,9 @@
 ---
-name: git-commit-message-only
+name: git-commit-message
 description: Use when the user asks to generate, suggest, draft, or refine git commit messages from current code changes, and only commit text is needed without code review or executing git commit.
 ---
 
-# Git Commit Message Only
+# Git Commit Message
 
 ## Overview
 

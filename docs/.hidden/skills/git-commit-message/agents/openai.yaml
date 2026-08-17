@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Commit Message"
+  short_description: "Generate scoped commit messages from diffs without code review"
+  default_prompt: "Use $git-commit-message to generate `type(scope): summary` commit messages from the current git diff without reviewing code, without brackets, and with body details when one summary line is not enough."

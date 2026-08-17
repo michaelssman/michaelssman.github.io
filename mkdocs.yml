@@ -330,10 +330,6 @@ nav:
     - 计算机网络/RTP.md
     - 计算机网络/SSH.md
     - 计算机网络/抓包.md
-  - 版本控制:
-    - 版本控制/git.md
-    - 版本控制/git_config.md
-    - 版本控制/git_ignore.md
   - 设计模式:
     - 设计模式/README.md
     - 创建型模式:
@@ -446,7 +442,13 @@ nav:
     - AI/Claude-Code-Hooks.md
     - CodeX:
       - AI/CodeX/Codex.md
+      - AI/CodeX/Codex CLI 与 Git Worktree 并行开发指南.md
     - AI/LongTask.md
+    - git:
+      - AI/git/git.md
+      - AI/git/git_config.md
+      - AI/git/git_ignore.md
+      - AI/git/delta.md
     - Skills:
       - AI/Skills/Agent Skills.md
   - Mac:

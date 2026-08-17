@@ -1,6 +1,6 @@
 ---
 name: git-commit-push
-description: Use when the user explicitly asks Codex to complete a git workflow that may stage changes, generate a Conventional Commit message, create a commit, pull/rebase from the remote branch, and push. Trigger on requests such as commit and push, submit code, pull then push, or finish the git commit workflow. Do not use when the user only wants commit message text; use git-commit-message-only instead.
+description: Use when the user explicitly asks Codex to complete a git workflow that may stage changes, generate a Conventional Commit message, create a commit, pull/rebase from the remote branch, and push. Trigger on requests such as commit and push, submit code, pull then push, or finish the git commit workflow. Do not use when the user only wants commit message text; use git-commit-message instead.
 ---
 
 # Git Commit Push
@@ -21,7 +21,7 @@ description: Use when the user explicitly asks Codex to complete a git workflow 
 - `commit and push`
 - `把当前改动提交到远端`
 
-以下语义不要触发本 skill，改用 `git-commit-message-only`：
+以下语义不要触发本 skill，改用 `git-commit-message`：
 - `生成 commit 信息`
 - `帮我写提交信息`
 - `润色 commit message`

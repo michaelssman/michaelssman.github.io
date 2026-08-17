@@ -207,6 +207,10 @@ web_search = "disabled"
 
 | 命令 | 用途 |
 | --- | --- |
+| `/title` | 配置终端窗口或 tab 标题字段 |
+| `/resume` | 从会话列表恢复历史对话 |
+| `/status` | 查看线程配置、模型、审批策略、可写目录和 token 使用 |
+| `/fork` | 从当前会话派生新线程 |
 | `/permissions` | 调整 Codex 无需询问即可执行的权限范围 |
 | `/model` | 选择活动模型和可用 reasoning effort |
 | `/fast` | 在支持的模型上切换 Fast service tier |
@@ -215,9 +219,7 @@ web_search = "disabled"
 | `/ps` | 查看当前会话的后台终端及其最近输出 |
 | `/stop` | 停止当前会话启动的全部后台终端 |
 | `/review` | 审查当前工作树、未提交改动、commit 或分支 diff |
-| `/status` | 查看线程配置、模型、审批策略、可写目录和 token 使用 |
 | `/statusline` | 配置 TUI 底部状态栏字段 |
-| `/title` | 配置终端窗口或 tab 标题字段 |
 | `/raw` | 查看最近一次 assistant 消息的原始 markdown |
 | `/compact` | 压缩/总结长对话，释放上下文 |
 | `/copy` | 复制最近一次完成的 Codex 输出，快捷键 `Ctrl+O` |
@@ -230,9 +232,7 @@ web_search = "disabled"
 | `/hooks` | 查看和管理 lifecycle hooks |
 | `/agent` | 切换/查看子智能体线程 |
 | `/side` 或 `/btw` | 开启临时侧边对话，不打断主线 |
-| `/fork` | 从当前会话派生新线程 |
 | `/new` | 在同一 CLI 会话里开启新对话 |
-| `/resume` | 从会话列表恢复历史对话 |
 | `/clear` | 清屏并开启新的对话；不同于 `Ctrl+L` 只清屏 |
 | `/ide` | 拉取 IDE 打开的文件、选择区等上下文 |
 | `/keymap` | 查看和保存 TUI 快捷键映射 |

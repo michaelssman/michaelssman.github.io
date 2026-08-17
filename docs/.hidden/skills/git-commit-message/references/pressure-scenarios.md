@@ -1,4 +1,4 @@
-# Commit Message Only Pressure Scenarios
+# Commit Message Pressure Scenarios
 
 ## RED: Baseline failures without this skill
 
