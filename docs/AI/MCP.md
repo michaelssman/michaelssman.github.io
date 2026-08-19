@@ -80,11 +80,115 @@ Codex Plugin 是可安装的分发单元，可以把 Skills、App integrations�
 - 明确指定可信服务器和数据来源，不要让模型根据记忆猜测 API、版本或产品行为。
 - MCP 工具仍然受 Sandbox、审批策略和项目权限边界约束。
 
-## 4. Claude Code Hooks 与 MCP { #claude-hooks-mcp }
+## 4. Codex 连接 Reqable { #codex-reqable-mcp }
+
+将 Reqable MCP Server 接入 Codex 后，Codex 可以直接筛选实时抓包记录，读取请求头、请求体、响应状态、响应头和响应体，不再需要手动复制接口数据。
+
+### 4.1 前提条件
+
+- 读取抓包数据时，Reqable 应保持运行。
+
+### 4.2 添加 Reqable MCP Server
+
+Reqable macOS 应用内置了 MCP Server，可以直接使用，不依赖 Node.js 或 `npx`：
+
+```bash
+codex mcp add reqable -- \
+  /Applications/Reqable.app/Contents/Helpers/mcp-server \
+  --scope minimal
+```
+
+`minimal` 仍会注册部分可写工具。如果只需要 Codex 分析接口，建议在 `~/.codex/config.toml` 中收紧为只读工具：
+
+```toml
+[mcp_servers.reqable]
+command = "/Applications/Reqable.app/Contents/Helpers/mcp-server"
+args = ["--scope", "minimal"]
+enabled_tools = [
+  "capture_live_filter",
+  "capture_live_get_by_id",
+  "capture_live_generate_curl",
+]
+default_tools_approval_mode = "prompt"
+```
+
+| 工具 | 作用 |
+| --- | --- |
+| `capture_live_filter` | 按 URL、域名等条件筛选抓包记录 |
+| `capture_live_get_by_id` | 根据数字 ID 读取完整请求和响应 |
+| `capture_live_generate_curl` | 将抓包请求生成 cURL |
+
+这个白名单不允许 Codex 删除抓包数据，也不允许创建重写、断点或脚本规则。
+
+### 4.3 检查配置
+
+```bash
+codex mcp get reqable
+codex mcp list
+```
+
+应能看到 `reqable` 的状态为 `enabled`，并且 `enabled_tools` 只包含上述三个工具。然后重启 Codex，可以使用类似以下的请求：
+
+```text
+查看 Reqable 中最近的接口请求。
+分析 Reqable 中 URL 包含 /login 的请求和响应。
+查找 Reqable 中响应状态异常的接口。
+```
+
+### 4.4 Reqable 与其他代理冲突
+
+Reqable 默认可以自动接管 macOS 系统代理。如果同时使用 FlClash、Clash 或其他代理软件，打开 Reqable 后可能出现浏览器或终端无法联网。
+
+查看当前系统代理、终端代理环境变量和端口占用：
+
+```bash
+scutil --proxy
+env | rg -i '^(http|https|all|no)_proxy='
+lsof -nP -iTCP -sTCP:LISTEN | rg ':7892|:9000|Reqable|adb'
+```
+
+在本机的一次实际排查中：
+
+- FlClash 相关进程监听 `127.0.0.1:7892`。
+- 终端的 `http_proxy`、`https_proxy` 和 `all_proxy` 均指向 `127.0.0.1:7892`。
+- `adb` 占用了 `9000`，而 `9000` 又是 Reqable 的默认代理端口。
+
+这些端口只是当时环境的实例，应以自己电脑的实际输出为准。
+
+#### 解决端口冲突
+
+如果 `9000` 已被占用，可以在 Reqable 中将代理端口改为 `9001`、`9080` 或其他未占用端口。Reqable MCP Server 会优先读取 Reqable 的实际 `proxyPort`，不需要在 MCP 配置中重复写死端口。
+
+#### 串联 FlClash
+
+需要同时使用 Reqable 和 FlClash 时，在 Reqable 中选择“代理 -> 二级代理 -> 新建”，例如：
+
+```text
+地址：127.0.0.1
+端口：7892
+模式：Include
+规则：*
+```
+
+网络链路为：
+
+```text
+应用 -> Reqable:9080 -> FlClash:7892 -> 互联网
+```
+
+如果只使用 Reqable 抓取 iPhone 协同流量，可以关闭 Reqable 的“自动设置系统代理”，避免它接管 Mac 浏览器和终端的网络。
+
+### 4.5 安全注意事项
+
+- 抓包内容可能包含 `Authorization`、Cookie、Token、密码和个人数据。
+- MCP 工具读取的内容会进入当前模型上下文，应只在必要时抓取和分析。
+- 优先按域名或 URL 筛选所需请求，避免一次性读取无关流量。
+
+## 5. Claude Code Hooks 与 MCP { #claude-hooks-mcp }
 
 Claude Code Hooks 可以监听 MCP 交互，也可以直接调用已连接 MCP 服务器上的工具。
 
-### 4.1 MCP 交互事件
+### 5.1 MCP 交互事件
 
 | 事件 | 触发时机 |
 | --- | --- |
@@ -93,7 +197,7 @@ Claude Code Hooks 可以监听 MCP 交互，也可以直接调用已连接 MCP �
 
 工具执行类事件也可以通过 Matcher 匹配 MCP 工具，例如 `mcp__.*`。
 
-### 4.2 MCP Tool Hook
+### 5.2 MCP Tool Hook
 
 `mcp_tool` 类型用于调用已连接的 MCP 服务器工具，适合把 Claude Code Hooks 接入外部系统。
 
@@ -117,7 +221,7 @@ mcp__memory__create_entities
 
 该名称可以用于 `PreToolUse`、`PostToolUse` 等工具事件的 Matcher，例如 `mcp__memory__.*`。
 
-## 5. Claude Agent SDK 与 Notion MCP { #claude-agent-sdk-notion-mcp }
+## 6. Claude Agent SDK 与 Notion MCP { #claude-agent-sdk-notion-mcp }
 
 一个研究智能体可以组合 Skill、子智能体和 MCP：
 
@@ -137,7 +241,7 @@ mcp__memory__create_entities
 | MCP 服务器 | 提供 Notion 等外部系统连接 |
 | Agent SDK | 以可编程方式编排完整工作流 |
 
-## 6. 什么时候使用 MCP
+## 7. 什么时候使用 MCP
 
 - 需要访问模型上下文之外的实时或私有数据。
 - 需要调用第三方系统提供的工具。
@@ -146,10 +250,12 @@ mcp__memory__create_entities
 
 如果任务只需要固定说明和可重复步骤，优先考虑 Skill；如果只是拆分任务或隔离上下文，使用子智能体；只有需要连接外部系统时，才需要 MCP。
 
-## 7. 相关文档
+## 8. 相关文档
 
 - [Agent Skills](Skills/Agent%20Skills.md)
 - [Subagents 子智能体](Agent/Subagents.md)
 - [Claude Code Hooks](Claude-Code-Hooks.md)
 - [Codex](CodeX/Codex.md)
 - [Codex MCP 官方文档](https://developers.openai.com/codex/mcp)
+- [Reqable MCP Server](https://github.com/reqable/reqable-mcp-server)
+- [Reqable 代理配置](https://github.com/reqable/reqable-docs/blob/master/en-US/capture/11_proxy.md)
