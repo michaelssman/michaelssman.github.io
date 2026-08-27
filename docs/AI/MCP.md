@@ -86,7 +86,7 @@ Codex Plugin 是可安装的分发单元，可以把 Skills、App integrations�
 
 ### 4.1 前提条件
 
-- 读取抓包数据时，Reqable 应保持运行。
+读取抓包数据时，Reqable 应保持运行。
 
 ### 4.2 添加 Reqable MCP Server
 
@@ -134,55 +134,6 @@ codex mcp list
 分析 Reqable 中 URL 包含 /login 的请求和响应。
 查找 Reqable 中响应状态异常的接口。
 ```
-
-### 4.4 Reqable 与其他代理冲突
-
-Reqable 默认可以自动接管 macOS 系统代理。如果同时使用 FlClash、Clash 或其他代理软件，打开 Reqable 后可能出现浏览器或终端无法联网。
-
-查看当前系统代理、终端代理环境变量和端口占用：
-
-```bash
-scutil --proxy
-env | rg -i '^(http|https|all|no)_proxy='
-lsof -nP -iTCP -sTCP:LISTEN | rg ':7892|:9000|Reqable|adb'
-```
-
-在本机的一次实际排查中：
-
-- FlClash 相关进程监听 `127.0.0.1:7892`。
-- 终端的 `http_proxy`、`https_proxy` 和 `all_proxy` 均指向 `127.0.0.1:7892`。
-- `adb` 占用了 `9000`，而 `9000` 又是 Reqable 的默认代理端口。
-
-这些端口只是当时环境的实例，应以自己电脑的实际输出为准。
-
-#### 解决端口冲突
-
-如果 `9000` 已被占用，可以在 Reqable 中将代理端口改为 `9001`、`9080` 或其他未占用端口。Reqable MCP Server 会优先读取 Reqable 的实际 `proxyPort`，不需要在 MCP 配置中重复写死端口。
-
-#### 串联 FlClash
-
-需要同时使用 Reqable 和 FlClash 时，在 Reqable 中选择“代理 -> 二级代理 -> 新建”，例如：
-
-```text
-地址：127.0.0.1
-端口：7892
-模式：Include
-规则：*
-```
-
-网络链路为：
-
-```text
-应用 -> Reqable:9080 -> FlClash:7892 -> 互联网
-```
-
-如果只使用 Reqable 抓取 iPhone 协同流量，可以关闭 Reqable 的“自动设置系统代理”，避免它接管 Mac 浏览器和终端的网络。
-
-### 4.5 安全注意事项
-
-- 抓包内容可能包含 `Authorization`、Cookie、Token、密码和个人数据。
-- MCP 工具读取的内容会进入当前模型上下文，应只在必要时抓取和分析。
-- 优先按域名或 URL 筛选所需请求，避免一次性读取无关流量。
 
 ## 5. Claude Code Hooks 与 MCP { #claude-hooks-mcp }
 

@@ -61,7 +61,7 @@ Spring Cloud alibaba: nacos服务注册中心，配置中心
 
 在搭建Nacos**服务发现中心**之前需要搞清楚两个概念：namespace和group
 
-- namespace：用于区分环境、比如：开发环境、测试环境、生产环境。
+- namespace：用于区分环境、比如：开发、测试、生产环境。
 - group：用于区分项目，比如：项目A、项目B。
 
 首先在nacos配置namespace:
@@ -170,7 +170,7 @@ spring:
 
 我们启动项目中传入spring.profiles.active的参数决定引用哪个环境的配置文件，例如：传入spring.profiles.active=dev表示使用dev环境的配置文件即content-service-dev.yaml。
 
-#### 2.2 配置content-service
+#### 2.2 示例：配置content-service
 
 以开发环境为例对content-service工程的配置文件进行配置，进入nacos，进入开发环境。
 
@@ -232,7 +232,7 @@ spring:
 [NacosRestTemplate.java:476] - HTTP method: POST, url: http://192.168.101.65:8848/nacos/v1/cs/configs/listener, body: {Listening-Configs=content-service.yamlxuecheng-plus-projectdevcontent-service-dev.yamlxuecheng-plus-project88459b1483b8381eccc2ef462bd59182devcontent-servicexuecheng-plus-projectdev, tenant=dev}
 ```
 
-#### 2.3配置content-api
+#### 2.3示例：配置content-api
 
 在nacos中的开发环境中配置content-api-dev.yaml，内容如下：
 

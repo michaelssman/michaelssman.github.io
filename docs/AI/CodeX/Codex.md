@@ -23,6 +23,8 @@
 
 - **它可以被定制**：通过 `AGENTS.md`、`config.toml`、Skills、插件、子智能体和自动化任务，让 Codex 更贴近个人或团队工作流。
 
+Codex 的 CLI、桌面端与 IDE 扩展共享`~/.codex/config.toml`。
+
 ---
 
 ## 2. 模型选择
@@ -108,7 +110,6 @@ JSONL 文件可能包含完整对话、指令、工作目录、工具调用及�
 #### 推荐恢复流程
 
 1. 退出前输入 `/rename codex-doc-update`，给当前会话设置一个容易识别的名称。
-2. 输入 `/exit` 或按 `Ctrl+C` 正常退出。普通退出不会删除会话记录。
 3. 下次先进入原项目目录，再运行 `codex resume` 打开会话选择器。
 4. 从列表中选择已命名的会话，或使用会话名称直接恢复：
 
@@ -210,6 +211,7 @@ web_search = "disabled"
 | `/title` | 配置终端窗口或 tab 标题字段 |
 | `/resume` | 从会话列表恢复历史对话 |
 | `/status` | 查看线程配置、模型、审批策略、可写目录和 token 使用 |
+| `/exit` 或 `/quit` | 退出 CLI |
 | `/fork` | 从当前会话派生新线程 |
 | `/permissions` | 调整 Codex 无需询问即可执行的权限范围 |
 | `/model` | 选择活动模型和可用 reasoning effort |
@@ -243,7 +245,6 @@ web_search = "disabled"
 | `/memories` | 配置 memory 注入或生成 |
 | `/experimental` | 切换实验功能，必要时重启 Codex |
 | `/feedback` | 向 Codex 维护者发送反馈和日志 |
-| `/exit` 或 `/quit` | 退出 CLI |
 
 ### `/title` 用法
 

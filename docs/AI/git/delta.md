@@ -98,7 +98,7 @@ git config --global --get-regexp '^(delta\.|merge\.conflictStyle)'
 
 ## 4. 日常使用
 
-配置完成后不需要学习新的 Git 命令，原有命令会自动使用 Delta。
+配置完成后Git原有命令会自动使用 Delta。
 
 ### 查看未暂存修改
 
