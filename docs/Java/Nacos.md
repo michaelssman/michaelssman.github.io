@@ -427,3 +427,64 @@ spring:
   config:
     import: nacos:hhjava-user-dev.yaml?config.namespace=dev&config.group=hhjava&config.file-extension=yaml
 ```
+
+## Nacos 配置备份与跨服务器迁移
+
+Nacos 配置可以导出为 ZIP，并在新服务器的 Nacos 中直接导入，因此不需要逐项重新填写。但配置 ZIP 只适合迁移“当前配置内容”，不能代替完整的实例灾备。可靠的迁移应同时保留配置导出包、Nacos 数据存储和应用侧密钥。
+
+### 1、明确备份边界
+
+| 备份对象 | 主要内容 | 用途 |
+| --- | --- | --- |
+| 配置导出 ZIP | 当前命名空间中的 Data ID、Group、配置格式和配置内容 | 跨服务器、跨兼容版本迁移 |
+| Nacos 数据存储 | 命名空间元数据、配置历史、用户、角色和权限等 | 同版本实例灾难恢复 |
+| 应用侧密钥 | Nacos 密码、数据库密码、OAuth 密钥、RSA 密钥等 | 恢复应用运行环境 |
+
+服务实例通常不需要备份。微服务启动后会重新注册到 Nacos，停止运行的临时实例也不应迁移到新服务器。
+
+当前 `hhjava` 项目的开发环境使用以下配置定位规则：
+
+- Namespace：`dev`
+- Group：`hhjava`
+- Data ID：`${spring.application.name}-${spring.profiles.active}.yaml`，例如 `hhjava-gateway-dev.yaml`、`hhjava-user-dev.yaml`
+- 应用侧密钥目录：`~/.config/hhjava/dev/`
+
+Nacos 中应只保存环境变量占位符，不保存真实的数据库密码、OAuth 客户端密钥和 RSA 私钥。因此，导出配置 ZIP 后仍需单独备份应用侧密钥。
+
+### 2、推荐的双层备份方法
+
+每次手工备份都创建独立的时间戳目录，例如：
+
+```text
+~/.config/hhjava/backups/nacos/20260828-153000/
+├── config-export/
+│   └── nacos-dev-config-v2.0.3.zip
+├── instance-data/
+│   └── nacos-database.sql.gz 或 nacos-data.tar.gz
+├── secrets/
+├── manifest.txt
+└── SHA256SUMS
+```
+
+备份步骤如下：
+
+1. 在 Nacos 控制台进入“配置管理”，选择 `dev` 命名空间并导出全部配置。
+2. 在 `manifest.txt` 中记录源 Nacos 版本、Namespace ID、Group、Data ID 列表和配置数量。
+3. 为导出包、数据快照和密钥备份生成 SHA-256 校验值，防止文件损坏或被意外替换。
+4. 根据 Nacos 的实际存储方式生成实例数据快照：
+   - 使用外部 MySQL 时，通过一致性 `mysqldump` 备份 Nacos 所使用的数据库。
+   - 使用内置 Derby 时，先短暂停止 Nacos，再备份 `/home/nacos/data`、服务端配置和容器运行参数，完成后立即重启。不要在 Derby 运行期间直接复制数据库文件。
+5. 单独备份 `~/.config/hhjava/dev/` 中的密钥文件，并保持目录权限为 `700`、文件权限为 `600`。
+
+### 3、新服务器恢复流程
+
+1. 部署目标 Nacos。完整数据库或 Derby 快照优先恢复到相同的 Nacos 版本；跨版本迁移优先使用配置 ZIP，并先在隔离环境验证兼容性。
+2. 创建与原环境完全相同的 Namespace ID，例如 `dev`。Namespace 的显示名称可以不同，但 ID 必须与客户端配置一致。
+3. 将配置 ZIP 导入空的目标命名空间。首次导入采用“存在冲突则终止”，不要直接覆盖目标服务器上的配置。
+4. 比对导入前后的 Data ID、Group、配置类型、配置数量和内容摘要。
+5. 重新建立 Nacos 用户、角色和权限；只有经过验证的同版本实例数据恢复，才可以用于还原这些信息及配置历史。
+6. 在新服务器的部署环境中恢复应用侧密钥，不能把真实密钥重新写进 Nacos 配置。
+7. 启动微服务，确认它们能够读取配置并重新注册。
+8. 验证完成后再切换应用的 Nacos 地址，并暂时保留旧服务器作为回滚入口。
+
+建议将 `NACOS_SERVER_ADDR` 配置为稳定的私网 DNS 名称，而不是固定公网 IP。以后更换 Nacos 服务器时只需要修改 DNS 指向，应用侧无需逐个修改地址。
