@@ -1,36 +1,146 @@
 # Pom.xml
 
-## hhjava 当前 POM 基线（2026-08-28）
+## `<project>`
 
-当前项目是 Java 17、Spring Boot 3.3.7 的 Maven 多模块工程，根项目坐标为 `com.hhjava.www:hhjava:1.0-SNAPSHOT`，打包类型为 `pom`。主要受管版本如下：
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
 
-| 组件 | 版本 |
-| --- | --- |
-| Spring Boot | 3.3.7 |
-| Spring Cloud | 2023.0.5 |
-| Spring Cloud Alibaba | 2023.0.1.0 |
-| MyBatis-Plus | 3.5.7 |
-| MinIO Java SDK | 8.5.17 |
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-完整 Reactor 共 9 个项目：根项目、`hhjava-common`、`hhjava-unify`、`hhjava-service`、`hhjava-user`、`hhjava-backup-file`、`hhjava-basic`、`hhjava-file-starter` 和 `hhjava-gateway`。根项目、service、basic 是聚合/父 POM；common、unify、file-starter 是共享 Jar；user、backup-file、gateway 是可运行服务。
+    <groupId>com.hh</groupId>
+    <artifactId>TestSSM</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+  
 
-常用验证命令：
-
-```bash
-mvn clean test
-mvn -DskipTests package
-mvn -pl hhjava-service/hhjava-user -am package
-mvn -pl hhjava-gateway -am package
-mvn -pl hhjava-service/hhjava-backup-file -am package
+</project>
 ```
 
-2026-08-28 执行根项目测试时，9 个 Reactor 项目均构建成功；实际执行的 6 个自动化测试全部位于 user 模块，覆盖 RSA、JWT 和 Authorization Server 基础配置。gateway、backup-file、Nacos 连接和业务接口尚无自动化测试覆盖。
+### `<parent>`
 
-完整模块关系和启动依赖见 [hhjava 项目业务与代码逻辑](../hhjava项目业务与代码逻辑.md)。
+```xml
+<!-- 继承Spring boot工程 -->
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.3.9.RELEASE</version>
+</parent>
+```
 
-## POM 常用配置
+指定该模块继承自hhjava-service父项目。
 
-### `<exclusions>`
+```xml
+<parent>
+    <artifactId>hhjava-service</artifactId>
+    <groupId>com.hhjava.www</groupId>
+    <version>1.0-SNAPSHOT</version>
+</parent>
+```
+
+### `<modules>`
+
+加入子模块
+
+```xml
+<modules>
+    <module>heima-leadnews-user</module>
+    <module>heima-leadnews-article</module>
+    <module>heima-leadnews-wemedia</module>
+    <module>heima-leadnews-schedule</module>
+    <module>heima-leadnews-search</module>
+    <module>heima-leadnews-admin</module>
+    <module>heima-leadnews-behavior</module>
+</modules>
+```
+
+### `<properties>`
+
+定义一些项目属性，如Java版本、编码格式和Spring Boot版本。
+
+```xml
+<properties>
+    <java.version>1.8</java.version>
+    <!-- 项目源码及编译输出的编码 -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!-- 项目编译JDK版本 -->
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <!-- 依赖包版本管理 -->
+    <spring-boot.version>2.6.13</spring-boot.version>
+</properties>
+```
+
+### `<dependencies>`
+
+导入依赖，引入各种jar包的坐标都在这里面写。
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.hh</groupId>
+    <artifactId>TestSSM</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <!-- 里面添加各种依赖 -->	
+    <dependencies>
+        <!-- 【1】mybatis的依赖 -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.5.9</version>
+        </dependency>
+        <!-- 【2】连接mysql的依赖 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.28</version>
+        </dependency>
+        <!-- 【3】log4j的依赖 -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+        <!-- 【4】spring的核心依赖 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.3.16</version>
+        </dependency>
+        <!-- 【5】springjdbc依赖-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>5.3.16</version>
+        </dependency>
+        <!-- 【6】spring整合mybatis的依赖 -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>2.0.7</version>
+        </dependency>
+        <!-- 【7】springwebmvc的依赖 -->
+        <!-- 依赖了Spring框架核心功能的5个依赖以及Spring整合Web的依赖spring-web -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>	<!--SpringMVC-->
+            <version>5.3.16</version>
+        </dependency>
+    </dependencies>
+
+</project>
+```
+
+#### `<exclusions>`
 
 忽略的包，因为其它地方已经导入过了。
 
@@ -68,6 +178,37 @@ mvn -pl hhjava-service/hhjava-backup-file -am package
    - 必须明确指定每个依赖的版本号，除非该版本号已经在 `<dependencyManagement>` 中定义。
 
 `<dependencyManagement>` 中的 `<dependencies>` 是为了统一管理依赖版本，而直接的 `<dependencies>` 是为了实际引入依赖。
+
+### `<build>`
+
+构建过程中的插件配置，包括Maven编译插件和Spring Boot插件。
+
+在`pom.xml`的`<build>`中添加Tomcat插件。
+
+```xml
+<!-- 加入tomcat插件 -->
+<pluginRepositories>
+    <pluginRepository>
+        <id>mvnrepository</id>
+        <url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
+    </pluginRepository>
+</pluginRepositories>
+<build>
+    <plugins>
+        <!-- Tomcat插件 -->
+        <plugin>
+            <groupId>org.apache.tomcat.maven</groupId>
+            <artifactId>tomcat8-maven-plugin</artifactId>
+            <version>3.0-r1756463</version>
+            <configuration>
+                <port>8888</port>	<!-- 端口-->
+                <path>/ssm</path>	<!--指定项目的上下文路径-->
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+```
+
 ### `<repositories>`
 
 Maven 中央仓库
@@ -109,9 +250,9 @@ Maven 中央仓库
 </repositories>
 ```
 
-## 多层 POM 继承
+## 多重继承
 
-在 Maven 多模块工程中，多层 POM 继承链很常见，尤其是在多模块项目中。你的项目结构中，`hhjava-service/hhjava-user/pom.xml`会继承`hhjava/pom.xml`中的配置。这是因为Maven的继承机制允许子模块继承父模块及其祖先模块的配置。
+在Maven中，多重继承的结构是常见的，尤其是在多模块项目中。你的项目结构中，`hhjava-service/hhjava-user/pom.xml`会继承`hhjava/pom.xml`中的配置。这是因为Maven的继承机制允许子模块继承父模块及其祖先模块的配置。
 
 ### 继承的内容
 
@@ -146,7 +287,7 @@ Maven 中央仓库
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
-                <version>${spring.boot.version}</version>
+                <version>3.0.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -198,3 +339,4 @@ Maven 中央仓库
     <artifactId>lombok</artifactId>
 </dependency>
 ```
+

@@ -361,7 +361,6 @@ nav:
       - 设计模式/行为型模式/总结.md
   - Java:
     - Java/Java.md
-    - Java/hhjava项目业务与代码逻辑.md
     - Java/环境搭建.md
     - Java/数据类型.md
     - Java/Stream.md
@@ -399,7 +398,8 @@ nav:
       - Java/认证授权和网关/jwt令牌.md
       - Java/认证授权和网关/网关-认证过滤器-拦截器.md     
       - Java/认证授权和网关/认证和授权.md
-      - Java/认证授权和网关/hhjava认证授权与配置安全整改实战.md
+      - Java/认证授权和网关/微信登录.md  
+    - Java/登录.md
     - Java/静态化freemarker.md
     - Java/分布式文件系统MinIO.md
     - Java/app端文章查看.md

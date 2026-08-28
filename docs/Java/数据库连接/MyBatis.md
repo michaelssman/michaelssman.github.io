@@ -1,34 +1,8 @@
 # MyBatis
 
-## hhjava 用户服务中的 MyBatis
+https://github.com/mybatis/mybatis-3/tree/master?tab=readme-ov-file
 
-`hhjava-user` 使用 MyBatis-Plus 3.5.7，并通过三个 Mapper 访问最小 RBAC 数据模型：
-
-| 表 | Mapper | 当前用途 |
-| --- | --- | --- |
-| `user` | `UserMapper` | 按用户名查询、插入用户 |
-| `user_role` | `UserRoleMapper` | 查询用户的角色关联、插入默认关联 |
-| `role` | `RoleMapper` | 按角色 ID 集合加载角色名 |
-
-登录查询链是：
-
-```text
-username -> user -> user_role.role_id -> role -> SimpleGrantedAuthority
-```
-
-Mapper XML 的外部参数均使用 `#{...}` 绑定，没有把请求值直接拼入 SQL。注册时 `BaseMapper.insert(user)` 依赖自增主键回填 `user.id`，再写入 `user_role`。
-
-当前实现不能直接作为推荐事务模板：
-
-- 插入 `user` 与 `user_role` 没有 `@Transactional`，第二次写入失败会留下无角色用户；
-- 默认 `roleId=2L` 硬编码，源码不验证角色是否存在，也没有定义它的业务语义；
-- 仓库没有 Flyway/Liquibase/SQL 初始化脚本，不能仅凭实体和 Mapper 保证表、唯一约束及预置角色存在；
-- “先查重再插入”不能替代数据库唯一约束，并发注册仍应由唯一键兜底；
-- 无角色用户会得到 `roles=null`，后续权限映射可能空指针。
-
-完整注册/登录流程见 [hhjava 项目业务与代码逻辑](../hhjava项目业务与代码逻辑.md)。
-
-[MyBatis 源码](https://github.com/mybatis/mybatis-3)；[MyBatis 中文文档](https://mybatis.org/mybatis-3/zh_CN/index.html)。
+mybaits中文网址：https://mybatis.org/mybatis-3/zh_CN/index.html
 
 等效于对之前学习JDBC的MyBatis框架。
 
@@ -71,7 +45,99 @@ MyBatis功能：
 
 例如：通过插件实现分页查询，性能监控等功能。
 
-## 类型别名
+## 搭建MyBatis框架
+
+### 1、创建数据库表
+
+直接在MySQL中，创建表和数据。
+
+### 2、创建Maven项目
+
+通过Maven导入对应框架。
+
+### 3、添加依赖
+
+```xml
+<!--MySQL依赖，mybatis链接数据库需要mysql驱动-->
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.28</version>
+</dependency>
+<!--Mybatis依赖-->
+<dependency>
+    <groupId>org.mybatis</groupId>
+    <artifactId>mybatis</artifactId>
+    <version>3.5.6</version>
+</dependency>
+```
+
+### 4、实体类
+
+Mybatis查询到的数据要封装成对象，对象要依托于类。
+
+### 5、Mapper数据库连接层
+
+ [Mapper数据库连接层](../Java分层/Mapper数据库连接层.md) 
+
+### 6、创建MyBatis全局配置文件
+
+6.1、配置数据库属性文件
+
+在`src|main|resources`中创建`db.properties`文件，后缀名必须是`.properties`。
+
+里面放数据库的配置信息。
+
+数据库的参数和核心配置文件解耦。改数据库的参数在`db.properties`里面改。
+
+```properties
+url=jdbc:mysql://localhost:3306/msb?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+driver=com.mysql.cj.jdbc.Driver
+username=数据库名字
+password=数据库密码
+```
+
+6.2、在`src|main|resources`中创建`mybatis.xml`文件
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--标签约束，xml的标签不能随便写，一旦随便写，代码会出错-->
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--    加载数据库配置文件-->
+    <properties resource="db.properties"></properties>
+    <!--    别名设置-->
+    <typeAliases>
+        <typeAlias type="com.hh.pojo.Book" alias="b"></typeAlias>
+        <package name="com.hh.pojo"/>
+    </typeAliases>
+
+    <!--数据库配置信息-->
+    <environments default="mysql">
+        <!--链接MySQL数据库的数据源配置-->
+        <environment id="mysql">
+            <!--配置mybatis中的事务管理-->
+            <transactionManager type="JDBC"></transactionManager>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+  
+    <!--资源扫描、接口对应的实现类-->
+    <mappers>
+        <mapper resource="com/hh/mapper/BookMapper.xml"></mapper>
+    </mappers>
+
+</configuration>
+```
+
+#### 别名设置
 
 MyBatis提供了别名机制可以给**某个类**或**某个包下所有类**起别名，简化resultType取值的写法。
 
@@ -80,21 +146,21 @@ MyBatis提供了别名机制可以给**某个类**或**某个包下所有类**�
 - type:类型全限定路径
 - alias:别名名称
 
-### 1、为具体类设置别名
+#### 1、具体的类起别名
 
 ```xml
 <typeAliases>  
-    <typeAlias type="com.hh.user.domain.User" alias="user"></typeAlias>
+    <typeAlias type="com.hh.pojo.Book" alias="b"></typeAlias>
 </typeAliases>
 ```
 
-### 2、为包设置别名
+#### 2、指定的包起别名
 
 当类个数较多时，明确指定别名工作量较大，可以通过`<package>`标签指定包下全部类的别名。指定后所有类的别名就是类名。（也不区分大小写）
 
 ```xml
 <typeAliases> 
-    <package name="com.hh.user.domain"/>
+    <package name="com.msb.pojo"/>
 </typeAliases>
 ```
 
@@ -117,7 +183,77 @@ MyBatis框架中内置了一些常见类型的别名。这些别名不需要配�
 |          |            |      | boolean | Boolean    |      | collection | Collection |
 |          |            |      |         |            |      | iterator   | Iterator   |
 
-## 参数绑定
+### 7、测试类，启动项目
+
+```java
+import com.hh.mapper.BookMapper;
+import com.hh.pojo.Book;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+public class test {
+    public static void main(String[] args) throws IOException {
+        //指定核心配置文件的路径：从resources下开始加载，mybatis.xml在resources根目录下，所以直接写mybatis.xml。
+        String resource = "mybatis.xml";
+        //获取加载配置文件的输入流：
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        //加载配置文件，创建工厂类
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+        //通过工厂类获取一个会话：
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+      
+      
+	    	/// 1、不使用接口类的情况：
+        //执行查询：
+        List list0 = sqlSession.selectList("com.hh.mapper.BookMapper.selectAllBooks");
+        /// 2、使用接口类的情况：
+        //动态代理模式：通过接口找到接口对应的实现类 BookMapper mapper = BookMapper实现类BookMapper.xml
+        BookMapper mapper = sqlSession.getMapper(BookMapper.class);
+        List list = mapper.selectAllBooks();
+        //遍历：
+        for (int i = 0; i <= list.size() - 1; i++) {
+            Book b = (Book) list.get(i);
+            System.out.println(b.getName() + "---" + b.getAuthor());
+        }
+
+        Book book = mapper.selectOneBook("java", "jj");
+        System.out.println(book.getName());
+
+        //参数传一个对象
+        Book b = new Book();
+        b.setName("java");
+        b.setAuthor("jj");
+        Book book1 = mapper.selectOneBook2(b);
+        System.out.println(book1.getAuthor());
+
+        Book book2 = mapper.selectOneBook3("java", b);
+        System.out.println(book2.getAuthor());
+
+        //插入数据
+        Book book3 = new Book();
+        book3.setId(3);
+        book3.setName("flutter");
+        book3.setAuthor("msb");
+        book3.setPrice(89);
+        int n = mapper.insertBook(book3);
+        if (n > 0) {
+            System.out.println("插入成功");
+        }
+        //事务相关操作
+        sqlSession.commit();
+        //关闭资源：
+        sqlSession.close();
+    }
+}
+```
+
+### 参数传递
 
 **使用接口绑定方案之前：**
 
@@ -128,7 +264,7 @@ MyBatis框架中内置了一些常见类型的别名。这些别名不需要配�
 
 可以直接调用方法传递参数即可。
 
-在Mapper接口文件中定义接口，在Mapper.xml映射文件中写参数的名字和接口中的要对应。
+在BookMapper接口文件中定义接口，在BookMapper.xml映射文件中写参数的名字和接口中的要对应。
 
 **获取数据方式-使用内置名称进行调用**
 
@@ -156,7 +292,7 @@ PS：`argM.`或者`paramN.`不可以省略不写
 
 先写接口、再写映射文件。
 
-## hhjava MyBatis-Plus 分页配置
+## 配置
 
 在引导类中添mybatis-plus的分页拦截器
 

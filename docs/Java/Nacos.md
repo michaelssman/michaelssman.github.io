@@ -29,12 +29,10 @@ Nacos通常安装在Linux服务器上。
 
 ## Nacos安装
 
-> 生产环境不要直接使用 `latest`，也不要把管理端口无条件开放到公网。应固定经过测试的版本、先完成升级兼容验证，并通过内网、安全组、防火墙或 VPN 只允许可信来源访问。
-
 1、docker拉取镜像 
 
 ```shell
-docker pull nacos/nacos-server:<经过验证的固定版本>
+docker pull nacos/nacos-server:latest
 ```
 
 2、创建容器
@@ -42,135 +40,390 @@ docker pull nacos/nacos-server:<经过验证的固定版本>
 针对nacos镜像创建容器
 
 ```shell
-docker run --env MODE=standalone -d --name nacos-server --restart=always \
-  -p 8848:8848 -p 9848:9848 -p 9849:9849 \
-  nacos/nacos-server:<经过验证的固定版本>
+docker run --env MODE=standalone -d --name nacos-server --restart=always -p 8848:8848 -p 9848:9848 -p 9849:9849 nacos/nacos-server:latest
 ```
 
 - docker run 启动容器
 - MODE=standalone 单机版
 - --restart=always 开机启动
 
-`8848` 是主 HTTP 端口，Nacos 2.x 客户端还会使用相对主端口偏移的 gRPC 端口，例如默认 `9848`。安全组只应对应用所在内网或明确的可信来源放行这些必要端口，不能直接对整个互联网开放。
+**在阿里云安全组中一定要开放8848和9848两个端口。**
 
 3、访问nacos地址：http://服务器ip:8848/nacos 
-## 当前 Spring Cloud Config Import 配置
+
+## 搭建Nacos
+
+### 1、服务发现中心
+
+Spring Cloud ：一套规范
+
+Spring Cloud alibaba: nacos服务注册中心，配置中心
+
+在搭建Nacos**服务发现中心**之前需要搞清楚两个概念：namespace和group
+
+- namespace：用于区分环境、比如：开发、测试、生产环境。
+- group：用于区分项目，比如：项目A、项目B。
+
+首先在nacos配置namespace:
+
+登录Centos，启动Naocs，使用sh /data/soft/restart.sh将自动启动Nacos。
+
+登录成功，点击左侧菜单“**命名空间**”进入命名空间管理界面，
+
+点击“新建命名空间”，填写命名空间的相关信息。如下图：
+
+![image-20250218104949667](assets/image-20250218104949667.png)
+
+使用相同的方法再创建“测试环境”（test）、"生产环境"（prod）的命名空间。
+
+首先完成各服务注册到Naocs。
+
+1、在xuecheng-plus-parent中添加依赖管理 
+
+```XML
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+    <version>${spring-cloud-alibaba.version}</version>
+    <type>pom</type>
+    <scope>import</scope>
+</dependency>
+```
+
+2、在具体微服务模块的接口工程中添加如下依赖
+
+discovery依赖用来向nacos注册微服务
+
+```XML
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+</dependency>
+```
+
+3、配置nacos的地址
+
+在具体微服务模块的接口工程的配置文件`application.yml`中配置如下信息：
+
+服务名、nacos地址、namespace、group。
+
+```YAML
+#微服务配置
+spring:
+  application:
+    name: 微服务名称 #向nacos上报哪个服务
+  cloud:
+    nacos:
+      server-addr: 192.168.101.65:8848
+      discovery:
+        namespace: dev
+        group: 项目名称
+```
+
+4、重启该微服务模块。
+
+待微服务启动成功，进入Nacos`服务管理`查看`服务列表`。
+
+在对应`命名空间`下有该服务这说明该微服务在Nacos注册成功。
+
+点击微服务的“详情”，可以查看微服务实例的地址。
+
+如果项目停止运行，则nacos对应的服务也会消失。
+
+### 2、配置中心
+
+#### 2.1 配置三要素
+
+搭建Nacos为配置中心，通过Nacos去管理项目的所有配置。
+
+正式的环境下，每个服务有多个实例保证容错性，每个实例用一个docker容器管理的话，配置文件会**散落**在所有的容器中，项目升级修改数据库地址时，需要把所有实例的配置文件修改一遍，不如在nacos统一管理。
+
+先将项目中的配置文件进行分类：
+
+**1、每个项目特有的配置**
+
+该配置只在有些项目中需要配置，或者该配置在每个项目中配置的值不同。
+
+比如：spring.application.name每个项目都需要配置但值不一样，以及有些项目需要连接数据库而有些项目不需要，有些项目需要配置消息队列而有些项目不需要。
+
+**2、项目所公用的配置**
+
+是指在若干项目中配置内容相同的配置。比如：redis的配置，很多项目用的同一套redis服务所以配置也一样。
+
+另外还需要知道nacos如何去定位一个具体的配置文件，即：namespace、group、dataid. 
+
+1、通过namespace、group找到具体的环境和具体的项目。
+
+2、通过dataid找到具体的配置文件，dataid有三部分组成：
+
+比如：content-service-dev.yaml配置文件  由下面三部分组成
+
+1. content-service：服务名，${spring.application.name}。
+2. dev：环境名，${spring.profiles.active}。
+3. yaml：扩展名，配置文件的后缀，${spring.cloud.nacos.config.file-extension}，nacos支持properties、yaml等格式类型。
+
+所以，如果我们要配置content-service工程的配置文件:
+
+- 在开发环境中配置：content-service-dev.yaml
+- 在测试环境中配置：content-service-test.yaml
+- 在生产环境中配置：content-service-prod.yaml
+
+我们启动项目中传入spring.profiles.active的参数决定引用哪个环境的配置文件，例如：传入spring.profiles.active=dev表示使用dev环境的配置文件即content-service-dev.yaml。
+
+#### 2.2 示例：配置content-service
+
+以开发环境为例对content-service工程的配置文件进行配置，进入nacos，进入开发环境。
+
+![06094289-6026-4ce9-bd61-6c5de6cb586d](assets/06094289-6026-4ce9-bd61-6c5de6cb586d.png)
+
+点击加号，添加一个配置
+
+![cd2bd027-980d-4d83-abf6-7a6febb1dd5e](assets/cd2bd027-980d-4d83-abf6-7a6febb1dd5e.png)
+
+输入Data ID、Group以及配置文件内容。
+
+为什么没在nacos中配置下边的内容 ？
+
+```YAML
+spring:
+  application:
+    name: content-service
+```
+
+因为刚才说了dataid第一部分就是spring.application.name，nacos 客户端要根据此值确定配置文件名称，所以要在工程的本地进行配置。
+
+在content-service工程的resources中添加bootstrap.yaml，内容如下：
+
+```YAML
+spring:
+  application:
+    name: content-service
+  cloud:
+    nacos:
+      server-addr: 192.168.101.65:8848
+      discovery:
+        namespace: dev
+        group: xuecheng-plus-project
+      config:
+        namespace: dev
+        group: xuecheng-plus-project
+        file-extension: yaml
+        refresh-enabled: true
+
+	#profiles默认为dev
+  profiles:
+    active: dev
+```
+
+在内容管理模块的接口工程和service工程配置依赖：
+
+```XML
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+</dependency>
+```
+
+配置完成，运行content-service工程的单元测试文件，能否正常测试，跟踪单元测试方法可以正常读取数据库的数据，说明从nacos读取配置信息正常。
+
+通过运行观察控制台打印出下边的信息，NacosRestTemplate.java通过Post方式与nacos服务端交互读取配置信息。
+
+```Plain
+[NacosRestTemplate.java:476] - HTTP method: POST, url: http://192.168.101.65:8848/nacos/v1/cs/configs/listener, body: {Listening-Configs=content-service.yamlxuecheng-plus-projectdevcontent-service-dev.yamlxuecheng-plus-project88459b1483b8381eccc2ef462bd59182devcontent-servicexuecheng-plus-projectdev, tenant=dev}
+```
+
+#### 2.3示例：配置content-api
+
+在nacos中的开发环境中配置content-api-dev.yaml，内容如下：
+
+```YAML
+server:
+  servlet:
+    context-path: /content
+  port: 63040
+
+#微服务配置
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.101.65:3306/accounting_app?useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: mysql
+
+# 日志文件配置路径
+logging:
+  config: classpath:log4j2-dev.xml
+
+# swagger 文档配置
+swagger:
+  title: "学成在线内容管理系统"
+  description: "内容系统管理系统对课程相关信息进行业务管理数据"
+  base-package: com.xuecheng.content
+  enabled: true
+  version: 1.0.0
+```
+
+在content-api工程的本地配置bootstrap.yaml，内容如下：
+
+```YAML
+#微服务配置
+spring:
+  application:
+    name: content-api
+  cloud:
+    nacos:
+      server-addr: 192.168.101.65:8848
+      discovery:
+        namespace: dev
+        group: xuecheng-plus-project
+      config:
+        namespace: dev
+        group: xuecheng-plus-project
+        file-extension: yaml
+        refresh-enabled: true
+        extension-configs:
+          - data-id: content-service-${spring.profiles.active}.yaml
+            group: xuecheng-plus-project
+            refresh: true
+  profiles:
+    active: dev
+```
+
+注意：因为api接口工程依赖了service工程 的jar，所以这里使用extension-configs扩展配置文件的方式引用service工程所用到的配置文件。
+
+如果添加多个扩展文件，继续在下添加即可，如下：
+
+```YAML
+        extension-configs:
+          - data-id: content-service-${spring.profiles.active}.yaml
+            group: xuecheng-plus-project
+            refresh: true
+          - data-id: 填写文件 dataid
+            group: xuecheng-plus-project
+            refresh: true           
+```
+
+启动content-api工程，查询控制台是否打印出了请求nacos的日志，如下:
+
+```Bash
+[NacosRestTemplate.java:476] - HTTP method: POST, url: http://192.168.101.65:8848/nacos/v1/cs/configs/listener
+```
+
+并使用Httpclient测试课程查询接口是否可以正常查询。
+
+### 3、公用配置
+
+nacos提供了shared-configs可以引入公用配置。
+
+所有的接口工程都需要配置swagger，将swagger的配置定义为一个公用配置，哪个项目用引入即可。
+
+单独在xuecheng-plus-common分组下创建xuecheng-plus的公用配置，进入nacos的开发环境，添加swagger-dev.yaml公用配置
+
+![0b378ef5-1c7d-4532-a82b-69e83a80752c](assets/0b378ef5-1c7d-4532-a82b-69e83a80752c.png)
+
+删除接口工程中对swagger的配置。
+
+再以相同的方法配置日志的公用配置。
+
+![485c92fd-cead-467e-9fed-36dfdf91e46f](assets/485c92fd-cead-467e-9fed-36dfdf91e46f.png)
+
+项目使用`shared-configs`可以引入公用配置。
+
+在接口工程的本地配置文件中引入swagger-dev.yaml和loggin-dev.yaml公用配置文件，如下：
+
+```yaml
+#微服务配置
+spring:
+  application:
+    name: content-api #服务名content-api-dev.yaml
+  cloud:
+    nacos:
+      server-addr: 192.168.101.65:8848
+      discovery: #服务注册相关配置
+        namespace: ${spring.profiles.active}
+        group: xuecheng-plus-project
+      config: #配置文件相关配置
+        namespace: ${spring.profiles.active}
+        group: xuecheng-plus-project
+        file-extension: yaml
+        refresh-enabled: true
+        extension-configs:
+          - data-id: content-service-${spring.profiles.active}.yaml
+            group: xuecheng-plus-project
+            refresh: true
+        shared-configs:
+          - data-id: swagger-${spring.profiles.active}.yaml
+            group: xuecheng-plus-common
+            refresh: true
+          - data-id: logging-${spring.profiles.active}.yaml
+            group: xuecheng-plus-common
+            refresh: true
+          - data-id: freemarker-config-dev.yaml
+            group: xuecheng-plus-common
+            refresh: true
+          - data-id: feign-${spring.profiles.active}.yaml
+            group: xuecheng-plus-common
+            refresh: true  #profiles默认为dev
+  profiles:
+    active: dev   #环境名
+```
+
+配置完成，重启content-api接口工程，访问http://localhost:63040/content/swagger-ui.html 查看swagger接口文档是否可以正常访问，查看控制台log4j2日志输出是否正常。
+
+### 4、配置优先级
+
+到目前为止已将所有微服务的配置统一在nacos进行配置，用到的配置文件有本地的配置文件 bootstrap.yaml和nacos上的配置文件，SpringBoot读取配置文件的顺序如下：
+
+1. 项目启动
+2. 加载bootstrap.yml，获取nacos地址、配置文件id
+3. 根据id读取nacos配置文件
+4. 读取本地配置文件application.yml，与nacos拉取到的配置合并
+5. 创建spring容器
+6. 加载bean
+
+引入配置文件的形式有：
+
+1、以项目应用名方式引入
+
+2、以扩展配置文件方式引入
+
+3、以共享配置文件方式引入
+
+4、本地配置文件
+
+前三个是nacos，第四个是本地。
+
+各配置文件的优先级：项目应用名配置文件 > 扩展配置文件  > 共享配置文件 > 本地配置文件。
+
+有时候我们在测试程序时直接在本地加一个配置进行测试，比如下边的例子：
+
+我们想启动两个内容管理微服务，此时需要在本地指定不同的端口，通过VM Options参数，在IDEA配置启动参数
+
+通过-D指定参数名和参数值，参数名即在bootstrap.yml中配置的server.port。
+
+![image-20250302231334872](assets/image-20250302231334872.png)
+
+启动ContentApplication2，发现端口仍然是63040，这说明本地的配置没有生效。
+
+这时我们想让本地最优先，可以在nacos配置文件 中配置如下即可实现：
+
+```YAML
+#配置本地优先
+spring:
+ cloud:
+  config:
+    override-none: true
+```
+
+再次启动ContentApplication2，端口为63041。
+
+## spring-cloud2021.0.3之后版本的配置
 
 2021.0.5版本的 Spring Cloud 默认不再启用 bootstrap 包，因此应该将配置文件写在 application.yml 中。
 
 ```yaml
 #微服务配置
 spring:
-  cloud:
-    nacos:
-      config:
-        namespace: dev
-        group: hhjava
-        file-extension: yaml
   config:
-    import: "nacos:hhjava-user-dev.yaml?group=hhjava"
+    import: nacos:hhjava-user-dev.yaml?config.namespace=dev&config.group=hhjava&config.file-extension=yaml
 ```
-
-在当前 Spring Cloud Alibaba 版本中，import URI 的查询参数使用 `group`；namespace 从 `spring.cloud.nacos.config.namespace` 读取，文件后缀已经包含在 data-id 中。不要把 `config.namespace`、`config.group`、`config.file-extension` 写进 URI，它们不是当前 resolver 识别的参数。
-
-## 生产安全与 hhjava 实践
-
-### 当前配置装配差异（2026-08-28）
-
-三个运行服务都按 `${spring.application.name}-${spring.profiles.active}.yaml` 计算 data-id，且 Nacos import 都没有声明 `optional:`。这表示配置没有主动设计本地降级路径，但不能简单推导成“data-id 不存在就中止启动”：当前版本对空/不存在的 data-id 记录警告后继续。三个服务的本地秘密配置加载方式如下：
-
-| 服务 | 本地外部 properties | Nacos data-id 只读复核 | 当前影响 |
-| --- | --- | --- | --- |
-| `hhjava-gateway` | 先可选加载 `HHJAVA_DEV_CONFIG_LOCATION`，再导入 Nacos | `hhjava-gateway-dev.yaml` 存在 | 路由等运行配置依赖 Nacos；连接/读取故障没有显式降级方案 |
-| `hhjava-user` | 先可选加载 `HHJAVA_DEV_CONFIG_LOCATION`，再导入 Nacos | `hhjava-user-dev.yaml` 存在 | 数据源等运行配置仍依赖 Nacos |
-| `hhjava-backup-file` | 没有上述本地文件导入 | `hhjava-backup-file-dev.yaml` 缺失 | 空配置警告后继续；随后因缺少 `minio.endpoint` 和 `MinioClient` Bean 启动失败 |
-
-`scripts/setup-dev-config.sh` 会从本机受控目录读取 Nacos、MySQL、OAuth 和 RSA 材料，原子生成权限为 `600` 的 `application.properties`。该脚本不生成 MinIO 参数，也不会被文件服务自动加载，因此不能把“脚本执行成功”理解为三个服务都具备启动条件。
-
-Gateway 当前远端路由为 `/user/** -> lb://hhjava-user` 与 `/backup/** -> lb://hhjava-backup-file`，没有 `StripPrefix`、重试、熔断或 fallback。文件服务无配置/无实例时，`/backup/**` 只会进入 Gateway 默认失败路径。
-
-### 1、应用账号与管理员账号分离
-
-业务应用不应使用 Nacos 管理员账号。推荐为每套环境创建独立运行账号，并把权限限制在该环境、项目的配置和服务发现资源。
-
-`hhjava` 开发环境采用的权限边界是：
-
-- 配置读取只覆盖 `dev:hhjava:*`。
-- 服务发现只覆盖 `dev:hhjava:naming/*`。
-- 应用运行账号与管理员账号分离。
-- 管理员密码轮换后验证旧密码失效。
-
-最小权限不能代替服务端升级。旧版本如果存在认证绕过或管理接口授权缺陷，即使应用 ACL 配置正确，也不能视为基础设施风险已经关闭。
-
-### 2、不要把秘密保存在源码或 Nacos 普通配置中
-
-本地配置只引用部署环境变量：
-
-```yaml
-spring:
-  cloud:
-    nacos:
-      server-addr: ${NACOS_SERVER_ADDR}
-      username: ${NACOS_USERNAME}
-      password: ${NACOS_PASSWORD}
-```
-
-数据库密码在 Nacos 中也只保存变量占位符：
-
-```yaml
-spring:
-  datasource:
-    password: ${HHJAVA_DATASOURCE_PASSWORD}
-```
-
-真实密码由容器、systemd、IDE 私有运行配置或秘密管理系统注入。`.env` 必须加入 `.gitignore`，仓库只能提交没有真实值的 `.env.example`。
-
-### 3、按应用名和 Profile 动态生成 data-id
-
-```yaml
-spring:
-  application:
-    name: hhjava-user
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
-  cloud:
-    nacos:
-      config:
-        namespace: ${NACOS_NAMESPACE:dev}
-        group: ${NACOS_GROUP:hhjava}
-        file-extension: yaml
-  config:
-    import:
-      - "optional:file:${HHJAVA_DEV_CONFIG_LOCATION:${user.home}/.config/hhjava/dev/application.properties}"
-      - "nacos:${spring.application.name}-${spring.profiles.active}.yaml?group=${NACOS_GROUP:hhjava}"
-```
-
-这样会读取 `hhjava-user-dev.yaml`，切换 profile 时远端配置文件名会同步变化。
-
-当前 user、gateway 和 backup-file 源码的 import URI 仍使用 `config.namespace`、`config.group`、`config.file-extension`。现环境之所以能工作，是因为 namespace/group 同时配置在 `spring.cloud.nacos.config` 下，data-id 自身也带 `.yaml` 后缀；后续应把源码 URI 收敛为上面的受支持写法，避免误以为这些查询参数生效。
-
-### 4、轮换与验收
-
-轮换凭据不能只修改新值，还要验证旧值确实失效：
-
-1. 生成新随机密码并写入受控秘密存储。
-2. 更新 Nacos 或数据库账号。
-3. 使用新值启动应用，确认配置读取、服务注册和数据库连接成功。
-4. 使用旧值发起只读登录，必须明确失败。
-5. 检查源码、构建产物、日志和 Git 历史中是否仍有旧值。
-
-### 5、版本与网络收口
-
-`hhjava` 本次验证时服务端仍为 Nacos 2.0.3，且公网 `8848` 尚未完成访问范围收敛，因此只能标记为“凭据已轮换，基础设施待收口”。后续需要：
-
-- 备份配置和服务数据后升级到经过兼容验证的维护版本。
-- 收敛 `8848` 到内网或可信来源。
-- 同时检查 9848 等客户端必需 gRPC 端口，避免只开放 HTTP 后服务注册不稳定。
-- 升级后重新验证登录、最小权限、配置读取、监听推送和服务注册。
-
-参考：
-
-- [Nacos 身份认证文档](https://nacos.io/en/docs/v2.3/guide/user/auth/)
-- [Nacos 认证绕过问题记录](https://github.com/alibaba/nacos/issues/10060)
-- [Nacos 2.5 升级指南](https://nacos.io/en/docs/v2.5/manual/admin/upgrading/)
-- [hhjava 认证授权与配置安全整改实战](./认证授权和网关/hhjava认证授权与配置安全整改实战.md)

@@ -1,39 +1,5 @@
 # 分布式文件系统MinIO
 
-## hhjava 当前文件业务
-
-当前工程使用 `com.hhjava.www:hhjava-file-starter:1.0-SNAPSHOT` 封装 MinIO SDK 8.5.17，`hhjava-backup-file` 依赖该 Starter。相对文件服务 context path 的 HTTP 接口是：
-
-| 方法与路径 | 请求 | 默认 prefix | 当前身份使用 |
-| --- | --- | --- | --- |
-| `POST /files/image` | multipart `file`，可选 `prefix` | `images` | JWT 强制认证；上传后记录当前用户名 |
-| `POST /files/html` | multipart `file`，可选 `prefix` | `htmls` | JWT 强制认证，但业务层未使用用户身份 |
-| `POST /files/database` | multipart `file`，可选 `prefix` | `databases` | JWT 强制认证，但业务层未使用用户身份 |
-| `DELETE /files?url=...` | 查询参数 `url` | 无 | JWT 强制认证，但没有所有权校验 |
-
-三类上传最终共用 `MinIOFileStorageService.uploadFile()`，对象 key 为：
-
-```text
-[prefix/]yyyy/MM/dd/originalFilename
-```
-
-返回值通过 `readPath/bucket/objectKey` 拼接；删除和内部下载却按 `endpoint` 解析 URL。如果 `readPath` 是代理/CDN 地址而 `endpoint` 是 MinIO API 地址，两条契约可能不一致。
-
-当前安全链仅公开 Swagger/OpenAPI，其余请求均由 OAuth2 Resource Server 通过 JWKS 校验 RS256、issuer、audience 和时间声明。旧 MVC `FileTokenInterceptor` 已删除，但“已认证”不等于“有权操作该对象”：源码没有文件元数据表、owner 字段或对象级授权。
-
-截至 2026-08-28，MinIO 尚未部署，Nacos 中也缺少 `hhjava-backup-file-dev.yaml`。当前依赖组合会对空 data-id 记录警告后继续启动；随后因为没有 `minio.endpoint`，`MinIOConfig` 不生效，最终由 `MinIOFileStorageService` 注入不到 `MinioClient` 而启动失败。真实上传/删除尚未验收。源码还存在以下边界：
-
-- `InputStream.available()` 被当成对象总长度，可能不可靠；
-- prefix 与原始文件名由客户端控制，同名对象可能覆盖；
-- 删除参数既不校验 URL 必须来自配置的 endpoint，也不限制为配置的 bucket；任意已认证用户可构造 `bucket/object`，尝试删除服务凭据有权访问的其他对象；
-- 删除 URL 的拆分发生在 `try` 之外，无 `/` 等畸形值可能直接触发 500；MinIO 删除异常又会被记录后吞掉，Controller 仍可能返回成功；
-- 自动配置只以 `minio.endpoint` 为启用条件，不校验其他必需属性，也不负责创建 Bucket；
-- 上传流没有在当前业务代码中显式关闭，图片 content type 固定为泛化的 `image/*`；内部下载会把整个对象读入内存，且尚未暴露 HTTP 下载接口；
-- HTML 上传没有内容校验，公开 Bucket 场景存在主动内容风险；
-- Starter 的存储实现依赖消费方包扫描，并非完全由自动配置显式注册。
-
-完整调用链与问题索引见 [hhjava 项目业务与代码逻辑](./hhjava项目业务与代码逻辑.md)。
-
 ## 对象存储的方式对比
 
 |    存储方式    |            优点            |   缺点   |
@@ -158,7 +124,7 @@ docker run -d \
 
 项目里面有各种微服务，如果MinIO在每一个微服务下都去集成的话，非常麻烦，所以抽出来`文件服务-starter`。
 
-### 1、创建模块 hhjava-file-starter
+### 1、创建模块heima-file-starter
 
 导入依赖
 
@@ -479,4 +445,63 @@ public class MinIOFileStorageService implements FileStorageService {
 
 ```java
 com.hhjava.www.config.MinIOConfig
+```
+
+### 5、其他微服务使用
+
+1、pom.xml文件中导入heima-file-starter的依赖
+
+```xml
+        <dependency>
+            <groupId>com.heima</groupId>
+            <artifactId>heima-file-starter</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+```
+
+2、在微服务`application.yml`中添加minio所需要的配置
+
+注：也可以在nacos中去配置下面内容。
+
+```yaml
+minio:
+  accessKey: admin
+  secretKey: your_strong_password
+  bucket: backup
+  endpoint: http://47.120.67.123:9000
+  readPath: http://47.120.67.123:9001/  # 文件访问域名
+```
+
+3、在对应使用的业务类中注入FileStorageService
+
+```java
+import com.heima.file.service.FileStorageService;
+import com.heima.minio.MinioApplication;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+@SpringBootTest(classes = MinioApplication.class)
+@RunWith(SpringRunner.class)
+public class MinioTest {
+
+    @Autowired
+    private FileStorageService fileStorageService;
+
+    @Test
+    public void testUpdateImgFile() {
+        try {
+            FileInputStream fileInputStream = new FileInputStream("E:\\tmp\\ak47.jpg");
+            String filePath = fileStorageService.uploadImgFile("", "ak47.jpg", fileInputStream);
+            System.out.println(filePath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+}
 ```
