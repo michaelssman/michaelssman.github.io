@@ -202,6 +202,71 @@ web_search = "disabled"
 
 如果要限制搜索工具范围，可使用 `tools.web_search` 配置允许域名、上下文大小和近似位置。
 
+### 3.7 Mac 锁屏后继续执行 CLI 任务
+
+锁屏不等于系统睡眠。按 `Control + Command + Q` 锁定屏幕后，只要 Mac 仍处于唤醒状态、网络保持连接、终端窗口没有关闭，并且 Codex CLI 进程仍在运行，当前任务就可以继续执行。以下情况会让任务无法继续推进或导致连接中断：
+
+- Mac 进入系统睡眠、休眠或因电量耗尽关机。
+- MacBook 合盖后进入睡眠；使用电池时应保持屏幕上盖打开。
+- 关闭正在运行 Codex CLI 的终端窗口，或退出 Codex CLI。
+- 网络断开。
+- Codex 正在等待用户审批或输入；此时进程虽然仍在运行，但不会自行越过等待点。
+
+#### 首选：启用 Codex CLI 的防空闲睡眠功能
+
+Codex CLI 提供实验性配置 `features.prevent_idle_sleep`，用于在一个轮次正在执行时阻止电脑因空闲而进入睡眠。该功能默认关闭，可在 `~/.codex/config.toml` 中启用：
+
+```toml
+[features]
+prevent_idle_sleep = true
+```
+
+如果配置文件中已经存在 `[features]`，只需把 `prevent_idle_sleep = true` 加到现有配置块中，不要重复创建同名配置块。修改后重新启动 Codex CLI，并检查是否生效：
+
+```bash
+codex features list | rg '^prevent_idle_sleep'
+```
+
+输出最后一列为 `true` 表示已经启用。官方只承诺该功能在“轮次正在执行”期间防止空闲睡眠；当没有活动轮次，例如当前轮次已经结束、CLI 正在等待下一条提示时，电脑仍可能按系统电源策略进入睡眠。
+
+参考：[Codex Configuration Reference](https://learn.chatgpt.com/docs/config-file/config-reference)。
+
+#### 兜底：使用 `caffeinate` 保持唤醒 4 小时
+
+如果希望在固定时间内不依赖 Codex 的任务状态、始终阻止空闲睡眠，可以在启动 Codex CLI 前执行：
+
+```bash
+nohup caffeinate -i -t 14400 >/dev/null 2>&1 &
+pgrep -fl caffeinate
+codex
+```
+
+说明：
+
+- `-i` 阻止系统因空闲进入睡眠，但不会阻止屏幕锁定或正常熄屏，使用电池时也有效。
+- `-t 14400` 表示 4 小时，到期后自动停止；计时从运行命令时开始。
+- `nohup ... &` 让 `caffeinate` 在后台运行，启动它的终端可以关闭；但是承载 Codex CLI 的终端窗口不能关闭，只能最小化或保持在后台。
+- 不要改用 `-d`，否则屏幕也不会自动熄灭；不要依赖 `-s`，因为它只在交流电供电时有效。
+- `caffeinate` 只能阻止空闲睡眠，不能可靠覆盖合盖、主动选择“睡眠”或低电量关机。
+
+提前结束时，先查出对应的进程 ID，再终止指定进程：
+
+```bash
+pgrep -fl caffeinate
+kill 12345
+```
+
+把示例中的 `12345` 替换为上一条命令显示的目标进程 ID，避免误停其他 `caffeinate` 进程。可执行 `man caffeinate` 查看 macOS 自带命令的完整说明。
+
+推荐操作顺序：
+
+1. 启用 `features.prevent_idle_sleep`；需要覆盖等待阶段时，再启动有时限的 `caffeinate`。
+2. 启动 Codex CLI 并提交任务。
+3. 保持 MacBook 上盖打开、网络连接正常且电量足够。
+4. 按 `Control + Command + Q` 锁屏，不要关闭运行 Codex CLI 的终端。
+
+长时间任务会持续消耗电量。纯电池运行时应设置合理的超时时间，并预留足够电量。OpenAI 的远程连接文档同样要求承载本地任务的电脑保持唤醒和在线；电脑进入睡眠后，本地 Shell、文件和工具将不可用，直到主机恢复：[Remote connections](https://learn.chatgpt.com/docs/remote-connections)。
+
 ---
 
 ## 4. 斜杠命令
