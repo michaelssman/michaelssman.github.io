@@ -452,11 +452,11 @@ com.hhjava.www.config.MinIOConfig
 1、pom.xml文件中导入heima-file-starter的依赖
 
 ```xml
-        <dependency>
-            <groupId>com.heima</groupId>
-            <artifactId>heima-file-starter</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+<dependency>
+    <groupId>com.heima</groupId>
+    <artifactId>heima-file-starter</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
 ```
 
 2、在微服务`application.yml`中添加minio所需要的配置
