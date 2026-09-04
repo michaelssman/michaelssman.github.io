@@ -443,6 +443,7 @@ nav:
     - CodeX:
       - AI/CodeX/Codex.md
       - AI/CodeX/Codex CLI 与 Git Worktree 并行开发指南.md
+      - AI/CodeX/Codex CLI项目目录迁移与会话恢复指南.md
     - AI/LongTask.md
     - git:
       - AI/git/git.md
