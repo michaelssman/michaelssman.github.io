@@ -205,7 +205,7 @@ mcp__memory__create_entities
 
 - [Agent Skills](Skills/Agent%20Skills.md)
 - [Subagents 子智能体](Agent/Subagents.md)
-- [Claude Code Hooks](Claude-Code-Hooks.md)
+- [Claude Code 与 Codex CLI Hooks](Claude-Code-and-Codex-Hooks.md)
 - [Codex](CodeX/Codex.md)
 - [Codex MCP 官方文档](https://developers.openai.com/codex/mcp)
 - [Reqable MCP Server](https://github.com/reqable/reqable-mcp-server)
