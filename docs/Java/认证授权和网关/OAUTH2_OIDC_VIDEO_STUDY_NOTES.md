@@ -1,9 +1,5 @@
 # OAuth2、OIDC、PKCE 与认证安全学习笔记
 
-> 本文只整理可跨项目复用的概念、原理和安全知识，不记录 hhjava 的端口、接口、类名或配置值。
-
-相关专题：[JWT 与 JWKS](JWT与JWKS.md)。
-
 ## 1. 学习资料与阅读方法
 
 协议结论优先依据下面的正式规范和官方文档：
@@ -21,13 +17,6 @@
 - [深入浅出 OAuth2 和 OIDC 协议](https://www.bilibili.com/video/BV14RVbzLE3c/)
 - [An Illustrated Guide to OAuth and OpenID Connect](https://www.youtube.com/watch?v=t18YB3xDfXI)
 - [An Illustrated Guide to OAuth and OpenID Connect（图文版）](https://developer.okta.com/blog/2019/10/21/illustrated-guide-to-oauth-and-oidc)
-
-推荐按下面的顺序学习：
-
-1. 先理解 OAuth2 为什么使用令牌，而不是把用户密码交给第三方应用。
-2. 再区分 Authorization Code、Access Token、ID Token 和 Refresh Token。
-3. 然后学习 OIDC、PKCE 各自解决什么问题。
-4. 最后把 state、nonce、CSRF、CORS、XSS 和 HTTPS 放在一起比较。
 
 先记住五句话：
 
@@ -59,8 +48,6 @@ OAuth2 的核心思路是：
 
 - **Authentication，认证**：确认当前主体是谁。
 - **Authorization，授权**：确认这个主体被允许做什么。
-
-先认证再授权是常见顺序，但两者不能合并成一个判断。账号密码正确只说明身份校验通过；接口权限和业务数据权限仍要单独判断。
 
 ## 3. 四个基本角色
 
@@ -117,7 +104,7 @@ Client Secret 不是用户密码，也不能证明当前终端用户是谁。
 
 ### 4.2 Response Type
 
-它表示客户端希望授权端点返回什么。Authorization Code 流程通常请求 code。
+表示客户端希望授权端点返回什么。Authorization Code 流程通常请求 code。
 
 ### 4.3 Scope
 
@@ -135,16 +122,36 @@ Authorization Code 是短期、一次性的中间凭据。客户端先从浏览�
 
 ### 5.1 使用 state 的推荐示例流程
 
-1. 客户端生成高熵随机字符串`code_verifier`。
-2. 客户端根据`code_verifier`计算`code_challenge`。
-3. 客户端把 code_challenge、redirect_uri、scope 和本例使用的 state 等参数发送到授权端点。
+1. 客户端分别生成高熵随机值 `state` 和 `code_verifier`，与当前浏览器会话或 App 的本次授权事务绑定保存。
+2. 客户端根据 `code_verifier` 计算 `code_challenge`。
+3. 客户端把 `code_challenge`、`redirect_uri`、`scope` 和本例使用的 `state` 等参数发送到授权端点。
 4. 授权服务器在浏览器中完成用户认证，并在需要时完成授权确认。
 5. 授权服务器把浏览器重定向回客户端，同时返回一次性 code 和原来的 state。
-6. 客户端先校验本例使用的 state。
+6. 客户端检查返回的 `state` 是否与当前会话或授权事务中保存的值一致、是否过期或已使用；检查失败则拒绝回调，成功则将其标记为已使用。
 7. 客户端把 code、redirect_uri 和原始 code_verifier 发送到令牌端点。
 8. 授权服务器验证成功后签发相应令牌。
 
 这是一条便于入门理解、显式使用 state 的流程。回调 CSRF 的具体防护组合并非永远固定，PKCE、state 和 OIDC nonce 的适用条件见 5.4 节。
+
+#### 5.1.1 state 的含义与作用
+
+`state`可理解为“请求状态标识”。它由客户端设置，用于关联授权请求与回调，确认返回结果对应当前会话或 App 发起的那次请求。授权服务器原样返回它，由客户端负责校验。
+
+下面只展示与 `state` 有关的参数，尖括号内容是占位符：
+
+~~~text
+授权请求：/authorize?...&state=<本次生成的随机值>
+授权回调：/callback?code=<授权码>&state=<原来的随机值>
+~~~
+
+主要作用：
+
+- **防范回调 CSRF（Cross-Site Request Forgery，跨站请求伪造）**：攻击者可能诱导用户的浏览器提交攻击者自己的授权回调，让应用错误地登录到攻击者账号。与当前会话绑定并正确校验的 `state` 可以识别这种不匹配的回调。
+- **关联应用状态**：例如在客户端保存 `state → 登录完成后返回的页面` 的映射，校验通过后恢复操作上下文。返回页面应限定为允许的站内路径，避免开放重定向。
+
+用于 CSRF 防护时，每次授权应使用密码学安全随机数生成器生成新的、难以猜测的 `state`，设置短期有效期并只允许使用一次。不能使用固定值，也不能只检查参数是否存在或在全局记录中能否找到它，必须验证它与当前会话或授权事务的绑定关系。由于 `state` 会经过浏览器重定向，不要在其中放入密码、令牌等敏感信息。
+
+依据：[RFC 6749 §4.1.1](https://www.rfc-editor.org/rfc/rfc6749.html#section-4.1.1)、[RFC 9700 §4.7](https://www.rfc-editor.org/rfc/rfc9700.html#section-4.7)。
 
 ### 5.2 PKCE 的计算关系
 
@@ -167,11 +174,11 @@ PKCE 与客户端认证不是互斥方案：
 
 ### 5.4 state、nonce 与 PKCE 的区别
 
-| 机制 | 主要保护对象 | 核心作用 |
-| --- | --- | --- |
-| PKCE | Authorization Code | 防止授权码截获或注入；确认授权服务器支持并正确执行 PKCE 时，也可承担回调 CSRF 防护 |
-| state | 授权请求和回调 | 保存并校验应用状态；没有可靠 PKCE 或 OIDC nonce 时，用一次性 state 防回调 CSRF |
-| nonce | OIDC ID Token | 把 ID Token 与本次认证请求绑定，降低重放、授权码注入和回调 CSRF 风险 |
+| 机制 | 主要保护对象 | 校验方与位置 | 核心作用 |
+| --- | --- | --- | --- |
+| PKCE | Authorization Code | 授权服务器在令牌端点校验 `code_verifier` | 防止授权码截获或注入；确认授权服务器支持并正确执行 PKCE 时，也可承担回调 CSRF 防护 |
+| state | 授权请求和回调 | 客户端在处理授权回调时校验 | 关联应用状态；没有可靠 PKCE 或 OIDC nonce 防护时，用绑定当前会话的一次性 `state` 防回调 CSRF |
+| nonce | OIDC ID Token | 客户端在验证 ID Token 时校验 | 把 ID Token 与本次认证请求绑定，降低重放、授权码注入和回调 CSRF 风险 |
 
 三者验证位置不同，并不是所有流程都必须机械地同时使用。客户端必须确保回调 CSRF 得到防护，并根据所用协议、SDK 和应用状态选择正确组合；只要使用了 state 或 nonce，就必须校验返回值。授权端点、Token 端点和 API 应使用 HTTPS。
 原生 App 回调按 RFC 8252 可采用 App-claimed HTTPS、基于受控域名反写的 private-use URI scheme，或 loopback IP；
