@@ -1,12 +1,6 @@
 # Git命令
 
-## git clone
-
-从远程拉取代码 
-
-1. 先在本地创建一个文件夹
-2. 终端cd进入该文件夹
-3. git clone 远程仓库的路径
+## clone
 
 ### clone某一次commit
 
@@ -46,7 +40,7 @@ git checkout <commit-hash>
 
 如果只添加某个文件，只需把 `.` 换成要添加的文件名即可。
 
-## git status
+## status
 
 可以查看哪些文件修改了或者冲突了。
 
@@ -56,7 +50,7 @@ git checkout <commit-hash>
 
 本地提交，将缓存中的文件Commit到git库。
 
-## git push  
+## push
 
 git push origin master。提交到远程的master分支。
 
@@ -64,7 +58,7 @@ git push origin master。提交到远程的master分支。
 git push <远程主机名> <分支名>
 ```
 
-## git pull
+## pull
 
 拉取/同步远程仓库的代码到本地，更新代码。
 
@@ -76,35 +70,11 @@ git push <远程主机名> <分支名>
 
 ## branch
 
-列出分支基本命令：`git branch`。
-
-没有参数时，**git branch** 会列出你在本地的分支。
-
-```sh
-$ git branch
-* master
-```
-
-此例的意思就是，有一个 **master** 分支，并且该分支是当前分支。
-
-### 创建分支
-
-执行 **git branch (branchname)** 即可。
-
-```sh
-$ git branch testing
-$ git branch
-* master
-  testing
-```
-
-### checkout
-
-git checkout (BranchName) 切换到要修改的分支。
+- `git branch`：列出你在本地的分支。
+- `git branch (branchname)`：创建分支
+- `git checkout (BranchName)`：切换到要修改的分支。
 
 ### merge
-
-本地合并，解决冲突，提交，推送。
 
 `git merge --no-ff '3.3.0'`：将3.3.0分支合并到当前分支。
 
@@ -155,7 +125,7 @@ A---B---C (main)
 
 使用 `--no-ff` 可以更清晰地记录分支合并的历史，可以帮助更好地理解代码的演变过程。
 
-### git stash
+### stash
 
 不在当前分支上commit和push，将修改在其它分支上进行commit和push。
 
@@ -270,13 +240,13 @@ git config --global pull.rebase false
 
 选择一个策略后，运行相应的命令，然后你应该能够成功地拉取和合并远程分支的更改。
 
-## git reset
+## reset
 
 `git reset --hard efa965834671bd20a19c049b572b647fc07613c4`会回退到`efa965834671bd20a19c049b572b647fc07613c4`这次提交，后面的提交在本地没有了，但是可以拉取。
 
 ![image-20240709155256180](assets/image-20240709155256180.png)
 
-## git revert
+## revert
 
 **撤销普通提交**
 
