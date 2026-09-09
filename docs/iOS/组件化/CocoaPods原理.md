@@ -1,8 +1,5 @@
 # CocoaPods 原理与私有组件发布
 
-本文以 `PWUtils` 源码仓库和 `PWSpecs` Specs 仓库为例，说明 CocoaPods 的核心
-解析模型，以及组件的本地开发、发布和接入流程。
-
 ## 一、核心解析模型
 
 CocoaPods 按以下链路安装组件：
@@ -77,12 +74,7 @@ end
 ```
 
 `:path` 相对于 `Example/Podfile`。修改源码后可以直接构建；Podspec、源码文件列表
-或资源列表发生变化时，重新安装依赖：
-
-```shell
-cd Example
-pod install
-```
+或资源列表发生变化时，重新安装依赖。
 
 本地开发的权威文件是：
 

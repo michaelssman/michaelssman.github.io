@@ -14,19 +14,11 @@ brew install cocoapods
 
 ## pod install
 
-每当更新Podfile去新添加或删除或更新某个或某些pod时，使用pod install。
+添加或删除某些pod时，使用pod install。
 
 运行pod install的时候，都会在Podfile.lock文件里写入你安装的pod的版本号。这个文件会锁定你安装的pod的版本。
 
 运行pod install时，Cocoapods只会按照Podfile.lock中列出的版本号来安装对应版本的pod；对于Podfile.lock文件中未列出的，Cocoapods会根据Podfile中的描述（pod ‘xxx’, '～1.0' ）去安装相应的版本。
-
-pod install 命令功能：
-
-1. 安装并显示Podfile指定的第三方库以及对应的版本号。
-2. 如果Podfile删除了某个库，执行pod install 命令的时候也会删除对应的库。
-3. 如果之前已经安装过了某个第三方库，则不进行更新安装操作。
-
-默认情况下`pod install`不会发生`pod repo update`。
 
 ### pod install --no-repo-update
 
@@ -40,31 +32,18 @@ pod install 命令功能：
 
 用pod outdated命令来查看有哪些pod有了更新的版本。这个命令会检查Podfile.lock中列出的pod的版本。
 
-## pod update
+## update
 
-`pod update`：更新所有Podfile中的pod。
+- `pod update`：更新所有Podfile中的pod。
+- `pod update *podname*`：更新某个pod至最新版本。
+- `pod update --no-repo-update`
+  - 注：不建议加入--no-repo-update 参数，若添加后仅从本地Cocoapods库中查找SDK，不再更新线上SDK。如果本地存在SDK会直接使用本地SDK版本(不是线上最新版本)，若本地不存在SDK会产生错误。
 
-`pod update *podname*`：更新某个pod至最新版本。
+## repo
 
-update命令并不会理会Podfile.lock中的版本信息（新版本仍然遵守在Podfile中做的限制）。
-
-所以，正确的用法是，当你往Podfile中添加了一个pod，用pod install；当要更新某个或全部pod时，使用pod update。
-
-`pod update --no-repo-update`
-
-注：不建议加入--no-repo-update 参数，若添加后仅从本地Cocoapods库中查找SDK，不再更新线上SDK。如果本地存在SDK会直接使用本地SDK版本(不是线上最新版本)，若本地不存在SDK会产生错误。 
-
-## pod repo list
-
-查看源。有多个
-
-## pod repo remove trunk
-
-移除trunk（主干）这个
-
-## pod repo update
-
-`pod repo update master` 升级本机过时的 pod 库。
+- `pod repo list`：查看源，可能有多个。
+- `pod repo remove trunk`：移除trunk（主干）这个。
+- `pod repo update master` 升级本机过时的 pod 库。
 
 ## 添加私有仓库spec
 
