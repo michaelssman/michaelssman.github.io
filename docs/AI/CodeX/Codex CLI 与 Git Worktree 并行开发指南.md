@@ -7,8 +7,6 @@ Git Worktree 可以让同一个 Git 仓库在多个目录中同时检出不同�
 Codex CLI 与 Worktree 的推荐配合方式是：
 
 1. 用 `git worktree` 为每个需求创建独立目录。
-2. 在每个 Worktree 目录中分别启动一个 Codex CLI 会话。
-3. 一个目录只开发一个需求，一个本地分支只被一个 Worktree 检出。
 4. 每个需求独立提交、推送，并按团队规范分别合入 `develop`、`release` 和 `main`。
 
 需要区分：Codex 桌面端可以自动创建和管理 Codex Worktree；Codex CLI 的常规用法是先由 Git 创建 Worktree，再从对应目录运行 `codex`。不要把桌面端的 Handoff、自动清理等能力当成 CLI 命令。
@@ -58,13 +56,6 @@ git worktree list
 
 git -C "$REPO_DIR" status --short --branch
 git -C "$WORKTREE_B_DIR" status --short --branch
-```
-
-预期对应关系：
-
-```text
-项目主目录          -> 需求分支 A
-需求 B Worktree     -> 需求分支 B
 ```
 
 ### 本地分支不存在时

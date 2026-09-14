@@ -461,6 +461,7 @@ nav:
     - MAC/hosts.md
     - MAC/搭建网站.md
     - MAC/使用hdiutil加密文件.md
+    - MAC/软件安装.md
   - python:
     - python/python.md
   - README.md

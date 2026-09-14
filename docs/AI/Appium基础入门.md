@@ -20,76 +20,18 @@ WebDriverAgent（WDA，运行在模拟器或真机上的测试组件）
 | --- | --- |
 | Appium Server | 接收创建会话、查找元素、点击、输入等请求 |
 | XCUITest Driver | 将 Appium 请求转换成 iOS 平台上的自动化操作 |
-| WebDriverAgent | 配合 XCUITest 在设备上完成操作；真机上需要签名 |
+| WebDriverAgent | 配合 XCUITest 在设备上完成操作 |
 | Appium Python Client | 让 Python 代码调用 Appium |
 | Appium Inspector | 查看页面截图、元素树和属性，交互调试定位方式 |
 | Session（会话） | 一次客户端与指定设备、App 的自动化连接 |
 | Capabilities（会话配置） | 创建会话时指定平台、驱动、设备和 App 等参数 |
 | `unittest` | Python 自带测试框架，负责运行用例、断言和报告通过或失败 |
 
-Appium Server、Driver、Inspector 和 Python Client 分别安装。Appium 不要求给业务 App 集成一个 Appium SDK；本文会给控件添加测试标识，方便稳定定位。
+Appium Server、Driver、Inspector 和 Python Client 分别安装。本文会给控件添加测试标识，方便稳定定位。
 
 来源：[Appium 工作原理](https://appium.io/docs/en/latest/intro/appium/)。
 
-## 2. 准备 Mac 环境
-
-### 2.1 版本与软件清单
-
-| 组件 | 本文采用的要求或选择 |
-| --- | --- |
-| Node.js | 推荐 **24.x LTS**；Appium 3 官方范围是 `^20.19.0 \|\| ^22.12.0 \|\| >=24.0.0` |
-| npm | `>=10`，通常随 Node.js 安装 |
-| Appium Server | 3.x |
-| XCUITest Driver | 官方矩阵中 `>=10.0.0` 对应 Appium 3 |
-| Python | 本文客户端要求 **3.10 及以上** |
-| Appium Python Client | 本文固定为核对时已发布的 **6.0.4**，其兼容矩阵要求 Selenium `4.37.0+` |
-| iOS Simulator | 安装一个 Xcode 支持的 iOS Runtime，并创建一个 iPhone 模拟器 |
-| Appium Inspector | 使用官方发布的独立桌面应用 |
-
-来源：[Appium 系统要求](https://appium.io/docs/en/latest/quickstart/requirements/)、[XCUITest Driver 系统要求](https://appium.github.io/appium-xcuitest-driver/latest/getting-started/system-requirements/)、[Node.js 下载](https://nodejs.org/en/download)。
-
-### 2.2 配置 Xcode
-
-1. 打开 `Xcode → Settings → Components`，安装 iOS 平台支持和一个 iOS Simulator Runtime；部分旧版 Xcode 的入口名为 `Platforms`。
-2. 打开 `Window → Devices and Simulators → Simulators`。如果没有可用 iPhone，点击 `+`，选择已安装的 iOS 版本创建一个。
-3. 在终端执行以下检查；这些命令可在任意目录执行。
-
-```bash
-xcode-select -p
-xcodebuild -version
-xcrun simctl list devices available
-```
-
-**成功标志：**第一条命令指向完整 Xcode 的开发者目录；第二条显示 Xcode 版本；第三条列出至少一个可用 iPhone 模拟器。
-
-如果第一条指向 `/Library/Developer/CommandLineTools`，或指向另一套 Xcode，而你实际使用的是 `/Applications/Xcode.app`，执行：
-
-```bash
-sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
-xcodebuild -runFirstLaunch
-```
-
-Xcode 安装在其他位置时，替换上面的路径。
-
-来源：[Apple：安装 Xcode 组件](https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components)、[Apple：Xcode 命令行工具](https://developer.apple.com/library/archive/technotes/tn2339/_index.html)。
-
-### 2.3 安装 Node.js 与 Python
-
-已有满足要求的环境可以继续使用。否则按以下步骤安装：
-
-1. 在 [Node.js 官方下载页](https://nodejs.org/en/download)选择 24.x LTS、macOS 和与你的 Mac 匹配的架构，下载安装包并完成安装。
-2. 在 [Python 官方 macOS 下载页](https://www.python.org/downloads/macos/)选择稳定版本的 macOS 安装包并安装。
-3. 重新打开终端，执行：
-
-```bash
-node --version
-npm --version
-python3 --version
-```
-
-**成功标志：**三条命令均能输出版本，且满足上表要求。尤其确认 `python3` 不是系统附带的旧版 Python。Python 的安装与命令路径说明见 [Python macOS 官方指南](https://docs.python.org/3/using/mac.html)。客户端版本依据 [官方 PyPI 发布](https://pypi.org/project/Appium-Python-Client/)和[兼容矩阵](https://github.com/appium/python-client)。
-
-## 3. 安装 Appium 和 iOS 驱动
+## 2. 安装 Appium 和 iOS 驱动
 
 以下命令在任意目录执行：
 
@@ -107,7 +49,7 @@ appium driver doctor xcuitest
 
 来源：[安装 Appium](https://appium.io/docs/en/latest/quickstart/install/)、[XCUITest Driver 安装与检查](https://appium.github.io/appium-xcuitest-driver/latest/getting-started/system-requirements/)。
 
-## 4. 创建教程目录和 Python 环境
+## 3. 创建教程目录和 Python 环境
 
 本教程将文件放在 `~/Documents/AppiumStarter`。以下命令会在你的 Mac 上创建一个新的学习目录。
 
@@ -137,9 +79,9 @@ source .venv/bin/activate
 
 来源：[Appium Python Client 安装与兼容矩阵](https://github.com/appium/python-client)、[Python 虚拟环境](https://docs.python.org/3/library/venv.html)。
 
-## 5. 创建一个可被测试的 iOS App
+## 4. 创建一个可被测试的 iOS App
 
-### 5.1 在 Xcode 创建示例工程
+### 4.1 在 Xcode 创建示例工程
 
 选择 `File → New → Project → iOS → App`，填写：
 
@@ -192,7 +134,7 @@ UIKit 片段只说明标识设置方式，不是本文 SwiftUI 示例需要额�
 
 来源：[Apple：创建 App 工程](https://developer.apple.com/documentation/xcode/creating-an-xcode-project-for-an-app)、[SwiftUI accessibilityIdentifier](https://developer.apple.com/documentation/swiftui/view/accessibilityidentifier%28_%3A%29)、[UIKit UIAccessibilityIdentification](https://developer.apple.com/documentation/uikit/uiaccessibilityidentification)。
 
-### 5.2 构建 Simulator 专用的 `.app`
+### 4.2 构建 Simulator 专用的 `.app`
 
 在终端 B 中执行：
 
@@ -231,9 +173,9 @@ test -d "build/Build/Products/Debug-iphonesimulator/AppiumDemo.app"
 
 来源：[Apple：命令行构建](https://developer.apple.com/library/archive/technotes/tn2339/_index.html)、[XCUITest Driver App 配置](https://appium.github.io/appium-xcuitest-driver/latest/reference/capabilities/)。
 
-## 6. 启动 Server 并生成会话配置
+## 5. 启动 Server 并生成会话配置
 
-### 6.1 在终端 A 启动 Server
+### 5.1 在终端 A 启动 Server
 
 新开终端 A，执行：
 
@@ -257,7 +199,7 @@ curl --fail http://127.0.0.1:4723/status
 
 来源：[Appium Server 启动](https://appium.io/docs/en/latest/quickstart/install/)、[Server 参数](https://appium.io/docs/en/latest/reference/cli/server/)。
 
-### 6.2 在终端 B 生成配置文件
+### 5.2 在终端 B 生成配置文件
 
 继续使用设置过 `APPIUM_SIM_UDID` 的终端 B。在教程目录、Python 虚拟环境已激活的情况下，完整复制执行：
 
@@ -304,9 +246,9 @@ cat caps.simulator.json
 
 来源：[XCUITest Driver Capabilities](https://appium.github.io/appium-xcuitest-driver/latest/reference/capabilities/)。
 
-## 7. 用 Inspector 建立第一次连接
+## 6. 用 Inspector 建立第一次连接
 
-### 7.1 安装并填写连接信息
+### 6.1 安装并填写连接信息
 
 从 [Appium Inspector 官方 Releases](https://github.com/appium/appium-inspector/releases)下载适合当前 Mac 架构的 `.dmg`。
 
@@ -328,7 +270,7 @@ cat caps.simulator.json
 
 来源：[Inspector 安装](https://appium.github.io/appium-inspector/latest/quickstart/installation/)、[Inspector 创建 Session](https://appium.github.io/appium-inspector/latest/quickstart/starting-a-session/)。
 
-### 7.2 检查元素并尝试点击
+### 6.2 检查元素并尝试点击
 
 1. 在截图或元素树中选中“加一”按钮，检查其属性中能找到 `counter.increment` 标识。
 2. 使用元素搜索，定位策略选 `accessibility id`，值填 `counter.increment`，确认只匹配到目标按钮。
@@ -344,9 +286,9 @@ cat caps.simulator.json
 
 来源：[XCUITest 元素属性](https://appium.github.io/appium-xcuitest-driver/latest/reference/element-attributes/)、[XCUITest 元素定位](https://appium.github.io/appium-xcuitest-driver/latest/reference/locator-strategies/)。
 
-## 8. 编写并运行第一个自动化测试
+## 7. 编写并运行第一个自动化测试
 
-### 8.1 创建测试文件
+### 7.1 创建测试文件
 
 在 `~/Documents/AppiumStarter` 中创建 `test_counter.py`，内容完整复制如下：
 
@@ -439,7 +381,7 @@ if __name__ == "__main__":
 
 来源：[Appium Python Client](https://github.com/appium/python-client)、[Selenium 等待策略](https://www.selenium.dev/documentation/webdriver/waits/)、[Python unittest 清理机制](https://docs.python.org/3/library/unittest.html#unittest.TestCase.addCleanup)。
 
-### 8.2 执行测试
+### 7.2 执行测试
 
 确认终端 A 的 Server 仍在运行，并且 Inspector 已结束会话。在终端 B 执行：
 
@@ -472,7 +414,7 @@ python -m unittest -v test_counter.py
 
 用例应失败。恢复 `count += 1`，再次构建、安装和测试，应恢复通过。这能验证断言确实发现了功能偏差。
 
-### 8.3 记录实际版本
+### 7.3 记录实际版本
 
 在终端 B 执行：
 
@@ -500,11 +442,11 @@ AppiumStarter/
 └── artifacts/                 # Server 日志、版本记录与失败证据
 ```
 
-## 9. 切换到 iPhone 真机
+## 8. 切换到 iPhone 真机
 
 真机仍使用同一套 Server、Inspector 和 Python 测试。新增的准备工作是：**设备连接、开发者模式、业务 App 签名，以及 WDA 签名。** 以下采用先由 Xcode 安装业务 App、再由 Appium 按 Bundle ID 启动的方式。
 
-### 9.1 准备设备并安装业务 App
+### 8.1 准备设备并安装业务 App
 
 1. 用 USB 连接 iPhone，解锁，确认“信任此电脑”。
 2. 在 `Xcode → Window → Devices and Simulators → Devices` 中确认设备连接完成，复制该设备的 Identifier（UDID）。它与前面的模拟器 UDID 不同。
@@ -518,7 +460,7 @@ AppiumStarter/
 
 来源：[XCUITest 真机配置](https://appium.github.io/appium-xcuitest-driver/latest/getting-started/device-setup/)、[Apple：在设备上运行 App](https://developer.apple.com/documentation/xcode/building-and-running-an-app)、[Apple：开发者模式](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device)。
 
-### 9.2 配置 WDA 签名
+### 8.2 配置 WDA 签名
 
 WDA 是独立的测试组件。**业务 App 能签名成功，不代表 WDA 自动具有可用的签名配置。**
 
@@ -549,7 +491,7 @@ appium driver run xcuitest open-wda
 
 来源：[XCUITest：WDA 签名与描述文件](https://appium.github.io/appium-xcuitest-driver/latest/getting-started/provisioning-profile/)、[完整手工配置](https://appium.github.io/appium-xcuitest-driver/latest/getting-started/provisioning-profile/full-manual-config/)。
 
-### 9.3 生成真机会话配置
+### 8.3 生成真机会话配置
 
 在终端 B、教程目录和已激活的虚拟环境中，先替换并执行以下四行。值分别来自前两步记录的信息：
 
@@ -596,7 +538,7 @@ cat caps.device.json
 
 来源：[XCUITest：App 与 WDA Capabilities](https://appium.github.io/appium-xcuitest-driver/latest/reference/capabilities/)。
 
-### 9.4 连接和运行
+### 8.4 连接和运行
 
 1. 保持终端 A 的 Appium Server 运行。
 2. Inspector 中保留相同的 Host、Port、Path，将配置替换为 `caps.device.json` 的内容，点击 `Start Session`。
@@ -612,7 +554,7 @@ python -m unittest -v test_counter.py
 
 设备、Xcode 或驱动版本变化后，应重新验证 Session 能否建立。入门阶段保持一台设备、一套配置、顺序执行，先取得稳定结果。
 
-## 10. 将示例接到自己的 iOS 项目
+## 9. 将示例接到自己的 iOS 项目
 
 计数器跑通后，可以按下面的顺序迁移到实际项目：
 
@@ -632,7 +574,7 @@ xcodebuild -list -workspace "YourApp.xcworkspace"
 
 只有 `.xcodeproj` 时，使用 `xcodebuild -list -project "YourApp.xcodeproj"`。沿用第 5.3 节的模拟器 destination 和明确的 `-derivedDataPath`，但最终 `.app` 名称以实际 Product Name 为准。
 
-## 11. 常见问题排查
+## 10. 常见问题排查
 
 排查顺序建议为：**Server 是否可连接 → Driver 是否加载 → 设备是否可用 → WDA 是否启动 → App 是否启动 → 元素是否可定位 → 业务断言是否成立。**
 
@@ -670,7 +612,7 @@ appium --version
 
 来源：[npm：全局安装权限错误](https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally/)、[XCUITest 故障排查](https://appium.github.io/appium-xcuitest-driver/latest/troubleshooting/)。
 
-## 12. 完成检查与官方资料
+## 11. 完成检查与官方资料
 
 完成入门后，应能独立确认以下结果：
 
