@@ -453,11 +453,14 @@ nav:
       - AI/git/delta.md
     - Skills:
       - AI/Skills/Agent Skills.md
+      - AI/Skills/Skills目录接入GitHub仓库.md
+    - AI/Appium基础入门.md
   - Mac:
     - MAC/软件包管理系统.md
     - MAC/linux.md
     - MAC/hosts.md
     - MAC/搭建网站.md
+    - MAC/使用hdiutil加密文件.md
   - python:
     - python/python.md
   - README.md

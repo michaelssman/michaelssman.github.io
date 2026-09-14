@@ -38,8 +38,6 @@ public class DemoApplication {
 
 `@SpringBootApplication` 组合了配置、自动配置和组件扫描能力。默认扫描以启动类所在包为基础，但第三方 Starter 不应依赖消费方扩大包扫描。
 
-不清楚“配置类”“Bean”和“自动配置”的区别时，可先看第 10 节：它从 `@Configuration` 讲到 `@Bean` 的对象创建，再对应到 `@AutoConfiguration`。
-
 启动时会准备环境、创建应用上下文并装配 Bean，根据应用类型启动 Web 服务器。不是所有 Boot 应用都启动 Tomcat：hhjava 的 Servlet 业务服务与 WebFlux 网关使用不同的 Web 技术栈。
 
 ## 3. 常见 Starter 怎么选
@@ -58,7 +56,7 @@ Boot 3 的 Web Starter 不自动等同于完整参数验证依赖，需要 Bean 
 
 ## 4. 配置文件基础
 
-Boot 默认识别 `application.properties` 和 `application.yml` / `application.yaml`。properties 用点分键，YAML 用层级缩进表达结构；缩进使用空格，不使用 Tab。
+Boot 默认识别 `application.properties` 和 `application.yml` / `application.yaml`。properties 用点分键，YAML 用层级缩进表达结构；YAML 冒号后有空格，层级用空格缩进，不使用 Tab。
 
 下面两种写法含义相同，只是说明格式：
 
@@ -168,7 +166,7 @@ common 和 Starter 不需要应用启动类或可执行 Jar 的 repackage；必�
 
 `hhjava-service/pom.xml` 已声明 `hhjava-common`，user 和 backup-file 通过继承获得依赖，无需重复填写版本。common 中各项能力仍按自己的自动配置条件生效。
 
-`ServletExceptionAutoConfiguration` 不依赖消费方扫描 `com.hh.common`。网关采用 WebFlux，使用自己的响应式认证错误处理器，不为复用 Servlet Advice 而引入 MVC 组件。
+`ServletExceptionAutoConfiguration` 不依赖消费方扫描 `com.hh.common`。网关采用 WebFlux，使用自己的响应式认证错误处理器。
 
 项目目录见 [工程结构](工程结构.md)，异常行为见 [异常处理](异常处理.md)，MinIO 配置与存储边界见 [MinIO 文件 Starter](分布式文件系统MinIO.md)。
 
@@ -330,7 +328,7 @@ server:
   port: 18080
 ```
 
-只监听本机回环地址，练习不对公网开放。YAML 冒号后有空格，层级用空格缩进。
+只监听本机回环地址，练习不对公网开放。
 
 ### 9.5 启动并发请求
 

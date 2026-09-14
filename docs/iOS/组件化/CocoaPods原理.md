@@ -2,7 +2,7 @@
 
 ## 一、核心解析模型
 
-CocoaPods 按以下链路安装组件：
+通过 Specs 仓库接入组件时，CocoaPods 按以下链路安装：
 
 ```text
 Podfile
@@ -22,7 +22,7 @@ Podfile
 | `Podspec` | 描述组件版本、源码地址、文件范围、资源和依赖 |
 | 源码仓库 | 保存组件源码，并通过 Git tag 固定发布版本 |
 | Specs 仓库 | 保存 Podspec 索引，不保存组件源码 |
-| `Podfile.lock` | 固定解析版本和 Specs 来源，保证开发机与 CI 结果一致 |
+| `Podfile.lock` | 记录解析版本和来源；Git 分支依赖还会锁定具体 commit，供开发机与 CI 复用 |
 
 使用私有 Specs 时，在 `Podfile` 顶部同时声明私有源和官方 CDN：
 
@@ -158,6 +158,8 @@ JSON、XIB、Storyboard 和字体采用相同的 Bundle 定位方式。
 
 ## 五、消费项目接入
 
+### 通过 Specs 接入发布版本
+
 推荐 Podfile：
 
 ```ruby
@@ -195,6 +197,86 @@ SPEC REPOS:
   https://github.com/michaelssman/PWSpecs.git:
     - PWUtils
 ```
+
+### 使用组件的指定 Git 分支
+
+适用于联调组件尚未发布的功能。通过 `:git` 和 `:branch` 直接读取组件仓库中的
+Podspec 与源码，不需要先为该组件发布 tag 或推送到 Specs 仓库；它依赖的其他
+私有 Pod 仍需配置相应的 Specs Source。
+
+#### 1. 配置 Podfile
+
+在应用项目 `Podfile` 对应的 `target` 内添加或替换原有声明，不要重复声明同一个 Pod：
+
+```ruby
+pod 'LMERPDocument',
+    :git => 'git@git.nmy.cn:app/iOS-LMERPDocument.git',
+    :branch => 'feature/floating-unit'
+```
+
+| 配置 | 含义 |
+| --- | --- |
+| `LMERPDocument` | 组件名称，必须与 Podspec 的 `s.name` 一致，不一定等于仓库名 |
+| `:git` | 组件源码仓库地址；示例使用 SSH，开发机和 CI 都需要读取权限 |
+| `:branch` | **组件仓库**的远端分支，不是应用项目当前所在的分支 |
+
+#### 2. 安装与更新
+
+首次添加该依赖，或修改 `:branch` 切换到另一个分支后，执行：
+
+```shell
+pod install
+```
+
+**分支名没变，但远端新增了提交**，需要主动获取新代码时执行：
+
+```shell
+pod update LMERPDocument
+```
+
+`pod update` 已包含安装和集成过程，成功后不需要再执行一次 `pod install`。
+指定名称可避免主动更新所有 Pod；依赖约束变化时，也可能需要调整相关依赖。
+
+应用项目执行 `git pull` 只同步应用仓库，不会替你更新这个组件仓库的分支代码。
+
+#### 3. 确认实际安装的提交
+
+`Podfile.lock` 的 `EXTERNAL SOURCES` 记录分支和仓库地址，`CHECKOUT OPTIONS` 中
+该组件的 `:commit` 记录实际安装的提交哈希。**分支会继续前进，但已锁定的 commit
+不会因普通 `pod install` 自动追新。**
+
+检查本次配置及锁文件变化：
+
+```shell
+git diff -- Podfile Podfile.lock
+```
+
+需要核对远端分支最新提交时，可执行只读查询：
+
+```shell
+git ls-remote git@git.nmy.cn:app/iOS-LMERPDocument.git refs/heads/feature/floating-unit
+```
+
+正常结果为 `提交哈希 + refs/heads/feature/floating-unit`。定向更新后，锁文件中的
+commit 应对应更新时的远端提交，不能只看 `PODS` 中的版本号，因为分支提交不一定
+修改 Podspec 版本。无结果时检查分支名和是否已推送；`Permission denied (publickey)`
+表示需要检查 SSH 密钥配置及仓库访问权限。
+
+安装后打开应用的 `.xcworkspace` 编译并验证组件功能，再将 `Podfile` 和
+`Podfile.lock` 一起提交。其他成员和 CI 使用 `pod install` 复用已锁定的结果。
+
+#### 4. 固定版本与本地开发
+
+| 需求 | 写法 |
+| --- | --- |
+| 联调远端分支 | `:git => '仓库地址', :branch => '分支名'` |
+| 使用已发布标签 | `:git => '仓库地址', :tag => '真实标签名'` |
+| 明确固定一次提交 | `:git => '仓库地址', :commit => '完整提交哈希'` |
+| 边修改本地组件源码边调试 | `:path => '../组件源码目录'`，见“本地组件开发” |
+
+`:branch`、`:tag`、`:commit` 按需求选择一种，不要同时配置。正式交付建议使用稳定的
+发布版本或固定 commit，并保留锁文件；需要修改组件源码时使用 `:path`，不要直接
+修改下载到 `Pods/` 中的文件，以免重装时丢失。
 
 ## 六、发布 PWUtils
 
@@ -307,18 +389,7 @@ pod install --repo-update
 - 应用工程和 Example 工程均可构建。
 - 开发机与 CI 的安装结果一致。
 
-## 八、Swift 与 Objective-C 互操作
-
-PWUtils 是 Swift 与 Objective-C 混编组件：
-
-- 暴露给 Objective-C 的 Swift 类型继承 `NSObject`，并使用 `@objc` 或
-  `@objcMembers` 标记可见 API。
-- Objective-C 调用方通过 `@import PWUtils;` 或
-  `#import <PWUtils/PWUtils-Swift.h>` 导入 Swift API。
-- `PWUtils-Swift.h` 由编译器生成，不属于 Podspec 的公开头文件列表。
-- 混编 Pod 使用模块和公开头文件互操作，不配置应用 target 的 Bridging Header。
-
-## 九、发布检查清单
+## 八、发布检查清单
 
 - [ ] Podspec 的名称、版本、source 和 tag 一致。
 - [ ] deployment target、Swift 版本、源码范围和资源配置正确。
@@ -335,5 +406,8 @@ PWUtils 是 Swift 与 Objective-C 混编组件：
 
 - [CocoaPods Private Pods](https://guides.cocoapods.org/making/private-cocoapods.html)
 - [CocoaPods Podfile Syntax](https://guides.cocoapods.org/syntax/podfile.html)
+- [CocoaPods pod install vs. pod update](https://guides.cocoapods.org/using/pod-install-vs-update.html)
+- [CocoaPods Git 下载器：分支解析与 commit 锁定](https://github.com/CocoaPods/cocoapods-downloader/blob/master/lib/cocoapods-downloader/git.rb)
+- [CocoaPods Analyzer：外部依赖与锁文件处理](https://github.com/CocoaPods/CocoaPods/blob/master/lib/cocoapods/installer/analyzer.rb)
 - [CocoaPods Podspec Syntax](https://guides.cocoapods.org/syntax/podspec.html)
 - [CocoaPods Command-line Reference](https://guides.cocoapods.org/terminal/commands.html)
