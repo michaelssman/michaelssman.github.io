@@ -36,7 +36,7 @@ public class DemoApplication {
 }
 ```
 
-`@SpringBootApplication` 组合了配置、自动配置和组件扫描能力。默认扫描以启动类所在包为基础，但第三方 Starter 不应依赖消费方扩大包扫描。
+`@SpringBootApplication` 组合了配置、自动配置和组件扫描能力。**默认扫描以启动类所在包为基础**，但第三方 Starter 不应依赖消费方扩大包扫描。
 
 启动时会准备环境、创建应用上下文并装配 Bean，根据应用类型启动 Web 服务器。不是所有 Boot 应用都启动 Tomcat：hhjava 的 Servlet 业务服务与 WebFlux 网关使用不同的 Web 技术栈。
 
@@ -124,7 +124,7 @@ public class ServletExceptionAutoConfiguration {
 - `@AutoConfiguration` 声明自动配置；
 - `@ConditionalOnWebApplication` 限定 Servlet Web 应用；
 - `@Bean` 声明处理器的创建方法；
-- `@ConditionalOnMissingBean` 让已有同类型 Bean 优先。这里“退让”就是不再注册这份默认 Bean，不是覆盖或删除使用方的实现。
+- `@ConditionalOnMissingBean` 让已有同类型 Bean 优先。这里“退让”就是不再注册这份默认 Bean。
 
 user、backup-file 属于 Servlet 应用，能匹配此应用类型条件；gateway 使用响应式 WebFlux，不匹配该条件。是否注册默认处理器还要继续检查已有 Bean，不能仅看到依赖了 common 就判断一定创建了一个新处理器。
 
@@ -160,8 +160,6 @@ common 和 Starter 不需要应用启动类或可执行 Jar 的 repackage；必�
 
 使用轻量应用上下文测试检查：默认配置、缺失配置、自定义替代 Bean、Servlet/Reactive 应用类型，以及没有扩大组件扫描时能否发现默认能力。
 
-“类写对了”与“Jar 中的自动配置清单能被消费方发现”是两个检查点，都需要覆盖。Mock 客户端能验证调用和失败传播，但不能代替连接真实存储服务。
-
 ## 7. 当前服务如何使用 common
 
 `hhjava-service/pom.xml` 已声明 `hhjava-common`，user 和 backup-file 通过继承获得依赖，无需重复填写版本。common 中各项能力仍按自己的自动配置条件生效。
@@ -174,19 +172,17 @@ common 和 Starter 不需要应用启动类或可执行 Jar 的 repackage；必�
 
 从 hhjava 根目录执行 `mvn clean test` 检查公共组件及跨模块契约；需要产物时，在测试完成后执行 `mvn -DskipTests package`。
 
-真实 Nacos、MySQL、MinIO 以及浏览器登录都属于外部集成验证。依赖不可用时明确记录未验证，不通过跳过测试把它描述为启动成功。
-
 ## 9. 动手：从空目录写出第一个 JSON 接口
 
-目标：访问 `http://127.0.0.1:18080/hello?name=Java`，收到问候 JSON。所有操作都在 **Mac 本机**，不需要服务器、Nacos、MySQL 或 MinIO。
+目标：访问 `http://127.0.0.1:18080/hello?name=Java`，收到问候 JSON。所有操作都在 **Mac 本机**。
 
 这是独立学习工程，不是给 hhjava 增加微服务。后续 [Mapper](Java分层/Mapper数据库连接层.md)、[异常](异常处理.md)、[序列化](序列化.md) 的练习使用同一个工程，不要把练习类复制进 hhjava。
 
 ### 9.1 准备 Java、Maven 和目录
 
 1. 在 Mac 终端运行 `java -version` 与 `mvn -v`。本练习使用 JDK 17、Maven 3.6.3 或以上的 Maven 3；`mvn -v` 显示的 Java 也应是 17。
-2. 在 IDEA 选择新建项目，语言选 Java，构建系统选 Maven，JDK 选 17，目录用 `/Users/michael/Documents/java_demo/hhjava-learning-basics`。若目录已有内容，不覆盖，换一个空的同级目录，并相应替换后续 `cd` 路径。
-3. 本练习固定 Boot 3.3.7 以便对照当前 hhjava 源码，不表示这是最新版本或新生产系统的推荐基线。升级版本要另行检查兼容性和安全公告，不混用 Boot 4 的包名及示例。
+2. 在 IDEA 选择新建项目，语言选 Java，构建系统选 Maven，JDK 选 17，目录用 `/Users/michael/Documents/java_demo/hhjava-learning-basics`。
+3. 本练习固定 Boot 3.3.7 以便对照当前 hhjava 源码，升级版本要另行检查兼容性和安全公告，不混用 Boot 4 的包名及示例。
 
 下文所有“文件”路径均相对于这个学习工程。缺少目录时，在 IDEA 对上级目录右键，新建 Directory 或 Package。完成后结构如下：
 
@@ -273,7 +269,7 @@ public class LearningApplication {
 }
 ```
 
-启动类放在 `com.example.learning`，后续组件放在此包或子包，才能被默认组件扫描发现。
+启动类放在 `com.example.learning`。
 
 文件：`src/main/java/com/example/learning/ApiResponse.java`
 
@@ -289,7 +285,7 @@ public record ApiResponse<T>(int code, String message, T data) {
 }
 ```
 
-这个教学类独立于 hhjava 的 `ResponseResult`，不需要引用 hhjava 模块。`record` 的组件不能重新赋值，但若组件本身是可变集合，也不会自动深度不可变；这里先使用字符串。
+`record` 的组件不能重新赋值，但若组件本身是可变集合，也不会自动深度不可变；这里先使用字符串。
 
 ### 9.4 创建 Controller 和配置
 
@@ -314,8 +310,8 @@ public class HelloController {
 
 - `@RestController`：让 Spring 管理此类，并把方法返回值交给消息转换器写进响应体。
 - `@GetMapping`：GET 请求路径匹配 `/hello` 时调用此方法。
-- `@RequestParam`：从 URL 的查询参数取 `name`；`?name=Java` 不是 JSON 请求体。
-- 返回 Java 对象后，Jackson 把它转成 JSON，不需要手工拼接带引号的 JSON 字符串。
+- `@RequestParam`：从 URL 的查询参数取 `name`。
+- 返回 Java 对象后，Jackson 把它转成 JSON。
 
 文件：`src/main/resources/application.yml`
 
@@ -399,7 +395,7 @@ java -jar target/hhjava-learning-basics-1.0-SNAPSHOT.jar
 | --- | --- |
 | `mvn: command not found` | Maven 没装好或 PATH 未包含其 bin；先修复，再确认 `mvn -v` |
 | `release version 17 not supported` | `mvn -v` 的 Java 太旧；终端和 IDEA Maven Runner 都改用 JDK 17 |
-| 18080 已被占用 | 不结束不认识的进程；更换学习工程 `server.port`，同步更换测试 URL |
+| 18080 已被占用 | 更换学习工程 `server.port`，同步更换测试 URL |
 | 浏览器 404 | 检查路径 `/hello`，以及 Controller 包是否位于启动类包之下 |
 | 返回网页而非 JSON | 检查是否写成普通 `@Controller` 且遗漏 `@ResponseBody`；本例使用 `@RestController` |
 | YAML 不生效 | 检查文件是否在 `src/main/resources`、缩进是否正确，以及是否有其他来源覆盖相同键 |
@@ -411,7 +407,7 @@ java -jar target/hhjava-learning-basics-1.0-SNAPSHOT.jar
 
 ### 10.1 @Configuration 配置的是什么
 
-`@Configuration` 是 Spring Framework 的类级注解，表示“这个 Java 类提供 Bean 的装配规则”。它不是 Spring Boot 才有的功能，也不是要求框架生成或修改application.yml。
+`@Configuration` 是 Spring Framework 的类级注解，表示“这个 Java 类提供 Bean 的装配规则”。
 
 先区分三个概念：
 
