@@ -629,18 +629,9 @@ mvn -pl hhjava-service/hhjava-backup-file -am test
 
 ### 13.1 获取 Access Token
 
-按照 [注册与登录](登录.md) 注册测试账号，再调用移动端密码登录接口：
+在 hhjava 项目中打开 `docs/AUTHENTICATION_GUIDE.md`，按“注册 → 移动 App 密码登录 → Reqable 手工调试”完成测试账号登录；请求参数与成功响应只在该文档维护。需要先学习凭据区别时，阅读 [各类 Token](认证授权和网关/OAuth2与OIDC.md#tokens)。
 
-```http
-POST http://127.0.0.1:63010/user/auth/mobile/login/password
-Content-Type: application/json
-```
-
-```json
-{"username":"<测试用户名>","password":"<该用户的登录密码>"}
-```
-
-这里填写的是 Java 用户账号，不是 MinIO 应用账号。把响应 `data.accessToken` 保存到 Reqable 私有变量；不要使用 `refreshToken` 调文件接口，也不要把 Token 写到本文或公开截图。
+这里使用的是 Java 用户账号，不是 MinIO 应用账号。把登录响应 `data.accessToken` 保存到 Reqable 私有变量，再继续下面的文件接口验证；不要使用 `refreshToken` 调文件接口，也不要把 Token 写到本文或公开截图。
 
 ### 13.2 测试上传
 

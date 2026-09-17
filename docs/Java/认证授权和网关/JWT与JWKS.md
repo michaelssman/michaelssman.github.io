@@ -1,7 +1,7 @@
 # JWT（JSON Web Token）与 JWKS（JSON Web Key Set）
 
-> 本文集中记录令牌格式、签名、验签、密钥管理和使用边界；[第 2.2 节](#jwt-fields) 是 JWT 字段解释的统一入口，包含通用含义与 hhjava 移动端的取值约定。
-> 授权流程与令牌用途见 [OAuth 2.0、OIDC 与 PKCE 学习笔记](OAUTH2_OIDC_VIDEO_STUDY_NOTES.md)。
+> 本文集中记录令牌格式、签名、验签、密钥管理和使用边界；[第 2.2 节](#jwt-fields) 是 JWT 字段解释的统一入口，只解释通用含义，不维护某个项目的实际取值。
+> 授权流程与令牌用途见 [OAuth 2.0、OIDC 与 PKCE 学习笔记](OAuth2与OIDC.md)。
 
 ## 术语速查
 
@@ -13,12 +13,6 @@
 | JWE | JSON Web Encryption | JSON Web 加密，用于加密并保护内容 |
 | JWK | JSON Web Key | JSON Web 密钥，使用 JSON 表示密码学密钥 |
 | JWKS | JSON Web Key Set | JSON Web 密钥集 |
-| OAuth 2.0 | The OAuth 2.0 Authorization Framework | OAuth 2.0 授权框架，用于委托访问资源 |
-| OIDC | OpenID Connect | OpenID Connect 身份认证协议，是建立在 OAuth 2.0 之上的身份层 |
-| PKCE | Proof Key for Code Exchange | 授权码交换证明密钥，用于降低授权码被截获后遭滥用的风险 |
-| Access Token | Access Token | 访问令牌，用于访问受保护资源 |
-| Refresh Token | Refresh Token | 刷新令牌，用于按授权服务器策略获取新的访问令牌 |
-| ID Token | ID Token（ID 表示 Identity） | 身份令牌，OIDC 用它向客户端传递用户认证结果和相关声明 |
 | MAC | Message Authentication Code | 消息认证码，使用共享秘密验证数据完整性和来源 |
 | HMAC | Hash-based Message Authentication Code | 基于哈希函数的消息认证码 |
 | SHA-256 | Secure Hash Algorithm 256-bit | 256 位安全散列算法 |
@@ -40,7 +34,6 @@
 | HTTP | Hypertext Transfer Protocol | 超文本传输协议 |
 | HTTPS | Hypertext Transfer Protocol Secure | 受加密连接保护的 HTTP |
 | X.509 | X.509（标准编号，不是缩写） | 定义公钥证书及相关验证机制的标准 |
-| CSRF | Cross-Site Request Forgery | 跨站请求伪造 |
 | RFC | Request for Comments | 请求评议文档，互联网标准和技术规范的文档系列 |
 
 ## 1. JWT 的定位
@@ -76,7 +69,7 @@ Header 和 Payload 的 Base64URL 编码可直接还原，不提供保密性。JW
 
 ### 2.2 字段示例与统一解释
 
-以下是虚构的通用业务令牌字段，不是 hhjava 的实际配置，也不是可直接使用的令牌。实际时间应由签发端生成，示例只演示 Unix 时间戳（从 1970-01-01 00:00:00 UTC 起计算的秒数）及 900 秒有效期。下方表格另列 hhjava 移动端约定，便于区分“协议含义”和“当前项目如何使用”。
+以下是虚构的通用业务令牌字段，不是实际配置或可使用的令牌。时间由签发端生成，示例只演示 Unix 时间戳（从 1970-01-01 00:00:00 UTC 起计算的秒数）及 900 秒有效期。具体应用必须另行约定字段是否必需以及如何取值。
 
 Header：
 
@@ -96,8 +89,6 @@ Header 常见字段：
 | `typ` | Type | 对象类型，JWT 中通常写作 `JWT` |
 | `kid` | Key ID（Key Identifier） | 密钥编号，用于从可信密钥集合中选择密钥 |
 
-hhjava 移动端的 `signingHeader()` 明确设置 `alg=RS256`，并使用 `hhjava.security.jwt.key-id` 配置填写 `kid`；通用示例中的 `typ` 不是该方法显式写入的字段。
-
 Payload：
 
 ```json
@@ -113,30 +104,21 @@ Payload：
 
 **标准 Claims（声明）**：下面七个字段由 [RFC 7519 第 4.1 节](https://www.rfc-editor.org/rfc/rfc7519.html#section-4.1) 定义。JWT 基础规范不要求所有场景都携带全部字段，哪些必需由具体协议和应用确定。
 
-| 字段与英文全称 | 通俗含义 | 校验或使用重点 | hhjava 移动端 Access Token 的当前取值 |
-| --- | --- | --- | --- |
-| `iss` — Issuer | 谁签发了这张凭证 | 与预先配置的可信签发者精确匹配 | `hhjava.security.jwt.issuer` 配置值 |
-| `sub` — Subject | 凭证代表谁；主体不一定是用户 | 在签发者范围内识别主体，不能默认它就是数据库 ID | 认证通过的用户名，即 `user.getUsername()`，**不是用户 ID** |
-| `aud` — Audience | 凭证预期给谁接收 | 可为字符串或字符串数组；Access Token 的受众用于资源服务器，ID Token 的受众用于客户端 | 包含 `hhjava.security.jwt.audience` 的数组；资源服务器要求其中包含自己配置的预期值 |
-| `exp` — Expiration Time | 凭证何时到期 | 到期后拒绝；验证端可按策略容忍少量时钟偏差 | 签发时间加 `hhjava.security.jwt.access-token-ttl` |
-| `nbf` — Not Before | 凭证最早何时可以使用 | 生效前拒绝；验证端可按策略容忍少量时钟偏差 | 当前移动端签发方法未写入，不要误以为它一定存在 |
-| `iat` — Issued At | 凭证何时签发 | 可用于按策略计算令牌年龄，不能代替过期检查 | 签发器读取的当前时间 |
-| `jti` — JWT ID | 这一张令牌的唯一编号 | 可关联撤销或重放记录，单独存在不会自动防重放 | 每次签发生成新的 UUID（Universally Unique Identifier，通用唯一标识符） |
-
-`iat`、`exp`、`nbf` 在 JSON 中使用秒级时间值，不是 Java 常见的毫秒时间戳。上面的通用示例中 `exp - iat = 900`，表示 15 分钟；不能把示例时长当作项目配置。表中的 `exp` 是 Access Token 的到期时间，不是 Refresh Token 会话家族的到期时间。
-
-**授权与移动会话字段**：它们不是上面七个基础字段，含义和数据类型需要按所用协议或应用契约确认。下面只说明 hhjava 第一方移动端 Access Token，不套用于所有 JWT 或 OIDC ID Token。
-
-| 字段与英文含义 | 当前项目的含义与取值 | 使用边界 |
+| 字段与英文全称 | 通俗含义 | 校验或使用重点 |
 | --- | --- | --- |
-| `scope` — Scope，授权范围 | 数组 `["hhjava.api"]`；资源服务器将其转换为 `SCOPE_hhjava.api` 权限 | 不是数据库角色；接口仍须按需要检查权限。其他协议或实现也可能使用空格分隔字符串，不能照搬本项目的数组格式 |
-| `authorities` — Authorities，权限集合 | 用户数据库角色名称数组，过滤空值、去重并排序 | 保留数据库原名，不自动加 `ROLE_`；有角色不代表拥有所有业务对象的操作权限 |
-| `sid` — Session ID，会话标识 | 本次密码登录生成的 `familyId`，对应数据库中的 `family_id`，关联同一登录下不断轮换的 Refresh Token | 不是 `HttpSession`，也不是某一条刷新记录的 ID；当前资源服务器不据此查表即时撤销 Access Token |
-| `auth_method` — Authentication Method，认证方式 | 当前为 `password`；刷新后沿用该会话的认证方式 | 本项目约定的字段，不是 OAuth2 授权类型，也不能直接当作标准 OIDC 认证方法声明 |
+| `iss` — Issuer | 谁签发了这张凭证 | 与预先配置的可信签发者精确匹配 |
+| `sub` — Subject | 凭证代表谁；主体不一定是用户 | 在签发者范围内识别主体，不能默认它就是数据库 ID |
+| `aud` — Audience | 凭证预期给谁接收 | 可为字符串或字符串数组；Access Token 的受众用于资源服务器，ID Token 的受众用于客户端 |
+| `exp` — Expiration Time | 凭证何时到期 | 到期后拒绝；验证端可按策略容忍少量时钟偏差 |
+| `nbf` — Not Before | 凭证最早何时可以使用 | 生效前拒绝；验证端可按策略容忍少量时钟偏差 |
+| `iat` — Issued At | 凭证何时签发 | 可用于按策略计算令牌年龄，不能代替过期检查 |
+| `jti` — JWT ID | 这一张令牌的唯一编号 | 可关联撤销或重放记录，单独存在不会自动防重放 |
 
-两张表中的项目取值依据 `hhjava-service/hhjava-user/src/main/java/com/hh/security/jwt/JwtAccessTokenPolicy.java` 的 `mobileAccessTokenClaims()`；角色整理规则见 `com.hh.security.UserAuthorityMapper`。它们描述当前实现，不代表 JWT 规范要求每个项目都这样设计。
+`iat`、`exp`、`nbf` 在 JSON 中使用秒级时间值，不是 Java 常见的毫秒时间戳。上面的通用示例中 `exp - iat = 900`，表示 15 分钟；不能把示例时长当作应用配置。一张 Access Token 的到期时间与刷新会话的有效期是不同约定。
 
-注意三个编号不要混淆：`kid` 选签名密钥，`jti` 区分每张 Access Token，`sid` 关联一次移动登录的会话家族。正常刷新时 `jti` 会变、`sid` 不变，`kid` 则取决于使用的签名密钥。
+除这七个注册声明外，协议或应用还可以定义其他声明。字段名字相同不代表所有 Token 都使用相同含义与数据类型；应依据所采用的协议或应用契约处理，不能把自定义字段当作 JWT 基础规范的强制要求。
+
+例如 `scope` 的授权含义见 [OAuth2 权限模型](OAuth2与OIDC.md#permissions)。项目实际声明、配置键和源码对应关系统一在项目仓库的 `hhjava/docs/AUTHENTICATION_GUIDE.md` 中维护。
 
 ### 2.3 签名输入
 
@@ -162,6 +144,8 @@ jwt = signing_input + "." + BASE64URL(signature)
 两者都不是内容加密。多服务场景采用 RS256，可以让资源服务器只持有公钥，避免向所有验证方分发签名秘密；算法选择仍要匹配协议、库和部署要求。
 
 验证端必须预先限制允许的算法，并检查算法与密钥类型、用途一致，不能由收到的 `alg` 自行决定接受范围。业务认证场景应拒绝未签名令牌和不符合策略的算法。
+
+<a id="jwks"></a>
 
 ## 4. JWK、JWKS 与密钥轮换
 
@@ -222,6 +206,8 @@ JWKS 只提供验签所需的密钥材料，不存放 JWT，也不会自动完�
 
 验证端可缓存可信 JWKS。遇到未知 `kid` 时，只从预先信任的来源按受控策略刷新；仍无法找到合适密钥时拒绝令牌，不能跳过验证。私钥泄漏属于紧急事件，不能等待正常过渡期结束才处理。
 
+<a id="jwt-validation"></a>
+
 ## 5. 验证流程
 
 ### 5.1 JWT Access Token（访问令牌）
@@ -269,7 +255,7 @@ Authorization: Bearer <ACCESS_TOKEN>
 - 本地验签不会自动获知退出登录、账号禁用或权限变更。需要立即失效时，必须配合撤销状态、内省或其他实时检查。
 - 删除客户端保存的 Token，不会让已泄漏的副本失效；停止刷新也不会自动撤销已签发的 Access Token。
 - 仅从 JWKS 删除公钥不能保证立即撤销，因为验证端可能持有缓存；密钥泄漏处置需要协调缓存和拒绝策略。
-- JWT 可以与 Session（会话）、Cookie（浏览器状态数据）同时使用。CSRF 风险取决于浏览器是否自动携带认证凭据，不能由令牌格式单独决定。
+- JWT 可以与 [Session/Cookie](认证和授权.md#session-cookie) 同时使用。[CSRF 风险](OAuth2与OIDC.md#csrf) 取决于凭据携带方式，不能由令牌格式单独决定。
 
 ## 7. 自测
 

@@ -81,7 +81,7 @@ List<Role> findRolesByUserId(@Param("userId") Long userId);
 
 这里“角色一次查询”不等于“整个登录只执行一次 SQL”。`UserServiceImpl` 先查询用户，再通过这条 JOIN 查询角色，合计两条账号读取 SELECT；登录还包含密码计算、会话写入等操作。
 
-移动端密码认证成功后直接复用 `AuthenticatedUser` 中的用户 ID 和角色快照，不重复调用用户查询。Refresh Token 刷新则仍查询当前用户和角色。原因见 [认证和授权](../认证授权和网关/认证和授权.md)。
+这两条查询如何参与登录、认证结果何时复用以及刷新时何时重查，统一见 hhjava 项目的 `docs/AUTHENTICATION_GUIDE.md` 中“标准密码链”和“刷新状态机”；本篇只维护 Mapper 与 SQL 的说明。框架基础见 [标准密码认证](../认证授权和网关/认证和授权.md#password-authentication)。
 
 ## 4. 接口和 XML 怎么对应
 
