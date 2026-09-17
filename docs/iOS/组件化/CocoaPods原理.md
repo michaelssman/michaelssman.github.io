@@ -216,9 +216,9 @@ pod 'LMERPDocument',
 
 | 配置 | 含义 |
 | --- | --- |
-| `LMERPDocument` | 组件名称，必须与 Podspec 的 `s.name` 一致，不一定等于仓库名 |
-| `:git` | 组件源码仓库地址；示例使用 SSH，开发机和 CI 都需要读取权限 |
-| `:branch` | **组件仓库**的远端分支，不是应用项目当前所在的分支 |
+| `LMERPDocument` | 组件名称，必须与 Podspec 的 `s.name` 一致 |
+| `:git` | 组件源码仓库地址 |
+| `:branch` | **组件仓库**的远端分支 |
 
 #### 2. 安装与更新
 
@@ -236,8 +236,6 @@ pod update LMERPDocument
 
 `pod update` 已包含安装和集成过程，成功后不需要再执行一次 `pod install`。
 指定名称可避免主动更新所有 Pod；依赖约束变化时，也可能需要调整相关依赖。
-
-应用项目执行 `git pull` 只同步应用仓库，不会替你更新这个组件仓库的分支代码。
 
 #### 3. 确认实际安装的提交
 
@@ -257,13 +255,8 @@ git diff -- Podfile Podfile.lock
 git ls-remote git@git.nmy.cn:app/iOS-LMERPDocument.git refs/heads/feature/floating-unit
 ```
 
-正常结果为 `提交哈希 + refs/heads/feature/floating-unit`。定向更新后，锁文件中的
-commit 应对应更新时的远端提交，不能只看 `PODS` 中的版本号，因为分支提交不一定
-修改 Podspec 版本。无结果时检查分支名和是否已推送；`Permission denied (publickey)`
-表示需要检查 SSH 密钥配置及仓库访问权限。
-
-安装后打开应用的 `.xcworkspace` 编译并验证组件功能，再将 `Podfile` 和
-`Podfile.lock` 一起提交。其他成员和 CI 使用 `pod install` 复用已锁定的结果。
+正常结果为 `提交哈希 + refs/heads/feature/floating-unit`。定向更新后，锁文件中的 commit 应对应更新时的远端提交，不能只看 `PODS` 中的版本号，因为分支提交不一定
+修改 Podspec 版本。
 
 #### 4. 固定版本与本地开发
 
@@ -274,8 +267,7 @@ commit 应对应更新时的远端提交，不能只看 `PODS` 中的版本号�
 | 明确固定一次提交 | `:git => '仓库地址', :commit => '完整提交哈希'` |
 | 边修改本地组件源码边调试 | `:path => '../组件源码目录'`，见“本地组件开发” |
 
-`:branch`、`:tag`、`:commit` 按需求选择一种，不要同时配置。正式交付建议使用稳定的
-发布版本或固定 commit，并保留锁文件；需要修改组件源码时使用 `:path`，不要直接
+`:branch`、`:tag`、`:commit` 按需求选择一种，不要同时配置。正式交付建议使用稳定的发布版本或固定 commit，并保留锁文件；需要修改组件源码时使用 `:path`，不要直接
 修改下载到 `Pods/` 中的文件，以免重装时丢失。
 
 ## 六、发布 PWUtils
@@ -380,14 +372,6 @@ pod repo lint PWSpecs
 ```shell
 pod install --repo-update
 ```
-
-验收结果应同时满足：
-
-- 安装到预期的 PWUtils 版本。
-- `Podfile.lock` 显示 PWUtils 来自 PWSpecs。
-- 能通过 SSH 下载 tag 对应的源码。
-- 应用工程和 Example 工程均可构建。
-- 开发机与 CI 的安装结果一致。
 
 ## 八、发布检查清单
 

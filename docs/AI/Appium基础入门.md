@@ -51,7 +51,7 @@ appium driver doctor xcuitest
 
 ## 3. 创建教程目录和 Python 环境
 
-本教程将文件放在 `~/Documents/AppiumStarter`。以下命令会在你的 Mac 上创建一个新的学习目录。
+本教程将文件放在 `~/Documents/AppiumStarter`。
 
 ```bash
 mkdir -p "$HOME/Documents/AppiumStarter"
