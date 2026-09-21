@@ -1,10 +1,10 @@
 # OAuth2 与 OIDC：从委托授权到安全登录
 
-本文讲协议原理：应用为什么要跳转登录、授权码怎样换成令牌、各类令牌交给谁，以及浏览器和移动端应守住哪些安全边界。它不是某个 Java 项目的部署教程，不需要先安装软件，也不包含真实客户端凭据。
+本文讲协议原理：应用为什么要跳转登录、授权码怎样换成令牌、各类令牌交给谁，以及浏览器和移动端应守住哪些安全边界。
 
 还不熟悉“认证、授权、Session、Cookie”的读者，先读[认证和授权](认证和授权.md#authentication-authorization)及其中的[浏览器会话](认证和授权.md#session-cookie)。JWT 的结构、签名和字段解释统一见 [JWT 与 JWKS](JWT与JWKS.md#jwt-fields)。
 
-先记住三件事：OAuth2 主要解决“允许应用访问什么”，OIDC（OpenID Connect，建立在 OAuth2 之上的身份层）补充“这次登录的用户是谁”，登录成功仍不等于可以访问所有人的数据。
+先记住三件事：OAuth2 主要解决“允许应用访问什么”，OIDC（OpenID Connect，建立在 OAuth2 之上的身份层）补充“这次登录的用户是谁”。
 
 <a id="oauth-roles"></a>
 
@@ -23,9 +23,9 @@ OAuth 2.0 是委托授权框架：用户在云相册的授权服务器完成认�
 | Authorization Server，授权服务器 | 核实授权请求，必要时认证用户，并签发令牌 | 云相册的授权中心 |
 | Resource Server，资源服务器 | 提供受保护的应用程序接口（API），验证令牌并检查访问权限 | 云相册的照片 API |
 
-这里的“客户端”是协议角色，不只指手机或浏览器：Java 后端也可以是 OAuth2 客户端。浏览器经常只是帮用户打开页面、携带重定向结果；真正保存令牌并调用 API 的客户端可能在后端。
+“客户端”是协议角色，不只指手机或浏览器：Java 后端也可以是 OAuth2 客户端。浏览器经常只是帮用户打开页面、携带重定向结果；真正保存令牌并调用 API 的客户端可能在后端。
 
-“资源”是照片、订单等被保护的数据或能力，不是第五个协议角色。同一系统可以同时承担授权服务器和资源服务器，但“能否发令牌”与“能否读这张照片”仍是不同职责。
+“资源”是被保护的数据或能力，不是第五个协议角色。同一系统可以同时承担授权服务器和资源服务器，但“能否发令牌”与“能否读这张照片”仍是不同职责。
 
 ### 1.2 公开客户端与机密客户端
 
@@ -82,7 +82,7 @@ PKCE 的全称是 Proof Key for Code Exchange，可理解为“兑换授权码�
 4. **授权服务器认证用户并决定授权。** 用户在授权服务器的可信页面完成登录；已有有效会话时可能不必再输密码。需要确认权限时，用户同意或拒绝授权。用户密码不交给申请照片的客户端。
 5. **浏览器回调客户端。** 成功时携带一次性 `code` 与原样返回的 `state`；失败时可能携带协议错误。客户端先检查回调对应当前事务，使用本例的 `state` 校验，拒绝不匹配、过期或重复回调。
 6. **客户端兑换令牌。** 向可信令牌端点发送 `grant_type=authorization_code`、`code`、相同的 `redirect_uri`、`client_id` 和原始 `code_verifier`。机密客户端还须按注册方式认证自身；PKCE 不替代客户端认证。
-7. **授权服务器校验。** 检查授权码是否有效、未被使用、属于该客户端及回调地址，再验证 verifier 与授权请求保存的 challenge 是否匹配；通过后返回 Access Token，本例的 OIDC 成功响应还含 ID Token（身份令牌）。是否返回用于续期的 Refresh Token（刷新令牌）取决于策略。
+7. **授权服务器校验。** 检查授权码是否有效、未被使用、属于该客户端及回调地址，再验证 verifier 与授权请求保存的 challenge 是否匹配；通过后返回 Access Token，本例的 OIDC 成功响应还含 ID Token（身份令牌）。是否返回用于续期的 Refresh Token取决于策略。
 8. **分别使用结果。** 客户端验证 ID Token 和本次 `nonce` 后使用身份结果；向资源服务器发请求时使用 Access Token。资源服务器验证令牌，再检查 API 权限和具体照片的访问权。
 
 这解释了“为什么不直接在回调 URL 发 Access Token”：浏览器回调只运输短期的一次性授权码，真正令牌通过独立的令牌端点取得，减少访问令牌进入地址、历史记录和相关泄漏路径的机会。[RFC 9700 §2.1.1–2.1.2](https://www.rfc-editor.org/rfc/rfc9700.html#section-2.1.1)
@@ -95,9 +95,9 @@ code_challenge = BASE64URL(SHA256(ASCII(code_verifier)))
 
 这里 SHA-256 是摘要算法；Base64URL 是适合放入 URL 的编码，结果不带末尾的 `=` 填充。`code_verifier` 应由密码学安全随机数生成器产生，长度为 43～128 个允许字符；一种标准做法是生成 32 字节随机数后转成不带填充的 Base64URL。[RFC 7636 §4.1–4.2](https://www.rfc-editor.org/rfc/rfc7636.html#section-4.1)
 
-可以把 challenge 想成“先登记证明的摘要”，verifier 是“兑换时出示原件”。它不是把授权码加密，也不是把 Client Secret 变得可公开。
+可以把 challenge 想成“先登记证明的摘要”，verifier 是“兑换时出示原件”。
 
-使用授权码流程的公开客户端必须使用 PKCE，机密客户端也推荐使用；选择 `S256`。服务端必须真正校验 verifier，并防止攻击者通过删除 challenge 降级绕过 PKCE。只在页面上看见这些参数，不代表防护已经生效。[RFC 9700 §2.1.1](https://www.rfc-editor.org/rfc/rfc9700.html#section-2.1.1)
+使用授权码流程的公开客户端必须使用 PKCE，机密客户端也推荐使用；选择 `S256`。服务端必须真正校验 verifier，并防止攻击者通过删除 challenge 降级绕过 PKCE。[RFC 9700 §2.1.1](https://www.rfc-editor.org/rfc/rfc9700.html#section-2.1.1)
 
 <a id="state-nonce"></a>
 
@@ -109,7 +109,7 @@ code_challenge = BASE64URL(SHA256(ASCII(code_verifier)))
 | `nonce` | OIDC 客户端验证 ID Token 时检查 | 把身份结果绑定到这次认证请求，检测重放；满足协议条件时也可防回调 CSRF、授权码注入 |
 | PKCE | 授权服务器在令牌端点验证 `code_verifier` | 将授权码兑换绑定到本次发起事务；确认服务端正确支持并执行时，也可承担回调 CSRF 防护 |
 
-`state` 的基本往返关系如下，尖括号均为每次动态生成或收到的值，不是可复制的常量：
+`state` 的基本往返关系如下，尖括号均为每次动态生成或收到的值：
 
 ```text
 授权请求：...?state=<本次随机值>
@@ -147,7 +147,7 @@ OpenID Connect（OIDC）是在 OAuth2 之上的身份层。OAuth2 Access Token �
 
 客户端在授权请求的 `scope` 中加入 `openid`，即发起 OIDC 认证。沿用授权码流程时，成功的令牌响应包含 ID Token（身份令牌），由客户端验证后了解本次认证结果。OIDC 中，提供认证结果的一方称为 OpenID Provider（OP，身份提供方），依赖这个结果的客户端称为 Relying Party（RP，依赖方）。[OIDC Core §1、§3.1](https://openid.net/specs/openid-connect-core-1_0.html#Introduction)
 
-还会遇到两个入口：Discovery（发现元数据）告诉客户端可信提供方的端点和能力；UserInfo 是用 Access Token 获取已授权用户资料的端点，不是接收 ID Token 的普通业务接口。取得 UserInfo 后，其中的用户主体标识必须与已验证 ID Token 的主体一致，不能只按昵称或邮箱拼接身份。[OIDC Core §5.3.2](https://openid.net/specs/openid-connect-core-1_0.html#UserInfoResponse)
+还会遇到两个入口：Discovery（发现元数据）告诉客户端可信提供方的端点和能力；UserInfo 是用 Access Token 获取已授权用户资料的端点。取得 UserInfo 后，其中的用户主体标识必须与已验证 ID Token 的主体一致，不能只按昵称或邮箱拼接身份。[OIDC Core §5.3.2](https://openid.net/specs/openid-connect-core-1_0.html#UserInfoResponse)
 
 ID Token 的用途、接收者和本次请求绑定必须同时正确；“能 Base64 解码”不等于“身份可信”。字段含义与校验步骤统一见 [JWT 与 JWKS：验证流程](JWT与JWKS.md#jwt-validation)，使用成熟 OIDC 客户端库完成验证，不自己拼装一套只检查签名的登录协议。
 
@@ -155,12 +155,12 @@ ID Token 的用途、接收者和本次请求绑定必须同时正确；“能 B
 
 ## 5. 授权码与三种 Token，分别交给谁
 
-| 凭据 | 接收者 | 用途 | 可以当业务 API 访问令牌吗 |
-| --- | --- | --- | --- |
-| Authorization Code | 授权服务器的令牌端点 | 一次性兑换令牌 | 不可以 |
-| Access Token | 预期的资源服务器 | 在授权范围内调用 API | 可以，仍须通过权限检查 |
-| ID Token | 发起 OIDC 认证的客户端 | 验证本次用户身份结果 | 不可以 |
-| Refresh Token | 授权服务器的刷新入口 | 换取新的 Access Token | 不可以 |
+| 凭据 | 接收者 | 用途 |
+| --- | --- | --- |
+| Authorization Code | 授权服务器的令牌端点 | 一次性兑换令牌 |
+| Access Token | 预期的资源服务器 | 在授权范围内调用 API |
+| ID Token | 发起 OIDC 认证的客户端 | 验证本次用户身份结果 |
+| Refresh Token | 授权服务器的刷新入口 | 换取新的 Access Token |
 
 Access Token 不一定是 JWT，OAuth2 不强制其编码格式；ID Token 是 OIDC 定义的 JWT。前者可以是不透明随机值，由资源服务器按部署协议核验。Cookie 所维持的浏览器会话也不等于这些令牌，见[Session 与 Cookie](认证和授权.md#session-cookie)。
 
@@ -171,7 +171,7 @@ Access Token 通常有效期较短。Refresh Token 让客户端在获准的会�
 Refresh Token 泄漏可能让攻击者持续取到新令牌，因此必须保护传输和存储。对公开客户端，授权服务器必须采用发送方约束或轮换机制检测重放：
 
 - **发送方约束**：除令牌外，还要求出示与该客户端实例绑定的密码学证明；不是只比较一个容易伪造的设备名称。
-- **轮换**：每次刷新发出新 Refresh Token、使旧值失效并保留关联关系。再次使用旧值说明可能泄漏，服务端撤销关联的活动 Refresh Token，要求重新取得授权，不能只返回错误后让攻击者继续刷新。
+- **轮换**：每次刷新发出新 Refresh Token、使旧值失效并**保留关联关系**。再次使用旧值说明可能泄漏，服务端撤销关联的活动 Refresh Token，要求重新取得授权，不能只返回错误后让攻击者继续刷新。
 
 这是 [RFC 9700 §4.14](https://www.rfc-editor.org/rfc/rfc9700.html#section-4.14) 的重放防护要求。客户端也应协调并发刷新，避免多个请求同时拿旧值刷新而被判为重放。
 
