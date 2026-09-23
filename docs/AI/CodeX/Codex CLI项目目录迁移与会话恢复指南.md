@@ -5,12 +5,10 @@
 移动项目文件夹不会删除 Codex CLI 会话。会话保存在：
 
 ```text
-/Users/michael/.codex/sessions
+~/.codex/sessions
 ```
 
 移动后看不到旧会话，是因为 `codex resume` 默认按当前工作目录过滤。使用 `codex resume --all` 即可查找旧目录下的会话，再通过 `-C/--cd` 指定新的项目目录。
-
-适用环境：`codex-cli 0.149.1`。
 
 ## 目标目录
 

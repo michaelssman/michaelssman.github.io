@@ -32,19 +32,15 @@ git checkout <commit-hash>
 
 如果你不想再看到这个提示，你可以通过设置配置变量`advice.detachedHead`为`false`来关闭它。例如，运行 `git config --global advice.detachedHead false`。
 
-## git add .
-
-添加到缓存。
-
-`.`表示添加目录下所有文件到缓存库。 `.`和`add`之间有空格。
-
-如果只添加某个文件，只需把 `.` 换成要添加的文件名即可。
-
 ## status
 
 可以查看哪些文件修改了或者冲突了。
 
 `git status --short`或`git status -s`格式更为紧凑的输出。
+
+## git add .
+
+`.`表示目录下所有文件添加到缓存库。如果只添加某个文件，只需把 `.` 换成要添加的文件名即可。
 
 ## git commit -m "注释"
 

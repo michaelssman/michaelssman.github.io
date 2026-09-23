@@ -29,13 +29,6 @@ Codex 的 CLI、桌面端与 IDE 扩展共享`~/.codex/config.toml`。
 
 ## 2. 模型选择
 
-临时指定模型：
-
-```bash
-codex -m gpt-5.5
-codex --model gpt-5.5
-```
-
 配置默认模型可写入 `~/.codex/config.toml`：
 
 ```toml
@@ -47,19 +40,6 @@ model = "gpt-5.5"
 ## 3. CLI 常用工作流
 
 ### 3.1 交互模式
-
-在项目目录启动：
-
-```bash
-cd /path/to/project
-codex
-```
-
-也可以直接带初始提示：
-
-```bash
-codex "Explain this codebase to me"
-```
 
 常见能力：
 
@@ -90,12 +70,19 @@ Codex CLI 中的“暂停目标”“停止当前任务”“停止后台终端�
 
 Codex 会在本地保存会话记录（transcript）。`CODEX_HOME` 是 Codex 本地状态的根目录，未自定义时默认为 `~/.codex`。
 
+#### 查找历史提问
+
+- **按关键词查找**：在 CLI 输入框按 `Ctrl+R`，输入关键词；按 `Enter` 将匹配的提问带回输入框，按 `Esc` 取消。
+- **逐条翻找**：输入框为空时，按 `↑`、`↓` 浏览历史提问。
+
+参考：[Codex 快捷键与会话恢复](https://learn.chatgpt.com/docs/developer-commands)、[Ghostty 终端内容搜索](https://ghostty.org/docs/install/release-notes/1-3-0#scrollback-search)。
+
 #### 会话保存位置
 
 | 内容 | 默认位置 |
 | --- | --- |
-| 活动会话 | `$CODEX_HOME/sessions`，即 `~/.codex/sessions` |
-| 已归档会话 | `$CODEX_HOME/archived_sessions`，即 `~/.codex/archived_sessions` |
+| 活动会话 | `~/.codex/sessions` |
+| 已归档会话 | `~/.codex/archived_sessions` |
 
 活动会话通常按创建日期保存为 JSONL 文件：
 
@@ -105,7 +92,7 @@ Codex 会在本地保存会话记录（transcript）。`CODEX_HOME` 是 Codex �
 
 路径中的日期通常是会话创建日期。会话跨天继续使用时，记录仍可能保存在最初创建日期对应的目录中。
 
-JSONL 文件可能包含完整对话、指令、工作目录、工具调用及其输出。不要将其提交到 Git；分享前应先检查并移除敏感信息。使用 `/archive` 后，会话记录会移至归档目录；使用 `/delete` 则会永久删除会话。
+使用 `/archive` 后，会话记录会移至归档目录；使用 `/delete` 则会永久删除会话。
 
 #### 推荐恢复流程
 
@@ -126,10 +113,6 @@ codex resume --last                # 恢复当前项目最近的会话
 codex resume --all                 # 在选择器中包含其他目录的会话
 codex resume <SESSION_ID_OR_NAME>  # 按会话 ID 或名称直接恢复
 ```
-
-如果已经进入一个新的 CLI 会话，可以输入 `/resume` 打开已保存会话的选择器。
-
-Codex App 中可从侧边栏重新打开历史会话，也可以按 `Cmd/Ctrl + G` 搜索会话。
 
 非交互模式也可以恢复：
 
@@ -266,6 +249,30 @@ kill 12345
 4. 按 `Control + Command + Q` 锁屏，不要关闭运行 Codex CLI 的终端。
 
 长时间任务会持续消耗电量。纯电池运行时应设置合理的超时时间，并预留足够电量。OpenAI 的远程连接文档同样要求承载本地任务的电脑保持唤醒和在线；电脑进入睡眠后，本地 Shell、文件和工具将不可用，直到主机恢复：[Remote connections](https://learn.chatgpt.com/docs/remote-connections)。
+
+### 3.8 Ghostty 中用 VS Code 编辑提示词
+
+在 macOS 的 Ghostty 中运行 Codex CLI 时，可以按 `Ctrl+G` 用外部编辑器编写较长的提示词。Codex 优先读取 `VISUAL`，未设置时使用 `EDITOR`。
+
+#### 配置
+
+1. 在 Ghostty 的 shell 中打开配置文件：
+
+   ```bash
+   open -e "~/.zshrc"
+   ```
+
+2. 在文件末尾加入下面一行并保存；如果已有 `VISUAL` 配置，直接修改原有配置：
+
+   ```bash
+   export VISUAL='"/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" --wait'
+   ```
+
+   `--wait` 让 VS Code 命令等待草稿文件关闭后再返回。保留示例中的两层引号，以正确处理应用路径中的空格。
+
+3. 新开 Ghostty 标签页，在项目目录运行 `codex`。已经运行的 Codex 需要退出后重新启动，才能读取新的环境变量。
+
+参考：[Codex CLI 外部提示词编辑器](https://learn.chatgpt.com/docs/cli-customization#prompt-editor)。
 
 ---
 
@@ -557,16 +564,10 @@ macOS 需要授予 Screen Recording 和 Accessibility 权限。由于它会影�
 
 - ❌ 把 Codex 当一次性代码生成器。
   ✅ 更好的方式是“计划 → 修改 → 验证 → review → 反馈 → 迭代”。
-
 - ❌ 一上来开 Full Access。
   ✅ 大多数本地工作用 `workspace-write` + `on-request` 已足够。
-
 - ❌ 把所有规则塞到全局 `AGENTS.md`。
   ✅ 个人偏好放全局，团队/项目/目录规则放最近的仓库 `AGENTS.md`。
-
-- ❌ 使用过时模型名或网上教程里的私有命令。
-  ✅ 以 `/model`、`codex -m` 和官方 Models 页面为准。
-
 - ❌ 让 Codex 联网查“最新资料”但不说明来源要求。
   ✅ 明确要求使用官方文档或指定可信来源。
 
