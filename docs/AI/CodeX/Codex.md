@@ -39,13 +39,7 @@ model = "gpt-5.5"
 
 ## 3. CLI 常用工作流
 
-### 3.1 交互模式
-
-常见能力：
-
-- 粘贴截图或通过 `--image` 附加图片。
-
-### 3.2 暂停、停止与终止
+### 3.1 暂停、停止与终止
 
 Codex CLI 中的“暂停目标”“停止当前任务”“停止后台终端”和“终止 CLI”作用范围不同：
 
@@ -66,7 +60,7 @@ Codex CLI 中的“暂停目标”“停止当前任务”“停止后台终端�
 
 参考：[Codex developer commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli)、[Codex configuration schema](https://learn.chatgpt.com/docs/config-schema.json)。
 
-### 3.3 恢复会话
+### 3.2 恢复会话
 
 Codex 会在本地保存会话记录（transcript）。`CODEX_HOME` 是 Codex 本地状态的根目录，未自定义时默认为 `~/.codex`。
 
@@ -121,7 +115,7 @@ codex exec resume --last "继续修复刚才发现的问题"
 codex exec resume <SESSION_ID> "实现刚才的计划"
 ```
 
-### 3.4 非交互模式
+### 3.3 非交互模式
 
 适合脚本、CI、流水线、定时任务：
 
@@ -150,7 +144,7 @@ codex exec --sandbox danger-full-access "run this in an isolated CI runner"
 
 `codex exec` 默认运行在 read-only sandbox 中。
 
-### 3.5 远程 TUI / App Server
+### 3.4 远程 TUI / App Server
 
 Codex CLI 支持连接远程 app server：
 
@@ -161,7 +155,7 @@ codex --remote ws://127.0.0.1:4500
 
 如果要从另一台机器访问，需要配置 WebSocket 鉴权，并优先放在 TLS 后面。不要把未鉴权的远程端点暴露到公网。
 
-### 3.6 Web Search
+### 3.5 Web Search
 
 Codex CLI 官方内置 first-party web search。默认本地任务使用 OpenAI 维护的搜索缓存，而不是每次实时抓取网页。这样可以降低任意网页内容带来的 prompt injection 风险，但搜索结果仍应视为不可信外部输入。
 
@@ -185,7 +179,7 @@ web_search = "disabled"
 
 如果要限制搜索工具范围，可使用 `tools.web_search` 配置允许域名、上下文大小和近似位置。
 
-### 3.7 Mac 锁屏后继续执行 CLI 任务
+### 3.6 Mac 锁屏后继续执行 CLI 任务
 
 锁屏不等于系统睡眠。按 `Control + Command + Q` 锁定屏幕后，只要 Mac 仍处于唤醒状态、网络保持连接、终端窗口没有关闭，并且 Codex CLI 进程仍在运行，当前任务就可以继续执行。以下情况会让任务无法继续推进或导致连接中断：
 
@@ -250,7 +244,7 @@ kill 12345
 
 长时间任务会持续消耗电量。纯电池运行时应设置合理的超时时间，并预留足够电量。OpenAI 的远程连接文档同样要求承载本地任务的电脑保持唤醒和在线；电脑进入睡眠后，本地 Shell、文件和工具将不可用，直到主机恢复：[Remote connections](https://learn.chatgpt.com/docs/remote-connections)。
 
-### 3.8 Ghostty 中用 VS Code 编辑提示词
+### 3.7 Ghostty 中用 VS Code 编辑提示词
 
 在 macOS 的 Ghostty 中运行 Codex CLI 时，可以按 `Ctrl+G` 用外部编辑器编写较长的提示词。Codex 优先读取 `VISUAL`，未设置时使用 `EDITOR`。
 
