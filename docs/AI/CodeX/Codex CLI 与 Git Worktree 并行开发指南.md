@@ -4,39 +4,9 @@
 
 Git Worktree 可以让同一个 Git 仓库在多个目录中同时检出不同分支。每个目录拥有独立的工作区和暂存区，但共享提交、分支、远端等 Git 数据。
 
-需要区分：Codex 桌面端可以自动创建和管理 Codex Worktree；Codex CLI 的常规用法是先由 Git 创建 Worktree，再从对应目录运行 `codex`。不要把桌面端的 Handoff、自动清理等能力当成 CLI 命令。
+## 2. 首次创建第二个 Worktree
 
-## 2. 通用示例约定
-
-本文使用以下通用名称，实际操作前，请按自己的项目替换变量值：
-
-```bash
-REPO_DIR="/path/to/project"
-WORKTREE_B_DIR="/path/to/project-requirement-b"
-BRANCH_A="feature/requirement-a"
-BRANCH_B="feature/requirement-b"
-```
-
-| 目录 | 本地分支 | 用途 |
-| --- | --- | --- |
-| `$REPO_DIR` | `$BRANCH_A` | 开发或维护需求 A |
-| `$WORKTREE_B_DIR` | `$BRANCH_B` | 开发或维护需求 B |
-
-示例场景：
-
-- 需求 A 的分支已经在主目录检出。
-- 需求 B 的本地分支已经存在，需要创建第二个 Worktree。
-- 如果需求分支尚未设置上游，第一次推送时使用 `git push -u` 建立跟踪关系。
-
-## 3. 首次创建第二个 Worktree
-
-先在当前主目录确认没有未处理的改动，并刷新远端信息：
-
-```bash
-cd "$REPO_DIR"
-git status --short --branch
-git fetch origin --prune
-```
+### 需求 B 的本地分支已经存在
 
 为已有的需求 B 分支创建独立目录：
 
@@ -58,19 +28,15 @@ git -C "$WORKTREE_B_DIR" status --short --branch
 如果以后需要从一个已有远端分支创建 Worktree，可先创建本地跟踪分支：
 
 ```bash
-git fetch origin --prune
 git branch --track "$BRANCH_B" "origin/$BRANCH_B"
 git worktree add "$WORKTREE_B_DIR" "$BRANCH_B"
 ```
 
-## 4. 创建一个全新的需求分支
+## 3. 创建一个全新的需求分支
 
 新需求通常从团队指定的开发基线创建。以下示例以 `origin/develop` 为基线：
 
 ```bash
-cd "$REPO_DIR"
-git fetch origin --prune
-
 NEW_BRANCH="feature/requirement-c"
 NEW_WORKTREE_DIR="/path/to/project-requirement-c"
 
@@ -85,15 +51,9 @@ git status --short --branch
 git push -u origin "$NEW_BRANCH"
 ```
 
-如果本地需求分支已经存在，不要再次使用 `-b` 创建同名分支。需要设置远端上游时，应在对应 Worktree 确认状态后执行：
+如果本地需求分支已经存在，不要再次使用 `-b` 创建同名分支。
 
-```bash
-cd "$REPO_DIR"
-git status --short --branch
-git push -u origin "$BRANCH_A"
-```
-
-## 5. 在两个 Worktree 中分别运行 Codex CLI
+## 4. 在两个 Worktree 中分别运行 Codex CLI
 
 ### 方式一：进入目录后启动
 
@@ -130,7 +90,7 @@ codex -C "$WORKTREE_B_DIR"
 请先检查分支和工作区状态，只修改本需求相关文件，不要操作其他 Worktree。
 ```
 
-## 6. 每天开始开发前
+## 5. 每天开始开发前
 
 在各自 Worktree 中分别检查：
 
@@ -155,7 +115,7 @@ git pull --rebase
 
 不要在未确认影响范围时，把一个需求分支合并到另一个需求分支。是否把最新 `develop` 同步进需求分支，也应先确认团队约定和最终合入 `release`、`main` 时是否会携带无关提交。
 
-## 7. 日常提交与推送
+## 6. 日常提交与推送
 
 所有命令都必须在对应需求的 Worktree 中执行：
 
@@ -178,7 +138,7 @@ git push
 - 不要让两个 Codex 会话同时修改同一个分支。
 - 不要把与需求无关的 Xcode 用户配置或本地环境文件加入提交。
 
-## 8. 按当前团队规范流转分支
+## 7. 按当前团队规范流转分支
 
 两个需求分别执行同一套流程，互不合并：
 
@@ -200,7 +160,7 @@ git diff --stat origin/develop...feature/<需求>
 
 需求分支在合入 `main` 之前应继续保留。某个需求后续需要修复时，直接进入对应 Worktree 继续提交；不要在另一个需求的 Worktree 中修改。
 
-## 9. iOS 项目的额外注意事项
+## 8. iOS 项目的额外注意事项
 
 新 Worktree 只会检出 Git 跟踪的文件。被 `.gitignore` 忽略的本地配置、依赖或生成文件不会自动出现在新目录，需要按项目既有方式重新生成或谨慎复制。
 
@@ -218,7 +178,7 @@ xcodebuild <其他参数> \
 
 同一时刻只在一个 Worktree 中执行 CocoaPods、工程文件生成或其他会改写共享外部状态的命令；执行后检查实际变更范围。
 
-## 10. 查看和管理 Worktree
+## 9. 查看和管理 Worktree
 
 查看所有 Worktree：
 
@@ -245,7 +205,7 @@ git worktree repair
 git worktree unlock "$WORKTREE_B_DIR"
 ```
 
-## 11. 需求结束后的安全清理
+## 10. 需求结束后的安全清理
 
 只有在以下条件全部满足后才清理：
 
@@ -270,8 +230,6 @@ git worktree prune
 git worktree list
 ```
 
-不要直接使用 `rm -rf` 删除 Worktree 目录，否则容易残留 Git Worktree 记录。
-
 确认团队不再需要需求分支后，才考虑删除本地和远端分支：
 
 ```bash
@@ -279,7 +237,7 @@ git branch -d "$BRANCH_B"
 git push origin --delete "$BRANCH_B"
 ```
 
-## 12. 常见问题
+## 11. 常见问题
 
 ### 提示分支已经被另一个 Worktree 使用
 
@@ -313,7 +271,7 @@ git worktree list
 git worktree prune
 ```
 
-## 13. 最短操作清单
+## 12. 最短操作清单
 
 首次为已有的需求 B 分支创建 Worktree：
 
@@ -335,11 +293,9 @@ codex -C "$REPO_DIR"
 codex -C "$WORKTREE_B_DIR"
 ```
 
-牢记三条规则：
+牢记规则：
 
-1. 一个需求一个本地分支、一个 Worktree、一个 Codex 会话。
-2. 提交前始终执行 `pwd` 和 `git status --short --branch`。
-3. 两个需求分支互不合并，分别向 `develop`、`release`、`main` 提交合并请求。
+提交前始终执行 `pwd` 和 `git status --short --branch`。
 
 ## 参考资料
 

@@ -2,21 +2,7 @@
 
 Delta（Homebrew 包名为 `git-delta`）是 Git 输出分页器。它不会替换 Git 的差异计算逻辑，而是为 `git diff`、`git show`、`git log -p`、`git blame` 等输出增加语法高亮、行号、行内差异和导航能力。
 
-## 1. 当前环境
-
-本机安装信息：
-
-| 项目 | 当前值 |
-| --- | --- |
-| 终端 | Ghostty |
-| 安装方式 | Homebrew |
-| Homebrew 包 | `git-delta` |
-| Delta 版本 | `0.19.2` |
-| 可执行文件 | `/opt/homebrew/bin/delta` |
-
-Ghostty 可以直接显示 Delta 的颜色和交互式分页输出，不需要额外的 Ghostty 配置。
-
-## 2. 安装与更新
+## 1. 安装与更新
 
 ### 安装
 
@@ -48,7 +34,7 @@ brew uninstall git-delta
 
 卸载 Delta 前应先删除或修改 Git 中引用 `delta` 的配置，避免 Git 找不到分页器。
 
-## 3. 配置 Git
+## 2. 配置 Git
 
 当前采用以下全局配置：
 
@@ -96,7 +82,7 @@ git config --global --get interactive.diffFilter
 git config --global --get-regexp '^(delta\.|merge\.conflictStyle)'
 ```
 
-## 4. 日常使用
+## 3. 日常使用
 
 配置完成后Git原有命令会自动使用 Delta。
 
@@ -149,7 +135,7 @@ git reflog -p
 git blame <file>
 ```
 
-## 5. 分页与导航
+## 4. 分页与导航
 
 Delta 默认借助分页器显示长内容，常用按键如下：
 
@@ -163,7 +149,7 @@ Delta 默认借助分页器显示长内容，常用按键如下：
 | `g` | 跳到开头 |
 | `G` | 跳到结尾 |
 
-## 6. 可选设置
+## 5. 可选设置
 
 ### 临时使用并排视图
 
@@ -210,7 +196,7 @@ git config --global --unset delta.light
 git config --global delta.dark true
 ```
 
-## 7. 常见问题
+## 6. 常见问题
 
 ### Git 没有使用 Delta
 
@@ -256,7 +242,7 @@ git config --global --unset interactive.diffFilter
 git config --global --remove-section delta
 ```
 
-## 8. 官方资料
+## 7. 官方资料
 
 - [Delta GitHub 仓库](https://github.com/dandavison/delta)
 - [Delta 官方文档](https://dandavison.github.io/delta/)

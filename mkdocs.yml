@@ -435,7 +435,6 @@ nav:
       - AI/OpenClaw/OpenClaw安装指南.md
     - AI/技巧.md
     - Agent:
-      - AI/Agent/Agent.md
       - AI/Agent/Subagents.md
       - AI/Agent/智能体开发新需求.md
     - AI/Claude-Code-and-Codex-Hooks.md

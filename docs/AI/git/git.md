@@ -34,9 +34,29 @@ git checkout <commit-hash>
 
 ## status
 
-可以查看哪些文件修改了或者冲突了。
+查看文件修改、暂存、未跟踪和冲突状态。常用简洁形式：
 
-`git status --short`或`git status -s`格式更为紧凑的输出。
+```bash
+git status --short --branch
+git status -sb  # 等价简写
+```
+
+`--short` 简洁显示文件状态，`--branch` 同时显示当前分支及其上游关系。
+
+输出示例：
+
+```text
+## main...origin/main [ahead 1]
+ M README.md
+M  docs/git.md
+?? notes.md
+```
+
+- `main...origin/main`：当前分支为 `main`，跟踪 `origin/main`。
+- `ahead 1`：本地领先 1 个提交；`behind 2` 则表示落后 2 个提交。
+- ` M`：修改未暂存；`M `：修改已暂存；`??`：未跟踪的新文件。
+
+普通文件状态的第一列表示暂存区，第二列表示工作区。
 
 ## add 与 commit 速查
 
@@ -70,6 +90,25 @@ git push origin master。提交到远程的master分支。
 ```sh
 git push <远程主机名> <分支名>
 ```
+
+如果需求分支尚未设置上游，第一次推送时使用 `git push -u` 建立跟踪关系。
+
+```shell
+git push -u origin "$NEW_BRANCH"
+```
+
+## fetch
+
+获取远端最新提交和分支信息，同时清理过期的远端跟踪记录：
+
+```bash
+git fetch origin --prune
+```
+
+- `origin`：远程仓库名称。
+- `--prune`：清理远端已删除分支在本地留下的跟踪记录。
+
+例如，在常规配置下，远端删除了 `feature-login` 后，此命令会清理本地的 `origin/feature-login` 记录，但保留你自己的本地 `feature-login` 分支。
 
 ## pull
 
@@ -278,10 +317,10 @@ git revert -m 1 abc1234  # 替换为实际的提交哈希
 
 ## 舍弃本地修改
 
-| 命令            | 作用                                                         |
-| --------------- | ------------------------------------------------------------ |
-| `git restore .` | 撤销当前目录下所有已跟踪文件的本地修改（新写法，Git 2.23+ 推荐） |
-| `git clean -fd` | 删除所有未跟踪的文件和文件夹（-f 强制，-d 包含文件夹）       |
+| 命令            | 作用                                                   |
+| --------------- | ------------------------------------------------------ |
+| `git restore .` | 撤销当前目录下所有已跟踪文件的本地修改                 |
+| `git clean -fd` | 删除所有未跟踪的文件和文件夹（-f 强制，-d 包含文件夹） |
 
 ## cherry-pick
 
