@@ -451,7 +451,7 @@ nav:
     - Skills:
       - AI/Skills/Agent Skills.md
       - AI/Skills/Skills目录接入GitHub仓库.md
-    - AI/Appium基础入门.md
+    - AI/Appium.md
   - Mac:
     - MAC/软件包管理系统.md
     - MAC/linux.md

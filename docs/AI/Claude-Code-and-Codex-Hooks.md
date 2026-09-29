@@ -1,7 +1,5 @@
 # Claude Code 与 Codex CLI Hooks
 
-> 本文依据 Claude Code 与 Codex CLI 官方文档整理，最后核对时间：2026-09-02。Hooks 仍在持续演进，使用新事件或字段前，应先检查 `claude --version`、`codex --version`，再核对对应版本的官方文档。
-
 ## 1. Hooks 是什么
 
 Hooks 是编码智能体的生命周期自动化机制。当会话、提示词、工具调用、子智能体或结束状态发生特定事件时，客户端会自动运行预先配置的处理器。

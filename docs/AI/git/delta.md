@@ -1,6 +1,6 @@
 # Delta
 
-Delta（Homebrew 包名为 `git-delta`）是 Git 输出分页器。它不会替换 Git 的差异计算逻辑，而是为 `git diff`、`git show`、`git log -p`、`git blame` 等输出增加语法高亮、行号、行内差异和导航能力。
+Delta（Homebrew 包名为 `git-delta`）是 Git 输出分页器。为 `git diff`、`git show`、`git log -p`、`git blame` 等输出增加语法高亮、行号、行内差异和导航能力。
 
 ## 1. 安装与更新
 
@@ -180,16 +180,16 @@ git --no-pager diff
 git --no-pager show <commit>
 ```
 
-### 使用浅色主题
+### 使用主题
 
-如果 Ghostty 改为浅色主题：
+浅色主题：
 
 ```bash
 git config --global --unset delta.dark
 git config --global delta.light true
 ```
 
-恢复深色主题：
+深色主题：
 
 ```bash
 git config --global --unset delta.light
@@ -215,22 +215,6 @@ unset GIT_PAGER
 ```
 
 如果该变量写在 `~/.zshrc` 中，还需要删除或修改对应的 `export GIT_PAGER=...`。
-
-### 输出颜色不适合当前主题
-
-深色主题使用：
-
-```bash
-git config --global delta.dark true
-git config --global --unset delta.light
-```
-
-浅色主题使用：
-
-```bash
-git config --global delta.light true
-git config --global --unset delta.dark
-```
 
 ### 卸载后 Git 报找不到 `delta`
 
