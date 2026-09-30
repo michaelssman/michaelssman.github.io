@@ -55,8 +55,6 @@ export PATH=$FLUTTER:$PATH
 
 flutter doctor是shell调用flutter
 
-AS创建flutter也有flutter路径
-
 ## Android studio
 
 ### 插件Plugins

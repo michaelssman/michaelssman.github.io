@@ -236,10 +236,6 @@ open命令：打开文件夹、打开文件。
 
 跳转到某个目录
 
-例如：
-`$ cd /Users/apple/Desktop/  `
-在这里有个小技巧，就是在输入目录如Desktop时，只要输入Des并按tab键，该目录名便自动补全了。
-
 - `cd /`   表示跳转到根目录。
 - `cd ~`   表示跳转到用户主目录。
 - `cd ~apple`   表示跳转到用户apple的主目录。
@@ -251,7 +247,7 @@ open命令：打开文件夹、打开文件。
 
 ### clear
 
-清空当前输入，如果Terminal窗口中的内容太多，可以用clear命令将其清空。
+如果Terminal窗口中的内容太多，可以用clear命令将其清空。
 
 ### ls 
 
@@ -308,7 +304,7 @@ michael@MichaeldeMacBook-Pro ~ %
 
 ## 配置文件.zshrc
 
-打开.zshrc文件`open ~/.zshrc`，如果不存在则创建.zshrc文件`touch ~/.zshrc`，`vim ~/.zshrc`去编辑，`.zshrc`中可以修改主题。
+打开.zshrc文件`open ~/.zshrc`，如果不存在则创建.zshrc文件`touch ~/.zshrc`，`vim ~/.zshrc`去编辑。
 
 ### 退出vim
 

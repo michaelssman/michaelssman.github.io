@@ -452,7 +452,6 @@ void test() {
         std::cout << is.pop() <<std::endl;
     }
     
-    
     //读取文件
     StackTemplate<string> strings;
     ifstream in("main.cpp");
@@ -548,7 +547,6 @@ void test() {
         std::cout << *s <<std::endl;
         delete s;
     }
-    
     
     //存自定义class
 		Stack<Q> qq;
