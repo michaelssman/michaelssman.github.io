@@ -459,9 +459,11 @@ nav:
     - MAC/搭建网站.md
     - MAC/使用hdiutil加密文件.md
     - MAC/软件安装.md
-  - python:
-    - python/python.md
   - README.md
+  - python:
+    - Bugly符号表上传工具:
+      - python/Bugly符号表上传工具/Python基础语法学习笔记.md
+      - python/Bugly符号表上传工具/README.md
 # [Extensions]
 plugins:
   - search: # 现在还不支持中文搜索 支持之后可以设置语言
