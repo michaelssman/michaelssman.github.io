@@ -1,3 +1,16 @@
+## 正常显示中文路径
+
+Git 默认将中文路径显示为 `\345\272...` 这样的八进制转义。关闭 `core.quotePath` 后可直接显示中文：
+
+```sh
+git config --global core.quotePath false
+git status --short --branch
+```
+
+`--global` 设置当前用户所有仓库的默认行为，只影响路径显示，不改变文件名或编码。
+
+参考：[Git 官方说明](https://git-scm.com/docs/git-config#Documentation/git-config.txt-corequotePath)。
+
 ## GitHub上传文件不能超过100M的解决办法
 
 上传项目到GitHub上，当某个文件大小超过100M时，就会上传失败，因为默认的限制了上传文件大小不能超过100M。如果需要上传超过100M的文件，就需要我们自己去修改配置。
