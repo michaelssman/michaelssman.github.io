@@ -1,6 +1,6 @@
 # MCP（Model Context Protocol）
 
-MCP 用于把智能体或 AI 应用连接到外部工具、数据源和系统。模型需要访问文档系统、数据库、浏览器、Figma、Sentry、GitHub、Notion 等外部上下文时，可以通过 MCP 服务器获得对应的工具和数据。
+MCP 用于把AI智能体连接到外部工具、数据源和系统。模型需要访问文档系统、数据库、浏览器、Figma、Sentry、GitHub、Notion 等外部上下文时，可以通过 MCP 服务器获得对应的工具和数据。
 
 ## 1. 一句话理解
 

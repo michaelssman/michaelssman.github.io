@@ -246,7 +246,7 @@ kill 12345
 
 ### 3.7 Ghostty 中用 VS Code 编辑提示词
 
-在 macOS 的 Ghostty 中运行 Codex CLI 时，可以按 `Ctrl+G` 用外部编辑器编写较长的提示词。Codex 优先读取 `VISUAL`，未设置时使用 `EDITOR`。
+按 `Ctrl+G` 用外部编辑器编写较长的提示词。Codex 优先读取 `VISUAL`，未设置时使用 `EDITOR`。
 
 #### 配置
 
