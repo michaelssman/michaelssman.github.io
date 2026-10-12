@@ -18,25 +18,78 @@ WebDriverAgent（WDA，运行在模拟器或真机上的测试组件）
 
 | 名称 | 在本文中的作用 |
 | --- | --- |
-| Appium Server | 接收创建会话、查找元素、点击、输入等请求 |
-| XCUITest Driver | 将 Appium 请求转换成 iOS 平台上的自动化操作 |
-| WebDriverAgent | 配合 XCUITest 在设备上完成操作 |
+| Appium Server | 命令行服务，接收创建会话、查找元素、点击、输入等请求 |
+| XCUITest Driver | 驱动扩展，将 Appium 请求转换成 iOS 平台上的自动化操作 |
+| WebDriverAgent（WDA） | 设备端测试组件，包含 Xcode 工程；运行在模拟器或 iPhone 上，配合 XCUITest 完成操作 |
 | Appium Python Client | 让 Python 代码调用 Appium |
-| Appium Inspector | 查看页面截图、元素树和属性，交互调试定位方式 |
+| Appium Inspector | 本文使用独立图形应用，查看页面截图、元素树和属性，交互调试定位方式 |
 | Session（会话） | 一次客户端与指定设备、App 的自动化连接 |
 | Capabilities（会话配置） | 创建会话时指定平台、驱动、设备和 App 等参数 |
 | `unittest` | Python 自带测试框架，负责运行用例、断言和报告通过或失败 |
 
-Appium Server、Driver、Inspector 和 Python Client 分别安装。本文会给控件添加测试标识，方便稳定定位。
+Appium Server、Driver、Inspector 和 Python Client 分别安装，WDA 随 XCUITest Driver 提供。本文安装方式中，只有 Inspector 会出现在 macOS 的“应用程序”中；Server、Driver 和 WDA 不是独立的 macOS 图形应用。
 
-来源：[Appium 工作原理](https://appium.io/docs/en/latest/intro/appium/)。
+日常测试先在终端启动 Server，再通过 Inspector 或 Python 创建会话。XCUITest Driver 和 WDA 由 Appium 调用，无需单独手动启动；首次真机签名配置见第 8 节。
+
+来源：[Appium 工作原理](https://appium.io/docs/en/latest/intro/appium/)、[XCUITest Driver 与 WDA](https://appium.github.io/appium-xcuitest-driver/latest/overview/)。
 
 ## 2. 安装 Appium 和 iOS 驱动
 
-以下命令在任意目录执行：
+Appium 3 要求兼容的 Node.js 和 npm `>=10`。如果当前 `node --version` 与 `npm --version` 已满足 [官方要求](https://appium.io/docs/en/latest/quickstart/requirements/)，可直接继续安装 Appium。否则，以下命令将官方 Node.js `24.21.0` LTS 安装到用户目录，自动区分 Apple Silicon 与 Intel Mac，并校验下载文件的 SHA-256：
 
 ```bash
-npm install -g appium@3
+bash <<'SH'
+set -euo pipefail
+node_version=24.21.0
+case "$(uname -m)" in
+  arm64) node_arch=arm64 ;;
+  x86_64) node_arch=x64 ;;
+  *) echo "不支持当前 Mac 架构" >&2; exit 1 ;;
+esac
+node_name="node-v${node_version}-darwin-${node_arch}"
+node_parent="$HOME/.local/share/nodejs"
+node_bin="$HOME/.local/bin"
+node_target="$node_parent/$node_name"
+
+for node_path in "$node_target" "$node_bin/node" "$node_bin/npm" "$node_bin/npx"; do
+  if [ -e "$node_path" ] || [ -L "$node_path" ]; then
+    echo "已有文件或链接，请先检查现有安装：$node_path" >&2
+    exit 1
+  fi
+done
+
+node_tmp=$(mktemp -d)
+trap 'rm -rf "$node_tmp"' EXIT
+cd "$node_tmp"
+curl --fail --location "https://nodejs.org/dist/v${node_version}/${node_name}.tar.gz" -o "$node_name.tar.gz"
+curl --fail --location "https://nodejs.org/dist/v${node_version}/SHASUMS256.txt" -o SHASUMS256.txt
+awk -v file="$node_name.tar.gz" '$2 == file {print; found=1} END {if (!found) exit 1}' SHASUMS256.txt > node.sha256
+shasum -a 256 -c node.sha256
+tar -xzf "$node_name.tar.gz"
+mkdir -p "$node_parent" "$node_bin"
+mv "$node_name" "$node_target"
+for node_command in node npm npx; do
+  ln -s "$node_target/bin/$node_command" "$node_bin/$node_command"
+done
+SH
+```
+
+校验应输出对应归档的 `OK`；已有目标目录或同名链接时，脚本会停止，不覆盖原有安装。安装完成后，在当前终端执行：
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+command -v node
+node --version
+npm --version
+```
+
+确认 Node 显示 `v24.21.0`、npm 主版本不低于 `10`。为让新终端也生效，在 `~/.zprofile` 中添加一行 `export PATH="$HOME/.local/bin:$PATH"`；如果 `~/.zshrc` 也调整 PATH，确保它不会把其他 Node 目录排到 `$HOME/.local/bin` 前面。重新打开终端后再检查版本。
+
+然后安装 Server 和驱动。`--prefix` 仅为这次 npm 安装指定用户目录，不修改 npm 的全局 prefix 配置：
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+npm install -g --prefix "$HOME/.local" appium@3
 appium --version
 appium driver install xcuitest
 appium driver list --installed
@@ -47,17 +100,21 @@ appium driver doctor xcuitest
 
 **成功标志：**Appium 显示 `3.x.x`；驱动列表包含 `xcuitest`；Doctor 的必要依赖检查通过。
 
-来源：[安装 Appium](https://appium.io/docs/en/latest/quickstart/install/)、[XCUITest Driver 安装与检查](https://appium.github.io/appium-xcuitest-driver/latest/getting-started/system-requirements/)。
+Doctor 会区分必要依赖与可选功能。本文的原生页面入门流程不要求将 `ffmpeg`、`applesimutils` 或 Remote XPC 相关工具全部安装；按实际使用的录像、设备交互等功能补充即可。
+
+来源：[Appium 系统要求](https://appium.io/docs/en/latest/quickstart/requirements/)、[安装 Appium](https://appium.io/docs/en/latest/quickstart/install/)、[Node.js 官方下载](https://nodejs.org/en/download)、[XCUITest Driver 安装与兼容检查](https://appium.github.io/appium-xcuitest-driver/latest/getting-started/system-requirements/)。
 
 ## 3. 创建教程目录和 Python 环境
 
-本教程将文件放在 `~/Documents/AppiumStarter`。
+Appium Python Client 6.x 要求 Python `>=3.10`。本教程使用 [Homebrew](https://brew.sh/) 的 Python 3.13，文件放在 `~/Documents/AppiumStarter`：
 
 ```bash
+brew install python@3.13
 mkdir -p "$HOME/Documents/AppiumStarter"
 cd "$HOME/Documents/AppiumStarter"
-python3 -m venv .venv
+"$(brew --prefix python@3.13)/bin/python3.13" -m venv .venv
 source .venv/bin/activate
+python --version
 python -m pip install --upgrade pip
 python -m pip install "Appium-Python-Client==6.0.4"
 python -m pip check
@@ -66,7 +123,7 @@ python -m pip show Appium-Python-Client selenium
 
 Python Client 会安装它声明需要的 Selenium 依赖。
 
-**成功标志：**`pip check` 没有报告依赖冲突；`pip show` 显示两个包的版本及位于 `.venv` 内的安装位置。
+**成功标志：**`python --version` 显示 `3.13.x`；`pip check` 没有报告依赖冲突；`pip show` 显示两个包的版本及位于 `.venv` 内的安装位置。
 
 以后每次新开终端执行 Python 示例，先运行：
 
@@ -77,7 +134,7 @@ source .venv/bin/activate
 
 后文区分两个终端：**终端 A 持续运行 Appium Server；终端 B 执行构建、配置生成和 Python 测试。** 环境变量只在设置它的终端及子进程中生效。
 
-来源：[Appium Python Client 安装与兼容矩阵](https://github.com/appium/python-client)、[Python 虚拟环境](https://docs.python.org/3/library/venv.html)。
+来源：[Appium Python Client 安装与兼容矩阵](https://github.com/appium/python-client)、[Homebrew Python 3.13](https://formulae.brew.sh/formula/python@3.13)、[Python 虚拟环境](https://docs.python.org/3/library/venv.html)。
 
 ## 4. 创建一个可被测试的 iOS App
 
@@ -144,7 +201,7 @@ source .venv/bin/activate
 xcrun simctl list devices available
 ```
 
-从列表中复制刚才使用的模拟器 UDID，也就是设备名称后括号中的唯一标识。将下面双引号中的说明替换为真实值，然后执行构建：
+从列表中选择一个可用的 iPhone 模拟器，复制其 UDID，也就是设备名称后括号中的唯一标识。将下面双引号中的说明替换为真实值，然后执行构建：
 
 ```bash
 export APPIUM_SIM_UDID="替换为模拟器的UDID"
@@ -190,7 +247,7 @@ appium --address 127.0.0.1 --port 4723 --log "$PWD/artifacts/appium.log"
 在终端 B 检查：
 
 ```bash
-curl --fail http://127.0.0.1:4723/status
+curl --noproxy '*' --fail http://127.0.0.1:4723/status
 ```
 
 **成功标志：**Server 日志显示监听地址及已加载的 XCUITest Driver；状态接口返回 JSON，其中 `value.ready` 为 `true`。这只证明服务可接收请求，设备和 App 的启动会在创建 Session 时验证。
@@ -250,7 +307,7 @@ cat caps.simulator.json
 
 ### 6.1 安装并填写连接信息
 
-从 [Appium Inspector 官方 Releases](https://github.com/appium/appium-inspector/releases)下载适合当前 Mac 架构的 `.dmg`。
+从 [Appium Inspector 官方 Releases](https://github.com/appium/appium-inspector/releases) 下载适合当前 Mac 架构的 `.dmg`。
 
 本文使用独立桌面应用，Server 仍由终端 A 中的命令运行。
 
@@ -303,6 +360,7 @@ from appium import webdriver
 from appium.options.ios import XCUITestOptions
 from appium.webdriver.client_config import AppiumClientConfig
 from appium.webdriver.common.appiumby import AppiumBy
+from selenium.webdriver.common.proxy import Proxy
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -317,6 +375,7 @@ class CounterTests(unittest.TestCase):
         client_config = AppiumClientConfig(
             remote_server_addr="http://127.0.0.1:4723",
             timeout=300,
+            proxy=Proxy({"proxyType": "direct"}),
         )
         self.driver = webdriver.Remote(
             options=options,
@@ -377,6 +436,8 @@ if __name__ == "__main__":
 
 客户端用 `XCUITestOptions` 传递会话配置。`AppiumClientConfig` 的 `timeout=300` 是单次 HTTP 请求的等待上限，为首次 WDA 构建留出时间。`WebDriverWait(..., 15)` 则反复检查页面条件；其等待过程中的每次请求仍受 HTTP 超时约束，因此 15 秒不是整个测试的硬性总时限。
 
+本例的 `proxyType: direct` 仅让 Python 客户端直连本机 Appium，避免终端的 HTTP 代理将 `127.0.0.1` 请求转发后返回 `502 Bad Gateway`，不会修改系统代理。若改用远程 Server，再按该服务器的网络要求配置。[Selenium ClientConfig](https://www.selenium.dev/selenium/docs/api/py/_modules/selenium/webdriver/remote/client_config.html)
+
 等待超时或断言不成立都会让测试失败。这里没有设置隐式等待，避免与显式等待叠加后产生难以预期的等待时间；签名或构建错误仍需按日志修复。
 
 来源：[Appium Python Client](https://github.com/appium/python-client)、[Selenium 等待策略](https://www.selenium.dev/documentation/webdriver/waits/)、[Python unittest 清理机制](https://docs.python.org/3/library/unittest.html#unittest.TestCase.addCleanup)。
@@ -404,7 +465,7 @@ OK
 
 可以再次执行同一条测试命令。测试失败时会输出堆栈，并尽量在 `artifacts/` 下保存截图和元素树；若创建 Session 本身失败，尚无可用设备会话，主要查看 `artifacts/appium.log`。
 
-第一次跑通后，还可以暂时把 Swift 按钮逻辑改成 `count += 2`，按第 5.3 节重新构建。模拟器保持启动，在终端 B 执行以下命令，明确安装这次的新产物后再测试：
+第一次跑通后，还可以暂时把 Swift 按钮逻辑改成 `count += 2`，按第 4.2 节重新构建。模拟器保持启动，在终端 B 执行以下命令，明确安装这次的新产物后再测试：
 
 ```bash
 xcrun simctl install "$APPIUM_SIM_UDID" \
@@ -452,6 +513,7 @@ AppiumStarter/
 2. 在 `Xcode → Window → Devices and Simulators → Devices` 中确认设备连接完成，复制该设备的 Identifier（UDID）。它与前面的模拟器 UDID 不同。
 3. 对 iOS 16 及以上设备，在 `设置 → 隐私与安全性 → 开发者模式` 中启用，按系统要求重启并确认。若入口未出现，先完成 Xcode 与设备配对。
 4. 按 XCUITest Driver 的设备配置要求，在设备 `设置 → 开发者` 中启用 `Enable UI Automation`。
+5. 在 `Xcode → Settings → Apple Accounts` 中添加账号；选择业务 App 的 Target → Signing & Capabilities，启用 `Automatically manage signing`，选择 Team，并设置该账号可注册的唯一 Bundle Identifier。
 6. 选择已连接的 iPhone 作为运行目标，按 `⌘R`，处理 Xcode 或设备提示的开发者信任要求，直到计数器 App 能在手机上正常运行。随后停止 Xcode 的运行任务。
 
 如果设备提示开发者不受信任，进入 `设置 → 通用 → VPN 与设备管理`，在“开发者 App”中选择对应团队并信任，再重新运行。
@@ -481,7 +543,7 @@ appium driver run xcuitest open-wda
 5. 如果出现签名、描述文件或设备信任错误，在这里处理，直到 WDA 能安装并启动。WDA 作为服务保持运行时，不需要等它像普通单元测试一样自行结束。
 6. 验证后停止 Xcode 中的 WDA 测试任务，让下一步由 Appium 管理启动。
 
-如果 WDA 提示开发者不受信任，按第 9.1 节的设备“VPN 与设备管理”路径，确认 WDA 所用签名团队的信任状态后再重试。
+如果 WDA 提示开发者不受信任，按第 8.1 节的设备“VPN 与设备管理”路径，确认 WDA 所用签名团队的信任状态后再重试。
 
 这些手工修改位于驱动附带的 WDA 工程中，升级 Driver 或 WDA 后可能需要重新设置。记录 Team 和 Bundle ID，并在升级后重新验证。Xcode 为实际 XCTest Runner 包生成 `.xctrunner` 后缀，签名描述文件需要覆盖最终生成的标识。后面的 `APPIUM_WDA_BUNDLE_ID` 填此处 Target 设置的基础 Bundle Identifier，不要自行再追加 `.xctrunner`。
 
@@ -536,6 +598,16 @@ cat caps.device.json
 
 `xcodeOrgId` 与 `xcodeSigningId` 配合设置 WDA 的签名 Team 和证书类型；`updatedWDABundleId` 必须与该 Team 可用的描述文件匹配。本文采用 `Apple Development`，如果团队使用其他有效开发签名身份，应与实际配置保持一致。
 
+也可以在教程目录创建 `wda-signing.xcconfig`，集中保存 Xcode 签名设置：
+
+```text
+DEVELOPMENT_TEAM = 替换为签名使用的TeamID
+CODE_SIGN_STYLE = Automatic
+CODE_SIGN_IDENTITY = Apple Development
+```
+
+此时用 `appium:xcodeConfigFile` 指向该文件的绝对路径，替代 JSON 中的 `appium:xcodeOrgId` 和 `appium:xcodeSigningId`，保留 `appium:updatedWDABundleId`。Xcode 自动管理的描述文件应配合 `Automatic` 签名；描述文件还必须覆盖目标设备、实际 App ID 和所用开发证书。
+
 来源：[XCUITest：App 与 WDA Capabilities](https://appium.github.io/appium-xcuitest-driver/latest/reference/capabilities/)。
 
 ### 8.4 连接和运行
@@ -572,7 +644,7 @@ python -m unittest -v test_counter.py
 xcodebuild -list -workspace "YourApp.xcworkspace"
 ```
 
-只有 `.xcodeproj` 时，使用 `xcodebuild -list -project "YourApp.xcodeproj"`。沿用第 5.3 节的模拟器 destination 和明确的 `-derivedDataPath`，但最终 `.app` 名称以实际 Product Name 为准。
+只有 `.xcodeproj` 时，使用 `xcodebuild -list -project "YourApp.xcodeproj"`。沿用第 4.2 节的模拟器 destination 和明确的 `-derivedDataPath`，但最终 `.app` 名称以实际 Product Name 为准。
 
 ## 10. 常见问题排查
 
@@ -580,8 +652,8 @@ xcodebuild -list -workspace "YourApp.xcworkspace"
 
 | 现象 | 优先检查与处理 |
 | --- | --- |
-| `appium: command not found` | 重新打开终端；检查 Node/npm 安装及 `npm prefix -g` 对应的 `bin` 是否在 PATH 中 |
-| npm 报 `EACCES` | 当前全局安装目录不可写；按下面的用户目录配置处理 |
+| `appium: command not found` | 检查 `$HOME/.local/bin` 是否在 PATH 中；用 `command -v node`、`command -v appium` 确认当前使用的安装 |
+| npm 报 `EACCES` | 检查报错路径与权限；安装 Appium 时显式传入 `--prefix "$HOME/.local"`，按下面说明定位 |
 | Driver 提示 Appium 版本不兼容 | 对照 Server 与 XCUITest Driver 的兼容要求，确认实际安装版本 |
 | Doctor 报 Xcode/SDK 不可用 | 检查 `xcode-select -p`、Xcode 首次启动和 Components 下载状态 |
 | `ECONNREFUSED 127.0.0.1:4723` | Server 未启动或端口不一致；先执行本机 `/status` 检查 |
@@ -598,17 +670,7 @@ xcodebuild -list -workspace "YourApp.xcworkspace"
 
 ### npm 全局安装权限的处理
 
-如果通过 Node 官网安装包安装 Node，且全局安装 Appium 时遇到 `EACCES`，可以按 npm 官方方法将全局包目录改到用户目录。该设置会影响之后这个用户执行的 npm 全局安装：
-
-```bash
-mkdir -p "$HOME/.local"
-npm config set prefix "$HOME/.local"
-export PATH="$HOME/.local/bin:$PATH"
-npm install -g appium@3
-appium --version
-```
-
-为了让新终端也生效，用文本编辑器打开或创建 `~/.zprofile`，添加一行 `export PATH="$HOME/.local/bin:$PATH"`，保存后重新打开终端。已经使用 Node 版本管理器时，沿用其全局包管理方式，避免额外混入另一套 prefix 配置。
+本文使用 `npm install -g --prefix "$HOME/.local" appium@3`，Appium 命令位于 `$HOME/.local/bin`。若仍报 `EACCES`，先检查错误中列出的目录：可能是目标目录不可写，也可能是 npm 缓存存在权限问题。根据具体路径修复权限后重试，无需修改 npm 的全局 prefix 配置。新终端找不到命令时，按第 2 节检查 PATH。
 
 来源：[npm：全局安装权限错误](https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally/)、[XCUITest 故障排查](https://appium.github.io/appium-xcuitest-driver/latest/troubleshooting/)。
 
@@ -634,3 +696,58 @@ appium --version
 | [Appium Inspector](https://appium.github.io/appium-inspector/latest/) | 查看元素、配置会话和交互调试 |
 | [Appium Python Client](https://github.com/appium/python-client) | 客户端安装、API 示例、Python/Selenium 兼容关系 |
 | [Selenium 等待策略](https://www.selenium.dev/documentation/webdriver/waits/) | 编写能等待页面状态变化的测试 |
+
+## 12. 本机已配置的环境
+
+以下为 2026-10-12 在本机实测的版本组合，供复用和排障时核对：
+
+| 组件 | 版本 |
+| --- | --- |
+| Node.js / npm | `24.21.0` / `11.19.0` |
+| Appium Server / XCUITest Driver | `3.8.0` / `12.17.1` |
+| WebDriverAgent / Inspector | `16.14.2` / `2026.9.2` |
+| Python / Appium Python Client / Selenium | `3.13.16` / `6.0.4` / `4.51.0` |
+| Xcode | `27.0`（`27A266a`） |
+
+Server 和 Driver 安装在用户目录的隐藏文件夹 `.local`、`.appium` 中，可在终端打开查看：
+
+```bash
+# Appium Server 安装目录
+open "$HOME/.local/lib/node_modules/appium"
+
+# XCUITest Driver 安装目录
+open "$HOME/.appium/node_modules/appium-xcuitest-driver"
+```
+
+本机 WDA 位于上述 Driver 目录下的 `node_modules/appium-webdriveragent`，其中的 `WebDriverAgent.xcodeproj` 是其 Xcode 工程。需要配置签名时，按第 8.2 节打开工程。
+
+本机已在 `~/Documents/AppiumStarter` 创建示例工程、虚拟环境、测试脚本和两份设备配置。iPhone 18 Pro 模拟器（iOS 27.0）及连接的 iPhone 11（iOS 27.0.1）均连续两次通过计数器 `0 → 1` 测试；Doctor 必要检查通过。`applesimutils` 属于可选依赖，本次未安装。
+
+以后新开终端 A，启动本地服务：
+
+```bash
+cd "$HOME/Documents/AppiumStarter"
+./start-appium.sh
+```
+
+需要查看界面元素时，在“应用程序”中打开 Appium Inspector，或在另一个终端执行：
+
+```bash
+open "/Applications/Appium Inspector.app"
+```
+
+在终端 B 激活环境，按需要执行其中一条测试命令：
+
+```bash
+cd "$HOME/Documents/AppiumStarter"
+source .venv/bin/activate
+
+APPIUM_CAPS_FILE=caps.simulator.json python -m unittest -v test_counter.py
+APPIUM_CAPS_FILE=caps.device.json python -m unittest -v test_counter.py
+```
+
+真机测试前连接并解锁 iPhone。Inspector 已保存 `AppiumDemo - Simulator` 配置，并验证能建立会话和读取计数器元素树；真机可直接复制 `caps.device.json` 创建会话。先结束 Inspector Session，再运行 Python。切换到其他设备或业务 App 时，修改对应配置中的 UDID、应用路径或 Bundle ID。
+
+本机真机配置使用 `wda-signing.xcconfig`，并将 `appium:wdaLocalPort` 设为 `8101`、`appium:derivedDataPath` 指向独立的 `build-wda-device` 目录，避免与模拟器的 WDA 端口、构建产物混用。签名 Team 和设备标识仅保存在本地配置中；更换团队或描述文件过期后需重新检查签名。
+
+实际依赖锁定文件为 `requirements.lock.txt`；版本记录和测试日志在 `artifacts/`。服务不随系统自动启动，使用结束后在终端 A 按 `Ctrl+C` 停止。
