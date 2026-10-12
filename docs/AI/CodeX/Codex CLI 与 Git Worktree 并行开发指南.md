@@ -4,9 +4,9 @@
 
 Git Worktree 可以让同一个 Git 仓库在多个目录中同时检出不同分支。每个目录拥有独立的工作区和暂存区，但共享提交、分支、远端等 Git 数据。
 
-## 2. 首次创建第二个 Worktree
+## 2. 远端已存在需求分支
 
-### 需求 B 的本地分支已经存在
+### 本地需求分支已经存在
 
 为已有的需求 B 分支创建独立目录：
 
@@ -37,21 +37,8 @@ git worktree add "$WORKTREE_B_DIR" "$BRANCH_B"
 新需求通常从团队指定的开发基线创建。以下示例以 `origin/develop` 为基线：
 
 ```bash
-NEW_BRANCH="feature/requirement-c"
-NEW_WORKTREE_DIR="/path/to/project-requirement-c"
-
 git worktree add -b "$NEW_BRANCH" "$NEW_WORKTREE_DIR" origin/develop
 ```
-
-进入新目录，确认分支并创建远端上游：
-
-```bash
-cd "$NEW_WORKTREE_DIR"
-git status --short --branch
-git push -u origin "$NEW_BRANCH"
-```
-
-如果本地需求分支已经存在，不要再次使用 `-b` 创建同名分支。
 
 ## 4. 在两个 Worktree 中分别运行 Codex CLI
 
@@ -237,41 +224,7 @@ git branch -d "$BRANCH_B"
 git push origin --delete "$BRANCH_B"
 ```
 
-## 11. 常见问题
-
-### 提示分支已经被另一个 Worktree 使用
-
-错误示例：
-
-```text
-fatal: 'feature/example' is already used by worktree at '<路径>'
-```
-
-Git 不允许同一个本地分支同时被两个 Worktree 检出。先执行：
-
-```bash
-git worktree list
-```
-
-然后进入已经检出该分支的目录继续工作，或先让原 Worktree 切换到其他分支，再进行后续操作。
-
-### 提示目标目录已经存在
-
-`git worktree add` 的目标路径应不存在或为空。不要覆盖已有项目目录；换一个明确的新目录名，并再次核对路径。
-
-### 新 Worktree 缺少本地配置或依赖
-
-这是正常现象：Git Worktree 不会复制未跟踪或被忽略的文件。按照项目启动文档重新生成依赖和配置；涉及密钥时不要随意复制或提交。
-
-### 删除目录后 `git worktree list` 仍显示旧记录
-
-先确认目录确实不再需要，然后运行：
-
-```bash
-git worktree prune
-```
-
-## 12. 最短操作清单
+## 11. 最短操作清单
 
 首次为已有的需求 B 分支创建 Worktree：
 
