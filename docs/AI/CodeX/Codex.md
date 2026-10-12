@@ -278,8 +278,8 @@ kill 12345
 | `/resume` | 从会话列表恢复历史对话 |
 | `/status` | 查看线程配置、模型、审批策略、可写目录和 token 使用 |
 | `/exit` 或 `/quit` | 退出 CLI |
-| `/fork` | 从当前会话派生新线程 |
 | `/permissions` | 调整 Codex 无需询问即可执行的权限范围 |
+| `/fork` | 从当前会话派生新线程 |
 | `/model` | 选择活动模型和可用 reasoning effort |
 | `/fast` | 在支持的模型上切换 Fast service tier |
 | `/plan` | 切换到计划模式，让 Codex 先做方案设计 |
