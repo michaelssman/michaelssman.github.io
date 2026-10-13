@@ -1,5 +1,7 @@
 # Appium：自动化测试
 
+第 1～11 节是从零搭建与编写计数器测试的通用教程。**本机已有环境时，直接查看第 12 节的实际版本、启动方式和验证结果，无需重新执行安装。**
+
 ## 1. 先认识各个组件
 
 Appium 将平台的 UI 自动化能力通过 WebDriver 协议提供给测试脚本。iOS 的调用关系如下：
@@ -35,7 +37,38 @@ Appium Server、Driver、Inspector 和 Python Client 分别安装，WDA 随 XCUI
 
 ## 2. 安装 Appium 和 iOS 驱动
 
-Appium 3 要求兼容的 Node.js 和 npm `>=10`。如果当前 `node --version` 与 `npm --version` 已满足 [官方要求](https://appium.io/docs/en/latest/quickstart/requirements/)，可直接继续安装 Appium。否则，以下命令将官方 Node.js `24.21.0` LTS 安装到用户目录，自动区分 Apple Silicon 与 Intel Mac，并校验下载文件的 SHA-256：
+本节命令都在 Mac 终端执行。先核对已有工具，只安装缺少或不兼容的部分。
+
+### 2.1 准备 Xcode 和目标设备支持
+
+1. 安装支持目标 iOS 版本的完整 Xcode，首次打开并完成其要求的协议确认和组件安装。仅安装 Command Line Tools 不够；`xcodebuild`、`simctl` 等工具需要完整 Xcode。
+2. 在 `Xcode → Settings → Locations → Command Line Tools` 中选择实际使用的 Xcode。
+3. 按目标平台安装需要的组件。运行模拟器时，在 Xcode 的 `Settings → Components` 中安装相应 iOS Simulator Runtime；真机测试不要求额外下载模拟器 Runtime，但必须完成 Xcode 的设备支持准备。
+4. 在终端核对：
+
+```bash
+xcode-select -p
+xcodebuild -version
+xcrun --sdk iphoneos --show-sdk-version
+```
+
+**成功标志：**开发工具路径指向完整 Xcode 内的 `Contents/Developer`，而非 `/Library/Developer/CommandLineTools`；版本和 iPhoneOS SDK 查询成功。设备系统、Xcode、macOS 和驱动需要相互兼容，按 [XCUITest 官方兼容矩阵](https://appium.github.io/appium-xcuitest-driver/latest/getting-started/system-requirements/) 核对，不能只比较 Appium 版本。
+
+例如，XCUITest Driver `11.1.2～12.12.4` 对应的 WDA 范围支持 Xcode `16.0～27.x`；iOS 27 要求 Driver `>=11.1.2`、WDA `>=14.1.1`。已满足兼容要求的环境可继续使用，不必为了教程重新安装或升级。真机的配对、开发者模式及签名在第 8 节配置。
+
+来源：[Apple：命令行工具选择](https://developer.apple.com/documentation/xcode/configuring-command-line-tools-settings)、[Xcode 专用命令行工具](https://developer.apple.com/documentation/xcode/xcode-command-line-tool-reference)、[安装 Xcode 组件](https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components)。
+
+### 2.2 检查或安装 Node.js
+
+Appium 3 的 Node.js 要求为 `^20.19.0 || ^22.12.0 || >=24.0.0`，npm 要求为 `>=10`；官方推荐 LTS（长期支持）版本。先执行：
+
+```bash
+command -v node
+node --version
+npm --version
+```
+
+已有 Homebrew、版本管理器或其他方式安装的 Node，只要满足上述要求就直接复用，不覆盖现有安装或调整其 PATH。仅在缺少兼容 Node 时，使用下面的独立安装方案：将官方 Node.js `24.21.0` LTS 安装到用户目录，自动区分 Apple Silicon 与 Intel Mac，并校验下载文件的 SHA-256。
 
 ```bash
 bash <<'SH'
@@ -83,30 +116,42 @@ node --version
 npm --version
 ```
 
-确认 Node 显示 `v24.21.0`、npm 主版本不低于 `10`。为让新终端也生效，在 `~/.zprofile` 中添加一行 `export PATH="$HOME/.local/bin:$PATH"`；如果 `~/.zshrc` 也调整 PATH，确保它不会把其他 Node 目录排到 `$HOME/.local/bin` 前面。重新打开终端后再检查版本。
+采用上述独立安装方案时，Node 应显示 `v24.21.0`、npm 主版本不低于 `10`。为让新终端也生效，在 `~/.zprofile` 中添加一行 `export PATH="$HOME/.local/bin:$PATH"`，并核对 `~/.zshrc` 是否再次调整 PATH。复用已有 Node 的用户保留原有 Node 路径；重新打开终端后用 `command -v node` 和版本命令确认实际生效的安装。
 
-然后安装 Server 和驱动。`--prefix` 仅为这次 npm 安装指定用户目录，不修改 npm 的全局 prefix 配置：
+### 2.3 安装缺少的 Server 和驱动
+
+如果已有 `appium` 命令，先执行 `appium --version` 和 `appium driver list --installed`。Appium 3 与 XCUITest Driver 10 及以上配套；已有兼容版本时直接运行下方检查命令，不重复安装。新环境按顺序执行：
 
 ```bash
+# 仅在尚未安装 Server 时执行；安装在用户目录，不修改 npm 全局 prefix。
 export PATH="$HOME/.local/bin:$PATH"
 npm install -g --prefix "$HOME/.local" appium@3
-appium --version
+
+# 仅在尚未安装 XCUITest Driver 时执行。
 appium driver install xcuitest
+```
+
+如果 Server 安装在 `~/.local`，也要在 `~/.zprofile` 中保留一行 `export PATH="$HOME/.local/bin:$PATH"`，确保新终端能找到 Appium；已有这行时不要重复添加。重新打开终端后执行 `command -v node` 和 `command -v appium`，确认仍使用预期的 Node，且 Appium 入口可用。复用已有其他路径的 Server 时无需添加此设置。
+
+随后检查：
+
+```bash
+appium --version
 appium driver list --installed
 appium driver doctor xcuitest
 ```
 
-各条命令依次完成：安装 3.x Server、查看版本、安装 iOS 驱动、查看已安装驱动、检查 iOS 自动化依赖。
+Server 的 npm 安装目录与驱动目录不同；驱动默认安装在 `~/.appium`，若设置过 `APPIUM_HOME`，则以该目录为准。启动 Server 和安装驱动时应使用同一环境。[Appium 环境变量](https://appium.io/docs/en/latest/reference/cli/env-vars/)
 
 **成功标志：**Appium 显示 `3.x.x`；驱动列表包含 `xcuitest`；Doctor 的必要依赖检查通过。
 
-Doctor 会区分必要依赖与可选功能。本文的原生页面入门流程不要求将 `ffmpeg`、`applesimutils` 或 Remote XPC 相关工具全部安装；按实际使用的录像、设备交互等功能补充即可。
+Doctor 会区分必要依赖与可选功能。本文让 Appium 通过 Xcode 构建并启动 WDA，原生页面入门不要求额外安装 `ffmpeg`、`go-ios`、`applesimutils` 或 Remote XPC 工具；按实际使用的录像、设备交互及 WDA 启动方式补充。Doctor 通过不代表真机签名或会话已经通过，仍需完成第 8 节的连接验证。
 
 来源：[Appium 系统要求](https://appium.io/docs/en/latest/quickstart/requirements/)、[安装 Appium](https://appium.io/docs/en/latest/quickstart/install/)、[Node.js 官方下载](https://nodejs.org/en/download)、[XCUITest Driver 安装与兼容检查](https://appium.github.io/appium-xcuitest-driver/latest/getting-started/system-requirements/)。
 
 ## 3. 创建教程目录和 Python 环境
 
-Appium Python Client 6.x 要求 Python `>=3.10`。本教程使用 [Homebrew](https://brew.sh/) 的 Python 3.13，文件放在 `~/Documents/AppiumStarter`：
+Appium Python Client 6.x 要求 Python `>=3.10`、Selenium `>=4.37.0`。可以复用满足要求的 Python；下面以 [Homebrew](https://brew.sh/) 的 Python 3.13 为例，文件放在 `~/Documents/AppiumStarter`。未安装 Homebrew 时先按其官网完成安装；已有 Python 3.13 时跳过 `brew install`。若该目录已有虚拟环境，先激活并检查版本，不覆盖重建。
 
 ```bash
 brew install python@3.13
@@ -116,12 +161,12 @@ cd "$HOME/Documents/AppiumStarter"
 source .venv/bin/activate
 python --version
 python -m pip install --upgrade pip
-python -m pip install "Appium-Python-Client==6.0.4"
+python -m pip install "Appium-Python-Client==6.0.6"
 python -m pip check
 python -m pip show Appium-Python-Client selenium
 ```
 
-Python Client 会安装它声明需要的 Selenium 依赖。
+Python Client 会安装它声明需要的 Selenium 依赖。这里固定客户端版本作为新环境示例；已有兼容环境可保留，通过检查后按第 7.3 节记录实际依赖。
 
 **成功标志：**`python --version` 显示 `3.13.x`；`pip check` 没有报告依赖冲突；`pip show` 显示两个包的版本及位于 `.venv` 内的安装位置。
 
@@ -134,7 +179,7 @@ source .venv/bin/activate
 
 后文区分两个终端：**终端 A 持续运行 Appium Server；终端 B 执行构建、配置生成和 Python 测试。** 环境变量只在设置它的终端及子进程中生效。
 
-来源：[Appium Python Client 安装与兼容矩阵](https://github.com/appium/python-client)、[Homebrew Python 3.13](https://formulae.brew.sh/formula/python@3.13)、[Python 虚拟环境](https://docs.python.org/3/library/venv.html)。
+来源：[Appium Python Client 安装与兼容矩阵](https://github.com/appium/python-client)、[客户端 6.0.6](https://pypi.org/project/Appium-Python-Client/6.0.6/)、[Homebrew Python 3.13](https://formulae.brew.sh/formula/python@3.13)、[Python 虚拟环境](https://docs.python.org/3/library/venv.html)。
 
 ## 4. 创建一个可被测试的 iOS App
 
@@ -307,9 +352,9 @@ cat caps.simulator.json
 
 ### 6.1 安装并填写连接信息
 
-从 [Appium Inspector 官方 Releases](https://github.com/appium/appium-inspector/releases) 下载适合当前 Mac 架构的 `.dmg`。
+从 [Appium Inspector 官方 Releases](https://github.com/appium/appium-inspector/releases) 下载桌面安装包。当前 `2026.9.2` 版本要求 macOS 13 或以上：Apple Silicon（M 系列芯片）选择 `arm64` 的 `.dmg`，Intel Mac 选择 `x64` 的 `.dmg`。可在“关于本机”中核对芯片。
 
-本文使用独立桌面应用，Server 仍由终端 A 中的命令运行。
+打开 `.dmg`，将 Appium Inspector 拖到“应用程序”，然后打开。首次被 macOS 阻止时，按官方安装说明进入 `系统设置 → 隐私与安全性 → 安全性`，针对刚下载的 Inspector 选择“仍要打开”，按提示确认；旧版 macOS 也可在 Finder 中按住 Control 点击应用后选择“打开”。本文使用独立桌面应用，Server 仍由终端 A 中的命令运行。
 
 在新建 Session 页面选择本地 Appium Server，填写：
 
@@ -325,7 +370,7 @@ cat caps.simulator.json
 
 **成功标志：**Inspector 出现 App 截图和元素树，画面中可以看到计数器。
 
-来源：[Inspector 安装](https://appium.github.io/appium-inspector/latest/quickstart/installation/)、[Inspector 创建 Session](https://appium.github.io/appium-inspector/latest/quickstart/starting-a-session/)。
+来源：[Inspector 系统要求](https://appium.github.io/appium-inspector/latest/quickstart/requirements/)、[Inspector 安装](https://appium.github.io/appium-inspector/latest/quickstart/installation/)、[Inspector 创建 Session](https://appium.github.io/appium-inspector/latest/quickstart/starting-a-session/)。
 
 ### 6.2 检查元素并尝试点击
 
@@ -484,7 +529,7 @@ python -m pip freeze > requirements.lock.txt
 node --version > artifacts/node-version.txt
 npm --version > artifacts/npm-version.txt
 appium --version > artifacts/appium-version.txt
-appium driver list --installed > artifacts/drivers.txt
+appium driver list --installed --json > artifacts/drivers.json
 xcodebuild -version > artifacts/xcode-version.txt
 ```
 
@@ -520,7 +565,7 @@ AppiumStarter/
 
 **成功标志：**你已经能够用 Xcode 在这台手机上安装并运行 App。记录 Target 中的实际 Bundle Identifier，下一步会使用。
 
-来源：[XCUITest 真机配置](https://appium.github.io/appium-xcuitest-driver/latest/getting-started/device-setup/)、[Apple：在设备上运行 App](https://developer.apple.com/documentation/xcode/building-and-running-an-app)、[Apple：开发者模式](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device)。
+来源：[XCUITest 真机配置](https://appium.github.io/appium-xcuitest-driver/latest/getting-started/device-setup/)、[Apple：在设备上运行 App](https://developer.apple.com/documentation/xcode/running-your-app-on-simulated-or-physical-devices)、[Apple：开发者模式](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device)。
 
 ### 8.2 配置 WDA 签名
 
@@ -594,7 +639,7 @@ PY
 cat caps.device.json
 ```
 
-这里没有 `appium:app`，因此 Appium 不负责安装业务 App；它按 `appium:bundleId` 启动已经安装的真机版本。以后修改业务 App 后，先用 Xcode 重新部署，再执行测试。
+这里没有 `appium:app`，因此 Appium 不负责安装业务 App；它按 `appium:bundleId` 启动已经安装的真机版本。以后修改业务 App 后，先用 Xcode 重新部署，再执行测试。已指定真实 UDID 时可以省略 `appium:platformVersion`；若显式填写，必须与设备实际系统版本一致，设备升级后及时更新。
 
 `xcodeOrgId` 与 `xcodeSigningId` 配合设置 WDA 的签名 Team 和证书类型；`updatedWDABundleId` 必须与该 Team 可用的描述文件匹配。本文采用 `Apple Development`，如果团队使用其他有效开发签名身份，应与实际配置保持一致。
 
@@ -656,6 +701,7 @@ xcodebuild -list -workspace "YourApp.xcworkspace"
 | npm 报 `EACCES` | 检查报错路径与权限；安装 Appium 时显式传入 `--prefix "$HOME/.local"`，按下面说明定位 |
 | Driver 提示 Appium 版本不兼容 | 对照 Server 与 XCUITest Driver 的兼容要求，确认实际安装版本 |
 | Doctor 报 Xcode/SDK 不可用 | 检查 `xcode-select -p`、Xcode 首次启动和 Components 下载状态 |
+| Inspector 首次打不开 | 确认安装包来自官方 Releases、架构正确，按第 6.1 节处理 macOS 的首次打开提示 |
 | `ECONNREFUSED 127.0.0.1:4723` | Server 未启动或端口不一致；先执行本机 `/status` 检查 |
 | HTTP 404 / 找不到路由 | 检查 Inspector Remote Path 为 `/`，Python URL 与 Server 的 base path 一致 |
 | 找不到 `.app` 或安装失败 | 使用 Server 机器上的绝对路径；确认构建成功、包的平台和目标设备一致 |
@@ -679,6 +725,7 @@ xcodebuild -list -workspace "YourApp.xcworkspace"
 完成入门后，应能独立确认以下结果：
 
 - [ ] Appium Server、XCUITest Driver 已安装，并记录实际版本。
+- [ ] 完整 Xcode 已完成首次准备，命令行工具选择与目标 iOS 的兼容关系已核对。
 - [ ] Doctor 必要依赖检查通过，`/status` 可访问。
 - [ ] Simulator 专用 `.app` 构建成功，配置绑定了指定模拟器。
 - [ ] Inspector 能看到 App，并通过 accessibility id 定位控件。
@@ -697,57 +744,103 @@ xcodebuild -list -workspace "YourApp.xcworkspace"
 | [Appium Python Client](https://github.com/appium/python-client) | 客户端安装、API 示例、Python/Selenium 兼容关系 |
 | [Selenium 等待策略](https://www.selenium.dev/documentation/webdriver/waits/) | 编写能等待页面状态变化的测试 |
 
-## 12. 本机已配置的环境
+## 12. 本机已配置的真机环境
 
-以下为 2026-10-12 在本机实测的版本组合，供复用和排障时核对：
+以下是 **2026-10-13** 在本机重新核验的环境。现有兼容组件直接复用，今天使用 USB 连接的 iPhone 11（iOS `27.0.1`）进行真机自动化。
 
-| 组件 | 版本 |
+| 组件 | 实际版本 |
 | --- | --- |
-| Node.js / npm | `24.21.0` / `11.19.0` |
-| Appium Server / XCUITest Driver | `3.8.0` / `12.17.1` |
-| WebDriverAgent / Inspector | `16.14.2` / `2026.9.2` |
-| Python / Appium Python Client / Selenium | `3.13.16` / `6.0.4` / `4.51.0` |
+| Node.js / npm | `26.7.0` / `12.0.2` |
+| Appium Server / XCUITest Driver / WebDriverAgent | `3.7.0` / `12.12.3` / `16.12.8` |
+| Python / Appium Python Client / Selenium | `3.13.5` / `6.0.6` / `4.49.0` |
 | Xcode | `27.0`（`27A266a`） |
+| iPhone / iOS | iPhone 11 / `27.0.1` |
+| Appium Inspector | `2026.9.2`，Apple Silicon 桌面版 |
 
-Server 和 Driver 安装在用户目录的隐藏文件夹 `.local`、`.appium` 中，可在终端打开查看：
+本机使用 Homebrew 路径中的 Node 和 Appium；不要为了与第 2 节的新环境示例一致而重复安装。可以这样核对实际入口：
 
 ```bash
-# Appium Server 安装目录
-open "$HOME/.local/lib/node_modules/appium"
-
-# XCUITest Driver 安装目录
-open "$HOME/.appium/node_modules/appium-xcuitest-driver"
+command -v node
+command -v appium
+npm root -g
+appium driver list --installed
 ```
 
-本机 WDA 位于上述 Driver 目录下的 `node_modules/appium-webdriveragent`，其中的 `WebDriverAgent.xcodeproj` 是其 Xcode 工程。需要配置签名时，按第 8.2 节打开工程。
+本次入口为 `/opt/homebrew/bin/node`、`/opt/homebrew/bin/appium`，Server 包位于 `/opt/homebrew/lib/node_modules/appium`，驱动位于 `~/.appium/node_modules/appium-xcuitest-driver`。需要打开 WDA 工程时使用 `appium driver run xcuitest open-wda`。
 
-本机已在 `~/Documents/AppiumStarter` 创建示例工程、虚拟环境、测试脚本和两份设备配置。iPhone 18 Pro 模拟器（iOS 27.0）及连接的 iPhone 11（iOS 27.0.1）均连续两次通过计数器 `0 → 1` 测试；Doctor 必要检查通过。`applesimutils` 属于可选依赖，本次未安装。
+### 12.1 每次运行真机检查
 
-以后新开终端 A，启动本地服务：
+1. 用 USB 连接并解锁 iPhone，保持开发者模式开启。首次连接按第 8 节处理信任和签名。
+2. 在终端 A 启动服务；已运行时复用现有服务，不要重复启动：
 
 ```bash
 cd "$HOME/Documents/AppiumStarter"
-./start-appium.sh
+./start_appium.command
 ```
 
-需要查看界面元素时，在“应用程序”中打开 Appium Inspector，或在另一个终端执行：
+3. 在终端 B 执行：
+
+```bash
+cd "$HOME/Documents/AppiumStarter"
+curl --noproxy '*' --fail http://127.0.0.1:4723/status
+.venv/bin/python -B smoke_test.py --caps ios_real_device.json
+```
+
+**成功标志：**手机打开系统“设置”，脚本输出 `验证通过：应用已在前台，窗口尺寸 375 × 812。`，随后输出会话已关闭，退出码为 `0`。
+
+也可以在 Finder 打开教程目录，双击 `start_appium.command` 和 `run_real_device_check.command`，按同样顺序运行。脚本直接使用 `.venv`，无须手动激活环境。
+
+```bash
+open "$HOME/Documents/AppiumStarter"
+```
+
+服务仅监听 `127.0.0.1:4723`，不会随系统自动启动。使用结束后，在终端 A 按 `Control + C` 停止。
+
+### 12.2 使用桌面 Inspector
+
+打开应用：
 
 ```bash
 open "/Applications/Appium Inspector.app"
 ```
 
-在终端 B 激活环境，按需要执行其中一条测试命令：
+本机已保存配置 **`iPhone 11 - 真机设置`**。在 `Saved Capability Sets` 中选择它，确认 Host `127.0.0.1`、Port `4723`、Path `/`、SSL 关闭，再点击 `Start Session`。已实际验证桌面版可以显示 iPhone 的“设置”截图和元素树。
 
-```bash
-cd "$HOME/Documents/AppiumStarter"
-source .venv/bin/activate
+重新创建配置时，将 `~/Documents/AppiumStarter/ios_real_device.json` 的完整内容粘贴到 JSON 编辑区，保存 JSON，再使用 `Save As…` 保存为便于识别的名称。
 
-APPIUM_CAPS_FILE=caps.simulator.json python -m unittest -v test_counter.py
-APPIUM_CAPS_FILE=caps.device.json python -m unittest -v test_counter.py
-```
+同一台 iPhone 一次只由一个客户端操作。结束 Inspector Session 后再运行 Python，避免与现有会话竞争设备。
 
-真机测试前连接并解锁 iPhone。Inspector 已保存 `AppiumDemo - Simulator` 配置，并验证能建立会话和读取计数器元素树；真机可直接复制 `caps.device.json` 创建会话。先结束 Inspector Session，再运行 Python。切换到其他设备或业务 App 时，修改对应配置中的 UDID、应用路径或 Bundle ID。
+### 12.3 切换到业务 App
 
-本机真机配置使用 `wda-signing.xcconfig`，并将 `appium:wdaLocalPort` 设为 `8101`、`appium:derivedDataPath` 指向独立的 `build-wda-device` 目录，避免与模拟器的 WDA 端口、构建产物混用。签名 Team 和设备标识仅保存在本地配置中；更换团队或描述文件过期后需重新检查签名。
+当前 `ios_real_device.json` 使用 `appium:bundleId: com.apple.Preferences`，只用于检查自动化连接。先通过 Xcode 在这台 iPhone 上安装业务 App，再把这个字段改成业务 App 的真实 Bundle Identifier；应用显示名称不能代替 Bundle ID。Inspector 中保存的配置是独立副本，修改本地 JSON 后，还要在 Inspector 中同步修改对应字段，或导入新配置并另存为业务 App 的名称。
 
-实际依赖锁定文件为 `requirements.lock.txt`；版本记录和测试日志在 `artifacts/`。服务不随系统自动启动，使用结束后在终端 A 按 `Ctrl+C` 停止。
+本机已经复用现有 Team、开发签名和描述文件验证 WDA；设备标识和签名配置保留在本机 JSON 和 Inspector 配置中。更换设备、Team 或更新 iOS 后重新核对配置，`appium:platformVersion` 当前为 `27.0.1`。本机真机使用 `wdaLocalPort: 8101`、`mjpegServerPort: 9101` 及独立 `derivedDataPath`，避免与模拟器的 WDA 端口、构建目录混用。
+
+`smoke_test.py` 只检查会话、应用前台状态和窗口尺寸。业务点击、输入及结果断言需要按第 9 节接入实际页面；`noReset: true` 会保留应用数据，测试账号和初始数据需要另行准备。
+
+### 12.4 已验证结果与文件
+
+- Doctor 必要检查通过；`ffmpeg` 和 `applesimutils` 未安装，属于可选功能依赖。
+- 真机已连续两次完成创建会话、打开“设置”、确认前台状态与窗口尺寸、关闭会话。
+- 真机截图与元素树接口验证通过，取得有效 PNG 和包含 140 个元素的 XML；连接检查后已关闭会话。
+- 桌面 Inspector 已安装，安装包通过官方 SHA-256 校验；已保存真机配置、显示设备画面与元素树，并正常结束 Session。
+- 本次使用 USB/Xcodebuild 启动 WDA，没有创建 Remote XPC 隧道；相关崩溃日志等高级功能未验证。
+- 本次没有创建或执行计数器 Demo、业务 App 用例，也没有重新执行模拟器测试。前文的计数器步骤是可继续实践的教程，不代表这些测试已在本机通过。
+
+本地文件：
+
+| 路径（相对 `~/Documents/AppiumStarter`） | 用途 |
+| --- | --- |
+| `start_appium.command` | 启动服务，日志写到 `artifacts/appium.log` |
+| `run_real_device_check.command` | 双击运行真机连接检查 |
+| `smoke_test.py` | Python 连接检查示例 |
+| `ios_real_device.json` | 当前真机、目标 App、WDA 签名配置 |
+| `.venv` / `requirements.txt` | Python 环境及已安装依赖版本 |
+| `ios_simulator.json` / `run_ios_check.command` | 保留的模拟器配置及入口 |
+| `artifacts/environment-20261013.json` | 本次环境版本记录 |
+| `artifacts/real-device-smoke-20261013.log` | 真机检查通过日志 |
+| `artifacts/inspector-api-check-20261013/` | 真机截图、元素树及接口验证记录 |
+| `artifacts/appium-20261013.log` | 本次配置验证的 Server 日志 |
+| `artifacts/setup-backup-*` | 配置修改前的本地备份 |
+
+环境恢复与双击使用说明见本地 `README.md`。设备标识、签名材料、日志和测试截图仅用于本地排障，不应随公开学习文档一起提交。
