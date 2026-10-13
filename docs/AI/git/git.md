@@ -108,8 +108,6 @@ git fetch origin --prune
 - `origin`：远程仓库名称。
 - `--prune`：清理远端已删除分支在本地留下的跟踪记录。
 
-例如，在常规配置下，远端删除了 `feature-login` 后，此命令会清理本地的 `origin/feature-login` 记录，但保留你自己的本地 `feature-login` 分支。
-
 ## pull
 
 拉取/同步远程仓库的代码到本地，更新代码。
@@ -324,13 +322,10 @@ git revert -m 1 abc1234  # 替换为实际的提交哈希
 
 ## cherry-pick
 
-有分支Develop和分支Feature。
-正常的流程是在Feature分支上面进行开发修改，提交代码，然后合到Develop分支。
-但是我不小心在Develop分支上进行了开发修改，提交push到Develop，现在Feature分支上面没有刚才修改的代码。
+正常的流程是在Feature分支上面进行开发，然后合到Develop分支。
+但是我不小心在Develop分支上进行了开发，提交push到Develop，现在Feature分支上面没有刚才修改的代码。
 
-可以用 **cherry-pick**。
-
-做法是：把你误提交到 `Develop` 的那几个 commit，单独拣到 `Feature` 分支上。
+可以用 **cherry-pick**。把你误提交到 `Develop` 的那几个 commit，单独拣到 `Feature` 分支上。
 
 1. 切到 Develop，找到误提交的 commit，记下你刚才提交的 commit hash。
 2. 切到 Feature，把 Develop 上误提交的 commit 拣过来
