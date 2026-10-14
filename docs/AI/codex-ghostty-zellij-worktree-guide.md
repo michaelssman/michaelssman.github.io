@@ -14,8 +14,6 @@
 
 ## 1. 最终采用的工作区结构
 
-Ghostty 只保留少量窗口或标签，用来承载 Zellij；不再为每个任务额外开一个长期占用的 Ghostty 标签。
-
 ```text
 Ghostty：一个主窗口，通常一个标签即可
 └── Zellij 会话管理器：查找、切换任务
@@ -30,13 +28,11 @@ Ghostty：一个主窗口，通常一个标签即可
         └── work：同样的三个面板
 ```
 
-这是本文的组织约定，不是软件自动识别出的项目树。Zellij 的原生层级是 session、tab 和 pane；布局文件可以定义 tab 与 pane。[^z-layout]
+Zellij 的原生层级是 session、tab 和 pane；布局文件可以定义 tab 与 pane。[^z-layout]
 
 ## 2. 安装与环境检查
 
 ### 2.1 最少需要什么
-
-Ghostty 和 Codex CLI 沿用你现在的安装与设置。新增工具只需要 Zellij；Git 和 Homebrew 应已在本机可用。Zellij 官方文档提供 Homebrew 安装方式。[^z-install]
 
 ```bash
 # 先检查现有环境
