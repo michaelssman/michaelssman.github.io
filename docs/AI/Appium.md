@@ -1,6 +1,6 @@
 # Appium：自动化测试
 
-第 1～11 节是从零搭建与编写计数器测试的通用教程。**本机已有环境时，直接查看第 12 节的实际版本、启动方式和验证结果，无需重新执行安装。**
+第 1～11 节是从零搭建与编写计数器测试的通用教程。**本机已有环境时，直接查看第 12 节，无需重新安装；当前业务真机验收的隧道启动、暂停和恢复步骤见第 12.5 节。**
 
 ## 1. 先认识各个组件
 
@@ -31,7 +31,7 @@ WebDriverAgent（WDA，运行在模拟器或真机上的测试组件）
 
 Appium Server、Driver、Inspector 和 Python Client 分别安装，WDA 随 XCUITest Driver 提供。本文安装方式中，只有 Inspector 会出现在 macOS 的“应用程序”中；Server、Driver 和 WDA 不是独立的 macOS 图形应用。
 
-日常测试先在终端启动 Server，再通过 Inspector 或 Python 创建会话。XCUITest Driver 和 WDA 由 Appium 调用，无需单独手动启动；首次真机签名配置见第 8 节。
+日常测试先在终端启动 Server，再通过 Inspector 或 Python 创建会话。默认流程由 Appium 构建并启动 WDA；使用预安装 WDA 时，还需按设备和驱动要求准备 Remote XPC 调试隧道，见第 8.5、12.5 节。首次真机签名配置见第 8 节。
 
 来源：[Appium 工作原理](https://appium.io/docs/en/latest/intro/appium/)、[XCUITest Driver 与 WDA](https://appium.github.io/appium-xcuitest-driver/latest/overview/)。
 
@@ -177,7 +177,7 @@ cd "$HOME/Documents/AppiumStarter"
 source .venv/bin/activate
 ```
 
-后文区分两个终端：**终端 A 持续运行 Appium Server；终端 B 执行构建、配置生成和 Python 测试。** 环境变量只在设置它的终端及子进程中生效。
+后文区分两个终端：**终端 A 持续运行 Appium Server；终端 B 执行构建、配置生成和 Python 测试。** 当前业务真机使用预安装 WDA，另开终端 C 保持调试隧道运行，见第 12.5 节。环境变量只在设置它的终端及子进程中生效。
 
 来源：[Appium Python Client 安装与兼容矩阵](https://github.com/appium/python-client)、[客户端 6.0.6](https://pypi.org/project/Appium-Python-Client/6.0.6/)、[Homebrew Python 3.13](https://formulae.brew.sh/formula/python@3.13)、[Python 虚拟环境](https://docs.python.org/3/library/venv.html)。
 
@@ -671,6 +671,14 @@ python -m unittest -v test_counter.py
 
 设备、Xcode 或驱动版本变化后，应重新验证 Session 能否建立。入门阶段保持一台设备、一套配置、顺序执行，先取得稳定结果。
 
+### 8.5 使用预安装 WDA 时的调试隧道
+
+`appium:usePreinstalledWDA: true` 表示直接启动设备上已安装并签名的 WDA，跳过本次会话的 Xcodebuild 构建启动过程。它与 `usePrebuiltWDA` 不同，不能仅因 WDA 已安装就省略连接准备。
+
+本机业务验收使用 iOS `27.0.1` 和预安装 WDA，需要先建立 Remote XPC 调试隧道；该版本的预安装启动路径不能依靠缺少隧道时的 `devicectl` 回退。默认 Xcodebuild 路径和模拟器不应照搬这项前置。隧道命令、检查方法及停止恢复流程见第 12.5 节。
+
+来源：[预安装 WDA 的真机要求](https://appium.github.io/appium-xcuitest-driver/latest/guides/run-preinstalled-wda/)、[Remote XPC 隧道](https://appium.github.io/appium-xcuitest-driver/latest/guides/remotexpc-tunnels-real-devices/)。
+
 ## 9. 将示例接到自己的 iOS 项目
 
 计数器跑通后，可以按下面的顺序迁移到实际项目：
@@ -709,6 +717,7 @@ xcodebuild -list -workspace "YourApp.xcworkspace"
 | 真机不可用 | 解锁设备，检查 USB、信任、开发者模式及 Xcode 设备准备状态 |
 | WDA 构建失败 / `xcodebuild` 返回 65 | 开启 `appium:showXcodeLog` 并查看第一条具体 Xcode 错误；检查 Team、签名、描述文件、SDK，而不是只看退出码 |
 | WDA 已安装但不能启动 | 检查开发者信任、UI Automation 设置和设备连接；在 Xcode 中直接运行 WDA Test 定位问题 |
+| 预安装 WDA 提示隧道不可用，或找不到设备的 Remote XPC 服务 | 按第 12.5 节启动隧道并查询目标设备条目；只有 4723 的 `/status` 正常，不能证明真机隧道已就绪 |
 | 元素找不到 / 等待超时 | 查看失败截图和 XML，确认当前页面、弹窗、可见状态、标识唯一性以及安装的是否是最新测试包 |
 | 初始计数不是 `0` | 确认配置包含 `forceAppLaunch: true`，Swift 示例使用内存状态，并已结束其他客户端的会话 |
 | `ModuleNotFoundError: appium` | 重新激活 `.venv`，用同一环境中的 `python -m pip show Appium-Python-Client` 检查 |
@@ -746,7 +755,7 @@ xcodebuild -list -workspace "YourApp.xcworkspace"
 
 ## 12. 本机已配置的真机环境
 
-以下是 **2026-10-13** 在本机重新核验的环境。现有兼容组件直接复用，今天使用 USB 连接的 iPhone 11（iOS `27.0.1`）进行真机自动化。
+以下组件版本于 **2026-10-13** 核验；**2026-10-14** 补充当前业务验收的预安装 WDA 流程。现有兼容组件直接复用，目标设备为 USB 连接的 iPhone 11（iOS `27.0.1`）。
 
 | 组件 | 实际版本 |
 | --- | --- |
@@ -768,7 +777,9 @@ appium driver list --installed
 
 本次入口为 `/opt/homebrew/bin/node`、`/opt/homebrew/bin/appium`，Server 包位于 `/opt/homebrew/lib/node_modules/appium`，驱动位于 `~/.appium/node_modules/appium-xcuitest-driver`。需要打开 WDA 工程时使用 `appium driver run xcuitest open-wda`。
 
-### 12.1 每次运行真机检查
+### 12.1 AppiumStarter 真机连接检查（Xcodebuild 路径）
+
+本节的 `ios_real_device.json` 未设置 `usePreinstalledWDA`，使用默认 Xcodebuild 启动。当前业务验收另用预安装 WDA 配置，按第 12.5 节准备隧道，不能只执行本节步骤。
 
 1. 用 USB 连接并解锁 iPhone，保持开发者模式开启。首次连接按第 8 节处理信任和签名。
 2. 在终端 A 启动服务；已运行时复用现有服务，不要重复启动：
@@ -820,12 +831,14 @@ open "/Applications/Appium Inspector.app"
 
 ### 12.4 已验证结果与文件
 
+以下是 AppiumStarter 连接检查的验证范围；当前业务 App 验收使用的连接方式见第 12.5 节。
+
 - Doctor 必要检查通过；`ffmpeg` 和 `applesimutils` 未安装，属于可选功能依赖。
 - 真机已连续两次完成创建会话、打开“设置”、确认前台状态与窗口尺寸、关闭会话。
 - 真机截图与元素树接口验证通过，取得有效 PNG 和包含 140 个元素的 XML；连接检查后已关闭会话。
 - 桌面 Inspector 已安装，安装包通过官方 SHA-256 校验；已保存真机配置、显示设备画面与元素树，并正常结束 Session。
-- 本次使用 USB/Xcodebuild 启动 WDA，没有创建 Remote XPC 隧道；相关崩溃日志等高级功能未验证。
-- 本次没有创建或执行计数器 Demo、业务 App 用例，也没有重新执行模拟器测试。前文的计数器步骤是可继续实践的教程，不代表这些测试已在本机通过。
+- AppiumStarter 连接检查采用 USB/Xcodebuild 启动 WDA；Remote XPC 的崩溃日志等高级功能未验证。
+- 连接检查脚本不包含计数器 Demo、业务用例或模拟器测试，不能用连接检查通过代替这些验收结果。
 
 本地文件：
 
@@ -844,3 +857,34 @@ open "/Applications/Appium Inspector.app"
 | `artifacts/setup-backup-*` | 配置修改前的本地备份 |
 
 环境恢复与双击使用说明见本地 `README.md`。设备标识、签名材料、日志和测试截图仅用于本地排障，不应随公开学习文档一起提交。
+
+### 12.5 当前业务真机验收：隧道、暂停与恢复
+
+本机业务会话使用 `appium:usePreinstalledWDA: true`。手机上已准备好签名 WDA 时，按以下顺序恢复验收；WDA 被卸载或签名失效时，先重新准备 WDA。`ios_real_device.json` 是第 12.1 节的连接检查配置，不会因启动隧道而自动变成业务配置。
+
+1. 用数据线连接并解锁 iPhone，确认 Xcode 能识别设备。
+2. 在终端 A 启动或复用 Appium Server，命令见第 12.1 节；Server 使用普通用户运行。
+3. 新开终端 C，执行调试隧道命令，并保持该终端运行：
+
+```bash
+sudo appium driver run xcuitest tunnel-creation
+```
+
+这条命令为 Mac 与真机建立 Remote XPC 调试通道。`sudo` 用于创建和配置系统网络隧道接口，密码仅在本机终端输入。
+
+4. 在终端 B 检查两个服务。隧道注册服务默认端口为 `42314`；如果启动日志显示其他端口，替换下方端口：
+
+```bash
+curl --noproxy '*' --fail http://127.0.0.1:4723/status
+curl --noproxy '*' --fail http://127.0.0.1:42314/remotexpc/tunnels
+```
+
+**成功标志：**Appium 状态接口正常；隧道列表含目标 iPhone 的 UDID、隧道地址及服务信息。空列表只表示注册服务在运行，不代表设备就绪。然后使用已配置好的业务 Capabilities 创建新会话，核对 App 截图和元素树；不要复用拔线前的旧 Session ID。
+
+5. 需要抓包时打开 Reqable，并按其当前显示的 IP 和端口核对手机 Wi-Fi 手动代理；切换网络后地址可能变化。抓包不是 Appium 点击、输入的必要条件。
+
+**午休或下班暂停：**先结束当前测试和会话，确认无待保存表单；在终端 C 按 `Control + C` 停止隧道，然后可关闭终端、拔下手机。不再使用 Server 时也可在终端 A 按 `Control + C`。停止 Reqable 后，如果手机继续使用该 Wi-Fi，应关闭手动代理，避免手机仍向已停止的代理发送请求。
+
+**下午或重启后恢复：**重新连接并解锁手机，重复以上步骤。已停止的服务需要重启；仍运行的服务先检查再复用，不重复启动。拔线后即使隧道终端还开着，也要重新核对注册列表；连接失效时停止旧隧道并重建。
+
+来源：[官方 tunnel-creation 命令及管理员权限说明](https://appium.github.io/appium-xcuitest-driver/latest/reference/scripts/#tunnel-creation)、[隧道检查与运行顺序](https://appium.github.io/appium-xcuitest-driver/latest/guides/remotexpc-tunnels-real-devices/)。

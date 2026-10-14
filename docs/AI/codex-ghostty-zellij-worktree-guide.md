@@ -1,783 +1,528 @@
 # Codex CLI + Ghostty + Zellij + Git worktree 开发环境配置手册
 
----
+| **层级**        | **对应内容**       | **示例**                           |
+| --------------- | ------------------ | ---------------------------------- |
+| Session（会话） | 一个项目           | iOS 客户端、Java 后端、Flutter App |
+| Tab（标签）     | 一个需求或worktree | 登录改造、支付功能、问题修复       |
+| Pane（面板）    | 该需求使用的程序   | Codex、Git/Shell、Tests/Logs       |
 
-## 阅读路线
+## 1. 本机快速开始
 
-需要先明确三件事：
+### 1.1 打开项目会话
 
-- 本文基础配置提供任务会话、分屏和会话管理器，**不提供常驻左侧的项目树**。
-- 重新连接仍在运行的 session，与电脑重启后重建 session，是两种不同的恢复方式；后者不能把原进程的运行状态原封不动地恢复。
-- 前文的 `cw today` 是设想，不是现成命令。本文脚本没有实现它，也不会自动猜测测试命令、日志文件或项目启动方式。
-
-会话管理与恢复机制参见 Zellij 官方资料。[^z-session][^z-restore]
-
-## 1. 最终采用的工作区结构
-
-```text
-Ghostty：一个主窗口，通常一个标签即可
-└── Zellij 会话管理器：查找、切换任务
-    ├── ios--auth
-    │   └── work
-    │       ├── Codex
-    │       ├── Git / Shell
-    │       └── Tests / Logs
-    ├── ios--payment
-    │   └── work：同样的三个面板
-    └── backend--api-v2
-        └── work：同样的三个面板
-```
-
-Zellij 的原生层级是 session、tab 和 pane；布局文件可以定义 tab 与 pane。[^z-layout]
-
-## 2. 安装与环境检查
-
-### 2.1 最少需要什么
+在 Ghostty 的外层 Shell 中，按当前项目任选一条：
 
 ```bash
-# 先检查现有环境
+zellij --layout kjxy attach --create kjxy
+```
+
+```bash
+zellij --layout lmerp attach --create lmerp
+```
+
+`attach --create` 在会话不存在时创建，存在时连接。项目布局只在首次创建时应用；重新连接不会重复添加初始标签，也不会用更新后的布局替换已有标签。
+
+已经在 Zellij 内时，按 `Ctrl+b`，松开后按 `w`，通过会话管理器切换项目；也可先按 `Ctrl+b → d` 分离，再执行上述命令。
+
+### 1.2 核对目录，再运行 Codex
+
+选择目标需求标签，在 Codex 面板的 Shell 中执行：
+
+```bash
+pwd
+git rev-parse --show-toplevel
+git branch --show-current
+git status --short --branch
+```
+
+目录和分支应对应第 2 节的目标 worktree。新任务运行：
+
+```bash
+codex
+```
+
+继续已有任务时，运行 `codex resume`，从选择器中确认并恢复对应对话。测试与日志命令在 `Tests / Logs` 面板中按项目实际要求手动执行。
+
+临时离开按 `Ctrl+b → d`；下次执行相同的项目启动命令即可重连。所有快捷键见第 7 节。
+
+## 2. 层级、文件与现有工作区
+
+Session 是项目工作区，tab 是需求工作区，pane 是运行程序的终端面板。
+
+```text
+Ghostty
+└── Zellij
+    ├── session：kjxy
+    │   ├── tab：ios26-adaptation
+    │   ├── tab：refactor1.0
+    │   └── tab：tiku2.4
+    └── session：lmerp
+        ├── tab：release
+        └── tab：purchase-optimization
+
+每个 tab：
+┌──────────────────────────────────┐
+│ Codex                            │
+├─────────────────┬────────────────┤
+│ Git / Shell     │ Tests / Logs   │
+└─────────────────┴────────────────┘
+```
+
+| 配置文件 | 用途 |
+| --- | --- |
+| `~/.config/zellij/config.kdl` | 自定义快捷键、鼠标、复制和恢复设置 |
+| `~/.config/zellij/layouts/codex-workspace.kdl` | 新增单个需求 tab 使用的三面板布局 |
+| `~/.config/zellij/layouts/kjxy.kdl` | `kjxy` 项目的初始标签和目录 |
+| `~/.config/zellij/layouts/lmerp.kdl` | `lmerp` 项目的初始标签和目录 |
+
+本机布局引用以下已存在的 worktree；分支为 2026-10-14 核对结果，开始工作前仍应重新检查：
+
+| Session | Tab | 工作目录 | 当时所在分支 |
+| --- | --- | --- | --- |
+| `kjxy` | `ios26-adaptation` | `/Users/michael/Desktop/yuncai/kjxy/ios-kjxy` | `feature/ios26-adaptation` |
+| `kjxy` | `refactor1.0` | `/Users/michael/Desktop/yuncai/kjxy/refactor1.0` | `feature/refactor1.0` |
+| `kjxy` | `tiku2.4` | `/Users/michael/Desktop/yuncai/kjxy/tiku2.4` | `feature/tiku2.4` |
+| `lmerp` | `release` | `/Users/michael/Desktop/yuncai/LMERPDocument/iOS-LMERPDocument` | `release` |
+| `lmerp` | `purchase-optimization` | `/Users/michael/Desktop/yuncai/LMERPDocument/purchaseModuleOptimization` | `feature/purchaseModuleOptimization` |
+
+## 3. 安装与备份
+
+### 3.1 检查已有工具
+
+新环境先检查：
+
+```bash
 command -v brew
-command -v git
 command -v codex
-
-# 安装 Zellij
-brew install zellij
-
-# 记录版本，后续排错会用到
 git --version
 zellij --version
-codex --version
 ```
 
-### 2.2 先做一次最小验证
-
-在 Ghostty 新建一个普通 shell，进入一个现有 worktree 根目录，然后执行：
+仅在尚未安装 Zellij 时安装。
 
 ```bash
-# 把下面路径替换为你准备试用的现有工作区
-cd "$HOME/你的现有项目路径"
+CURL_SSL_BACKEND=secure-transport \
+HOMEBREW_NO_AUTO_UPDATE=1 \
+HOMEBREW_NO_INSTALL_CLEANUP=1 \
+HOMEBREW_CURL_RETRIES=1 \
+brew install zellij
 
-zellij --session ios--trial
+zellij --version
 ```
 
-进入 Zellij 后，在里面运行 `codex`。先验证输入、中文、复制粘贴和终端显示正常，不急着同时开很多任务。
+### 3.2 修改前备份
 
-按经典默认键位，`Ctrl + o` 后按 `d` 是 detach；回到外层 shell 后运行：
+本次实施前的备份目录为 `~/.local/state/zellij-setup/20261014-101940/`。以后修改配置前，可在 Shell 中执行：
 
 ```bash
-zellij attach ios--trial
+zellij_backup="$HOME/.local/state/zellij-setup/$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$zellij_backup"
+if [ -d "$HOME/.config/zellij" ]; then
+  cp -R "$HOME/.config/zellij" "$zellij_backup/zellij"
+fi
+mkdir -p "$HOME/.config/zellij/layouts"
 ```
 
-这一步用于验证“离开界面后重新连接”的工作方式。键位若与你选择的预设不同，以底部提示和本机配置为准。[^z-session][^z-command]
-
-## 3. 备份与路径约定
-
-### 3.1 备份将要编辑的文件
-
-下方命令只复制已存在的文件，不修改其内容：
+查看配置目录或备份：
 
 ```bash
-stamp="$(date +%Y%m%d-%H%M%S)"
-
-for file in \
-  "$HOME/.zshrc" \
-  "$HOME/.config/zellij/config.kdl" \
-  "$HOME/.config/zellij/layouts/codex-workspace.kdl" \
-  "$HOME/.local/bin/cw"
-do
-  if [ -f "$file" ]; then
-    cp -p "$file" "$file.bak.$stamp"
-  fi
-done
-
-mkdir -p "$HOME/.config/zellij/layouts" "$HOME/.local/bin"
+open "$HOME/.config/zellij"
+open "$HOME/.local/state/zellij-setup"
 ```
 
-本手册示例使用 `~/.config/zellij`。如果你使用自定义配置目录，请相应修改路径；第 8 节脚本可以通过 `CW_LAYOUT` 指定布局文件。Zellij 的配置查找方式见官方说明。[^z-config]
+下面给出完整文件内容。新环境可用 `nano "文件绝对路径"` 创建并粘贴，按 `Ctrl+O` 保存、回车确认、`Ctrl+X` 退出；已有文件先备份并核对差异。
 
-### 3.2 现有仓库不动，新 worktree 统一放置
+## 4. 全局配置与通用布局
 
-```text
-现有仓库：保持原位置
-例如 ~/Desktop/yuncai/IOS-acc/Auxiliary
+### 4.1 `config.kdl`
 
-~/worktrees/
-├── ios/
-│   ├── auth/
-│   └── payment/
-└── backend/
-    └── api-v2/
-```
-
-上面的仓库路径取自前面截图中的终端路径，仅作为配置起点。**先确认它仍然存在，且是你要管理的 Git 工作区根目录。**它可以是原始工作目录，也可以是同一仓库的既有 worktree。
-
-把下面内容加入 `~/.zshrc`，已有同名配置时编辑原项，不重复追加：
-
-```bash
-export PATH="$HOME/.local/bin:$PATH"
-
-# 改成你的实际 Git 工作区根目录
-export CW_IOS_REPO="$HOME/Desktop/yuncai/IOS-acc/Auxiliary"
-
-# 仅在确实有 backend 项目时设置；否则可以不加这一行
-export CW_BACKEND_REPO="$HOME/workspace/backend"
-
-# 只影响以后由 cw 新建的 worktree，不移动现有目录
-export CW_WORKTREE_ROOT="$HOME/worktrees"
-```
-
-保存后新开一个普通 shell，或执行：
-
-```bash
-source "$HOME/.zshrc"
-
-git -C "$CW_IOS_REPO" rev-parse --show-toplevel
-git -C "$CW_IOS_REPO" worktree list
-```
-
-只有当输出确实对应目标仓库时才继续。不要在 `.zshrc` 中直接写不加条件的 `zellij` 自动启动命令，本手册使用手动进入，避免产生嵌套会话。
-
-## 4. 先理解 Git worktree 的手动操作
-
-这部分用于理解后面的 `cw` 做了什么。已有 worktree 的任务可以跳过创建，直接进行第 6 节的布局验证。
-
-### 4.1 新任务：创建分支和工作目录
-
-先看清楚本项目实际使用的基线；`fetch` 用于获取远端对象与引用，区别于执行合并。[^git-fetch]
-
-```bash
-git -C "$CW_IOS_REPO" branch -a
-
-# 需要更新远端引用时再执行；不会替你合并当前分支
-git -C "$CW_IOS_REPO" fetch origin
-```
-
-下面以 `origin/develop` 为例；项目用 `origin/main`、其他分支或某个提交时，修改 `BASE`。它不是通用默认值。
-
-```bash
-REPO="$CW_IOS_REPO"
-BASE="origin/develop"  # 必须改成你确认过的基线
-TARGET="$HOME/worktrees/ios/payment"
-
-mkdir -p "$HOME/worktrees/ios"
-
-git -C "$REPO" worktree add \
-  -b feature/payment \
-  "$TARGET" \
-  "$BASE"
-```
-
-该命令从指定基线创建 `feature/payment`，并把它检出到目标目录。**当前目录里的未提交改动不会因此自动搬到新 worktree。**[^git-worktree]
-
-### 4.2 已有本地分支：不要再加 `-b`
-
-以下是另一种情形，不要紧接上一步对同一目录重复执行：
-
-```bash
-git -C "$CW_IOS_REPO" worktree add \
-  "$HOME/worktrees/ios/payment" \
-  feature/payment
-```
-
-如果提示分支已被另一个 worktree 使用，先查：
-
-```bash
-git -C "$CW_IOS_REPO" worktree list
-```
-
-### 4.3 worktree 的隔离边界
-
-把 worktree 理解为**代码工作目录与检出分支的隔离**，不要把它当成完整的运行环境隔离。由此在工作流上需要额外检查：不同任务是否使用相同服务端口、同一数据库、同一个模拟器或共享构建输出。
-
-依赖安装、本地配置、密钥以及测试环境仍按项目自己的方式准备。不要自动复制 `.env`、签名资料或其他敏感文件到每个任务目录。
-
-## 5. 配置 Zellij：先少改配置
-
-Zellij 使用 KDL 配置文件。第一次配置时，可以在 `~/.config/zellij/config.kdl` 中加入以下内容；**已有配置时只合并对应选项，不要覆盖原有键位和插件配置。**[^z-config][^z-options]
+文件位置：`~/.config/zellij/config.kdl`。以下与本机保存的配置一致：
 
 ```kdl
-// 日常把大多数按键交给 Codex / shell，减少快捷键冲突
-// 使用经典默认键位时，Ctrl + g 在 Locked / Normal 间切换
+// 默认把按键交给面板内的程序；Ctrl+b 后执行一次操作，再自动回到 Locked。
+// 保留 Ctrl+g 给 Codex 外部编辑器，保留 Alt 组合键给终端文字编辑。
 default_mode "locked"
-
+default_layout "codex-workspace"
 mouse_mode true
 pane_frames true
+copy_command "pbcopy"
+on_force_close "detach"
 
-// 允许保存会话布局等信息，便于退出后重建
-// 这不是进程内存快照，也不是代码备份
+// 只保存布局和命令信息，不额外持久化终端画面与滚动记录。
 session_serialization true
+serialize_pane_viewport false
+web_server false
+show_release_notes false
+
+keybinds clear-defaults=true {
+    locked {
+        bind "Ctrl b" { SwitchToMode "Normal"; }
+    }
+    normal {
+        bind "Ctrl b" "Esc" "Enter" { SwitchToMode "Locked"; }
+        bind "h" "Left" { MoveFocus "Left"; SwitchToMode "Locked"; }
+        bind "j" "Down" { MoveFocus "Down"; SwitchToMode "Locked"; }
+        bind "k" "Up" { MoveFocus "Up"; SwitchToMode "Locked"; }
+        bind "l" "Right" { MoveFocus "Right"; SwitchToMode "Locked"; }
+        bind "[" { GoToPreviousTab; SwitchToMode "Locked"; }
+        bind "]" { GoToNextTab; SwitchToMode "Locked"; }
+        bind "1" { GoToTab 1; SwitchToMode "Locked"; }
+        bind "2" { GoToTab 2; SwitchToMode "Locked"; }
+        bind "3" { GoToTab 3; SwitchToMode "Locked"; }
+        bind "4" { GoToTab 4; SwitchToMode "Locked"; }
+        bind "5" { GoToTab 5; SwitchToMode "Locked"; }
+        bind "f" { ToggleFocusFullscreen; SwitchToMode "Locked"; }
+        bind "r" { SwitchToMode "RenameTab"; TabNameInput 0; }
+        bind "s" { SwitchToMode "Scroll"; }
+        bind "+" { Resize "Increase"; SwitchToMode "Locked"; }
+        bind "-" { Resize "Decrease"; SwitchToMode "Locked"; }
+        bind "w" {
+            LaunchOrFocusPlugin "zellij:session-manager" {
+                floating true
+                move_to_focused_tab true
+            }
+            SwitchToMode "Locked";
+        }
+        bind "d" { Detach; }
+    }
+    renametab {
+        bind "Enter" { SwitchToMode "Locked"; }
+        bind "Esc" { UndoRenameTab; SwitchToMode "Locked"; }
+    }
+    scroll {
+        bind "j" "Down" { ScrollDown; }
+        bind "k" "Up" { ScrollUp; }
+        bind "PageDown" { PageScrollDown; }
+        bind "PageUp" { PageScrollUp; }
+        bind "Esc" "q" "Ctrl b" { ScrollToBottom; SwitchToMode "Locked"; }
+    }
+}
 ```
 
-## 6. 创建 Codex 专用三面板布局
+这里使用精简的自定义键位：默认 Locked，按 `Ctrl+b` 解锁，普通操作后回到 Locked；重命名与滚动模式需要明确结束。它不是直接启用官方 Unlock-First 预设。`clear-defaults=true` 清除默认按键，Locked 中只拦截 `Ctrl+b`，让 `Ctrl+g`、Alt 组合键继续交给面板内程序。
 
-默认布局的目标是：
+`copy_command "pbcopy"` 使用 macOS 剪贴板；`session_serialization` 保存可用于重建的布局、目录和命令信息，`serialize_pane_viewport false` 不额外保存终端画面。`web_server false` 关闭 Web 服务，`show_release_notes false` 避免首启版本说明浮层。配置含义参见 [Zellij Options](https://zellij.dev/documentation/options)、[快捷键配置](https://zellij.dev/documentation/keybindings)。
 
-```text
-┌───────────────────────────────────────────────┐
-│ work                                          │
-├───────────────────────────────────────────────┤
-│                                               │
-│                 Codex                         │
-│          可按需要切换为独占显示                │
-│                                               │
-├───────────────────────┬───────────────────────┤
-│ Git / Shell           │ Tests / Logs          │
-│ git status / git diff │ 项目测试或日志命令    │
-├───────────────────────┴───────────────────────┤
-│ Zellij 状态与快捷键提示                        │
-└───────────────────────────────────────────────┘
-```
+### 4.2 `codex-workspace.kdl`
 
-### 6.1 保存布局文件
+文件位置：`~/.config/zellij/layouts/codex-workspace.kdl`：
 
-确认第 3 节已经备份同名文件，然后执行：
-
-```bash
-cat > "$HOME/.config/zellij/layouts/codex-workspace.kdl" <<'KDL'
+```kdl
+// 单个需求的三面板布局；工作目录由启动目录或 new-tab --cwd 指定。
 layout {
-    default_tab_template {
+    pane size=1 borderless=true {
+        plugin location="zellij:tab-bar"
+    }
+    pane size="70%" focus=true
+    pane size="30%" split_direction="vertical" {
+        pane name="Git / Shell"
+        pane name="Tests / Logs"
+    }
+    pane size=2 borderless=true {
+        plugin location="zellij:status-bar"
+    }
+}
+```
+
+这是三个终端面板，加上顶部标签栏和底部状态栏：上方约 70% 用于 Codex，下方约 30% 横向并排放置 Git / Shell 与 Tests / Logs。上方面板默认取得焦点，且不设置固定 `name`，以显示程序提供的动态标题；本文仍将其称为 Codex 面板。三个面板都先打开 Shell，工作目录来自启动位置或 `new-tab --cwd`。布局不自动运行 Codex、构建或测试。[布局语法](https://zellij.dev/documentation/creating-a-layout)
+
+## 5. 项目初始布局与新项目接入
+
+### 5.1 `kjxy.kdl` 完整示例
+
+文件位置：`~/.config/zellij/layouts/kjxy.kdl`：
+
+```kdl
+// 项目会话的初始布局；只在创建新会话时应用。
+layout {
+    tab_template name="worktree" {
         pane size=1 borderless=true {
             plugin location="zellij:tab-bar"
         }
-        children
+        pane size="70%" focus=true
+        pane size="30%" split_direction="vertical" {
+            pane name="Git / Shell"
+            pane name="Tests / Logs"
+        }
         pane size=2 borderless=true {
             plugin location="zellij:status-bar"
         }
     }
-
-    tab name="work" {
-        pane name="Codex" size="72%" focus=true
-        pane size="28%" split_direction="vertical" {
-            pane name="Git / Shell"
-            pane name="Tests / Logs"
-        }
-    }
+    worktree name="ios26-adaptation" cwd="/Users/michael/Desktop/yuncai/kjxy/ios-kjxy" focus=true
+    worktree name="refactor1.0" cwd="/Users/michael/Desktop/yuncai/kjxy/refactor1.0"
+    worktree name="tiku2.4" cwd="/Users/michael/Desktop/yuncai/kjxy/tiku2.4"
 }
-KDL
 ```
 
-`size` 控制分配比例；下方容器的 `split_direction="vertical"` 让两个面板左右排列；tab-bar 和 status-bar 是官方布局示例使用的内置插件。这里没有写死工作目录，首次创建时沿用启动位置。[^z-layout]
+`tab_template` 复用三面板结构；末尾每个 `worktree` 定义一个标签及其绝对工作目录。路径必须是已经存在的目录，Zellij 不负责创建 Git worktree。
 
-### 6.2 从一个实际 worktree 启动
+### 5.2 `lmerp.kdl`
 
-```bash
-cd "$HOME/worktrees/ios/payment"
-
-zellij \
-  --layout "$HOME/.config/zellij/layouts/codex-workspace.kdl" \
-  attach --create ios--payment
-```
-
-`attach --create` 用于连接已有会话或在不存在时创建。**已存在的会话不会因为你换了外层 shell 目录，就被重新定位到另一个 worktree；旧会话的布局也不会被新文件直接替换。**[^z-command][^z-cli]
-
-进入后先在三个面板分别运行 `pwd`，确认都在期望的 worktree。可以用鼠标点击切换面板。
-
-上方面板选择一种操作：
-
-```bash
-# 新任务：开始新对话
-codex
-
-# 同一个任务：选择已有对话继续
-codex resume
-```
-
-`codex resume` 用于继续以前的交互会话，不等同于重新连接 Zellij。[^codex]
-
-下方左侧：
-
-```bash
-git status --short
-git diff
-```
-
-下方右侧：先留作普通 shell，再手动执行你已经确认的项目命令。不要直接照搬 `npm run dev` 到 iOS 项目，也不要把不存在的 `logs` 当成日志路径。
-
-### 6.3 可选：新建布局时自动启动 Codex
-
-基础版本故意先打开 shell，让你自己选择 `codex` 或 `codex resume`。这样不容易误开新对话或接错历史任务。
-
-确实希望创建新任务时自动启动 Codex，可以把布局中的这一行：
+本机已保存 `~/.config/zellij/layouts/lmerp.kdl`。重新搭建时，使用上面完整模板，将最后三行 `worktree` 定义替换为下面两行，再保存为 `lmerp.kdl`：
 
 ```kdl
-pane name="Codex" size="72%" focus=true
+worktree name="release" cwd="/Users/michael/Desktop/yuncai/LMERPDocument/iOS-LMERPDocument" focus=true
+worktree name="purchase-optimization" cwd="/Users/michael/Desktop/yuncai/LMERPDocument/purchaseModuleOptimization"
 ```
 
-改为：
+这两行位于 `layout { ... }` 内，与 `tab_template` 同级。其他机器需替换为实际目录，不应直接沿用本机绝对路径。
 
-```kdl
-pane name="Codex" size="72%" focus=true {
-    command "codex"
-}
-```
+### 5.3 接入另一个项目
 
-这是命令面板，不是智能恢复器：它启动的是 `codex`，不会替你判断应该恢复哪个历史对话；命令退出后，该面板也不等同于一个正常返回提示符的 shell。日常恢复历史任务仍优先使用基础布局。命令面板与布局语法见官方说明。[^z-layout]
+1. 在该项目的现有工作区运行 `git worktree list`，确认待加入的目录与分支。
+2. 复制 `kjxy.kdl` 为新的布局文件，例如 `newproject.kdl`。以下 `-n` 会保留已存在的目标文件：
 
-## 7. 日常切换与 Ghostty 配置
+   ```bash
+   cp -n "$HOME/.config/zellij/layouts/kjxy.kdl" \
+     "$HOME/.config/zellij/layouts/newproject.kdl"
+   nano "$HOME/.config/zellij/layouts/newproject.kdl"
+   ```
 
-### 7.1 Zellij 常用操作
+3. 保留完整 `tab_template`，删除末尾原项目的三行 `worktree`，为新项目每个现有目录添加一行。至少保留一行，且只给一个标签设置 `focus=true`。例如：
 
-下面按**经典默认键位**书写。“`Ctrl + o` → `w`”表示先按组合键，松开后再按 `w`，不是三个键一起按。
+   ```kdl
+   worktree name="main-workspace" cwd="/替换为新项目工作区的绝对路径" focus=true
+   ```
 
-启用了 `default_mode "locked"` 后，通常先按 `Ctrl + g` 解锁，再使用表中操作。完成后查看底部模式提示，必要时再按 `Ctrl + g` 返回 Locked。若你使用其他键位预设，以界面提示和本机配置为准。[^z-session][^z-keybinds][^z-options]
+4. 保存后解析检查，再在外层 Shell 创建会话：
 
-| 操作 | 经典默认键位 / 方法 |
-| --- | --- |
-| 打开会话管理器，查找和切换任务 | Normal 模式下 `Ctrl + o` → `w` |
-| detach：离开界面而不主动退出会话 | Normal 模式下 `Ctrl + o` → `d` |
-| 当前面板独占显示 / 恢复布局 | Normal 模式下 `Ctrl + p` → `f` |
-| 切换当前面板 | 鼠标点击目标面板 |
-| 列出会话 | 外层 shell 执行 `zellij list-sessions` |
-| 回到指定会话 | 外层 shell 执行 `zellij attach ios--payment` |
+   ```bash
+   zellij --layout newproject setup --check
+   zellij --layout newproject attach --create newproject
+   ```
 
-**日常“下班离开”优先使用 detach，不是退出整个 Zellij session。**如果电脑仍运行且会话进程仍存活，之后可以重新连接；detach 不保证机器睡眠、断网或重启时任务仍能照常执行。[^z-command][^z-restore]
+布局文件名和 session 名在本方案中保持一致。进入各 tab 后执行第 1.2 节的目录与分支检查。
 
-### 7.2 Ghostty 可以完全不改
+修改初始布局只影响以后的新会话；向当前已运行的项目加入需求，应使用下一节的 `new-tab`，不必结束整个项目会话。
 
-本方案的分类与布局在 Zellij 层完成，Ghostty 不需要新增特殊插件。
+## 6. 在项目中新增需求标签
 
-需要调整时，优先用 Ghostty 菜单中的打开配置功能找到当前实际配置文件，再备份编辑。官方文档目前列出了 `config.ghostty` 和旧名 `config`，以及 XDG 与 macOS 专用路径；不要盲目新建多个互相覆盖的配置文件。[^ghostty-config]
-
-可以保留以下少量选项：
-
-```ini
-font-size = 15
-shell-integration = detect
-```
-
-字体和主题沿用你当前的设置即可，不必为了这套工作流更换。需要核对可用项时：
+目标 worktree 必须已经存在，并属于该项目。先按第 1 节打开目标项目会话，让它保持客户端连接；以下以 `kjxy` 为例，在其中的 **Git / Shell 面板**查看已有标签：
 
 ```bash
-ghostty +list-fonts
-ghostty +list-themes
-ghostty +list-keybinds --default
+zellij --session kjxy action query-tab-names
 ```
 
-如果 `ghostty` 不在 shell 的 PATH 中，使用应用菜单查看设置即可，不能据此认定 GUI 应用没有安装。字体、主题和 shell integration 的定义见官方参考。[^ghostty-options][^ghostty-keys]
-
-原生分屏快捷键也可以保留：
-
-```ini
-keybind = cmd+d=new_split:right
-keybind = cmd+shift+d=new_split:down
-```
-
-但这两项分割的是 **Ghostty 窗格**，不是 Zellij 面板。进入 Zellij 后，建议主要用 Zellij 管理面板，避免产生两套分屏层级。[^ghostty-actions]
-
-## 8. 安装可选的 `cw` 工作区命令
-
-### 8.1 它做什么、不做什么
-
-本文提供的 `cw` 是本地辅助脚本，不是 Codex、Ghostty 或 Zellij 自带命令。
-
-它按以下规则工作：
-
-```text
-cw ios payment origin/develop
-    ↓
-读取 CW_IOS_REPO
-    ↓
-创建或检查 ~/worktrees/ios/payment
-    ↓
-新任务分支使用 feature/payment
-    ↓
-创建 / 连接 ios--payment 会话，使用三面板布局
-```
-
-脚本**不会**自动提交、推送、合并、删除 worktree、重置分支、复制密钥或运行测试。使用基础布局时，Codex 仍由你在面板内选择新建或恢复。
-
-首次创建新分支时要求显式指定基线。已有工作区或本地分支时省略基线，避免误以为“传一个新基线”会安全地更新已有任务。
-
-脚本新增项目的入口是 `case "$project"`，目前示例支持 `ios` 和 `backend`。其他项目可以照样加一项。项目代号不同却指向同一 Git 仓库时，分支名仍会共享；不要指望项目别名提供额外隔离。
-
-### 8.2 保存脚本
-
-确认第 3 节已经备份原有 `~/.local/bin/cw`，然后完整执行下面的代码块：
+确认目标需求尚未加入后，在同一 Shell 中填写实际标签名和目录：
 
 ```bash
-cat > "$HOME/.local/bin/cw" <<'CW_SCRIPT'
-#!/usr/bin/env bash
-# cw: 一个任务一个 Git worktree + 一个 Zellij session。
-# 兼容 Bash 3.2+；不提交、不删除、不重置代码，不自动执行项目命令。
-set -euo pipefail
+task_tab="替换为需求标签名"
+task_directory="/替换为现有worktree的绝对路径"
 
-fail() { printf 'cw: %s\n' "$*" >&2; exit 1; }
-usage() {
-  cat <<'HELP'
-用法：
-  cw ios payment origin/main    首次创建任务（基线必须明确）
-  cw ios payment                打开已有任务 / 复用已有本地分支
-  cw backend api-v2 origin/main
-  cw open ios--legacy /绝对路径/已有worktree
-  cw attach ios--payment        重连或尝试恢复已有会话
-  cw list                       列出会话
-
-项目路径：CW_IOS_REPO、CW_BACKEND_REPO
-新 worktree 根目录：CW_WORKTREE_ROOT（默认 ~/worktrees）
-布局：CW_LAYOUT（默认 ~/.config/zellij/layouts/codex-workspace.kdl）
-HELP
-}
-slug_ok() { [[ "$1" =~ ^[a-z0-9][a-z0-9_-]*$ ]]; }
-need() { command -v "$1" >/dev/null 2>&1 || fail "找不到命令：$1"; }
-outside_zellij() {
-  [[ -z "${ZELLIJ:-}" ]] || fail '请先 detach 到外层 shell；会话内切换请用 Zellij 会话管理器。'
-}
-repo_root() {
-  local p top
-  [[ -d "$1" ]] || fail "目录不存在：$1"
-  p=$(cd "$1" && pwd -P)
-  top=$(git -C "$p" rev-parse --show-toplevel 2>/dev/null) || fail "不是普通 Git 工作目录：$p"
-  top=$(cd "$top" && pwd -P)
-  [[ "$p" == "$top" ]] || fail "请传入工作区根目录，而非子目录：$top"
-  printf '%s\n' "$p"
-}
-common_dir() {
-  # --git-common-dir 可能返回相对路径，必须在对应工作区中解析。
-  ( cd "$1"; cd "$(git rev-parse --git-common-dir)"; pwd -P )
-}
-open_workspace() {
-  local session="$1" target="$2"
-  local layout="${CW_LAYOUT:-$HOME/.config/zellij/layouts/codex-workspace.kdl}"
-  slug_ok "$session" || fail '会话名只允许小写字母、数字、下划线和连字符，并须以字母或数字开头。'
-  [[ -f "$layout" ]] || fail "请先创建布局文件：$layout"
-  target=$(repo_root "$target")
-  printf '会话：%s\n目录：%s\n' "$session" "$target"
-  printf '进入后在 Codex 面板执行 codex 或 codex resume。\n'
-  cd "$target"
-  # 创建时使用布局；已存在的会话会被重连，不会重设其目录和布局。
-  exec zellij --layout "$layout" attach --create "$session"
-}
-
-case "${1:-help}" in
-  help|-h|--help) usage; exit 0 ;;
-esac
-need git
-need zellij
-
-case "$1" in
-  list)
-    [[ $# -eq 1 ]] || fail '用法：cw list'
-    exec zellij list-sessions
-    ;;
-  attach)
-    [[ $# -eq 2 ]] || fail '用法：cw attach 会话名'
-    outside_zellij
-    slug_ok "$2" || fail '会话名格式错误。'
-    exec zellij attach "$2"
-    ;;
-  open)
-    [[ $# -eq 3 ]] || fail '用法：cw open 会话名 /绝对路径/已有worktree'
-    outside_zellij
-    [[ "$3" == /* ]] || fail '请使用绝对路径；也可使用 "$HOME/..."。'
-    open_workspace "$2" "$3"
-    ;;
-esac
-
-[[ $# -eq 2 || $# -eq 3 ]] || { usage; exit 1; }
-outside_zellij
-project="$1"
-task="$2"
-base="${3:-}"
-slug_ok "$project" && slug_ok "$task" || fail '项目名和任务名必须是小写英文/数字/下划线/连字符。'
-[[ "$project" != *--* && "$task" != *--* ]] || fail '项目名和任务名不要包含连续两个连字符。'
-case "$project" in
-  ios) repo="${CW_IOS_REPO:-$HOME/workspace/ios-app}" ;;
-  backend) repo="${CW_BACKEND_REPO:-$HOME/workspace/backend}" ;;
-  *) fail "未知项目：$project；请在脚本 case 中新增项目映射。" ;;
-esac
-repo=$(repo_root "$repo")
-root="${CW_WORKTREE_ROOT:-$HOME/worktrees}"
-[[ "$root" == /* ]] || fail 'CW_WORKTREE_ROOT 必须是绝对路径。'
-target="$root/$project/$task"
-branch="feature/$task"
-session="$project--$task"
-layout="${CW_LAYOUT:-$HOME/.config/zellij/layouts/codex-workspace.kdl}"
-[[ -f "$layout" ]] || fail "请先创建布局文件：$layout"
-
-if [[ -e "$target" || -L "$target" ]]; then
-  [[ -z "$base" ]] || fail '任务目录已存在；重新打开时请省略基线参数。'
-  target=$(repo_root "$target")
-  [[ "$(common_dir "$repo")" == "$(common_dir "$target")" ]] || fail '目标目录属于其他 Git 仓库。'
-  actual=$(git -C "$target" symbolic-ref --quiet --short HEAD) || fail '目标工作区处于 detached HEAD；请用 cw open 明确打开。'
-  [[ "$actual" == "$branch" ]] || fail "目标分支是 $actual，而非 $branch；请用 cw open 明确打开。"
-else
-  if git -C "$repo" show-ref --verify --quiet "refs/heads/$branch"; then
-    [[ -z "$base" ]] || fail "本地分支 $branch 已存在；复用时请省略基线参数。"
-    mkdir -p "$root/$project"
-    git -C "$repo" worktree add "$target" "$branch"
-  else
-    [[ -n "$base" ]] || fail "首次创建请指定基线，例如：cw $project $task origin/main（按项目实际分支修改）。"
-    [[ "$base" != -* ]] || fail '基线不能以 - 开头。'
-    git -C "$repo" rev-parse --verify "${base}^{commit}" >/dev/null 2>&1 || fail "找不到基线提交：$base；请检查分支或先 git fetch。"
-    mkdir -p "$root/$project"
-    git -C "$repo" worktree add -b "$branch" "$target" "$base"
-  fi
-fi
-open_workspace "$session" "$target"
-CW_SCRIPT
-
-chmod +x "$HOME/.local/bin/cw"
-
-# 仅为当前 shell 立即生效；长期配置已在第 3 节写入 ~/.zshrc
-export PATH="$HOME/.local/bin:$PATH"
-
-cw --help
+git -C "$task_directory" rev-parse --show-toplevel
+git -C "$task_directory" branch --show-current
 ```
 
-### 8.3 常用示例
-
-下面的 `origin/develop` 和 `origin/main` 都是示例，请选用仓库里真实存在、适合任务的基线。
+确认输出正确，再添加：
 
 ```bash
-# 新任务：目录和分支尚不存在时，明确传入基线
-cw ios auth origin/develop
-
-# 同一任务再次进入：先 detach 到外层 shell，再运行
-cw ios auth
-
-# 新建另一个项目的任务；需先正确设置 CW_BACKEND_REPO
-cw backend api-v2 origin/main
-
-# 列出会话
-cw list
-
-# 指定会话：重连或尝试恢复
-cw attach ios--auth
-```
-
-对于**已经存在、目录不遵循新规则的 worktree**，无需搬动，也无需重新创建分支：
-
-```bash
-# 将第二个参数替换成真实的绝对路径
-cw open ios--legacy "$HOME/某个已有worktree路径"
-```
-
-同一个 session 名始终留给同一个任务。`cw open` 并不维护全局的“名称—目录”注册表：若该名称已被你手工用于别的目录，连接后仍是原会话。首次接入旧任务时用新的、唯一的名称，并在进入后检查 `pwd`。
-
-在 Zellij 内运行 `cw` 的打开命令会被脚本拒绝，以免嵌套；请使用会话管理器切换，或 detach 后再执行。`cw list` 可以直接列出会话。
-
-### 8.4 代码验证范围
-
-本次整理对脚本做了 Bash 语法检查，并在临时 Git 仓库中通过了 12 项逻辑测试，覆盖新建、复用、含空格路径、非法任务名、缺失基线、跨仓库误用和嵌套防护等。
-
-**Zellij 在测试中使用了替身程序验证参数传递，没有在你的 macOS 上实际联调 Ghostty、Zellij 或 Codex。**因此第一次使用请只接入一个测试任务，按第 15 节逐项验收；不要直接批量迁移全部工作区。
-
-## 9. 推荐的日常使用流程
-
-### 开始一个新需求
-
-在外层 shell 中创建或进入任务：
-
-```bash
-# 第一次使用时选好实际基线
-cw ios payment-v2 origin/develop
-```
-
-进入后在上方面板执行 `codex`，给出本任务目标与范围；下方两个面板分别用于检查差异和运行测试。这里采用“一项主要任务一段对话”作为组织约定，不把它当成必须遵守的软件限制。
-
-### 中途切换任务
-
-打开会话管理器，按项目或任务名查找，例如 `ios`、`payment`，然后切换。不要为了切换任务再增加一个长期打开的 Ghostty 标签。会话管理器的操作以其当前界面提示为准。[^z-session]
-
-### 暂时离开
-
-确认没有待处理的交互确认，然后 detach。之后用 `cw attach ios--payment-v2` 回到原会话。
-
-Zellij 可以保留终端会话，但不能替你处理 Codex 的审批提示，也不能保证网络请求永不失败。
-
-### 查看长输出
-
-需要专注阅读 Codex 时把当前面板独占显示，完成后恢复三面板。分屏是减少切换的工具，不必一直固定占用屏幕。
-
-## 10. 会话恢复：把三层状态分开理解
-
-| 需要恢复的东西 | 对应机制 | 不能据此假定什么 |
-| --- | --- | --- |
-| 仍在运行的终端会话 | Zellij attach | 不保证电脑睡眠或断网时任务继续正常工作 |
-| 退出或重启后的布局 | Zellij session resurrection | 不是原进程内存、连接和执行位置的恢复 |
-| Codex 的历史对话 | `codex resume` | 不等于重连原终端进程，也不代替代码备份 |
-
-Zellij 的序列化与复活用于重建布局、目录和命令等会话信息，实际恢复还受缓存是否存在和配置影响；Codex 有自己的历史对话恢复入口。[^z-restore][^codex]
-
-### 10.1 只是 detach，原会话还活着
-
-```bash
-cw attach ios--payment
-```
-
-这时先查看原 Codex 是否仍在运行，不要在另一个面板又启动一个处理相同任务的 Codex。
-
-### 10.2 电脑重启或会话已经退出
-
-先查看可用记录：
-
-```bash
-cw list
-cw attach ios--payment
-```
-
-有可恢复记录时，可以尝试恢复；必要时从会话管理器的已退出会话区域选择。部分命令面板可能需要你按界面提示确认重新运行。恢复后检查当前目录、运行进程和测试服务，不要假定它们全部自动正常。[^z-restore]
-
-随后在正确 worktree 的 shell 中恢复 Codex：
-
-```bash
-cd "$HOME/worktrees/ios/payment"
-
-# 更稳妥：先查看候选历史会话
-codex resume
-
-# 仅在确认当前目录最近一次对话就是该任务时使用
-codex resume --last
-```
-
-按核对时的官方 CLI 文档，`--last` 默认限定在当前工作目录，`--all` 会扩大选择范围。多任务环境下不要随手加 `--all`。[^codex]
-
-如果恢复不到 Zellij 会话，但代码目录仍在，可以用一个新会话名重新搭建布局，再执行 `codex resume`。这只是重建工作环境，不是找回原进程运行现场。
-
-## 11. 任务结束与安全清理
-
-**detach 不代表任务完成，关闭一个面板也不代表代码已经提交。**清理前先确认 Codex、测试进程和编辑器不再使用目标目录。
-
-先检查工作目录的改动与被忽略文件。[^git-status]
-
-```bash
-TARGET="$HOME/worktrees/ios/payment"
-
-git -C "$TARGET" status --short
-git -C "$TARGET" diff
-
-# 额外看看被忽略的本地文件；输出可能较多
-git -C "$TARGET" status --short --ignored
-```
-
-确认需要的代码已经按你的流程提交或备份，本地配置和重要产物也已另行保存，再正常退出该任务的会话，然后从外层 shell 执行：
-
-```bash
-# 这是删除任务工作目录的操作，只在任务确实完成时执行
-# 不要添加 --force 绕过未保存文件的检查
-git -C "$CW_IOS_REPO" worktree remove "$HOME/worktrees/ios/payment"
-
-git -C "$CW_IOS_REPO" worktree list
-```
-
-Git 默认限制对不干净 worktree 的删除，但被忽略文件同样需要你主动检查，不能把“命令可以执行”当成“所有重要内容都已经备份”。分支是否保留或删除，按你的分支管理流程单独处理。[^git-worktree]
-
-不要直接用文件管理器或 `rm -rf` 清理 worktree。已退出的 Zellij 会话记录也应在会话管理器中确认后清理，避免日后误恢复到已删除目录。
-
-## 12. 常见问题与排错
-
-| 现象 | 先检查什么 |
-| --- | --- |
-| `cw: command not found` | `~/.local/bin/cw` 是否存在且可执行；`echo "$PATH"` 是否包含 `~/.local/bin` 的展开路径 |
-| 提示仓库目录不存在 | 核对 `CW_IOS_REPO` / `CW_BACKEND_REPO`；必须是实际 Git 工作区根目录 |
-| `origin/main` 或 `origin/develop` 不存在 | `git branch -a` 查看真实分支；必要时 `git fetch origin`，不要猜基线 |
-| 分支已经在另一个 worktree 使用 | `git worktree list` 找到旧路径，用 `cw open` 接入，不要强制重复检出 |
-| Codex 快捷键被截获 | 查看 Zellij 当前模式；回到 Locked，再测试输入；确认使用的键位预设 |
-| 修改 KDL 后旧会话没变化 | 新布局用于创建；使用新的测试 session 名验证，不要误认为旧会话会被自动重建 |
-| 三个面板的目录不对 | 分别运行 `pwd`；检查是否重连了旧会话，或 shell 初始化文件中是否有自动 `cd` |
-| `cw` 拒绝在当前终端打开任务 | 当前已在 Zellij 内；先 detach，或直接用会话管理器切换 |
-| 重新打开却是新 Codex 对话 | `codex` 是启动新对话；应该在对应 worktree 使用 `codex resume` |
-| Ghostty 配置不生效 | 从应用菜单打开实际配置；检查 macOS 专用目录是否还有覆盖项 |
-
-优先运行本机帮助，不要把未来版本或另一台机器的选项直接套过来：
-
-```bash
-zellij --help
-zellij attach --help
-zellij setup --help
-codex resume --help
-```
-
-Zellij 的每个子命令有自己的帮助；Ghostty 也提供本机配置参考与配置重载入口。[^z-command][^ghostty-config]
-
-## 13. 可选替代方案：项目一个 session，任务一个 tab
-
-如果使用一段时间后，发现更需要真正的“项目 → 任务”两层组织，可以改成：
-
-```text
-Zellij session：ios
-├── tab：auth
-│   ├── Codex
-│   ├── Git / Shell
-│   └── Tests / Logs
-└── tab：payment
-    ├── Codex
-    ├── Git / Shell
-    └── Tests / Logs
-
-Zellij session：backend
-└── tab：api-v2
-```
-
-这仍不是常驻左侧树，但利用了 session → tab 的原生层级，比只靠名称前缀更明确。
-
-**这是另一种管理模型，不是第 8 节 `cw` 脚本的模式。**先选定一种，不要同时维护“Ghostty 项目标签 + 每任务 session + 每任务 tab”三套索引。
-
-手工试用方法：
-
-```bash
-# 在外层普通 shell 中，创建或连接项目会话
-cd "$CW_IOS_REPO"
-zellij attach --create ios
-```
-
-进入项目会话后，在一个 shell 面板中执行：
-
-```bash
-# 目标 worktree 必须事先存在
-zellij action new-tab \
-  --name payment \
-  --cwd "$HOME/worktrees/ios/payment" \
+zellij --session kjxy action new-tab \
+  --name "$task_tab" \
+  --cwd "$task_directory" \
   --layout "$HOME/.config/zellij/layouts/codex-workspace.kdl"
 ```
 
-该命令会新建 tab；重复执行会继续新增，不会替你按任务名去重。Zellij 官方 CLI 支持用名称、工作目录和布局创建 tab。[^z-actions]
+`--session` 明确指定项目；`--cwd` 指定三个面板的工作目录；`--layout` 使用单需求布局。新增 `lmerp` 的需求时，先打开 `lmerp` 会话，再将 `--session kjxy` 改为 `--session lmerp`。
 
-至于“左侧一直显示可展开的项目树，点击切换右侧任务”，本文没有实现。左侧文件浏览器只显示文件，也不能自动等同于任务会话管理器；不要把两者混为一谈。
+**重复执行会新增重复 tab，不会按名称去重。** 本机 `0.45.1` 在没有客户端连接的纯后台会话中新建布局可能报 `Not enough room`，因此保持目标项目已打开再新增。若从另一个外层 Shell 执行，也应先在一个终端 attach 目标会话。新增后检查三个面板的 `pwd`，并在 Codex 面板确认分支后开始工作。[Zellij CLI Actions](https://zellij.dev/documentation/cli-actions)
 
-## 14. 最常用命令速查
+希望将这个需求纳入以后新建项目会话的初始结构时，再把对应 `worktree name=... cwd=...` 行补入项目布局；当前会话已有的 tab 不会因此再次创建。
+
+## 7. Codex 与日常快捷键
+
+`Ctrl+b → h` 表示先按 `Ctrl+b`，松开后再按 `h`。下表对应本文自定义配置，不能与 Zellij 默认快捷键表混用。
+
+| 操作 | 按键 |
+| --- | --- |
+| 向左、下、上、右切换面板 | `Ctrl+b → h / j / k / l`，也可用方向键 |
+| 前一个 / 后一个标签 | `Ctrl+b → [` / `Ctrl+b → ]` |
+| 直接选择第 1～5 个标签 | `Ctrl+b → 1～5` |
+| 当前面板全屏 / 恢复 | `Ctrl+b → f` |
+| 放大 / 缩小当前面板 | `Ctrl+b → +` / `Ctrl+b → -` |
+| 重命名当前标签 | `Ctrl+b → r`，输入后按 `Enter`；`Esc` 取消 |
+| 打开会话管理器、选择项目 | `Ctrl+b → w` |
+| 分离当前连接 | `Ctrl+b → d` |
+| 进入滚动模式 | `Ctrl+b → s` |
+| 滚动模式逐行 / 翻页 | `j / k` 或上下键；`PageDown / PageUp` |
+| 退出滚动并回到输入状态 | `Esc`、`q` 或 `Ctrl+b` |
+| 解锁后取消操作，回到 Locked | `Ctrl+b`、`Esc` 或 `Enter` |
+
+也可用鼠标点击 tab 或面板。Ghostty 保留原有窗口和标签设置；进入 Zellij 后，项目内分屏由 Zellij 管理。
+
+在正确的 worktree 中，按目的选择 Codex 命令：
+
+| 目的 | 命令 |
+| --- | --- |
+| 新开对话 | `codex` |
+| 从选择器恢复当前目录的历史对话 | `codex resume` |
+| 确认最近一次对话就是当前任务后直接恢复 | `codex resume --last` |
+| 当前目录找不到目标时查看其他目录的对话 | `codex resume --all`，选择时核对目录 |
+
+在 Codex 输入框按 **`Ctrl+g`** 打开 `VISUAL` 指定的外部编辑器，未设置 `VISUAL` 时使用 `EDITOR`；保存并关闭编辑器后，文字返回输入框，再确认发送。本文配置在 Locked 中保留此按键与 Alt 文字移动，沿用原有编辑器和 Ghostty 配置。[Codex CLI 自定义](https://learn.chatgpt.com/docs/cli-customization)、[Codex 命令参考](https://learn.chatgpt.com/docs/cli/reference)
+
+### 7.1 查看当前 Codex 的动态标题
+
+上方 Codex 面板使用程序提供的标题，保留这三层不同的用途：
+
+| 位置 | 显示内容 |
+| --- | --- |
+| Zellij 需求 tab | 保留 `refactor1.0`、`tiku2.4` 等固定需求名称 |
+| Codex 面板标题 | 显示当前程序提供的动态状态；面板不设置固定名称 |
+| 外层 Ghostty 标签或窗口标题 | 自动标题未被覆盖时，可接收当前聚焦面板经 Zellij 传出的标题 |
+
+本机 Codex 已配置 `terminal_title = ["activity", "git-branch", "thread-name"]`，本轮沿用该设置，无需重复添加。状态文字由 Codex 决定；显示空闲不代表测试通过或业务任务成功，结果仍应查看对话、命令退出状态和验证证据。
+
+已有会话不会自动套用修改后的布局。本机已按明确的面板 ID，就地清除两个项目中五个 Codex 用途面板的固定名称，保留原进程；尚未启动 Codex 的 Shell 可能暂时沿用初始标题，直到程序发送新的标题更新。
+
+切换到某个需求 tab 后，聚焦上方 Codex 面板，外层标题才对应这个任务；聚焦下方 Shell 或日志面板时，外层标题可能跟随它们变化。**单个 Ghostty tab 不会同时汇总内部多个需求的运行状态。**
+
+如果外层 Ghostty 标签仍被手动名称固定，该名称会覆盖终端传来的动态标题。仅在出现这种情况时，按 macOS Ghostty `1.3.1` 的界面操作：选中该标签，打开 **View → Change Tab Title...**，删除全部文字留空，按 `Enter`（内联编辑）或 `OK`（弹窗）保存，即可恢复自动标题，无需重启。这里清除的是 Ghostty 的手动标题，不需要修改 Zellij 的需求 tab 名称。[Ghostty 标题对话框](https://ghostty.org/docs/config/keybind/reference#prompt_tab_title)、[清除手动标签标题](https://ghostty.org/docs/config/keybind/reference#set_tab_title)
+
+## 8. 离开、重连与重启后的恢复
+
+| 状态 | 操作与边界 |
+| --- | --- |
+| 暂时离开，原会话仍在运行 | `Ctrl+b → d` 分离；执行 `zellij attach kjxy` 或 `zellij attach lmerp` 重连 |
+| 切换到另一个项目 | `Ctrl+b → w` 打开会话管理器，选择目标 session |
+| 关闭 Ghostty 窗口 | 本配置 `on_force_close "detach"` 请求分离；需要保留工作时优先显式 detach |
+| 电脑重启或会话进程已结束 | 有保存数据时可重建标签、目录与命令；不能恢复原进程内存或正在进行的网络请求 |
+| Codex 进程已结束 | 先核对 worktree，再运行 `codex resume` 恢复对话 |
+
+查看会话：
 
 ```bash
-# 1. 新任务：首次明确基线
-cw ios auth origin/develop
-
-# 2. 已有任务：省略基线
-cw ios auth
-
-# 3. 接入旧 worktree：使用唯一会话名和实际绝对路径
-cw open ios--legacy "$HOME/你的已有worktree路径"
-
-# 4. 查看 / 重连
-cw list
-cw attach ios--auth
-
-# 5. 在正确 worktree 中恢复 Codex 对话
-codex resume
-
-# 6. 查看 Git 工作区关系
-git -C "$CW_IOS_REPO" worktree list
+zellij list-sessions
 ```
 
-`cw` 的打开命令在 **Zellij 外层 shell** 使用；`codex` / `codex resume` 在 **目标 worktree 的面板 shell** 使用。
+列表可能包含可恢复的已退出会话。重连存在恢复数据的项目后，按界面提示确认需要重新运行的程序。若恢复数据不可用，但 worktree 仍在，可用项目初始布局重新创建会话，再手动添加后续需求 tab。
 
-## 15. 实施验收清单
+Detach 的持续运行依赖 Mac、Zellij 服务进程和任务本身仍可运行；机器睡眠、重启或依赖网络中断不能靠 detach 保证任务继续。布局恢复也不能代替保存文件、Git 提交或 Codex 对话恢复。[会话重建机制](https://zellij.dev/documentation/session-resurrection)
 
-### 第一阶段：先验证一个任务
+本机没有配置开机或新终端自动进入 Zellij，打开 Ghostty 后按第 1 节手动连接。
 
-- [ ] Zellij、Git、Codex 均可运行，版本已记录。
-- [ ] 现有配置已备份，选定的仓库路径已核对。
-- [ ] 一个测试 session 能打开三面板，三个面板的 `pwd` 正确。
-- [ ] Codex 的输入、中文、复制粘贴和常用快捷键正常。
-- [ ] 会话管理器能找到测试任务，detach 后能重新 attach。
-- [ ] 已亲自验证面板独占显示和恢复分屏。
+## 9. Git worktree 的创建与结束
 
-### 第二阶段：再增加自动化
+本次终端配置直接使用第 2 节已有目录。以下是以后新增需求时的手动流程；**新增 Zellij tab 本身不会创建分支或 worktree**。
 
-- [ ] `cw --help` 正常输出。
-- [ ] 显式指定基线后，能创建一个新的测试 worktree。
-- [ ] 对同一任务执行 `cw 项目 任务`，没有创建第二个分支或重复目录。
-- [ ] 能用 `cw open` 接入一个现有 worktree，而不移动原目录。
-- [ ] 能在正确目录用 `codex resume` 找到要继续的对话。
-- [ ] 已理解重启恢复不是进程原地继续，清理 worktree 前会检查代码和本地文件。
+### 9.1 为新需求创建分支和目录
 
-完成后再逐步减少 Ghostty 的旧标签。先迁移一个任务，再迁移一个项目，不要一次关闭所有正在工作的终端。
+先明确所属仓库、需求分支名和基线分支。基线由项目发布规则决定，不能仅从当前所在分支推断。把下列四个值替换为本次已确认的实际值：
+
+```bash
+project_repo="/替换为该项目现有工作区的绝对路径"
+task_directory="/替换为准备新建的需求目录绝对路径"
+task_branch="feature/替换为需求名"
+base_ref="origin/替换为已确认的基线分支"
+```
+
+以 `origin` 远端为例，更新引用并检查基线：
+
+```bash
+git -C "$project_repo" worktree list
+git -C "$project_repo" fetch origin
+git -C "$project_repo" rev-parse --verify "${base_ref}^{commit}"
+```
+
+确认基线存在、需求分支尚未创建且目标目录未被使用，再执行：
+
+```bash
+git -C "$project_repo" worktree add -b "$task_branch" "$task_directory" "$base_ref"
+git -C "$task_directory" status --short --branch
+```
+
+若需求分支已经存在，先从 `git worktree list` 判断它是否已在其他目录检出：已有目录直接复用；仅当尚未检出时，使用下面命令，**不再加 `-b`**：
+
+```bash
+git -C "$project_repo" worktree add "$task_directory" "$task_branch"
+```
+
+创建成功后，按项目文档准备该 worktree 的依赖和本地配置，再按第 6 节添加需求 tab。构建、测试、服务端口和日志路径按实际工程设置，不从其他 worktree 自动复制。
+
+### 9.2 需求结束后的清理
+
+1. 先完成项目要求的评审、验证与合并，保存需要保留的改动；停止该需求的 Codex、测试、日志和其他进程。
+2. 在目标需求 tab 的 Shell 中执行 `zellij action close-tab`，关闭该 tab。该操作会关闭其全部面板，因此应先完成上一步。
+3. 在外层 Shell 或其他保留的工作区重新设置下面三个变量，替换为本次要清理的真实值。不同 Shell 不共享第 9.1 节设置的变量，关闭 tab 后不能假定它们仍存在：
+
+   ```bash
+   project_repo="/替换为该项目仍保留的工作区绝对路径"
+   task_directory="/替换为本次要删除的需求目录绝对路径"
+   task_branch="feature/替换为本次已结束的需求名"
+
+   git -C "$project_repo" worktree list
+   git -C "$task_directory" rev-parse --show-toplevel
+   git -C "$task_directory" status --short --branch
+   git -C "$task_directory" ls-files --others --ignored --exclude-standard
+   ```
+
+   确认工作区列表、仓库根目录和分支都指向本次结束的需求；最后一条用于发现 Git 忽略的本地文件，需要保留的文件先移出该目录。
+
+4. 确认需求目录可以删除后，从仍保留的仓库工作区执行：
+
+   ```bash
+   git -C "$project_repo" worktree remove "$task_directory"
+   git -C "$project_repo" worktree list
+   ```
+
+   不添加 `--force` 绕过未保存文件的检查；被拒绝时先处理具体原因。删除 worktree 不会同时删除其分支。确实不再需要且已合并的本地分支，可另外执行 `git -C "$project_repo" branch -d "$task_branch"`。
+
+5. 如果项目布局包含这个目录，删除相应 `worktree` 行，避免以后新建会话时引用已删除路径。布局文件不直接修改已保存的会话恢复数据；会话管理器中若还有引用该目录的已退出会话，应在确认不再需要后清理对应恢复记录。
+
+此流程使用 Git 管理 worktree，不直接通过 Finder 或 `rm -rf` 删除关联目录。[Git worktree 生命周期](https://git-scm.com/docs/git-worktree)
+
+## 10. 检查、排错与本机验证记录
+
+### 10.1 配置解析检查
+
+下面只检查配置、布局和实际支持的参数，不启动项目任务：
+
+```bash
+zellij --version
+zellij --config "$HOME/.config/zellij/config.kdl" --layout codex-workspace setup --check
+zellij --config "$HOME/.config/zellij/config.kdl" --layout kjxy setup --check
+zellij --config "$HOME/.config/zellij/config.kdl" --layout lmerp setup --check
+zellij action new-tab --help
+```
+
+`setup --check` 应成功解析配置和布局；它不能证明目录内项目可以构建，也不能代替 Ghostty 中的快捷键与显示验收。
+
+| 现象 | 检查与处理 |
+| --- | --- |
+| `zellij: command not found` | 用 `command -v brew`、`brew list --versions zellij` 检查安装；新开正常的 Ghostty Shell 再检查 PATH |
+| 布局找不到或 KDL 解析失败 | 检查文件名、括号和配置目录；运行上面的 `setup --check`，按报错行定位 |
+| 没有出现预期初始标签 | 检查是否连接了已存在的同名会话；修改初始布局不会覆盖它，缺少的需求用 `new-tab` 添加 |
+| 新 tab 目录不对 | 检查 `--cwd` 的绝对路径；在三个面板核对 `pwd`，再核对 Git 分支 |
+| 新增 tab 报 `Not enough room` | 先 attach 目标 session，让窗口有足够空间，再在其 Git / Shell 面板中执行新增命令；本机不采用无客户端的纯后台新增方式 |
+| 重复出现同名 tab | `new-tab` 不去重；先用 `query-tab-names` 检查，关闭重复项前停止其中程序 |
+| `Ctrl+g` 或 Alt 被拦截 | 先回到 Locked；核对是否加载本文 `clear-defaults=true` 配置，或是否又嵌套了其他复用器 |
+| 按快捷键后文字不输入 | 检查是否仍在重命名或滚动模式，按对应退出键回到 Locked |
+| 外部编辑器没有打开 | 在 Shell 检查 `printenv VISUAL`、`printenv EDITOR`，沿用可运行的编辑器命令；此问题与会话恢复分开排查 |
+| Codex 恢复了错误任务 | 先核对当前目录，使用 `codex resume` 选择，不直接假定 `--last` 就是目标 |
+| Codex 状态没有出现在标题中 | 聚焦上方 Codex 面板，确认其未设置固定 pane 名称；外层 Ghostty 若仍显示手动名称，按第 7.1 节清除标题覆盖 |
+| 恢复会话后目录不存在 | 先检查原 worktree 是否被移动或删除；修正项目布局，再为存在的目录建立标签 |
+
+### 10.2 2026-10-14 本机记录
+
+| 项目 | 状态 |
+| --- | --- |
+| Zellij 安装 | Homebrew 安装 `0.45.1`，版本命令已核验 |
+| 配置文件 | `config.kdl`、通用布局、`kjxy.kdl`、`lmerp.kdl` 已保存 |
+| 配置与布局解析 | `setup --check` 已通过 |
+| 现有 worktree | 已核对两个项目、五个目录的仓库关系和当时分支 |
+| Ghostty、Shell 与 Codex 配置 | 沿用现有设置；未新增自动启动 |
+| Git 操作 | 本次配置未创建、搬迁或删除 worktree，未创建分支或提交代码 |
+| 安装时的项目会话与面板 | 首次创建时，`kjxy` 有 3 个 tab，`lmerp` 有 2 个 tab；15 个终端面板的目录均与目标 worktree 一致，当时运行程序为 `/bin/zsh` |
+| 安装验证的任务范围 | 当时没有在这些面板运行 Codex 或业务构建、测试命令；该记录不代表后续面板的实时运行状态 |
+| 新增需求 tab | 已连接客户端的临时会话中，`new-tab --cwd` 通过；带空格路径的三个终端面板目录均匹配 |
+| 键盘与重连验证 | 临时会话通过 PTY（伪终端）测试：`Ctrl+b` 前缀、面板与标签切换、全屏、中文标签重命名、打开会话管理器；detach/attach 后面板 ID、目录、标签名及测试进程均保留 |
+| 按键与文本透传 | 临时面板按原始字节收到 `Ctrl+g`、Alt+h 和中文 UTF-8 文本；这不代表已验收 Ghostty 输入法或实际 Codex 编辑器交互 |
+| Ghostty 输入交互 | 仍未人工验收：中文输入法、实际 Codex `Ctrl+g` 外部编辑器与 Alt 文字移动 |
+| 动态标题验证 | PTY 模拟的 `Working → Ready` 状态切换通过，现有 Codex 面板动态标题已恢复；实际 Ghostty 外层仍显示“云课堂”，清除其手动标题覆盖后的显示效果待确认 |
+| 运行会话标题更新 | 三份布局已取消上方面板的固定名称并通过解析；现有五个对应面板已就地清名，ID、目录、运行命令与退出状态保持不变；正在运行的 Codex 面板已恢复其真实动态标题 |
+| 机器重启后的会话重建 | 未执行重启验证 |
+
+安装阶段的测试专用会话已清理，保留 `kjxy` 与 `lmerp` 两个项目会话。安装验证记录保存在 `~/.local/state/zellij-setup/20261014-101940/verification.json`。
+
+动态标题调整的验证记录位于 `~/.local/state/zellij-title-fix/20261014-121539/verification.json`，同目录保存调整前的三份布局备份。
+
+首次进入项目后，依次确认：各 tab 的目录和分支正确；三个面板正常；`Ctrl+b` 能切换、分离和重连；Locked 中 `Ctrl+g` 与 Alt 文字移动保持原行为。通过这些检查后再依赖该会话承载长时间运行的任务。
