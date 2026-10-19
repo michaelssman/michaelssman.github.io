@@ -329,33 +329,3 @@ tmux 的树形选择界面和 Zellij 的会话管理器可以辅助切换；它�
 **先解决分类，再增加工具：项目用会话分组，需求或 worktree 用窗口 / 标签区分，同一任务中的程序用面板并排展示。**
 
 对当前工作流，可以先从 Zellij 的一个项目会话开始；熟悉创建、切换和分离后，再考虑可复用布局和自动化启动脚本。
-
-以下为本文所用的官方文档，核对日期为 **2026-10-13**。在线文档可能包含比本机版本更新的功能，实际使用以已安装版本的帮助信息和配置为准。
-
-| 编号 | 资料 |
-| --- | --- |
-| 1 | [tmux 官方入门指南][1] |
-| 2 | [tmux 官方手册（OpenBSD）][2] |
-| 3 | [Zellij 官方用户指南][3] |
-| 4 | [Zellij 会话命令与配置输出][4] |
-| 5 | [Zellij 快捷键配置][5] |
-| 6 | [Zellij CLI Actions][6] |
-| 7 | [Zellij 会话重建与恢复限制][7] |
-| 8 | [Zellij 命令行配置选项][8] |
-| 9 | [Zellij 布局][9] |
-| 10 | [Ghostty 官方文档][10] |
-| 11 | [Git worktree 官方文档][11] |
-| 12 | [Codex CLI 官方文档][12] |
-
-[1]: https://github.com/tmux/tmux/wiki/Getting-Started
-[2]: https://man.openbsd.org/tmux
-[3]: https://zellij.dev/documentation/
-[4]: https://zellij.dev/documentation/commands.html
-[5]: https://zellij.dev/documentation/keybindings.html
-[6]: https://zellij.dev/documentation/cli-actions.html
-[7]: https://zellij.dev/documentation/session-resurrection.html
-[8]: https://zellij.dev/documentation/command-line-options.html
-[9]: https://zellij.dev/documentation/layouts.html
-[10]: https://ghostty.org/docs
-[11]: https://git-scm.com/docs/git-worktree
-[12]: https://developers.openai.com/codex/cli/
