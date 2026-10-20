@@ -150,11 +150,13 @@ spring:
 
 是指在若干项目中配置内容相同的配置。比如：redis的配置，很多项目用的同一套redis服务所以配置也一样。
 
-另外还需要知道nacos如何去定位一个具体的配置文件，即：namespace、group、dataid. 
+另外还需要知道nacos如何去定位一个具体的配置文件，即：Namespace、Group、Data ID.
 
-1、通过namespace、group找到具体的环境和具体的项目。
+1、通过namespace找到具体的环境（dev）。
 
-2、通过dataid找到具体的配置文件，dataid有三部分组成：
+2、通过group找到具体的项目（hhjava）。
+
+3、通过dataid找到具体的配置文件，dataid有三部分组成：
 
 比如：content-service-dev.yaml配置文件  由下面三部分组成
 
