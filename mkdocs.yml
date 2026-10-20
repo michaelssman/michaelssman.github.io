@@ -362,6 +362,7 @@ nav:
   - Java:
     - Java/Java.md
     - Java/环境搭建.md
+    - Java/SSH隧道访问ECS服务.md
     - Java/数据类型.md
     - Java/Stream.md
     - Java/实体类.md

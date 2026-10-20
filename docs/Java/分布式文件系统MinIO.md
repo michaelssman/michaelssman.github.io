@@ -21,7 +21,7 @@ App → HTTPS :443 gateway → 127.0.0.1:63030 backup-file
 | 文件服务配置 | `/etc/hhjava/backup-file/application.yml`、`secrets.properties` |
 | 文件请求入口 | `https://47.120.56.43/backup/files/...` |
 
-现有 MySQL/Nacos 的管理入口仍应由安全组限制来源。
+Mac 管理 MinIO、Nacos 和 MySQL 时统一使用 [SSH 隧道](SSH隧道访问ECS服务.md)，无需为此开放服务的公网端口。已有公网直连应先切换并验证隧道，再收紧安全组与容器端口映射。
 
 ## 2. Mac：上传许可证与安装脚本
 
@@ -70,7 +70,7 @@ python3 configure-minio.py
 
 ## 4. Nacos：发布连接配置，不保存真实密钥
 
-在 Nacos 配置管理中选择 `dev`，新建 `hhjava-backup-file-dev.yaml`，Group 为 `hhjava`，格式 YAML，内容采用项目的 `scripts/ecs/backup-file-nacos.yaml`。已有同名配置时先导出备份，再合并，不整份覆盖。
+先通过 [SSH 隧道打开 Nacos 控制台](SSH隧道访问ECS服务.md#nacos-mysql)。在配置管理中选择 `dev`，新建 `hhjava-backup-file-dev.yaml`，Group 为 `hhjava`，格式 YAML，内容采用项目的 `scripts/ecs/backup-file-nacos.yaml`。已有同名配置时先导出备份，再合并，不整份覆盖。
 
 关键部分：
 
@@ -156,34 +156,7 @@ systemctl restart hhjava-gateway
 
 ## 7. 控制台、日常检查与备份
 
-### 7.1 打开控制台
-
-通过 SSH（Secure Shell，安全外壳协议）隧道，把 Mac 本地端口转发到 ECS 上的 MinIO。Mac 与 ECS 之间的数据经过加密，只需已有 SSH 连接可用。
-
-1. **Mac：建立隧道。** 新开一个 Mac 终端窗口，执行下面这一整条命令；可以整段复制，行尾的 `\` 表示命令继续到下一行。
-
-   ```sh
-   ssh -i "/Users/michael/Downloads/ecs260818.pem" \
-     -N -o ExitOnForwardFailure=yes \
-     -L 127.0.0.1:19000:127.0.0.1:9000 \
-     -L 127.0.0.1:19001:127.0.0.1:9001 \
-     root@47.120.56.43
-   ```
-
-   `-N` 表示只转发端口、不进入服务器命令行；`-L` 指定本地端口转发；`ExitOnForwardFailure=yes` 在本地转发监听无法建立时退出并报错。[SSH 官方说明](https://man.openbsd.org/ssh)
-
-   | Mac 本地入口 | 转发到 ECS | 用途 |
-   | --- | --- | --- |
-   | `127.0.0.1:19000` | `127.0.0.1:9000` | MinIO API 调试 |
-   | `127.0.0.1:19001` | `127.0.0.1:9001` | MinIO 网页控制台 |
-
-2. **Mac：打开控制台。** 保持隧道终端运行，在 Chrome 打开 `http://127.0.0.1:19001`，应出现 MinIO 登录页面。终端没有输出、一直等待通常是正常的；如果提示端口已占用，先确认是否已有隧道，避免重复启动。
-
-3. **登录 MinIO。** 使用 MinIO 管理员账号和密码，凭据保存在 ECS 的 `/opt/hhjava-minio/secrets/root_user` 和 `/opt/hhjava-minio/secrets/root_password`。需要查看时，另开 Mac 终端登录 ECS，登录后可查看存储桶和对象、进行管理。
-
-4. **关闭隧道。** 在隧道终端按 `Control + C`。
-
-### 7.2 日常检查与备份
+控制台访问、端口转发及登录步骤见 [SSH 隧道访问 ECS 服务](SSH隧道访问ECS服务.md)。
 
 **ECS** 常用检查：
 
