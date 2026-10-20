@@ -6,7 +6,11 @@ Git Worktree 可以让同一个 Git 仓库在多个目录中同时检出不同�
 
 ## 2. 远端已存在需求分支
 
-### 本地需求分支已经存在
+**本地分支不存在时，先创建本地跟踪分支：**
+
+```bash
+git branch --track "$BRANCH_B" "origin/$BRANCH_B"
+```
 
 为已有的需求 B 分支创建独立目录：
 
@@ -18,21 +22,9 @@ git worktree add "$WORKTREE_B_DIR" "$BRANCH_B"
 
 ```bash
 git worktree list
-
-git -C "$REPO_DIR" status --short --branch
-git -C "$WORKTREE_B_DIR" status --short --branch
 ```
 
-### 本地分支不存在时
-
-如果以后需要从一个已有远端分支创建 Worktree，可先创建本地跟踪分支：
-
-```bash
-git branch --track "$BRANCH_B" "origin/$BRANCH_B"
-git worktree add "$WORKTREE_B_DIR" "$BRANCH_B"
-```
-
-## 3. 创建一个全新的需求分支
+## 3. 创建全新的需求分支
 
 新需求通常从团队指定的开发基线创建。以下示例以 `origin/develop` 为基线：
 
@@ -174,12 +166,6 @@ git worktree list
 git worktree list --porcelain
 ```
 
-查看指定 Worktree 的状态：
-
-```bash
-git -C "$WORKTREE_B_DIR" status --short --branch
-```
-
 如果某个 Worktree 被手动移动，可修复记录：
 
 ```bash
@@ -194,24 +180,9 @@ git worktree unlock "$WORKTREE_B_DIR"
 
 ## 10. 需求结束后的安全清理
 
-只有在以下条件全部满足后才清理：
-
-- 需求已按团队流程合入 `main`。
-- 本地没有未提交改动。
-- 本地提交已全部推送。
-- 不再有 Codex、Xcode 或终端进程使用该目录。
-
-先检查：
+从其他 Worktree 中安全移除：
 
 ```bash
-git -C "$WORKTREE_B_DIR" status --short --branch
-git worktree list
-```
-
-再从其他 Worktree 中安全移除：
-
-```bash
-cd "$REPO_DIR"
 git worktree remove "$WORKTREE_B_DIR"
 git worktree prune
 git worktree list
@@ -249,9 +220,3 @@ codex -C "$WORKTREE_B_DIR"
 牢记规则：
 
 提交前始终执行 `pwd` 和 `git status --short --branch`。
-
-## 参考资料
-
-- [OpenAI 官方 Codex CLI 文档](https://learn.chatgpt.com/docs/codex/cli)
-- [OpenAI 官方 Codex Worktree 文档](https://learn.chatgpt.com/docs/environments/git-worktrees)
-- [Git 官方 Worktree 文档](https://git-scm.com/docs/git-worktree)

@@ -58,6 +58,17 @@ M  docs/git.md
 
 普通文件状态的第一列表示暂存区，第二列表示工作区。
 
+### 在指定目录查看状态
+
+无需先进入目标目录，可以用 `-C` 指定本次 Git 命令的执行位置。
+
+```bash
+WORKTREE_B_DIR="/path/to/project-requirement-b"
+git -C "$WORKTREE_B_DIR" status --short --branch
+```
+
+注意使用大写 `-C`；小写 `-c` 用于临时传入 Git 配置。执行前应确保目录变量已设置且非空：`-C ""` 会沿用当前目录。[Git 官方说明](https://git-scm.com/docs/git#Documentation/git.txt--Cltpathgt)
+
 ## add 与 commit 速查
 
 暂存区保存准备提交的内容。基本流程：**修改文件 → `git add` 暂存 → `git commit` 生成本地提交记录**。
