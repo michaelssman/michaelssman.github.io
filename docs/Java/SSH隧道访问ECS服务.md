@@ -64,7 +64,21 @@ ssh -i "/Users/michael/Downloads/ecs260818.pem" \
 
 ## 4. Mac 本机运行 hhjava
 
-先保持对应隧道运行，再在 **IDEA 的运行配置 → Environment variables** 中按服务设置以下变量；这些是配置项，不是直接粘贴到终端的命令。
+**Mac：** 在 `hhjava` 根目录依次执行以下命令。前两条切换目录、生成配置；最后一条启动五个端口的统一隧道，保持终端运行，再从 IDEA 启动服务。
+
+```sh
+cd /Users/michael/Documents/java_demo/hhjava
+./scripts/setup-dev-config.sh
+./scripts/ecs-tunnel.sh
+```
+
+统一脚本与第 2、3 节的手动隧道择一使用，不要重复占用端口。脚本默认使用本文 ECS 和 SSH 私钥；更换时运行 `./scripts/ecs-tunnel.sh user@host /完整路径/key.pem`。
+
+生成器读取已忽略的 `/Users/michael/Documents/java_demo/.hhjava-dev-config/` 中的凭据，配置文件权限为 `600`（仅当前用户可读写）。`application.properties` 用于 user/gateway；提供 `minio-app-user`、`minio-app-password` 后，另生成不含数据库密码及用户私钥的 `backup-file.properties`。本机 MinIO 输入对应 ECS 的 `secrets/app_user`、`secrets/app_password`，不是管理员凭据。
+
+项目在运行环境（profile）配置加载阶段，后置导入各服务自己的本机文件，覆盖 Nacos 的连接地址：`local/hhjava-user.properties` 默认使用 MySQL `13306`，`local/hhjava-backup-file.properties` 默认使用 MinIO `19000`；已有覆盖文件不会被生成器改写。Nacos 默认为 `127.0.0.1:18848`。通常不需另外设置 IDEA 环境变量；若旧运行配置仍填写公网地址，应删除旧值或改为下表地址。
+
+需要临时覆盖时，在 **IDEA 的运行配置 → Environment variables** 按服务设置；以下是配置项，不是终端命令。
 
 | 本机服务 | 覆盖变量 |
 | --- | --- |
@@ -74,7 +88,7 @@ ssh -i "/Users/michael/Downloads/ecs260818.pem" \
 
 数据库 URL 示例对应 `app` 库；已有数据库名或其他连接参数不同时保留其原值，只替换主机和端口。Nacos、数据库和 MinIO 的凭据继续使用各服务已有的受限配置，不写入本指南。MinIO 的 `read-path` 仍按对象定位约定配置，不因 API 走隧道就变成公开下载地址。
 
-上述变量只用于 **Mac 进程**，不要修改共享 Nacos 配置或 ECS 的 systemd 参数。ECS 宿主机服务仍连接本机 `8848`、`3306`、`9000`；同 Docker 网络中的服务使用容器服务名。项目开发模板可能仍默认公网 Nacos 地址，修改 `.env.example` 本身不会改变正在运行的进程。
+这些覆盖只用于 **Mac 进程**，不要修改共享 Nacos 配置或 ECS 的 systemd 参数。ECS 宿主机服务仍连接本机 `8848`、`3306`、`9000`；同 Docker 网络中的服务使用容器服务名。修改配置后需重启本机应用，修改 `.env.example` 本身不会改变正在运行的进程。
 
 重启本机应用后确认 Nacos 配置能加载，数据库或文件业务能正常调用。隧道只解决这些基础服务的连接，不会自动打通其他微服务之间的访问。
 
@@ -86,4 +100,11 @@ ssh -i "/Users/michael/Downloads/ecs260818.pem" \
 - **安全组：** 保留可信来源的 SSH `22` 和业务所需 HTTPS `443`。跨 ECS 的必要连接走私网并精确授权。[阿里云安全组建议](https://www.alibabacloud.com/help/en/ecs/user-guide/start-using-security-groups)
 - **Docker：** 对仅供宿主机和 SSH 隧道访问的端口，使用 `127.0.0.1:宿主机端口:容器端口`，不绑定所有网卡。既有实例修改映射前先确认数据卷、容器网络和其他客户端；不要删除数据卷重建。MySQL 示例见 [环境搭建](环境搭建.md#mysql-via-ssh)。[Docker 端口发布说明](https://docs.docker.com/engine/network/port-publishing/)
 
-以上是访问和收紧方案，不表示服务器的容器映射或安全组已经完成修改。
+### 本实例已完成的配置
+
+- ECS 的 MySQL `3306`、Nacos `8848/9848/9849`、MinIO `9000/9001` 均只发布到 `127.0.0.1`；Nacos `9849` 为服务端间端口，不转发到 Mac。
+- MySQL 沿用原镜像、账号与 `mysql_mysql_data` 数据卷；配置为 `/opt/mysql/compose.yaml`，项目名为 `mysql-private`，复用原网络 `mysql_backend`。
+- Nacos 沿用 `2.0.3` 和原账号、配置；容器 `/home/nacos/data` 已挂载到 ECS `/opt/hhjava-nacos/data`，包含内置 Derby 数据库和注册数据。不要用空目录覆盖。
+- 迁移顺序为停服、冷备份、保留旧容器，再按回环映射重建及验证。备份位于 `/opt/hhjava-loopback-backups/`；`*-before-loopback-*` 原容器保持停止且关闭自动重启。不要同时启动新旧 MySQL；Nacos 迁移后已有新写入时，也不能直接启动旧容器回退。
+
+上述是容器映射的实施结果；阿里云安全组规则本次未调整、未核验，不代表其旧公网放行规则已经删除。

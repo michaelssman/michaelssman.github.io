@@ -21,7 +21,7 @@ App → HTTPS :443 gateway → 127.0.0.1:63030 backup-file
 | 文件服务配置 | `/etc/hhjava/backup-file/application.yml`、`secrets.properties` |
 | 文件请求入口 | `https://47.120.56.43/backup/files/...` |
 
-Mac 管理 MinIO、Nacos 和 MySQL 时统一使用 [SSH 隧道](SSH隧道访问ECS服务.md)，无需为此开放服务的公网端口。已有公网直连应先切换并验证隧道，再收紧安全组与容器端口映射。
+MinIO API `9000` 和控制台 `9001` 仅绑定 ECS 回环地址。Mac 管理 MinIO、Nacos 和 MySQL，或运行本机 hhjava，统一按 [SSH 隧道](SSH隧道访问ECS服务.md)连接；该文档同时记录已完成的容器映射和本机配置。
 
 ## 2. Mac：上传许可证与安装脚本
 
