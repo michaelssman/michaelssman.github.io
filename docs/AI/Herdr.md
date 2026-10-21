@@ -82,19 +82,9 @@ herdr integration status
 
 ## 3. 管理本机项目
 
-| Workspace | 目录 |
-|---|---|
-| `flutter_demo` | `/Users/michael/Documents/flutter_demo` |
-| `HHLib` | `/Users/michael/Documents/HHLib` |
-| `java_demo` | `/Users/michael/Documents/java_demo` |
-| `michaelssman.github.io` | `/Users/michael/Documents/michaelssman.github.io` |
-| `skills` | `/Users/michael/.codex/skills` |
-
-上述五个工作区已创建，每个包含一个 `main` 标签和三个面板：上方约 70%，下方左右为 `Git / Shell`、`Tests / Logs`。直接运行 `herdr` 即可使用；下文创建、分屏步骤用于以后补建或增加项目。
-
 ### 首次添加工作区
 
-先启动一次 `herdr`，按 `Ctrl+b → q` 返回外层 Shell。查看已有工作区：
+查看已有工作区：
 
 ```bash
 herdr workspace list
@@ -116,10 +106,7 @@ herdr workspace create --cwd "/Users/michael/.codex/skills" --label "skills"
 
 推荐每个工作区使用一个 `main` 标签：上方运行 Codex，下方左右分别执行 Git/Shell 命令和测试/查看日志。
 
-1. 在单面板中按 `Ctrl+b → -`，上下分屏。
-2. 单击下方面板，再按 `Ctrl+b → v`，把下方分成左右两部分。
-3. 拖动边框调整大小，上方可保留约 70% 高度；右键面板可重命名。
-4. 单击上方面板，确认当前目录后运行 Codex：
+1. 单击上方面板，确认当前目录后运行 Codex：
 
    ```bash
    pwd
@@ -129,8 +116,6 @@ herdr workspace create --cwd "/Users/michael/.codex/skills" --label "skills"
 Herdr 可检测面板中的 Codex，并在侧栏显示任务状态。面板负责运行程序，工作区负责组织项目；创建工作区本身不会启动 Codex 或测试。[快速开始](https://herdr.dev/docs/quick-start/)
 
 ## 4. 日常操作
-
-`Ctrl+b → c` 表示先同时按 `Ctrl+b`，松开后再按 `c`。鼠标可直接切换工作区、标签和面板，拖动分隔线调整布局，右键打开操作菜单。
 
 | 操作 | 快捷键 |
 |---|---|
