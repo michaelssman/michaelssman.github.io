@@ -188,7 +188,7 @@ git worktree prune
 git worktree list
 ```
 
-确认团队不再需要需求分支后，才考虑删除本地和远端分支：
+删除本地和远端分支：
 
 ```bash
 git branch -d "$BRANCH_B"
