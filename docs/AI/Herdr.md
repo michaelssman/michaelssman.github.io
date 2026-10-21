@@ -112,6 +112,25 @@ herdr workspace create --cwd "/Users/michael/.codex/skills" --label "skills"
 
 每条命令创建一个工作区及其首个标签、Shell 面板。再次运行 `herdr`，单击左侧工作区切换项目。[CLI 工作区说明](https://herdr.dev/docs/cli-reference/#workspaces)
 
+### 打开已有 Git worktree
+
+同一个仓库同时开发多个需求时，可以把每个已有 worktree 加入 Herdr，作为独立工作区归到源仓库下面。先启动 Herdr，并按上一节的方法把源仓库加入工作区。
+
+例如，源仓库为 `/Users/michael/Desktop/yuncai/kjxy/ios-kjxy`，已有需求 worktree 为 `/Users/michael/Desktop/yuncai/kjxy/refactor1.0`，在普通 Shell 中执行：
+
+```bash
+herdr worktree open \
+  --cwd "/Users/michael/Desktop/yuncai/kjxy/ios-kjxy" \
+  --path "/Users/michael/Desktop/yuncai/kjxy/refactor1.0" \
+  --label "重构1.0"
+```
+
+- `--cwd`：源仓库的工作目录，用于确定 worktree 所属的 Git 仓库。
+- `--path`：该仓库中已经存在的 worktree 目录。
+- `--label`：该工作区在 Herdr 中显示的名称。
+
+执行后，源仓库下面会出现“重构1.0”工作区，可在其中运行 `codex` 开发该需求。该命令打开已有 checkout，不创建新分支或 worktree，也不移动项目文件；若该 worktree 已打开，会切换到已有工作区。[Worktree 说明](https://herdr.dev/docs/configuration/#worktrees)
+
 ### 分屏与运行 Codex
 
 推荐每个工作区使用一个 `main` 标签：上方运行 Codex，下方左右分别执行 Git/Shell 命令和测试/查看日志。
