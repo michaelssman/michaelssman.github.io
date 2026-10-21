@@ -454,8 +454,6 @@ nav:
       - AI/Skills/Agent Skills.md
       - AI/Skills/Skills目录接入GitHub仓库.md
     - AI/Appium.md
-    - AI/codex-ghostty-zellij-worktree-guide.md
-    - AI/tmux-zellij-terminal-workspaces.md
     - AI/Herdr.md
   - Mac:
     - MAC/软件包管理系统.md
