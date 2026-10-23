@@ -60,7 +60,44 @@ $ponytail:ponytail off
 
 切换后观察回复确认。普通的 `lite/full/ultra/off` 切换不修改新会话默认值。[模式定义](https://github.com/DietrichGebert/ponytail/blob/main/skills/ponytail/SKILL.md#levels)、[切换实现](https://github.com/DietrichGebert/ponytail/blob/main/hooks/ponytail-mode-tracker.js)
 
-## 3. 默认配置与 Herdr 多标签
+## 3. 代码逻辑评审
+
+`ponytail-review` 把代码逻辑正确性放在评审首位，会读取变更及相关调用方、被调用函数和测试，追踪数据流。重点检查：
+
+- 条件分支、空值、边界值、金额舍入等错误。
+- 修改是否破坏调用方，数据在调用链中是否正确传递。
+- 并发竞争、重复操作、事务和数据丢失风险。
+- 关键逻辑是否缺少能够发现错误的有效测试。
+
+每个问题需要有具体触发场景、代码位置、影响和修复建议。默认只输出报告，不修改代码。[官方评审规则](https://github.com/DietrichGebert/ponytail/blob/main/skills/ponytail-review/SKILL.md)
+
+按评审范围选择技能：
+
+| 技能 | 适用范围 |
+|---|---|
+| `ponytail-review` | 指定变更，例如未提交内容、暂存内容、需求分支或 PR；未指定时检查未提交变更，没有未提交变更则检查最近一次提交 |
+| `ponytail-audit` | 指定目录或整个仓库；大仓库优先深入高风险区域，并说明未检查的部分 |
+
+`ponytail-audit` 同样检查逻辑正确性，默认只报告问题，不修改代码。[官方仓库审查规则](https://github.com/DietrichGebert/ponytail/blob/main/skills/ponytail-audit/SKILL.md)
+
+### 提供业务判断依据
+
+业务逻辑需要结合需求文档、接口约定和预期行为评审。评审前提供对应资料的实际路径，并明确比较基准分支。
+
+在 **Codex 输入框中**使用下面的提示词；将 `develop` 替换为实际基准分支，并补充需求文档和接口约定的路径：
+
+```text
+$ponytail:ponytail-review
+
+审核当前需求分支相对于 develop 的变更。
+结合需求文档和接口约定，重点检查业务逻辑、数据流、
+边界条件、并发及异常处理，并追踪相关调用链。
+
+只报告有明确证据的问题，给出文件行号、触发条件、
+实际结果、预期结果和修复建议。不要修改代码，用中文输出。
+```
+
+## 4. 默认配置与 Herdr 多标签
 
 不创建配置文件也能使用，默认模式为 `full`。需要明确设置新会话默认模式时，在 **Codex 输入框中**执行：
 
@@ -90,7 +127,7 @@ Herdr 的多个标签和面板只要使用同一用户、同一个 `CODEX_HOME`�
 
 多标签并行建议保持统一模式，当前插件的模式状态并非按会话完全隔离。[状态存储实现](https://github.com/DietrichGebert/ponytail/blob/main/hooks/ponytail-runtime.js)
 
-## 4. 排查
+## 5. 排查
 
 | 现象 | 检查或处理 |
 |---|---|
@@ -98,7 +135,7 @@ Herdr 的多个标签和面板只要使用同一用户、同一个 `CODEX_HOME`�
 | 输入 `/ponytail-review` 无效 | 改用 Codex 的 `$ponytail:ponytail-review` 技能调用 |
 | 找不到费用统计 band / board | 这是 Claude Code 的配套界面，不是 Codex CLI 功能 |
 
-## 5. 停用与卸载
+## 6. 停用与卸载
 
 临时关闭 Ponytail，在 Codex 输入框执行 `$ponytail:ponytail off`。需要禁用插件时，在 Codex 中打开 `/plugins`，选中 Ponytail 后按空格切换启用状态。
 
