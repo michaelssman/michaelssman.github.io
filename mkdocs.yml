@@ -35,7 +35,7 @@ edit_uri: "" # 编辑按钮跳转的链接
 repo_url: https://github.com/michaelssman/michaelssman.github.io # 右上角点击跳转的链接
 repo_name: michael.github.io # 右上角的名字
 ## [bottom-left corner]
-copyright: Copyright &copy; 2024 Michael # 左下角的版权声明
+copyright: Copyright &copy; 2026 Michael # 左下角的版权声明
 ## [bottom-right corner]
 extra:
   social: # icons
@@ -466,8 +466,7 @@ nav:
       - python/Bugly符号表上传工具/README.md
 # [Extensions]
 plugins:
-  - search: # 现在还不支持中文搜索 支持之后可以设置语言
-    # insider已经支持中文的分词搜索了 https://squidfunk.github.io/mkdocs-material/blog/2022/chinese-search-support/
+  - search:
       lang:
         - en
         - ja
