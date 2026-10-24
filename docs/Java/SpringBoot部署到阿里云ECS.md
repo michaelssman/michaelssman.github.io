@@ -95,9 +95,9 @@ hhjava-gateway/target/hhjava-gateway-1.0-SNAPSHOT.jar
 shasum -a 256 hhjava-service/hhjava-user/target/hhjava-user-1.0-SNAPSHOT.jar hhjava-gateway/target/hhjava-gateway-1.0-SNAPSHOT.jar
 ```
 
-文件稍后上传至 `/opt/hhjava/releases/<release>/user.jar`、`gateway.jar`；先完成数据库备份与第 6 节目录准备，再上传。
+文件稍后上传至 `/opt/hhjava/releases/<release>/user.jar`、`gateway.jar`；先完成第 5 节数据库检查（需保留数据时先备份）与第 6 节目录准备，再上传。
 
-## 5. 第三步：先备份数据库，再执行迁移
+## 5. 第三步：检查数据库并准备迁移
 
 操作位置：**ECS，通过已确认的 MySQL 管理入口操作**。
 
@@ -105,11 +105,13 @@ shasum -a 256 hhjava-service/hhjava-user/target/hhjava-user-1.0-SNAPSHOT.jar hhj
 
 先检查数据库名、业务表结构、索引与角色，不查询或输出用户密码及会话凭据。注册需要 `user`、`role`、`user_role` 三张表；源码注册固定关联 `role_id=2`，因此角色必须实际存在。用户名唯一约束也要在真实 MySQL 中确认，不能把 Java 先查重当作数据库约束。
 
-仓库的 V1/V2 不负责建立这三张业务表。**没有业务表的全新数据库，不属于本教程“复用已有数据库”的直接适用范围**；先准备经过审查的业务表建表迁移和角色数据，不能只执行 V1/V2 后就测试注册。
+仓库的 V1～V4 不负责建立这三张业务表。**没有业务表的全新数据库，不属于本教程“复用已有数据库”的直接适用范围**；先准备经过审查的业务表建表迁移和角色数据，不能删库后只启动应用。短信注册还要求 `username` 至少容纳 38 字符，密码字段至少容纳 60 字符的 BCrypt 哈希。
 
-### 5.2 建立能恢复的备份
+### 5.2 需要保留数据时，建立能恢复的备份
 
-开始 user 新版本之前，备份目标数据库的结构与数据，并保护备份文件。备份可能含用户密码哈希、OAuth2 Token 和移动会话信息，不是可以公开的普通 SQL 示例。
+当前项目尚未上线、数据均为可丢弃的测试业务数据，不强制备份，也不为旧版本增加兼容分支；结构满足要求时直接迁移，不为更新短信功能清空数据。确需重建时先确认本项目 `app` 库及基础三表，不清理 Nacos、凭据或其他服务数据。
+
+将来需要保留数据时，在启动 user 新版本之前备份目标数据库的结构与数据，并确认恢复方案。以下备份步骤仅在这种情况下执行；备份可能含用户密码哈希、OAuth2 Token 和移动会话信息，不能公开。
 
 1. 明确目标库与备份位置，使用受限账号和目录，不把密码写进命令行。
 2. 确认备份工具退出成功、文件非空；若压缩，还要校验压缩文件完整性。
@@ -141,12 +143,12 @@ Flyway 使用 `flyway_schema_history` 记录版本。先查历史，再选择对
 
 | 数据库情况 | 应如何处理 |
 | --- | --- |
-| 已有版本 0 基线和成功的 V1，尚无 V2 | 保持 `HHJAVA_FLYWAY_BASELINE_ON_MIGRATE=false`；user 启动时校验旧迁移并应用 V2 |
-| 已有成功的 V1、V2 | 仍保留校验，不重复手工创建表，不修改已执行迁移 |
+| 已有成功的迁移，尚未到 V4 | 保持 `HHJAVA_FLYWAY_BASELINE_ON_MIGRATE=false`；新版 user 校验历史并按顺序补齐迁移，已有 V1/V2 时追加 V3/V4 |
+| 已有成功的 V1～V4 | 仍保留校验，不重复手工创建表，不修改已执行迁移 |
 | 有业务表但没有 Flyway 历史 | 确认库与结构后，仅首次接管临时打开版本 0 基线开关；完成后恢复 `false` |
 | 有失败记录、校验和不一致，或表存在但版本不对应 | 暂停启动，核对迁移原因；不直接删历史表或用 repair 掩盖问题 |
 
-V1 创建 OAuth2 表；V2 创建 `mobile_refresh_session`，供移动登录保存 Refresh Token 的不可逆摘要以及轮换状态。**不要手工复制 V2 SQL 执行后再让 Flyway 重复执行。**
+V1 创建 OAuth2 表；V2 创建 `mobile_refresh_session`，保存 Refresh Token 摘要和轮换状态；V3 创建手机号关联表 `user_phone_identity`；V4 创建短信挑战表 `sms_verification` 与发送配额锁表 `sms_send_guard`，并初始化固定锁行。**不要手工导入迁移 SQL 后再让 Flyway 重复执行。**
 
 启动后的检查只看迁移版本、成功标记和目标表结构，不打印 Token、`token_hash` 或整表数据。H2 单元测试通过不等于真实 MySQL 迁移已经通过。
 
@@ -289,7 +291,7 @@ curl --noproxy '*' --silent --output /dev/null --write-out 'user_jwks_http=%{htt
 docker exec mysql sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -N -e "SELECT version,description,success FROM app.flyway_schema_history ORDER BY installed_rank;"'
 ```
 
-预期 user 稳定运行、仅监听 `127.0.0.1:8080`、JWKS 200、V2 成功。失败停在此处，受控查看 `journalctl -u hhjava-user.service -n 80 --no-pager`，分享前脱敏。user 就绪不是公网或 App 已通过。
+预期 user 稳定运行、仅监听 `127.0.0.1:8080`、JWKS 200、V1～V4 均为 `success=1`。失败停在此处，受控查看 `journalctl -u hhjava-user.service -n 80 --no-pager`，分享前脱敏。user 就绪不是公网或 App 已通过。
 
 ## 7. 第五步：启用公网 IP 的 HTTPS 与自动续期
 
@@ -375,7 +377,7 @@ renew unit 还有 `ExecStartPost`：即使无需续签也对齐证书，补偿�
 | 检查位置 | 要确认的内容 | 通过标准 |
 | --- | --- | --- |
 | ECS | Java 与两个服务状态 | 进程稳定运行，无反复重启；user 只监听回环，gateway 监听 TLS 443 |
-| ECS / MySQL | Flyway 与业务前置表 | 预期迁移成功，移动会话表存在，业务表及默认角色完整 |
+| ECS / MySQL | Flyway 与业务前置表 | V1～V4 成功；移动会话表、手机号关联表、短信挑战/配额表存在，基础业务表及默认角色完整 |
 | ECS | JWKS 与路由 | 能取得公钥，不能取得私钥；gateway 正确到达 user |
 | 服务器外部 | HTTPS | 证书可信、IP 匹配、证书链正常，不使用 `curl -k` 或 App 的跳过证书验证功能 |
 | 服务器外部 | 公开元数据 | issuer、授权/Token/JWKS 地址使用预期公网入口，不泄露内部 8080 地址 |
@@ -390,19 +392,28 @@ curl --noproxy '*' --silent --show-error --connect-timeout 5 --max-time 10 --out
 
 ### 8.2 注册、登录、刷新与退出
 
-操作位置：**本机 API 调试工具或真实 App**。下表 URL 以 `https://47.120.56.43` 为根地址；四个接口均使用 `POST` 和 `Content-Type: application/json`，不靠浏览器 Cookie 登录，也不需要 OAuth client secret。
+操作位置：**本机 API 调试工具或真实 App**。URL 以 `https://47.120.56.43` 为根地址；下表接口均使用 `POST` 和 `Content-Type: application/json`，不靠浏览器 Cookie 登录，也不需要 OAuth client secret。先确认已部署与当前接口一致的 user/gateway 版本，不能把本地代码更新当成服务器已更新。
+
+手机号采用一次验证码验证后注册或登录，新号码自动创建账号并返回 Token；不再提供用户名密码独立注册。阿里云开通、凭据、已有账号绑定及登录后设置密码，统一按 [hhjava 项目认证指南](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/AUTHENTICATION_GUIDE.md)第 12.5 节操作。真实短信按量计费。本机文件是 `java_demo/hhjava/docs/AUTHENTICATION_GUIDE.md`；网页对应已推送版本，本地修改需同步推送后才能在网页查看。
 
 | 操作 | 请求路径 | JSON 参数 |
 | --- | --- | --- |
-| 注册 | `/user/auth/register` | `username`、`password` |
-| 密码登录 | `/user/auth/mobile/login/password` | `username`、`password` |
+| 获取登录验证码 | `/user/auth/mobile/sms/code` | `phoneNumber` |
+| 统一注册/登录 | `/user/auth/mobile/login/sms` | `phoneNumber`、`challengeId`、`code` |
+| 密码登录 | `/user/auth/mobile/login/password` | `phoneNumber` 或 `username` 二选一，再加 `password` |
 | 刷新 | `/user/auth/mobile/token/refresh` | `refreshToken` |
 | 退出 | `/user/auth/mobile/logout` | `refreshToken` |
 
-在 Reqable 新建请求，选 `POST`，填写“根地址 + 请求路径”；Body 选择 JSON。注册和登录的请求体结构相同：
+在 Reqable 新建请求，选 `POST`，填写“根地址 + 请求路径”；Body 选择 JSON。先获取短信验证码：
 
 ```json
-{"username":"<你注册的用户名>","password":"<你自己设置的密码>"}
+{"phoneNumber":"<你自己的11位手机号>"}
+```
+
+再向统一登录入口提交返回的 `challengeId` 和手机收到的验证码：
+
+```json
+{"phoneNumber":"<同一手机号>","challengeId":"<本次发送返回的ID>","code":"<收到的6位验证码>"}
 ```
 
 刷新和退出使用下面结构，值来自登录或最近一次刷新响应；占位符不能原样提交，实际 Token 不要复制到公开文档：
@@ -413,13 +424,12 @@ curl --noproxy '*' --silent --show-error --connect-timeout 5 --max-time 10 --out
 
 按顺序操作，并只保留脱敏验收结论：
 
-1. **注册专用验收账号**：用户名 3～64 个字符；密码 8～72 个字符，且 UTF-8 编码不超过 72 字节。成功应为 HTTP 200、`code: 200`、`data: "用户注册成功"`。不要使用真实个人账号做破坏性重放实验。
-2. **验证重复注册**：同一用户名再次注册返回 HTTP 409；不能覆盖原账号。参数不合法返回 400。
-3. **验证错误密码**：返回 HTTP 401 和“用户名或密码错误”；不存在的账号也返回相同类别错误。
-4. **正确登录**：HTTP 200，`data` 含 `tokenType`、`accessToken`、`expiresIn`、`refreshToken`、`refreshExpiresIn`。Token 字段是凭据，不复制到截图或报告；时间字段以实际响应为准。
-5. **正常刷新**：把最近一次返回的 `refreshToken` 发送给刷新接口；成功取得新的一对 Token 后一起替换旧值。不得并发用同一旧 Refresh Token 刷新。
-6. **验证退出**：使用最新 Refresh Token 退出，预期 HTTP 200、`data: "退出登录成功"`；重复退出仍成功。之后再次用该会话刷新应返回 401。
-7. **独立验证旧 Token 重放**：重新登录建立单独测试会话，刷新一次，再重放旧 Refresh Token；旧 Token 与此会话的新 Token 随后均不能继续刷新。不要用正式正在使用的会话做此实验。
+1. **首次短信登录**：使用自己的测试号码，正确验证码应直接返回 HTTP 200、`code: 200`，`data` 含 `tokenType`、`accessToken`、`expiresIn`、`refreshToken`、`refreshExpiresIn`。未关联号码自动创建账号，不再取第二条短信。Token 字段是凭据，不复制到截图或报告。
+2. **再次登录**：按发送冷却重新获取验证码；成功后仍是同一账号，原备份归属不变。错误/过期码应拒绝，参数不合法返回 400；不要重复发送来做限流实验。
+3. **密码入口**：使用已设置密码的手机号，正文为 `{"phoneNumber":"<已绑定手机号>","password":"<当前密码>"}`；旧账号可改传 `username`，不能同时传两个身份字段。正确密码成功，错误密码或不存在账号均返回 401。
+4. **正常刷新**：把最近一次返回的 `refreshToken` 发送给刷新接口；成功取得新的一对 Token 后一起替换旧值。不得并发用同一旧 Refresh Token 刷新。
+5. **验证退出**：使用最新 Refresh Token 退出，预期 HTTP 200、`data: "退出登录成功"`；重复退出仍成功。之后再次用该会话刷新应返回 401。
+6. **独立验证旧 Token 重放**：重新登录建立单独测试会话，刷新一次，再重放旧 Refresh Token；旧 Token 与此会话的新 Token 随后均不能继续刷新。不要用正式正在使用的会话做此实验。
 
 Access Token 用于受保护业务请求的 `Authorization: Bearer <accessToken>`；Refresh Token 只能用于刷新/退出，不能当作 Bearer 凭据。当前 JWT 没有即时撤销黑名单，退出撤销的是刷新会话，已发出的 Access Token 仍可能在到期前通过验证，这是当前实现边界。
 
@@ -433,7 +443,9 @@ Access Token 用于受保护业务请求的 `Authorization: Bearer <accessToken>
 
 ### 8.4 日常更新和回退
 
-完成测试/打包，使用新发布名创建目录、上传两包并比较 SHA-256；保留原有秘密和 JWT 密钥，不重跑首次初始化。配置变化先备份并逐项比较。**ECS**核对旧指针后切换：
+完成测试/打包，使用新发布名创建目录、上传两包并比较 SHA-256；保留原有秘密和 JWT 密钥，不重跑首次初始化。配置变化先备份并逐项比较。若已部署文件服务，它也通过 `/opt/hhjava/current/backup-file.jar` 启动，新目录必须保留该文件，否则后续重启文件服务会失败。以下在 **ECS** 核对旧指针，按需复制未改动的文件服务 Jar，确认内容一致且服务账号可读后再切换：
+
+若同时更新文件服务，先在 **Mac 的 hhjava 根目录**执行 `mvn -pl hhjava-service/hhjava-user,hhjava-gateway,hhjava-service/hhjava-backup-file -am package`（包含测试），将 `hhjava-service/hhjava-backup-file/target/hhjava-backup-file-1.0-SNAPSHOT.jar` 上传为新目录的 `backup-file.jar`，按第 4 节方式核对 SHA-256。下方已有新 Jar 时不再复制旧文件；从未安装文件服务的服务器仍先按 [MinIO 部署教程](分布式文件系统MinIO.md)准备依赖与 unit。
 
 ```sh
 readlink /opt/hhjava/current
@@ -441,6 +453,17 @@ readlink /opt/hhjava/current
 set -eu
 test -f "/opt/hhjava/releases/$HHJAVA_RELEASE/user.jar"
 test -f "/opt/hhjava/releases/$HHJAVA_RELEASE/gateway.jar"
+if systemctl cat hhjava-backup-file.service >/dev/null 2>&1; then
+  if [ ! -e "/opt/hhjava/releases/$HHJAVA_RELEASE/backup-file.jar" ]; then
+    test ! -L "/opt/hhjava/releases/$HHJAVA_RELEASE/backup-file.jar"
+    test -r /opt/hhjava/current/backup-file.jar
+    cp -p /opt/hhjava/current/backup-file.jar "/opt/hhjava/releases/$HHJAVA_RELEASE/backup-file.jar"
+    cmp -s /opt/hhjava/current/backup-file.jar "/opt/hhjava/releases/$HHJAVA_RELEASE/backup-file.jar"
+  fi
+  test -f "/opt/hhjava/releases/$HHJAVA_RELEASE/backup-file.jar"
+  runuser -u hhjava-backup-file -- test -r "/opt/hhjava/releases/$HHJAVA_RELEASE/backup-file.jar"
+  sha256sum "/opt/hhjava/releases/$HHJAVA_RELEASE/backup-file.jar"
+fi
 test ! -e "/opt/hhjava/current-$HHJAVA_RELEASE"
 test ! -L "/opt/hhjava/current-$HHJAVA_RELEASE"
 ln -s "/opt/hhjava/releases/$HHJAVA_RELEASE" "/opt/hhjava/current-$HHJAVA_RELEASE"
@@ -449,7 +472,7 @@ systemctl restart hhjava-user.service
 )
 ```
 
-user 的迁移和 JWKS 通过后，再 `systemctl restart hhjava-gateway.service`，重做公网与认证检查。回退按相同指针方式选择已验证旧目录，但必须先确认新数据库结构兼容旧代码；JAR 回退不撤销 Flyway。此方案有短暂停机，不承诺高可用或零停机。
+user 的迁移和 JWKS 通过后，再 `systemctl restart hhjava-gateway.service`，重做公网与认证检查。若更新了文件服务 Jar，还需 `systemctl restart hhjava-backup-file.service`，使用 ECS 签发的令牌验收上传、分页、下载内容一致、跨账号拒绝和测试对象删除；不改动原有 MinIO 数据。回退按相同指针方式选择已验证旧目录，但必须先确认新数据库结构兼容旧代码；JAR 回退不撤销 Flyway。此方案有短暂停机，不承诺高可用或零停机。
 
 ## 9. 故障定位与交付边界
 
@@ -460,14 +483,14 @@ user 的迁移和 JWKS 通过后，再 `systemctl restart hhjava-gateway.service
 | 证书不被信任 | 是否误用 staging、是否匹配 IP、链是否完整、是否过期；不关闭校验 |
 | `/user/**` 返回 400 | 请求协议/Host/端口是否与 issuer 一致，是否擅自增加 TLS 终止代理 |
 | 返回 404 | Nacos 路由、前缀处理、user context-path，不先归因于密码 |
-| 登录返回 500 | 数据库连接、业务表/默认角色、V2 迁移、JWT 密钥；仅查看受控脱敏日志 |
+| 登录返回 500 | 数据库连接、业务表/默认角色、V1～V4 迁移、JWT 密钥；仅查看受控脱敏日志 |
 | 登录成功但业务请求 401 | 是否使用 Access Token，issuer/audience/算法/时间是否匹配，JWKS 是否可达 |
 | 首次 HTTPS 正常，之后突然失败 | timer、80 验证通路、证书到期、deploy-hook 与 gateway 实际证书 |
 | 进程被系统结束 | 内存与系统日志，核对两个 Java 进程和既有容器总资源，不只反复重启 |
 
-上线验收应分别记录“已验证 / 未验证及原因”：构建测试、产物校验、数据库备份及恢复、真实迁移、内部路由、外部 TLS、证书续期、认证正常与失败路径、真实 App。不要用一个“部署成功”掩盖未完成项目。
+上线验收应分别记录“已验证 / 未验证及原因”：构建测试、产物校验、数据库备份及恢复（有保留要求时）、真实迁移、内部路由、外部 TLS、证书续期、认证正常与失败路径、真实 App。不要用一个“部署成功”掩盖未完成项目。
 
-当前项目还没有账号级登录限流、验证码/风控、Access Token 即时撤销及平滑 JWT 密钥轮换。注册冲突返回 409 存在账号枚举取舍；公开服务必须配套适合实际场景的抗滥用措施。本文完成单机部署与验收，不等于自动具备完整生产安全和高可用能力。
+当前已有短信验证码及手机号/IP/全局发送限额、挑战核验次数限制，但密码登录入口仍缺少账号级限流，尚无完整风控、Access Token 即时撤销和平滑 JWT 密钥轮换；公开服务必须配套适合实际场景的抗滥用措施。本文完成单机部署与验收，不等于自动具备完整生产安全和高可用能力。
 
 本文的备份操作只覆盖同机受限备份和压缩完整性检查；没有完成隔离恢复演练、异地加密备份或外部到期告警。真实 App 工程也不在本教程的服务端验收范围，须单独连接并验证。
 
