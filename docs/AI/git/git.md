@@ -121,7 +121,49 @@ git fetch origin --prune
 
 ## pull
 
-拉取/同步远程仓库的代码到本地，更新代码。
+`git pull` 先获取远程提交，再按指定策略整合到**当前分支**。[Git 官方说明](https://git-scm.com/docs/git-pull)
+
+```bash
+git pull              # 从当前分支已配置的上游分支拉取
+git pull origin main  # 从 origin 的 main 分支拉取，整合到当前分支
+```
+
+执行前先提交或用 `git stash` 临时保存未完成的修改；`git pull origin main` 不会自动切换到本地 `main` 分支。
+
+### 拉取代码报错
+
+如果提示：
+
+```text
+fatal: Need to specify how to reconcile divergent branches.
+```
+
+表示本地分支和远程分支各有对方没有的提交，历史已经分叉，需要选择整合策略。按团队约定选择以下命令之一，仅对本次拉取生效：
+
+| 策略 | 命令 | 效果 |
+| --- | --- | --- |
+| 合并（Merge） | `git pull --no-rebase` | 保留已有提交；分叉时创建合并提交 |
+| 变基（Rebase） | `git pull --rebase` | 将本地提交重新应用到远程最新提交之后，会改写这些提交；避免用于已经共享的提交 |
+| 仅快进（Fast-forward only） | `git pull --ff-only` | 仅允许快进更新；分叉时拒绝整合，不能用于解决上述报错 |
+
+快进是直接把本地分支指针移动到远程的新提交，不产生合并提交。如果本地只是领先且已包含远程全部提交，则无需更新，并不属于分叉。
+
+合并或变基仍可能产生冲突：修复冲突文件并用 `git add 文件路径` 暂存后，分别执行 `git merge --continue` 或 `git rebase --continue`；要取消本次操作，分别执行 `git merge --abort` 或 `git rebase --abort`。
+
+### 设置默认拉取策略
+
+在仓库目录执行对应配置，后续 `git pull` 会使用该默认策略，无需每次传入参数：
+
+```bash
+# 按团队约定选择一项，不要依次执行全部命令
+git config set pull.rebase false  # 默认合并
+git config set pull.rebase true   # 默认变基
+git config set pull.ff only       # 仅允许快进
+```
+
+如果已经设置了 `pull.ff=only`，改为允许合并或变基时，还需执行 `git config set pull.ff true`，解除仅快进限制。
+
+若要设置所有仓库的默认值，添加 `--global`，例如 `git config set --global pull.rebase false`。[Git 配置说明](https://git-scm.com/docs/git-config)
 
 ## tag
 
@@ -218,89 +260,6 @@ A---B---C (main)
 
 这样，你就可以在新的分支上进行提交和推送，而不会影响到 `develop` 分支。
 
-## 拉取代码报错
-
-```sh
-From git.nmy.cn:app/003Code/ios-scm
-
- \* branch      main    -> FETCH_HEAD
-
-hint: You have divergent branches and need to specify how to reconcile them.
-
-hint: You can do so by running one of the following commands sometime before
-
-hint: your next pull:
-
-hint: 
-
-hint:  git config pull.rebase false # merge
-
-hint:  git config pull.rebase true  # rebase
-
-hint:  git config pull.ff only    # fast-forward only
-
-hint: 
-
-hint: You can replace "git config" with "git config --global" to set a default
-
-hint: preference for all repositories. You can also pass --rebase, --no-rebase,
-
-hint: or --ff-only on the command line to override the configured default per
-
-hint: invocation.
-
-fatal: Need to specify how to reconcile divergent branches.
-```
-
-这个错误信息表明你的本地分支和远程分支已经发散，它们拥有不同的提交历史，Git 需要知道如何合并这些更改。这通常发生在其他人已经推送了一些提交到远程仓库的 `main` 分支，而你的本地 `main` 分支也有一些不同的提交。Git 不确定应该如何合并这些更改，所以它需要你提供一个策略来解决这个问题。
-
-Git 提供了几种策略来解决这个问题：
-
-1. **合并（Merge）**：这会创建一个新的合并提交，它结合了两个分支的更改。这是最直观的方法，因为它保留了完整的历史记录，但可能会导致历史变得复杂。
-
-   执行以下命令来设置合并为默认的拉取策略：
-
-   ```sh
-   git config pull.rebase false
-   ```
-
-2. **变基（Rebase）**：这会将你的本地更改重新应用在远程分支的最新提交之上。这会创建一个更干净的项目历史，但它会改变已经存在的提交的历史。
-
-   执行以下命令来设置变基为默认的拉取策略：
-   ```sh
-   git config pull.rebase true
-   ```
-
-3. **快进（Fast-forward only）**：如果你的本地分支落后于远程分支，Git 只会更新你的本地分支以匹配远程分支。如果你的本地分支包含了远程没有的提交，Git 会拒绝操作。
-
-   执行以下命令来设置快进为默认的拉取策略：
-   ```sh
-   git config pull.ff only
-   ```
-
-你可以选择一个适合你工作流程的策略，并使用上面的命令来配置它。如果你想为所有仓库设置默认策略，可以使用 `--global` 标志。例如，如果你想全局设置合并策略，可以使用：
-
-```sh
-git config --global pull.rebase false
-```
-
-如果你只想为当前操作解决这个问题，而不改变全局设置，你可以在执行 `git pull` 命令时添加相应的标志，例如：
-
-- 对于合并：
-  ```sh
-  git pull --no-rebase
-  ```
-- 对于变基：
-  ```sh
-  git pull --rebase
-  ```
-- 对于快进：
-  ```sh
-  git pull --ff-only
-  ```
-
-选择一个策略后，运行相应的命令，然后你应该能够成功地拉取和合并远程分支的更改。
-
 ## reset
 
 `git reset --hard efa965834671bd20a19c049b572b647fc07613c4`会回退到`efa965834671bd20a19c049b572b647fc07613c4`这次提交，后面的提交在本地没有了，但是可以拉取。
@@ -333,7 +292,7 @@ git revert -m 1 abc1234  # 替换为实际的提交哈希
 
 ## cherry-pick
 
-正常的流程是在Feature分支上面进行开发，然后合到Develop分支。
+正常的流程是在Feature分支上开发，然后合到Develop分支。
 但是我不小心在Develop分支上进行了开发，提交push到Develop，现在Feature分支上面没有刚才修改的代码。
 
 可以用 **cherry-pick**。把你误提交到 `Develop` 的那几个 commit，单独拣到 `Feature` 分支上。
