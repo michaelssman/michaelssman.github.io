@@ -19,8 +19,6 @@ herdr
 
 首次启动会创建默认会话；以后执行同一命令连接已有会话。
 
-**不要在 Zellij 面板中启动 Herdr。** 两者都使用 `Ctrl+b` 前缀，嵌套会增加按键冲突和分屏层级。若当前在 Zellij 内，先按 `Ctrl+b → d` 分离，再运行 `herdr`；已有 Zellij 任务继续运行。
-
 ## 2. 本机配置
 
 配置文件：`~/.config/herdr/config.toml`。
@@ -55,8 +53,6 @@ enabled = false
 herdr config check
 herdr server reload-config
 ```
-
-大多数界面设置可即时生效；Shell 启动方式只影响新面板。[配置说明](https://herdr.dev/docs/configuration/)、[完整配置参考](https://herdr.dev/docs/config-reference/)
 
 ### Codex 会话集成
 
@@ -104,7 +100,7 @@ herdr workspace create --cwd "/Users/michael/.codex/skills" --label "skills"
 
 ### 打开已有 Git worktree
 
-同一个仓库同时开发多个需求时，可以把每个已有 worktree 加入 Herdr，作为独立工作区归到源仓库下面。先启动 Herdr，并按上一节的方法把源仓库加入工作区。
+同一个仓库同时开发多个需求时，可以把每个已有 worktree 加入 Herdr，作为独立工作区归到源仓库下面。
 
 例如，源仓库为 `/Users/michael/Desktop/yuncai/kjxy/ios-kjxy`，已有需求 worktree 为 `/Users/michael/Desktop/yuncai/kjxy/refactor1.0`，在普通 Shell 中执行：
 
@@ -119,7 +115,7 @@ herdr worktree open \
 - `--path`：该仓库中已经存在的 worktree 目录。
 - `--label`：该工作区在 Herdr 中显示的名称。
 
-执行后，源仓库下面会出现“重构1.0”工作区，可在其中运行 `codex` 开发该需求。该命令打开已有 checkout，不创建新分支或 worktree，也不移动项目文件；若该 worktree 已打开，会切换到已有工作区。[Worktree 说明](https://herdr.dev/docs/configuration/#worktrees)
+执行后，源仓库下面会出现“重构1.0”工作区，可在其中运行 `codex` 开发该需求。
 
 ### 分屏与运行 Codex
 
