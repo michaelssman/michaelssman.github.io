@@ -2,7 +2,28 @@
 
 Ponytail 是面向编码 Agent 的提示词与技能插件，帮助 Codex 优先复用现有代码，以最少的必要改动完成任务。
 
-`SessionStart`、`UserPromptSubmit`、`SubagentStart` 三个 hooks 均为 `Trusted`；默认使用 `full`。
+## Plugin、Skill、Hook 的区别
+
+**Ponytail 以 Plugin（插件）安装，插件内部包含多个 Skill（技能）和 Hook（钩子）。**
+
+| 类型 | 作用 | Ponytail 中的例子 |
+|---|---|---|
+| Plugin（插件） | 将相关能力打包，统一安装、启用、更新和卸载 | `ponytail@ponytail` 是整个插件 |
+| Skill（技能） | 通过 `SKILL.md` 向 Agent 提供完成特定任务的步骤与规则 | `ponytail-review` 用于评审改动，`ponytail-audit` 用于检查仓库 |
+| Hook（钩子） | 在指定事件发生时自动执行脚本 | `SessionStart` 在会话开始等事件发生时加载 Ponytail 模式 |
+
+Plugin 是安装与管理单位，Skill 提供任务流程，Hook 提供事件触发的自动操作。插件可以只包含部分能力，不要求同时包含 Skill 和 Hook。[OpenAI 插件架构说明](https://developers.openai.com/plugins/concepts/plugins)
+
+### 本机安装位置
+
+```text
+/Users/michael/.codex/plugins/cache/ponytail/ponytail/5.3.2/
+├── .codex-plugin/plugin.json       插件清单，声明技能和钩子的位置
+├── skills/                        6 个技能，各自包含 SKILL.md
+└── hooks/claude-codex-hooks.json   钩子事件及其脚本配置
+```
+
+本机的 `SessionStart`、`UserPromptSubmit`、`SubagentStart` 三个 Hook 已设为 `Trusted`；分别用于加载模式、跟踪模式切换、向子 Agent 提供 Ponytail 规则。默认模式为 `full`。
 
 ## 1. 安装与启用
 
