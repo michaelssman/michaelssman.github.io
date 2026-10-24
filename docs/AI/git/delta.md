@@ -2,6 +2,8 @@
 
 Delta（Homebrew 包名为 `git-delta`）是 Git 输出分页器。为 `git diff`、`git show`、`git log -p`、`git blame` 等输出增加语法高亮、行号、行内差异和导航能力。
 
+需要在 Ghostty 中通过左侧文件树选择文件、右侧查看差异时，见 [Lazygit + Delta](lazygit.md)。
+
 ## 1. 安装与更新
 
 ### 安装
