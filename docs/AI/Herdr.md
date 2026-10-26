@@ -86,17 +86,16 @@ herdr integration status
 herdr workspace list
 ```
 
-**以下命令只用于创建缺少的工作区，不要每次启动都执行。** CLI 不按名称自动去重；重复执行会创建同名工作区。首次启动时已有的项目工作区也应复用。
+**以下命令只用于创建缺少的工作区，不要每次启动都执行。**
 
 ```bash
 herdr workspace create --cwd "/Users/michael/Documents/flutter_demo" --label "flutter_demo"
 herdr workspace create --cwd "/Users/michael/Documents/HHLib" --label "HHLib"
 herdr workspace create --cwd "/Users/michael/Documents/java_demo" --label "java_demo"
-herdr workspace create --cwd "/Users/michael/Documents/michaelssman.github.io" --label "michaelssman.github.io"
 herdr workspace create --cwd "/Users/michael/.codex/skills" --label "skills"
 ```
 
-每条命令创建一个工作区及其首个标签、Shell 面板。再次运行 `herdr`，单击左侧工作区切换项目。[CLI 工作区说明](https://herdr.dev/docs/cli-reference/#workspaces)
+每条命令创建一个工作区及其首个标签、Shell 面板。
 
 ### 打开已有 Git worktree
 
@@ -115,7 +114,16 @@ herdr worktree open \
 - `--path`：该仓库中已经存在的 worktree 目录。
 - `--label`：该工作区在 Herdr 中显示的名称。
 
-执行后，源仓库下面会出现“重构1.0”工作区，可在其中运行 `codex` 开发该需求。
+#### 已有一个 worktree，再添加另一个
+
+**第二个 worktree 已创建，只需加入 Herdr：** 再执行一次 `open`，`--cwd` 仍指向同一个源仓库，`--path` 换成第二个 worktree 的实际目录，`--label` 换成它的显示名称。例如：
+
+```bash
+herdr worktree open \
+  --cwd "/Users/michael/Desktop/yuncai/kjxy/ios-kjxy" \
+  --path "/Users/michael/Desktop/yuncai/kjxy/task-2" \
+  --label "需求2"
+```
 
 ### 分屏与运行 Codex
 
