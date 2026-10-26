@@ -1,6 +1,6 @@
 # Lazygit + Delta
 
-在 Ghostty 中运行 Lazygit，可以用左侧文件树选择修改文件，在右侧查看差异，并执行暂存、提交、拉取和推送。Lazygit 提供交互界面与 Git 操作，Delta 负责差异高亮；不需要 Ghostty 插件。
+在 Ghostty 中运行 Lazygit，可以用左侧文件树选择修改文件，在右侧查看差异，并执行暂存、提交、拉取和推送。Lazygit 提供交互界面与 Git 操作，Delta 负责差异高亮。
 
 ## 1. 安装
 
@@ -12,7 +12,7 @@ lazygit --version
 delta --version
 ```
 
-两条版本命令都应输出版本号。本文配置依据 Lazygit `v0.66.2` 的官方文档；更新时运行 `brew update`，再运行 `brew upgrade lazygit git-delta`。
+更新时运行 `brew update`，再运行 `brew upgrade lazygit git-delta`。
 
 ## 2. 配置左侧文件树与右侧差异
 
