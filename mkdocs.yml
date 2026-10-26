@@ -452,7 +452,8 @@ nav:
       - AI/Skills/Skills目录接入GitHub仓库.md
     - AI/Appium.md
     - AI/Herdr.md
-    - AI/Ponytail.md
+    - plugins:
+      - AI/plugins/Ponytail.md
   - Mac:
     - MAC/软件包管理系统.md
     - MAC/linux.md
