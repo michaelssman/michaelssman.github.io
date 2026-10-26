@@ -1,6 +1,6 @@
 # MinIO：阿里云 Docker 部署与 hhjava 接入
 
-MinIO 是兼容 S3 接口的对象存储：**桶（bucket）**装对象，**对象键（key）**标识文件。hhjava 通过 Java SDK 上传和删除；`mc` 是管理员使用的命令行客户端。
+MinIO 是兼容 S3 接口的对象存储：**桶（bucket）**装对象，**对象键（key）**标识文件。hhjava 通过 Java SDK 上传、分页列举、下载和删除；`mc` 是管理员使用的命令行客户端。
 
 本文沿用已有 ECS `47.120.56.43`、Docker、Nacos 和 hhjava 登录服务，安装 **AIStor Free 单节点版**。许可证由本人申请并确认条款。[官方容器安装](https://docs.min.io/aistor/installation/container/install/)、[许可证](https://docs.min.io/aistor/operations/licenses/)。
 
@@ -9,7 +9,7 @@ MinIO 是兼容 S3 接口的对象存储：**桶（bucket）**装对象，**对�
 ```text
 App → HTTPS :443 gateway → 127.0.0.1:63030 backup-file
                                       ├─ Nacos：读取连接配置
-                                      ├─ user JWKS：验证 JWT
+                                      ├─ user JWKS 验签 + 内部接口确认 Token 状态
                                       └─ 127.0.0.1:9000 MinIO → 私有桶 hhjava-backup
 ```
 
@@ -87,6 +87,10 @@ minio:
 
 ## 5. 部署文件服务并添加网关路由
 
+先完成 [ECS 教程的独立 JDK 安装与校验](SpringBoot部署到阿里云ECS.md#hhjava-jdk)：当前文件服务 unit 与 user/gateway 一样使用 `/opt/hhjava/jdks/current/bin/java`，不依赖系统 `/usr/bin/java`。已有系统 Dragonwell 可以保留，不能只上传新版 unit 却遗漏它要求的 JDK 路径。
+
+本节是**首次添加文件服务**。前置 user/gateway 必须已经按当前代码部署，数据库由完整 V1 初始化并含账号安全版本。涉及三服务认证契约变化时，统一按 [ECS 教程第 8.4 节](SpringBoot部署到阿里云ECS.md#hhjava-update)同时发布 Jar、配置和 unit，不用下面的单服务安装步骤替代协同发布。`backup-file-application.yml` 的 `hhjava.security.token-status-uri` 必须直连 user：单机默认 `http://127.0.0.1:8080/user/internal/auth/token-status`，不能填公网 gateway；状态不可确认时拒绝请求，不退回仅验签。
+
 **Mac，hhjava 根目录**：先测试再打包，上传到新的发布目录。`files-20261019-01` 是本次目录，后续发布改成新的唯一名称，不覆盖旧 JAR。
 
 ```sh
@@ -113,7 +117,7 @@ curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:63030/files
 
 最后一条预期 **401**：服务已响应，但匿名不能访问。该服务只持有 Nacos 与 MinIO 凭据，不持有 user 的 RSA 私钥、数据库密码或 OAuth 客户端秘密。
 
-在 `/etc/hhjava/gateway/application.yml` 的 `spring.cloud.gateway.routes` 保留现有 user 路由，再加入：
+在 `/etc/hhjava/gateway/application.yml` 的 `spring.cloud.gateway.server.webflux.routes` 保留现有 user 路由，再加入：
 
 ```yaml
 - id: hhjava-backup-file-ecs
@@ -124,7 +128,7 @@ curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:63030/files
     - StripPrefix=1
 ```
 
-项目 `scripts/ecs/gateway-application.yml` 已含此路由。在 ECS 对比差异，确认仅新增上述路由后执行：
+项目 `scripts/ecs/gateway-application.yml` 已含此路由，并保留 Gateway 5 的转发头边界及内部状态地址。在 ECS 对比差异；只有确认目标配置中的原有环境设置均可保留时才整体安装。存在其他环境差异则只合并路由，不能通过复制模板丢弃既有配置：
 
 ```sh
 diff -u /etc/hhjava/gateway/application.yml /opt/hhjava/releases/files-20261019-01/ecs/gateway-application.yml
@@ -146,13 +150,15 @@ systemctl restart hhjava-gateway
 | `POST /backup/files/image` | multipart 的 `file` 字段；图片业务 |
 | `POST /backup/files/html` | multipart 的 `file` 字段；HTML 业务 |
 | `POST /backup/files/database` | multipart 的 `file` 字段；数据库文件业务 |
+| `GET /backup/files/database` | 可选 `prefix`、`cursor`、`limit`；分页列出当前主体的数据库备份，默认每页 20 条 |
+| `GET /backup/files/database/download?key=…` | `key` 使用列表返回的对象键，由工具编码；返回文件流，不是 JSON |
 | `DELETE /backup/files?url=…` | Query 参数 `url` 填上传响应的 `data`，由工具编码；只能删除自己的对象 |
 
 上传可带 `prefix`，例如 `backups/app`；每段只允许字母数字开头及字母数字、下划线、连字符。省略时分别使用 `images`、`htmls`、`databases`。对象按用户/服务客户端、issuer 和主体隔离，并使用 UUID 文件名；同名上传不会覆盖。
 
-返回的 URL **只是私有对象定位值，不是浏览器可直接下载的公开链接**。当前没有 HTTP 下载接口；不能为了让链接可打开而把桶设为公开。也不检测文件真实内容类型。浏览器 H5 跨域访问需要单独配置精确 Origin；App/Reqable 不需要放宽 CORS。
+返回的 URL **只是私有对象定位值，不是浏览器可直接下载的公开链接**。数据库备份通过上表带 Bearer 的下载接口获取，不能为了让 MinIO URL 可直接打开而把桶设为公开。服务不检测文件真实内容类型。浏览器 H5 跨域访问需要单独配置精确 Origin；App/Reqable 不需要放宽 CORS。
 
-验收至少覆盖：上传后内容一致、同名不覆盖、本人删除成功、跨主体删除 403、匿名 401、非法路径 400，以及 MinIO 匿名读取 403。检查完成后删除专用测试对象。
+验收至少覆盖：上传后分页可见、下载内容一致、同名不覆盖、本人删除成功、跨主体访问拒绝、匿名 401、非法路径 400，以及 MinIO 匿名读取 403。还需确认改密前旧 Token 无法访问文件、状态服务故障时以 503 拒绝。检查完成后删除专用测试对象；具体发布结果见[项目 ECS 发布记录](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/ECS_DEPLOYMENT_RECORD.md)，不能把本页步骤当作已经执行。
 
 ## 7. 控制台、日常检查与备份
 

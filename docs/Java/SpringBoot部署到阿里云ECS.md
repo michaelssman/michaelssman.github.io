@@ -2,6 +2,8 @@
 
 本文配合 hhjava 的 `scripts/ecs/` 模板部署到 `47.120.56.43`。这是单机个人联调方案：沿用 `app` 数据库及账号、Nacos 的 `dev` Namespace / `hhjava` Group 和已有 OAuth 服务客户端秘密，并非生产隔离环境。正式业务还需分库、独立配置环境、分离迁移与运行账号并完善限流、监控和备份。
 
+教程对应当前 Spring Boot 4 / Spring Cloud Gateway 5 代码，配套库以项目根 POM 和[依赖与 API 维护说明](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/DEPENDENCY_AND_API_REVIEW.md)为准；升级 Java SDK 不会同时升级 MySQL、Nacos 或 MinIO 服务端。本文说明怎么部署，不代表这些步骤已在服务器执行；实际发布结果见[ECS 发布记录](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/ECS_DEPLOYMENT_RECORD.md)。网页反映已推送版本，本地尚未推送时以同名项目文档为准。
+
 只想连接 App，先看第 8.2、8.3 节；以后更新代码，看第 8.4 节；首次搭建服务器，再从第 3 节按顺序操作。
 
 ## 1. 部署完成后是什么效果
@@ -24,13 +26,14 @@ Certbot → 临时监听 80 完成证书验证 → 更新 HTTPS 证书 → 通�
 
 443 是 HTTPS 默认端口，访问时可以不写 `:443`。`127.0.0.1` 表示当前机器自己：在 ECS 上指 ECS，在手机上指手机，不能把它填为 App 的服务器地址。
 
-本文选择 Alibaba Cloud Linux 4、x86_64、Dragonwell 17 Headless、systemd 托管 Java 进程。MySQL/Nacos 即使运行在 Docker 容器里，也不要求 Java 服务一起容器化；但它们的访问地址必须以实际容器网络和端口映射为准。
+本文选择 Alibaba Cloud Linux 4、x86_64、独立安装的 Azul Zulu JDK 17、systemd 托管 Java 进程。hhjava 使用 `/opt/hhjava/jdks/current/bin/java`，不替换系统 `/usr/bin/java`，也不影响其他应用使用的 Dragonwell。MySQL/Nacos 即使运行在 Docker 容器里，也不要求 Java 服务一起容器化；但它们的访问地址必须以实际容器网络和端口映射为准。
 
 ## 2. 先认识会用到的东西
 
 | 名称 | 用途及本文中的作用 |
 | --- | --- |
-| Dragonwell / Headless | Dragonwell 是阿里巴巴提供的 OpenJDK 发行版；Headless 不依赖桌面显示环境，适合服务器 |
+| JDK / Azul Zulu | JDK（Java Development Kit，Java 开发工具包）包含编译及运行 Java 的工具；Zulu 是 Azul 提供的 OpenJDK 发行版，本方案固定补丁版本独立安装 |
+| 软链接 `current` | 指向具体目录的快捷入口；JDK 和应用发布各有一个 `current`，切换其中一个不会自动切换另一个，也不会自动重启进程 |
 | systemd | Linux 的服务管理器；负责启动、停止、开机运行和按配置恢复进程 |
 | Certbot / ACME | Certbot 是证书客户端；ACME（Automatic Certificate Management Environment，自动证书管理环境）是申请和续期证书的协议 |
 | Flyway | 按版本执行数据库结构变更的工具；本项目由 user 启动时执行迁移 |
@@ -103,13 +106,60 @@ shasum -a 256 hhjava-service/hhjava-user/target/hhjava-user-1.0-SNAPSHOT.jar hhj
 
 ### 5.1 确认不是连错库
 
-先检查数据库名、业务表结构、索引与角色，不查询或输出用户密码及会话凭据。注册需要 `user`、`role`、`user_role` 三张表；源码注册固定关联 `role_id=2`，因此角色必须实际存在。用户名唯一约束也要在真实 MySQL 中确认，不能把 Java 先查重当作数据库约束。
+先核对主机、数据库名和账号权限，不查询或输出密码及会话凭据。当前 `V1__init_current_schema.sql` 是完整空库初始化：创建账号、角色、角色关系、OAuth2、移动会话、手机号关系和短信挑战表，并写入默认角色 `(2, p2)` 与短信发送锁行。`security_version` 已包含在建表结构中，无须另行补列。
 
-仓库的 V1～V4 不负责建立这三张业务表。**没有业务表的全新数据库，不属于本教程“复用已有数据库”的直接适用范围**；先准备经过审查的业务表建表迁移和角色数据，不能删库后只启动应用。短信注册还要求 `username` 至少容纳 38 字符，密码字段至少容纳 60 字符的 BCrypt 哈希。
+首次部署先由数据库管理员创建**空的 `app` 库**并授予服务账号所需权限，再启动 user 让 Flyway 自动建表。已有库先查历史；不得对有表的库直接手工执行 V1，也不使用自动 baseline 接管。库里含其他项目数据时，先另建本项目专属库并修改数据源 URL。
+
+MySQL 容器名为 `mysql` 且管理员凭据已在容器环境中时，以下命令仅用于确认库名未占用后的首次建库；库已存在会报错并停止，不覆盖数据：
+
+```sh
+docker exec mysql sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -e "CREATE DATABASE app CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;"'
+```
+
+**接着准备数据库账号；已有账号不重新创建、不改密码。**
+
+1. **Mac**：确认 `java_demo/.hhjava-dev-config/mysql-app-password` 已存在并仅自己可读。全新环境尚无该文件时，先创建目录，再生成随机密码；命令拒绝覆盖已有文件，不输出密码：
+
+   ```sh
+   mkdir -p /Users/michael/Documents/java_demo/.hhjava-dev-config
+   chmod 700 /Users/michael/Documents/java_demo/.hhjava-dev-config
+   (
+   set -eu
+   umask 077
+   set -C
+   openssl rand -base64 36 > /Users/michael/Documents/java_demo/.hhjava-dev-config/mysql-app-password
+   )
+   ```
+
+2. **ECS**：先查 MySQL 容器网络网关，后端运行在 ECS 宿主机、通过容器端口连接时，通常以该网关地址进入 MySQL。输出应为本机 Docker 私网地址；多网络或不同网络模式需先确认实际来源，不直接使用 `%` 放宽所有来源。
+
+   ```sh
+   docker inspect --format '{{range .NetworkSettings.Networks}}{{.Gateway}}{{println}}{{end}}' mysql
+   docker exec -it -e MYSQL_HISTFILE=/dev/null mysql sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" exec mysql -uroot'
+   ```
+
+   在 MySQL 提示符执行：
+
+   ```sql
+   SELECT User, Host FROM mysql.user WHERE User='app';
+   ```
+
+   若已有匹配来源的账号，检查 `SHOW GRANTS FOR 'app'@'<查到的Host>';`，沿用现有密码与文件，不执行下面的创建语句。确认没有对应账号时才执行；将 `<Docker网关地址>` 替换成已核实的地址，密码使用上一步文件中的值。Mac 可用 `tr -d '\r\n' < "/Users/michael/Documents/java_demo/.hhjava-dev-config/mysql-app-password" | pbcopy` 去掉文件末尾换行后复制并粘贴，操作后用 `printf '' | pbcopy` 清空剪贴板；不要截图、共享终端或记录会话。
+
+   ```sql
+   CREATE USER 'app'@'<Docker网关地址>' IDENTIFIED BY '<mysql-app-password文件中的密码>' REQUIRE SSL;
+   GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, DROP, INDEX, REFERENCES ON app.* TO 'app'@'<Docker网关地址>';
+   SHOW GRANTS FOR 'app'@'<Docker网关地址>';
+   EXIT;
+   ```
+
+   `REQUIRE SSL` 要求数据库连接加密；权限仅作用于 `app.*`，包含 Flyway 建表和应用读写所需操作，不授予全实例权限或转授权限。这里创建的是数据库账号，不是 App 用户。
+
+3. 完成第 6.4 节秘密传送后，再按第 6.5 节启动 user 验证 TLS 连接、Flyway 和 JWKS。连接失败先核对来源 Host、密码文件一致性与 MySQL TLS，不通过关闭 TLS 或改成 root 连接解决。
 
 ### 5.2 需要保留数据时，建立能恢复的备份
 
-当前项目尚未上线、数据均为可丢弃的测试业务数据，不强制备份，也不为旧版本增加兼容分支；结构满足要求时直接迁移，不为更新短信功能清空数据。确需重建时先确认本项目 `app` 库及基础三表，不清理 Nacos、凭据或其他服务数据。
+当前项目没有正式用户，测试数据可在确认范围后重建；重建会使账号、授权、刷新会话和短信挑战全部消失，原用户须重新短信注册。Mac 与 ECS 若共用 `app` 库，须先停止两边服务。只操作已核实的本项目库及专属测试对象，不能清空 MySQL 实例、Nacos、密钥或其他服务数据。一次维护尚未验收完成时保留受限恢复材料；验收后按明确保留策略清理，不长期堆积旧发布。
 
 将来需要保留数据时，在启动 user 新版本之前备份目标数据库的结构与数据，并确认恢复方案。以下备份步骤仅在这种情况下执行；备份可能含用户密码哈希、OAuth2 Token 和移动会话信息，不能公开。
 
@@ -137,24 +187,24 @@ stat -c '%a %s %n' "$HHJAVA_BACKUP"
 
 预期权限 600、非空，`gzip -t` 无错误；已经存在时换唯一名称。压缩完整性不是隔离恢复验证，也不是异地加密备份；后两项未完成时必须写“未验证”，不能在正式库尝试恢复。
 
-### 5.3 按 Flyway 历史判断下一步
+### 5.3 让 Flyway 初始化并验证
 
-Flyway 使用 `flyway_schema_history` 记录版本。先查历史，再选择对应情况：
+Flyway 使用 `flyway_schema_history` 保存已执行版本和校验和。同一脚本只执行一次，重复启动只校验，不重复建表或插入角色。[Flyway 版本迁移](https://documentation.red-gate.com/flyway/flyway-concepts/migrations/versioned-migrations)
 
 | 数据库情况 | 应如何处理 |
 | --- | --- |
-| 已有成功的迁移，尚未到 V4 | 保持 `HHJAVA_FLYWAY_BASELINE_ON_MIGRATE=false`；新版 user 校验历史并按顺序补齐迁移，已有 V1/V2 时追加 V3/V4 |
-| 已有成功的 V1～V4 | 仍保留校验，不重复手工创建表，不修改已执行迁移 |
-| 有业务表但没有 Flyway 历史 | 确认库与结构后，仅首次接管临时打开版本 0 基线开关；完成后恢复 `false` |
-| 有失败记录、校验和不一致，或表存在但版本不对应 | 暂停启动，核对迁移原因；不直接删历史表或用 repair 掩盖问题 |
+| 本项目空库，没有历史表 | 启动 user，自动执行完整 V1 |
+| 当前 V1 已成功，校验和一致 | 正常启动；后续结构变化使用新的 V2、V3 等迁移 |
+| 非空库没有历史，或历史与当前脚本不匹配 | 停止；确认测试库可弃后单独安排重建，不执行 baseline 或 repair |
+| 有失败迁移 | 保持服务停止，核实实际结构及失败原因，不通过删历史记录绕过 |
 
-V1 创建 OAuth2 表；V2 创建 `mobile_refresh_session`，保存 Refresh Token 摘要和轮换状态；V3 创建手机号关联表 `user_phone_identity`；V4 创建短信挑战表 `sms_verification` 与发送配额锁表 `sms_send_guard`，并初始化固定锁行。**不要手工导入迁移 SQL 后再让 Flyway 重复执行。**
+完整 V1 包含 `user/role/user_role`、三张 OAuth2 表、`mobile_refresh_session`、`user_phone_identity`、`sms_verification`、`sms_send_guard`。账号与手机号有唯一约束，用户角色关系有唯一键和外键；默认角色由脚本创建。**不要手工导入迁移 SQL 后再启动 Flyway。**
 
 启动后的检查只看迁移版本、成功标记和目标表结构，不打印 Token、`token_hash` 或整表数据。H2 单元测试通过不等于真实 MySQL 迁移已经通过。
 
 MySQL 的建表等 DDL（Data Definition Language，数据定义语言）不等于可以随应用事务任意回滚；不能认为换回旧 JAR 就能恢复数据库。回退前必须确认旧代码是否兼容新结构，需要数据库恢复时另行安排维护窗口和数据恢复方案。[MySQL 8.0 原子 DDL 说明](https://dev.mysql.com/doc/refman/8.0/en/atomic-ddl.html)
 
-**ECS**查看迁移、业务表、默认角色和用户名索引：
+**完成第 6.5 节首次启动后**，在 ECS 查看迁移、业务表、默认角色和用户名索引：
 
 ```sh
 docker exec mysql sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -N -e "SELECT version,description,success FROM app.flyway_schema_history ORDER BY installed_rank; SELECT table_name FROM information_schema.tables WHERE table_schema=\"app\"; SELECT id,name FROM app.role WHERE id=2; SELECT index_name,non_unique,GROUP_CONCAT(column_name ORDER BY seq_in_index) FROM information_schema.statistics WHERE table_schema=\"app\" AND table_name=\"user\" GROUP BY index_name,non_unique;"'
@@ -164,7 +214,7 @@ docker exec mysql sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -N -e "SE
 
 ## 6. 第四步：准备运行配置与服务权限
 
-操作位置：**ECS**。安装本方案所需 Dragonwell 17 Headless，然后确认实际 Java 路径与主版本。user 和 gateway 由 systemd 以受限身份运行，不以 root 长期运行业务进程；443 的监听权限仅授予需要它的网关服务。
+操作位置：**ECS**。先安装并验证 hhjava 专用 JDK，再安装当前仓库的服务模板。user 和 gateway 由 systemd 以受限身份运行，不以 root 长期运行业务进程；443 的监听权限仅授予需要它的网关服务。
 
 ### 6.1 两类私钥不是同一个东西
 
@@ -182,18 +232,76 @@ docker exec mysql sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -N -e "SE
 | user 监听 | 仅 `127.0.0.1:8080`，不开放公网直连 |
 | gateway 监听 | 公网 443，直接加载 TLS 证书 |
 | JWKS 获取地址 | `http://127.0.0.1:8080/user/oauth2/jwks`；user 的 context-path 为 `/user` |
+| Token 状态检查地址 | gateway 和 backup-file 的 `hhjava.security.token-status-uri` 均直连 `http://127.0.0.1:8080/user/internal/auth/token-status`；模板允许用 `HHJAVA_SECURITY_TOKEN_STATUS_URI` 覆盖，不能填写 gateway 公网地址 |
 | API audience | 所有签发方和消费方一致；仓库默认 `hhjava-api` |
 | profile / Namespace / Group | `dev` / `dev` / `hhjava`；只读既有配置，关闭 discovery 和动态 refresh，不向共享 Nacos 注册 ECS 实例 |
-| gateway 本机静态路由 | `/user/**` 到 `http://127.0.0.1:8080`，保留 `/user`，不能加 `StripPrefix`；覆盖共享 Nacos 的 `lb://` 路由 |
+| gateway 本机静态路由 | 放在 `spring.cloud.gateway.server.webflux.routes`；`/user/**` 到 `http://127.0.0.1:8080`，保留 `/user`，不能加 `StripPrefix`；覆盖共享 Nacos 的 `lb://` 路由 |
+| gateway 转发头边界 | 保留 `server.forward-headers-strategy: none` 和 `spring.cloud.gateway.server.webflux.trusted-proxies: '(?!)'`；入口先去除外来转发头，再由 Gateway 根据真实连接重建，不把任意客户端当可信代理 |
 | MySQL | `app` 库 / `app` 账号；`sslMode=REQUIRED` 要求加密，但不等于校验数据库服务器身份 |
 
 Nacos 必须已经存在 Namespace ID `dev`、Group `hhjava` 下的 `hhjava-user-dev.yaml` 和 `hhjava-gateway-dev.yaml`，运行账号须有读取权限。关闭服务发现不等于移除配置中心依赖：启动仍需读取这两份配置。换服务器前先迁移 Nacos 配置和数据库，Nacos 操作见 [Nacos](Nacos.md)；不能只复制两个 JAR 就期待所有依赖自动出现。
 
-### 6.3 ECS：首次安装目录、用户与模板
+JWKS 负责获取公钥；Token 状态接口负责在本地验签通过后确认该 Bearer 仍然有效。后者不能经过 gateway，否则会递归认证；HTTP 只允许数字回环地址，跨机必须用 HTTPS。接口有效返回 204，失效返回 401；连接失败、超时或其他无法确认状态的情况按 503 拒绝请求，不缓存成功结果，也不降级为“仅验签”。公网 `/user/internal/**` 不对 App 开放。部署文件服务时，还需相同配置边界及 `hhjava-backup-file-dev.yaml`。
+
+Gateway 5 的路由、默认过滤器和 discovery locator 均使用 `spring.cloud.gateway.server.webflux.*` 前缀。同步核对实际 Nacos 网关配置，保留各环境原有路由目标；ECS 模板仍以本机固定路由覆盖远端配置，不为升级把本机地址写入共享环境。[Gateway 官方配置说明](https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/configuration.html)
+
+<a id="hhjava-jdk"></a>
+
+### 6.3 ECS：安装独立 JDK、目录、用户与模板
+
+#### 6.3.1 下载固定 JDK 并校验
+
+以下包仅适用于本方案的 Linux x86_64 / glibc，不适用于 Mac 或 ARM 服务器。固定 Zulu `17.70.111` / Java `17.0.21`；URL、架构及 SHA-256 来自 [Azul 官方包元数据](https://api.azul.com/metadata/v1/zulu/packages/3b43a148-84f9-4ed2-9131-09be9e5070c1)。SHA-256 是文件完整性摘要，下载后必须匹配才解压。以后更新补丁需重新核对官方包、摘要和项目验证结果，不只修改版本字符串。
+
+**ECS root 终端**；需要已有 `curl`、`tar` 和 `sha256sum`。以下只新增固定版本目录，不改变系统 Java；同名目录已有时先验证，不覆盖解压：
 
 ```sh
-dnf install -y java-17-alibaba-dragonwell-headless
-/usr/bin/java -version
+(
+set -eu
+test "$(uname -m)" = x86_64
+umask 022
+HHJAVA_JDK_NAME=zulu17.70.111-ca-jdk17.0.21-linux_x64
+HHJAVA_JDK_ARCHIVE="/var/cache/hhjava-jdk/${HHJAVA_JDK_NAME}.tar.gz"
+test ! -e "/opt/hhjava/jdks/$HHJAVA_JDK_NAME"
+test ! -L "/opt/hhjava/jdks/$HHJAVA_JDK_NAME"
+install -d -m 755 /opt/hhjava/jdks /var/cache/hhjava-jdk
+curl --fail --location --proto '=https' --tlsv1.2 \
+  "https://cdn.azul.com/zulu/bin/${HHJAVA_JDK_NAME}.tar.gz" --output "$HHJAVA_JDK_ARCHIVE"
+printf '%s  %s\n' '730ac4f645f601d3005bcdc8736c7e0630d402382e332c11d61ac2494436587f' "$HHJAVA_JDK_ARCHIVE" | sha256sum --check -
+tar --extract --gzip --file "$HHJAVA_JDK_ARCHIVE" --directory /opt/hhjava/jdks --no-same-owner
+"/opt/hhjava/jdks/$HHJAVA_JDK_NAME/bin/java" -version
+)
+```
+
+预期摘要检查为 `OK`，`java -version` 显示 `17.0.21` 和 Zulu。下载、摘要或运行检查失败就停止，不安装服务。全局 `java -version` 仍可能显示 Dragonwell，这是刻意保留的系统状态，不能用它判断 hhjava 实际运行版本。
+
+#### 6.3.2 切换 hhjava 专用 Java 入口
+
+首次部署直接执行；已有服务升级时，先记录旧 `readlink -f /opt/hhjava/jdks/current` 结果，在第 8.4 节维护窗口停止服务后再执行。沿用第 3 节唯一的 `HHJAVA_RELEASE`；`mv -Tf` 原子替换的是软链接，旧 JDK 目录保留：
+
+```sh
+(
+set -eu
+test -n "$HHJAVA_RELEASE"
+HHJAVA_JDK_DIR=/opt/hhjava/jdks/zulu17.70.111-ca-jdk17.0.21-linux_x64
+test -x "$HHJAVA_JDK_DIR/bin/java"
+if [ -e /opt/hhjava/jdks/current ] || [ -L /opt/hhjava/jdks/current ]; then
+  test -L /opt/hhjava/jdks/current
+  readlink -f /opt/hhjava/jdks/current
+fi
+test ! -e "/opt/hhjava/jdks/current-$HHJAVA_RELEASE"
+test ! -L "/opt/hhjava/jdks/current-$HHJAVA_RELEASE"
+ln -s "$HHJAVA_JDK_DIR" "/opt/hhjava/jdks/current-$HHJAVA_RELEASE"
+mv -Tf "/opt/hhjava/jdks/current-$HHJAVA_RELEASE" /opt/hhjava/jdks/current
+/opt/hhjava/jdks/current/bin/java -version
+)
+```
+
+三个 Java 服务的当前 unit 均使用 `/opt/hhjava/jdks/current/bin/java`；应用 JAR 则由另一个 `/opt/hhjava/current/` 指针选择。不要更改 `/usr/bin/java`、全局 `JAVA_HOME` 或 `alternatives` 来替代这两条路径的核对。
+
+#### 6.3.3 首次创建服务用户、目录并安装模板
+
+```sh
 getent passwd hhjava-user hhjava-gateway
 ```
 
@@ -291,7 +399,7 @@ curl --noproxy '*' --silent --output /dev/null --write-out 'user_jwks_http=%{htt
 docker exec mysql sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -N -e "SELECT version,description,success FROM app.flyway_schema_history ORDER BY installed_rank;"'
 ```
 
-预期 user 稳定运行、仅监听 `127.0.0.1:8080`、JWKS 200、V1～V4 均为 `success=1`。失败停在此处，受控查看 `journalctl -u hhjava-user.service -n 80 --no-pager`，分享前脱敏。user 就绪不是公网或 App 已通过。
+预期 user 稳定运行、仅监听 `127.0.0.1:8080`、JWKS 200、V1 为 `success=1`，且 `user` 与 `mobile_refresh_session` 均存在 `security_version` 列。失败停在此处，受控查看 `journalctl -u hhjava-user.service -n 80 --no-pager`，分享前脱敏。user 就绪不是公网或 App 已通过。
 
 ## 7. 第五步：启用公网 IP 的 HTTPS 与自动续期
 
@@ -376,8 +484,9 @@ renew unit 还有 `ExecStartPost`：即使无需续签也对齐证书，补偿�
 
 | 检查位置 | 要确认的内容 | 通过标准 |
 | --- | --- | --- |
-| ECS | Java 与两个服务状态 | 进程稳定运行，无反复重启；user 只监听回环，gateway 监听 TLS 443 |
-| ECS / MySQL | Flyway 与业务前置表 | V1～V4 成功；移动会话表、手机号关联表、短信挑战/配额表存在，基础业务表及默认角色完整 |
+| ECS | Java 与各服务状态 | 进程实际使用受控 JDK，无反复重启；user 只监听回环，gateway 监听 TLS 443；已安装的 backup-file 仅监听回环 63030 |
+| ECS / MySQL | Flyway 完整初始化 | 当前 V1 成功；移动会话表、手机号关联表、短信挑战/配额表存在，基础业务表及默认角色完整，账号和会话安全版本列存在 |
+| ECS / 受保护业务接口 | Token 状态校验 | 有效令牌正常访问；改密后旧用户凭据拒绝；状态不可确认时返回 503，公网不能访问内部状态路径 |
 | ECS | JWKS 与路由 | 能取得公钥，不能取得私钥；gateway 正确到达 user |
 | 服务器外部 | HTTPS | 证书可信、IP 匹配、证书链正常，不使用 `curl -k` 或 App 的跳过证书验证功能 |
 | 服务器外部 | 公开元数据 | issuer、授权/Token/JWKS 地址使用预期公网入口，不泄露内部 8080 地址 |
@@ -394,13 +503,13 @@ curl --noproxy '*' --silent --show-error --connect-timeout 5 --max-time 10 --out
 
 操作位置：**本机 API 调试工具或真实 App**。URL 以 `https://47.120.56.43` 为根地址；下表接口均使用 `POST` 和 `Content-Type: application/json`，不靠浏览器 Cookie 登录，也不需要 OAuth client secret。先确认已部署与当前接口一致的 user/gateway 版本，不能把本地代码更新当成服务器已更新。
 
-手机号采用一次验证码验证后注册或登录，新号码自动创建账号并返回 Token；不再提供用户名密码独立注册。阿里云开通、凭据、已有账号绑定及登录后设置密码，统一按 [hhjava 项目认证指南](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/AUTHENTICATION_GUIDE.md)第 12.5 节操作。真实短信按量计费。本机文件是 `java_demo/hhjava/docs/AUTHENTICATION_GUIDE.md`；网页对应已推送版本，本地修改需同步推送后才能在网页查看。
+手机号采用一次验证码验证后注册或登录，新号码自动创建账号并返回 Token；不再提供用户名密码独立注册。阿里云开通、凭据及登录后设置密码，统一按 [hhjava 项目认证指南](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/AUTHENTICATION_GUIDE.md)第 12.5 节操作。真实短信按量计费。本机文件是 `java_demo/hhjava/docs/AUTHENTICATION_GUIDE.md`；网页对应已推送版本，本地修改需同步推送后才能在网页查看。
 
 | 操作 | 请求路径 | JSON 参数 |
 | --- | --- | --- |
 | 获取登录验证码 | `/user/auth/mobile/sms/code` | `phoneNumber` |
 | 统一注册/登录 | `/user/auth/mobile/login/sms` | `phoneNumber`、`challengeId`、`code` |
-| 密码登录 | `/user/auth/mobile/login/password` | `phoneNumber` 或 `username` 二选一，再加 `password` |
+| 密码登录 | `/user/auth/mobile/login/password` | `phoneNumber`、`password` |
 | 刷新 | `/user/auth/mobile/token/refresh` | `refreshToken` |
 | 退出 | `/user/auth/mobile/logout` | `refreshToken` |
 
@@ -426,12 +535,12 @@ curl --noproxy '*' --silent --show-error --connect-timeout 5 --max-time 10 --out
 
 1. **首次短信登录**：使用自己的测试号码，正确验证码应直接返回 HTTP 200、`code: 200`，`data` 含 `tokenType`、`accessToken`、`expiresIn`、`refreshToken`、`refreshExpiresIn`。未关联号码自动创建账号，不再取第二条短信。Token 字段是凭据，不复制到截图或报告。
 2. **再次登录**：按发送冷却重新获取验证码；成功后仍是同一账号，原备份归属不变。错误/过期码应拒绝，参数不合法返回 400；不要重复发送来做限流实验。
-3. **密码入口**：使用已设置密码的手机号，正文为 `{"phoneNumber":"<已绑定手机号>","password":"<当前密码>"}`；旧账号可改传 `username`，不能同时传两个身份字段。正确密码成功，错误密码或不存在账号均返回 401。
+3. **密码入口**：使用已设置密码的手机号，正文为 `{"phoneNumber":"<已绑定手机号>","password":"<当前密码>"}`。正确密码成功，错误密码或不存在账号均返回 401。
 4. **正常刷新**：把最近一次返回的 `refreshToken` 发送给刷新接口；成功取得新的一对 Token 后一起替换旧值。不得并发用同一旧 Refresh Token 刷新。
 5. **验证退出**：使用最新 Refresh Token 退出，预期 HTTP 200、`data: "退出登录成功"`；重复退出仍成功。之后再次用该会话刷新应返回 401。
 6. **独立验证旧 Token 重放**：重新登录建立单独测试会话，刷新一次，再重放旧 Refresh Token；旧 Token 与此会话的新 Token 随后均不能继续刷新。不要用正式正在使用的会话做此实验。
 
-Access Token 用于受保护业务请求的 `Authorization: Bearer <accessToken>`；Refresh Token 只能用于刷新/退出，不能当作 Bearer 凭据。当前 JWT 没有即时撤销黑名单，退出撤销的是刷新会话，已发出的 Access Token 仍可能在到期前通过验证，这是当前实现边界。
+Access Token 用于受保护业务请求的 `Authorization: Bearer <accessToken>`；Refresh Token 只能用于刷新/退出，不能当作 Bearer 凭据。普通退出只撤销当前刷新会话，已发出的 Access Token 仍可能在到期前有效；**设置或重设密码**会增加账号安全版本，使该账号旧用户 JWT、刷新会话及浏览器/OAuth 授权不能再通过新的认证检查。两种操作范围不同，没有按单个 `jti` 撤销的黑名单；细节见[项目改密撤销说明](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/AUTHENTICATION_GUIDE.md#password-change-revocation)。
 
 ### 8.3 App 侧还要做什么
 
@@ -441,38 +550,97 @@ Access Token 用于受保护业务请求的 `Authorization: Bearer <accessToken>
 
 本实例 API 根地址是 `https://47.120.56.43`。本教程不修改 App 工程，也不嵌入 OAuth service client secret；原生 App 连接失败不通过放开浏览器 CORS 解决。完整验收还应检查伪造 Host 返回 400、Refresh Token 不能作为 Bearer、JWKS 不含私钥。专用测试账号若要清理，应精确核对账号及会话 ID，不批量删除现有用户。
 
+<a id="hhjava-update"></a>
+
 ### 8.4 日常更新和回退
 
-完成测试/打包，使用新发布名创建目录、上传两包并比较 SHA-256；保留原有秘密和 JWT 密钥，不重跑首次初始化。配置变化先备份并逐项比较。若已部署文件服务，它也通过 `/opt/hhjava/current/backup-file.jar` 启动，新目录必须保留该文件，否则后续重启文件服务会失败。以下在 **ECS** 核对旧指针，按需复制未改动的文件服务 Jar，确认内容一致且服务账号可读后再切换：
+先设置第 3 节的唯一发布名与 SSH 变量。保留原有秘密、JWT 密钥、TLS 材料和 MinIO 数据，不重跑首次初始化。当前认证契约要求 **user、gateway 以及已安装的 backup-file 使用同一轮新版代码**；不能只升级 user/gateway，再把只验签的旧文件服务 Jar 复制进新目录。
 
-若同时更新文件服务，先在 **Mac 的 hhjava 根目录**执行 `mvn -pl hhjava-service/hhjava-user,hhjava-gateway,hhjava-service/hhjava-backup-file -am package`（包含测试），将 `hhjava-service/hhjava-backup-file/target/hhjava-backup-file-1.0-SNAPSHOT.jar` 上传为新目录的 `backup-file.jar`，按第 4 节方式核对 SHA-256。下方已有新 Jar 时不再复制旧文件；从未安装文件服务的服务器仍先按 [MinIO 部署教程](分布式文件系统MinIO.md)准备依赖与 unit。
+**步骤 1（Mac，hhjava 根目录）**：执行 `mvn -pl hhjava-service/hhjava-user,hhjava-gateway,hhjava-service/hhjava-backup-file -am package`（包含测试）。按第 6.3 节仅创建新的发布目录并上传 user/gateway 与当前 `scripts/ecs/`，不重跑首次安装；已部署文件服务时，再将 `hhjava-service/hhjava-backup-file/target/hhjava-backup-file-1.0-SNAPSHOT.jar` 上传为同目录的 `backup-file.jar`。三个产物分别按第 4 节核对本机和 ECS 的 SHA-256。未安装文件服务的服务器，先按 [MinIO 部署教程](分布式文件系统MinIO.md)准备依赖，不能直接启动空配置。
+
+**步骤 2（ECS）：准备备份和配置。** 记录 `/opt/hhjava/current` 与 `/opt/hhjava/jdks/current` 的真实目标；备份数据库（有保留要求时）、`/etc/hhjava/` 配置及对应 systemd unit。与新模板逐项比较并准备修改：unit 的 `ExecStart` 使用专用 JDK；gateway 的配置前缀与转发头边界按第 6.2 节；gateway/backup-file 均配置 user 的直连 `token-status-uri`。保留各服务原有环境差异和秘密，不整份覆盖。JDK 更新先完成第 6.3.1 节下载校验，但不要提前切换运行入口。
+
+**步骤 3（ECS）：暂停续期并进入维护窗口。** 检查新 Jar 可读后，先暂停证书续期定时器，确认续期任务已经结束，再停止公开网关、已安装的文件服务和 user，最后切换应用目录。没有新版文件 Jar 时直接停止，不自动复制旧包。
+
+`.timer` 负责定时触发，`.service` 才实际执行续期；只停止 timer 不会中止已经开始的任务。续期钩子即使看到 gateway 已停止，只要它仍设置为开机启用，也会重新启动网关，因此不能漏掉这一步。当前续期服务是 `Type=oneshot`（执行一次即结束），执行中可能是 `activating`，下面只允许 `inactive`（未运行）继续，而不是只用 `is-active` 判断。[systemd 服务状态说明](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html#Type=)
 
 ```sh
-readlink /opt/hhjava/current
+readlink -f /opt/hhjava/current
+readlink -f /opt/hhjava/jdks/current
 (
 set -eu
 test -f "/opt/hhjava/releases/$HHJAVA_RELEASE/user.jar"
 test -f "/opt/hhjava/releases/$HHJAVA_RELEASE/gateway.jar"
+runuser -u hhjava-user -- test -r "/opt/hhjava/releases/$HHJAVA_RELEASE/user.jar"
+runuser -u hhjava-gateway -- test -r "/opt/hhjava/releases/$HHJAVA_RELEASE/gateway.jar"
 if systemctl cat hhjava-backup-file.service >/dev/null 2>&1; then
-  if [ ! -e "/opt/hhjava/releases/$HHJAVA_RELEASE/backup-file.jar" ]; then
-    test ! -L "/opt/hhjava/releases/$HHJAVA_RELEASE/backup-file.jar"
-    test -r /opt/hhjava/current/backup-file.jar
-    cp -p /opt/hhjava/current/backup-file.jar "/opt/hhjava/releases/$HHJAVA_RELEASE/backup-file.jar"
-    cmp -s /opt/hhjava/current/backup-file.jar "/opt/hhjava/releases/$HHJAVA_RELEASE/backup-file.jar"
-  fi
   test -f "/opt/hhjava/releases/$HHJAVA_RELEASE/backup-file.jar"
   runuser -u hhjava-backup-file -- test -r "/opt/hhjava/releases/$HHJAVA_RELEASE/backup-file.jar"
-  sha256sum "/opt/hhjava/releases/$HHJAVA_RELEASE/backup-file.jar"
 fi
+# 暂停自动续期前，确认第 7.6 节的定时器已启用且运行正常。
+systemctl is-enabled --quiet hhjava-certbot-renew.timer
+systemctl is-active --quiet hhjava-certbot-renew.timer
+systemctl stop hhjava-certbot-renew.timer
+# 查询失败也按未就绪处理；没有运行中的进程，还必须没有等待执行的续期作业。
+HHJAVA_RENEW_STATE=$(systemctl show hhjava-certbot-renew.service -p ActiveState --value) || HHJAVA_RENEW_STATE=unknown
+HHJAVA_RENEW_JOBS=$(systemctl list-jobs --no-legend --no-pager hhjava-certbot-renew.service) || HHJAVA_RENEW_JOBS=unknown
+if [ "$HHJAVA_RENEW_STATE" != inactive ] || [ -n "$HHJAVA_RENEW_JOBS" ]; then
+  # 此时还没有停止业务服务；恢复原定时器并中止本次发布，不强行结束续期。
+  systemctl start hhjava-certbot-renew.timer
+  printf '%s\n' '续期服务状态或排队作业未确认安全；本次发布已中止，请检查状态与日志。' >&2
+  exit 1
+fi
+systemctl stop hhjava-gateway.service
+if systemctl cat hhjava-backup-file.service >/dev/null 2>&1; then
+  systemctl stop hhjava-backup-file.service
+fi
+systemctl stop hhjava-user.service
+test -L /opt/hhjava/current
 test ! -e "/opt/hhjava/current-$HHJAVA_RELEASE"
 test ! -L "/opt/hhjava/current-$HHJAVA_RELEASE"
 ln -s "/opt/hhjava/releases/$HHJAVA_RELEASE" "/opt/hhjava/current-$HHJAVA_RELEASE"
 mv -Tf "/opt/hhjava/current-$HHJAVA_RELEASE" /opt/hhjava/current
-systemctl restart hhjava-user.service
 )
 ```
 
-user 的迁移和 JWKS 通过后，再 `systemctl restart hhjava-gateway.service`，重做公网与认证检查。若更新了文件服务 Jar，还需 `systemctl restart hhjava-backup-file.service`，使用 ECS 签发的令牌验收上传、分页、下载内容一致、跨账号拒绝和测试对象删除；不改动原有 MinIO 数据。回退按相同指针方式选择已验证旧目录，但必须先确认新数据库结构兼容旧代码；JAR 回退不撤销 Flyway。此方案有短暂停机，不承诺高可用或零停机。
+如果前置检查失败，停在此处：定时器未启用/未运行时先按第 7.6 节修复；续期仍在执行或排队时等待结束，`failed` 时检查受控日志并修复，不能只清除失败状态后继续。维护期间不要手工执行 `certbot renew`、续期 service 或证书部署钩子，也不要重启 ECS；`stop timer` 只暂停当前运行，不取消开机自启。
+
+**步骤 4（ECS）：安装配置并启动 user。** 服务停止后，落实第 2 步已核对的配置及 unit 修改；需要更新 JDK 时执行第 6.3.2 节。先运行 `systemd-analyze verify` 校验实际安装的两个或三个 Java unit，再 `systemctl daemon-reload`、`systemctl start hhjava-user.service`。按第 6.5 节确认当前 Flyway V1、两张表的版本列和 JWKS 正常。任何一步失败保持维护状态排查，不先开放网关。
+
+**步骤 5（ECS）：启动其余服务并验收。** 已安装文件服务时先 `systemctl start hhjava-backup-file.service`，再 `systemctl start hhjava-gateway.service`。按第 8.1、8.2 节及[项目三服务部署核对](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/AUTHENTICATION_GUIDE.md#security-version-deployment)检查新登录、正常刷新、改密后旧凭据拒绝及状态服务故障拒绝；有文件服务时再验上传、分页、下载内容一致、跨账号拒绝和测试对象删除。每次验收重新登录取得用户 JWT，确认缺少或过时的安全版本会被拒绝。
+
+**核对真正运行的 JDK**，在 ECS 对每个已安装服务执行下面检查；不是只检查交互终端的 `java -version`：
+
+```sh
+for HHJAVA_SERVICE in hhjava-user hhjava-gateway hhjava-backup-file; do
+  systemctl cat "$HHJAVA_SERVICE.service" >/dev/null 2>&1 || continue
+  systemctl show "$HHJAVA_SERVICE.service" -p ActiveState -p SubState -p NRestarts -p MainPID
+  HHJAVA_PID=$(systemctl show "$HHJAVA_SERVICE.service" -p MainPID --value)
+  if [ "$HHJAVA_PID" -gt 0 ]; then
+    readlink -f "/proc/$HHJAVA_PID/exe"
+  fi
+done
+```
+
+预期进程均稳定，实际路径指向选定 Zulu 目录的 `bin/java`。只改变软链接不会改变已启动 JVM，必须重新启动相应服务。
+
+**步骤 6（ECS）：恢复自动续期。** 仅在上述发布验证通过后执行，并检查下一次执行安排：
+
+```sh
+(
+set -eu
+systemctl start hhjava-certbot-renew.timer
+systemctl is-enabled hhjava-certbot-renew.timer
+systemctl is-active hhjava-certbot-renew.timer
+systemctl list-timers hhjava-certbot-renew.timer --all
+)
+```
+
+预期分别为 `enabled`、`active`，并有下一次执行时间。当前 timer 配置 `Persistent=true`，恢复时可能补执行维护期间错过的任务（仍受随机延迟影响），续期钩子可能再次重启 gateway；因此必须先完成发布验证，再恢复，并按第 7.6 节检查任务结果和公网 HTTPS。[systemd 定时器补执行说明](https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html#Persistent=)
+
+**失败与回退**：业务服务停止后若发布失败，保持定时器暂停，不用“退出时无条件恢复”的脚本，以免钩子提前启动网关；修复或回退并验证通过后，再执行第 6 步。短期 IP 证书不能无限期停续，排障时持续核对证书到期时间，不把暂停状态遗忘为永久配置。
+
+回退应用前先确认数据库结构与认证规则兼容；切回旧 Jar 不会回滚数据库，也可能取消当前安全保障。失败时应先保持受控不可用状态，不让新旧规则混合对外服务。仅 JDK 补丁导致问题时，仍遵守第 3 步的续期暂停和停机顺序（若已处于本轮维护状态，不重复要求 timer 为 active），把第 6.3.2 节 `HHJAVA_JDK_DIR` 改成之前记录并保留的已验证 JDK 完整目录，原子切回后按 user → backup-file（若已安装）→ gateway 启动，再核对进程路径和认证，最后执行第 6 步恢复续期。首次独立安装没有旧 JDK 指针时不能凭空回退；不要改系统 Java 代替调查。此方案有短暂停机，不承诺高可用或零停机。
 
 ## 9. 故障定位与交付边界
 
@@ -483,14 +651,16 @@ user 的迁移和 JWKS 通过后，再 `systemctl restart hhjava-gateway.service
 | 证书不被信任 | 是否误用 staging、是否匹配 IP、链是否完整、是否过期；不关闭校验 |
 | `/user/**` 返回 400 | 请求协议/Host/端口是否与 issuer 一致，是否擅自增加 TLS 终止代理 |
 | 返回 404 | Nacos 路由、前缀处理、user context-path，不先归因于密码 |
-| 登录返回 500 | 数据库连接、业务表/默认角色、V1～V4 迁移、JWT 密钥；仅查看受控脱敏日志 |
-| 登录成功但业务请求 401 | 是否使用 Access Token，issuer/audience/算法/时间是否匹配，JWKS 是否可达 |
+| 登录返回 500 | 数据库连接、业务表/默认角色、当前 Flyway 初始化、JWT 密钥；仅查看受控脱敏日志 |
+| 登录成功但业务请求 401 | 是否使用新版 Access Token，issuer/audience/算法/时间是否匹配，账号安全版本是否因改密变化 |
+| 受保护请求 503 | user 状态接口、配置直连地址、数据库、超时及连接；不关闭状态校验或缓存成功结果绕过故障 |
+| 服务报 Java 路径不存在或版本不符 | unit 的绝对路径、`jdks/current` 指针、目录执行权限和实际 `/proc/<PID>/exe`，不只看全局 `java -version` |
 | 首次 HTTPS 正常，之后突然失败 | timer、80 验证通路、证书到期、deploy-hook 与 gateway 实际证书 |
-| 进程被系统结束 | 内存与系统日志，核对两个 Java 进程和既有容器总资源，不只反复重启 |
+| 进程被系统结束 | 内存与系统日志，核对所有已安装 Java 进程和既有容器总资源，不只反复重启 |
 
 上线验收应分别记录“已验证 / 未验证及原因”：构建测试、产物校验、数据库备份及恢复（有保留要求时）、真实迁移、内部路由、外部 TLS、证书续期、认证正常与失败路径、真实 App。不要用一个“部署成功”掩盖未完成项目。
 
-当前已有短信验证码及手机号/IP/全局发送限额、挑战核验次数限制，但密码登录入口仍缺少账号级限流，尚无完整风控、Access Token 即时撤销和平滑 JWT 密钥轮换；公开服务必须配套适合实际场景的抗滥用措施。本文完成单机部署与验收，不等于自动具备完整生产安全和高可用能力。
+当前已有短信验证码及手机号/IP/全局发送限额、挑战核验次数限制，以及改密后的账号级凭据失效；但密码登录入口仍缺少账号级限流，尚无完整风控、单个 Access Token 黑名单和平滑 JWT 密钥轮换。公开服务必须配套适合实际场景的抗滥用措施；具备单机部署步骤不等于自动具备完整生产安全和高可用能力。
 
 本文的备份操作只覆盖同机受限备份和压缩完整性检查；没有完成隔离恢复演练、异地加密备份或外部到期告警。真实 App 工程也不在本教程的服务端验收范围，须单独连接并验证。
 
