@@ -38,7 +38,8 @@ delta --version
    ```yaml
    gui:
      language: zh-CN
-     screenMode: half
+     screenMode: normal
+     sidePanelWidth: 0.25
      enlargedSideViewLocation: left
      showFileTree: true
      mouseEvents: true
@@ -49,12 +50,23 @@ delta --version
        - command: delta --{{colorScheme}} --paging=never
    ```
 
-   - `screenMode: half` 使用等宽双栏，只展开当前面板及其内容；`left` 让文件面板在左、差异在右。
+   - `screenMode: normal` 使用常规布局，左侧保留状态、文件、分支、提交等面板，右侧显示差异；`sidePanelWidth: 0.25` 将左侧默认宽度设为约 25%，右侧约 75%。
    - `showFileTree` 启用目录树，`mouseEvents` 启用鼠标操作，`showCommandLog: false` 隐藏命令日志区域。
    - `language: zh-CN` 使用简体中文；`{{colorScheme}}` 让 Delta 跟随终端深浅主题。
    - `--paging=never` 关闭 Delta 自身分页，由 Lazygit 管理滚动与按键。Lazygit 内不使用 Delta 的 `n`、`N` 区块导航。
 
 此配置只接入 Lazygit；普通 `git diff` 的全局配置见 [Delta](delta.md)。
+
+### 调整左右宽度
+
+修改 `gui.sidePanelWidth` 即可按比例设置左侧宽度，例如 `0.20` 表示约 20%，`0.25` 表示约 25%，`0.30` 表示约 30%。右侧使用剩余空间。保存后按 `q` 退出，再运行 `lazygit`，无需重启 Ghostty 或电脑。
+
+- 保持 `screenMode: normal`。切换到 `half` 且 `enlargedSideViewLocation: left` 时，只显示当前侧面板及其内容，并强制左右等宽，`sidePanelWidth` 不生效。
+- `+` / `_` 只切换 `normal`、`half`、`full` 布局，不能连续调整宽度。
+- Lazygit `v0.66.2` 不支持用鼠标拖动内部分隔线调宽；`mouseEvents: true` 开启点击、滚动等已有鼠标交互，不会增加拖动调宽能力。
+- 当右侧并排显示已暂存和未暂存两个差异面板时，Lazygit 会自动调整比例，左侧可能小于设定宽度。
+
+宽度行为依据 [v0.66.2 布局实现](https://github.com/jesseduffield/lazygit/blob/v0.66.2/pkg/gui/controllers/helpers/window_arrangement_helper.go#L241-L268)及[鼠标处理实现](https://github.com/jesseduffield/lazygit/blob/v0.66.2/pkg/gocui/gui.go#L1774-L1934)。
 
 ## 3. 打开仓库并验证
 
@@ -68,7 +80,7 @@ lazygit
 
 将示例目录替换为自己的仓库路径。第二条命令应输出仓库根目录；若提示不是 Git 仓库，先确认进入了正确目录。
 
-关闭首次提示后按 `2` 聚焦“文件 / Files”。配置已设为 `half`，无需再按 `+`；此时应看到左侧修改文件树与右侧所选文件的差异。上下移动选择文件，检查差异是否有 Delta 高亮。没有本地修改时，文件面板为空属于正常情况。
+关闭首次提示后按 `2` 聚焦“文件 / Files”。保持 `normal` 布局，查看单个未暂存文件时应看到左侧约占 25%、右侧约占 75%；文件树位于左侧的文件面板，其他侧面板仍会显示。上下移动选择文件，检查右侧差异是否有 Delta 高亮。没有本地修改时，文件面板为空属于正常情况。
 
 ## 4. 常用操作
 
@@ -111,7 +123,7 @@ delta --version
 
 ### 布局或快捷键与预期不同
 
-按 `2` 回到 Files；若全屏只剩一个区域，按 `_` 从 full 返回 half。`+` 会继续切换到下一个布局，而不是固定进入 half。确保 Ghostty 窗口足够宽，并在普通 shell 中运行 Lazygit；若外层终端复用器或其他终端界面拦截按键，先退出该界面或检查其快捷键，再按 `?` 核对 Lazygit 当前按键。
+按 `2` 回到 Files；若处于 full，按两次 `_` 经 half 返回 normal；若处于 half，按一次 `_` 返回 normal，恢复自定义宽度比例。确保 Ghostty 窗口足够宽，并在普通 shell 中运行 Lazygit；若外层终端复用器或其他终端界面拦截按键，先退出该界面或检查其快捷键，再按 `?` 核对 Lazygit 当前按键。
 
 ### 差异没有高亮
 
