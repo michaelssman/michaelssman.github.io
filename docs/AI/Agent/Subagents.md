@@ -125,7 +125,7 @@
 
 - 子智能体会消耗额外 token，因为每个子智能体都有自己的模型工作和工具调用。
 - 子智能体继承当前 sandbox policy。
-- 自定义 agent 可以配置更细的角色和权限边界。
+- 自定义 agent 可以定义角色、模型及部分能力开关；沙盒和审批权限继承主会话，角色指令不构成独立权限隔离。
 - Codex 不应随意自动开子智能体；你可以明确要求它使用子智能体。
 
 使用时要注意：
@@ -157,6 +157,8 @@ Prioritize correctness, security, behavior regressions, and missing test coverag
 ```
 
 可以把它理解为：把“你希望某类子智能体怎么工作”沉淀成固定配置。
+
+Java 后端与 Flutter App 的实际配置、审核流程和恢复方法见 [Java 与 Flutter 多 Agent 协作配置](Java与Flutter多Agent协作配置.md)。
 
 子智能体与 Skills、外部工具的组合方式参见 [MCP](../MCP.md#mcp-skills-subagents)。
 

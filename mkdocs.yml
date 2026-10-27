@@ -434,6 +434,7 @@ nav:
     - AI/技巧.md
     - Agent:
       - AI/Agent/Subagents.md
+      - AI/Agent/Java与Flutter多Agent协作配置.md
       - AI/Agent/智能体开发新需求.md
     - AI/Claude-Code-and-Codex-Hooks.md
     - CodeX:
