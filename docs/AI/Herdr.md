@@ -90,9 +90,7 @@ herdr workspace list
 
 ```bash
 herdr workspace create --cwd "/Users/michael/Documents/flutter_demo" --label "flutter_demo"
-herdr workspace create --cwd "/Users/michael/Documents/HHLib" --label "HHLib"
 herdr workspace create --cwd "/Users/michael/Documents/java_demo" --label "java_demo"
-herdr workspace create --cwd "/Users/michael/.codex/skills" --label "skills"
 ```
 
 每条命令创建一个工作区及其首个标签、Shell 面板。
