@@ -22,8 +22,6 @@ delta --version
    lazygit --print-config-dir
    ```
 
-   macOS 默认目录是 `~/Library/Application Support/lazygit`，环境变量可能改变它，以命令输出为准。
-
 2. 创建或打开该目录中的 `config.yml`：
 
    ```bash
@@ -51,38 +49,21 @@ delta --version
    ```
 
    - `screenMode: normal` 使用常规布局，左侧保留状态、文件、分支、提交等面板，右侧显示差异；`sidePanelWidth: 0.25` 将左侧默认宽度设为约 25%，右侧约 75%。
-   - `showFileTree` 启用目录树，`mouseEvents` 启用鼠标操作，`showCommandLog: false` 隐藏命令日志区域。
+   - `showFileTree` 启用目录树。
+   - `mouseEvents` 启用鼠标操作。
+   - `showCommandLog: false` 隐藏命令日志区域。
    - `language: zh-CN` 使用简体中文；`{{colorScheme}}` 让 Delta 跟随终端深浅主题。
    - `--paging=never` 关闭 Delta 自身分页，由 Lazygit 管理滚动与按键。Lazygit 内不使用 Delta 的 `n`、`N` 区块导航。
 
-此配置只接入 Lazygit；普通 `git diff` 的全局配置见 [Delta](delta.md)。
-
-### 调整左右宽度
-
-修改 `gui.sidePanelWidth` 即可按比例设置左侧宽度，例如 `0.20` 表示约 20%，`0.25` 表示约 25%，`0.30` 表示约 30%。右侧使用剩余空间。保存后按 `q` 退出，再运行 `lazygit`，无需重启 Ghostty 或电脑。
+### 调整左右宽度（不等宽）
 
 - 保持 `screenMode: normal`。切换到 `half` 且 `enlargedSideViewLocation: left` 时，只显示当前侧面板及其内容，并强制左右等宽，`sidePanelWidth` 不生效。
 - `+` / `_` 只切换 `normal`、`half`、`full` 布局，不能连续调整宽度。
-- Lazygit `v0.66.2` 不支持用鼠标拖动内部分隔线调宽；`mouseEvents: true` 开启点击、滚动等已有鼠标交互，不会增加拖动调宽能力。
 - 当右侧并排显示已暂存和未暂存两个差异面板时，Lazygit 会自动调整比例，左侧可能小于设定宽度。
 
-宽度行为依据 [v0.66.2 布局实现](https://github.com/jesseduffield/lazygit/blob/v0.66.2/pkg/gui/controllers/helpers/window_arrangement_helper.go#L241-L268)及[鼠标处理实现](https://github.com/jesseduffield/lazygit/blob/v0.66.2/pkg/gocui/gui.go#L1774-L1934)。
+宽度行为依据 [v0.66.2 布局实现](https://github.com/jesseduffield/lazygit/blob/v0.66.2/pkg/gui/controllers/helpers/window_arrangement_helper.go#L241-L268)及[鼠标处理实现](https://github.com/jesseduffield/lazygit/blob/v0.66.2/pkg/gocui/gui.go#L1654-L1789)。
 
-## 3. 打开仓库并验证
-
-先进入需要查看的 Git 仓库，例如：
-
-```bash
-cd "/Users/michael/Documents/java_demo"
-git rev-parse --show-toplevel
-lazygit
-```
-
-将示例目录替换为自己的仓库路径。第二条命令应输出仓库根目录；若提示不是 Git 仓库，先确认进入了正确目录。
-
-关闭首次提示后按 `2` 聚焦“文件 / Files”。保持 `normal` 布局，查看单个未暂存文件时应看到左侧约占 25%、右侧约占 75%；文件树位于左侧的文件面板，其他侧面板仍会显示。上下移动选择文件，检查右侧差异是否有 Delta 高亮。没有本地修改时，文件面板为空属于正常情况。
-
-## 4. 常用操作
+## 3. 常用操作
 
 下表中的文件操作以“文件 / Files”面板为上下文；同一按键在其他面板可能有不同作用。
 
@@ -104,7 +85,7 @@ lazygit
 
 仅查看差异时，选择文件即可，不需要按空格。按 `Enter` 进入逐行操作时，使用 Lazygit 原生差异显示，便于选择和暂存代码；按 `Esc` 返回文件树与 Delta 预览。提交前先检查暂存内容；`p`、`P` 分别会更新本地仓库和远程仓库。
 
-## 5. 常见问题
+## 4. 常见问题
 
 ### 命令不存在或配置键不识别
 
@@ -129,7 +110,7 @@ delta --version
 
 先确认 `delta --version` 成功，再检查配置缩进、`git.diffRenderers` 中的命令及可执行文件路径。存在多个渲染器时，按 `|` 切换到 Delta；不要把 Delta 自身分页器的快捷键当作 Lazygit 快捷键。
 
-## 6. 官方资料
+## 5. 官方资料
 
 - [Homebrew Lazygit](https://formulae.brew.sh/formula/lazygit)
 - [Lazygit v0.66.2 配置](https://github.com/jesseduffield/lazygit/blob/v0.66.2/docs/Config.md)
