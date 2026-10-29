@@ -88,7 +88,7 @@ developer_instructions = """
 
 其余四个文件已在模板中提供完整指令。修改角色时优先明确允许的工作范围、输入、产物与验证要求，避免只写一个职位名称。
 
-设计角色默认复用可用工具；没有设计工具时，在 `design/<迭代标识>/` 制作不需要构建的 HTML/CSS/JS 原型，使用虚构数据。此目录在实际设计任务中再创建。原型用于审核流程和视觉，Flutter 的键盘、手势和设备适配仍需实际验收。
+设计角色优先使用 Figma，复用组件、变量和布局规则；未接入、权限不足或所需能力不可用时，在 `design/<迭代标识>/` 制作不需要构建的 HTML/CSS/JS 原型并说明限制，使用虚构数据。此目录在实际设计任务中再创建。原型用于审核流程和视觉，Flutter 的键盘、手势和设备适配仍需实际验收。
 
 ### 2.4 设置总控规则和状态记录
 
@@ -96,7 +96,7 @@ developer_instructions = """
 
 1. 派工指定自定义 `agent_type`、目标、批准材料、工作目录、修改范围、依赖和验收条件。
 2. 操作 Java 前显式读取 `hhjava/AGENTS.md`；操作 Flutter 前显式读取根 `AGENTS.md`、`AGENTS.flutter.md` 和目标目录更近的规则。额外可写目录不意味着其规则已自动加载。
-3. 主 Agent 独占 `docs/current-iteration.md`；designer 独占获分配的原型文件；同一文件同时只有一个修改者。
+3. 主 Agent 独占 `docs/current-iteration.md`；designer 独占获分配的原型文件及 Figma 文件、页面或节点，派工指定链接和修改范围。同一范围同时只有一个修改者，不改变分享权限或发布组件库。
 4. 前后端并行前先确定接口字段、鉴权、错误与示例；接口详细说明沿用两端现有权威文档，迭代记录保存增量和链接。
 5. 子 Agent 不执行 Git 提交、推送或切换分支，由主 Agent 按用户授权统一处理。
 6. 同仓库需要 worktree 隔离时显式创建并分配路径、权限，不能假定子 Agent 自动拥有独立工作树。
@@ -125,6 +125,58 @@ trust_level = "trusted"
 进入会话后用 `/status` 检查工作目录与权限，用 `/subagents` 查看实际启动的子任务。桌面客户端可以打开该协作目录作为工作目录；本次验证的是本机 CLI，桌面端实际权限以会话显示为准。
 
 官方依据：[配置加载与信任](https://learn.chatgpt.com/docs/config-file/config-basic)、[CLI 命令](https://learn.chatgpt.com/docs/developer-commands)。
+
+### 2.6 接入 Figma 设计工具
+
+Figma 用于保存可编辑的界面设计稿、组件和交互原型。`designer` 负责设计，用户审核后再由 `flutter` 按项目现有组件和架构实现。网页登录、插件安装、账号授权和目标文件可编辑是不同状态；配置中写了“优先 Figma”不代表接入已完成。
+
+**桌面端安装与授权：**
+
+1. 在 Figma 官网注册并登录账号。
+2. 在 ChatGPT / Codex 桌面端打开 **Plugins**，搜索 **Figma**，安装官方插件。
+3. 按提示在 Figma 官方授权页面允许连接。凭据由客户端授权流程管理，不写入角色配置、教程或下载模板。
+4. 从 `/Users/michael/Documents/app-management` 开启新会话，让智能体检查 Figma 工具是否可调用、有哪些读写能力。安装后的新会话才能加载新增的工具和技能；旧会话没有工具时重新开启。
+5. 进入设计阶段时，在 Figma 新建设计文件或选择已有文件，复制文件或具体页面、Frame（画板）的链接交给主 Agent。主 Agent 将链接、允许修改的范围和已批准产品方案一起交给 `designer`。
+
+**使用 Ghostty 中的 Codex CLI：**
+
+先从协作目录启动，在 `/mcp` 中检查 Figma 是否已连接，不能仅凭桌面端安装成功推断 CLI 可用。若 CLI 尚未配置，可在 `/plugins` 中安装可用的官方 Figma 插件；已有连接不要重复添加。
+
+如果当前 CLI 无法使用插件安装方式，官方提供手动 MCP 接入。MCP（Model Context Protocol，模型上下文协议）是智能体调用 Figma 工具的连接方式。在本机终端执行：
+
+```sh
+codex mcp add figma --url https://mcp.figma.com/mcp
+```
+
+按提示登录和授权；如果没有启动授权流程或需要重新登录，执行：
+
+```sh
+codex mcp login figma
+```
+
+然后重新启动：
+
+```sh
+codex -C "/Users/michael/Documents/app-management"
+```
+
+手动添加 MCP 不会安装 Figma 的技能；需要时按官方接入文档中的技能入口安装，不能假定仅添加服务器就完成全部工具配置。
+
+**连接后的最小检查提示词：**
+
+```text
+只检查 Figma 接入，不修改设计稿或业务代码。
+确认当前 Figma 工具可调用；若有账号身份工具，核对连接身份。
+区分读取设计、生成设计和直接编辑画布的实际能力。
+如已提供目标文件链接，只读检查其内容及工具能够确认的权限。
+没有文件或无法确认权限时标为未验证，不用创建测试页面来假装检查通过。
+```
+
+画布写入目前要求 Professional、Education、Organization 或 Enterprise 套餐及文件编辑权限；能读取设计不等于能编辑。套餐或能力不足时说明原因，交付本地 HTML 原型，不自动购买套餐。实际资格以 Figma 的当前规则和工具返回结果为准。
+
+切换工具不会撤销已有产品或原型批准。交付 Figma 产物时，主 Agent 在迭代记录保存文件/节点链接及可定位版本，或本地截图和状态说明，避免后续修改改变审核依据。
+
+官方依据：[Figma 接入 Codex](https://developers.figma.com/docs/figma-mcp-server/remote-server-installation/#codex)、[画布写入条件](https://developers.figma.com/docs/figma-mcp-server/write-to-canvas/)、[OpenAI 插件安装与会话加载](https://learn.chatgpt.com/docs/plugins)。
 
 ## 3. 日常使用与审核
 
@@ -192,6 +244,8 @@ trust_level = "trusted"
 | Agent 忽略项目规范 | 主 Agent 在派工时明确提供目标仓库规范路径，并要求先读取 |
 | 多个 Agent 同时改同一文件 | 主 Agent 重新分配写入范围，保留已有变更；共享迭代文件保持主 Agent 单写 |
 | 每次恢复都丢失阶段 | 检查主 Agent 是否更新了 current-iteration 的审核依据、产物版本和下一步 |
+| Figma 网页已登录但智能体没有工具 | 安装官方插件并完成账号授权，开启新会话；CLI 还需检查 `/mcp` 中的连接 |
+| 能读 Figma，不能编辑画布 | 检查当前工具是否提供画布写入、套餐资格及目标文件编辑权限；受限时用 HTML 原型并说明未验证项 |
 
 ## 6. 本次配置记录
 
@@ -203,5 +257,7 @@ trust_level = "trusted"
 - Codex 严格配置读取确认项目配置已加载、两个额外可写目录及子 Agent 并发上限生效；原生提示输入检查确认总控规则和五个自定义角色已注册。
 
 本次只验证配置加载，未运行完整角色派工迭代、Java/Flutter 业务测试或桌面客户端验收，也未启动业务改造或发布。
+
+后续 Figma 配置将设计工具首选项、远端设计范围和审核依据同步到协作规则、`designer.toml`、README 及下载模板。模板中的 `current-iteration.md` 仍是初始状态，不包含本机正在进行的产品迭代；工具授权和设计文件权限需要按 2.6 节独立验证。
 
 相关基础概念参见 [Subagents 子智能体](Subagents.md)。
