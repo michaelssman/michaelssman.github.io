@@ -7,7 +7,7 @@
 - 安全组需允许可信来源访问 SSH `22`。
 - 下文命令均在 **Mac 新终端窗口**执行，不是在已登录 ECS 的终端中执行。每个代码块是一条完整命令，可以整段复制；行尾的 `\` 表示续行。
 
-命令中的 `-i` 指定 SSH 私钥；`-N` 表示只转发端口、不进入服务器命令行；`-L` 的格式为 `Mac监听地址:Mac端口:ECS可访问的目标地址:目标端口`。两个 `127.0.0.1` 分别指 Mac 和 ECS 自己，不是同一台机器。
+命令中的 `-i` 指定 SSH 私钥；`-N` 表示只转发端口、不进入服务器命令行；`-L` 的格式为 `Mac监听地址:Mac端口:ECS可访问的目标地址:目标端口`。
 
 `ExitOnForwardFailure=yes` 在本地转发监听无法建立时退出，但不保证 ECS 上的目标服务已启动。[SSH 端口转发](https://man.openbsd.org/ssh)、[转发失败处理](https://man.openbsd.org/ssh_config#ExitOnForwardFailure)。
 
@@ -30,9 +30,9 @@ ssh -i "/Users/michael/Downloads/ecs260818.pem" \
 | `http://127.0.0.1:19001` | `127.0.0.1:9001` | Chrome 打开 MinIO 控制台 |
 | `http://127.0.0.1:19000` | `127.0.0.1:9000` | SDK 或存储工具连接 MinIO API |
 
-控制台使用 **MinIO 管理员账号和密码**。凭据位于 ECS 的 `/opt/hhjava-minio/secrets/root_user` 和 `/opt/hhjava-minio/secrets/root_password`。需要查看时另开 Mac 终端正常登录 ECS；隧道窗口不能执行服务器命令。
+控制台使用 **MinIO 管理员账号和密码**。凭据位于 ECS 的 `/opt/hhjava-minio/secrets/root_user` 和 `/opt/hhjava-minio/secrets/root_password`。需要查看时另开 Mac 终端正常登录 ECS；
 
-看到登录页面并成功进入存储桶列表，即完成控制台访问验证。API 使用 MinIO 应用凭据，不使用 hhjava 的 Bearer Token。部署与权限说明见 [MinIO](分布式文件系统MinIO.md)。
+API 使用 MinIO 应用凭据，不使用 hhjava 的 Bearer Token。部署与权限说明见 [MinIO](分布式文件系统MinIO.md)。
 
 <a id="nacos-mysql"></a>
 
@@ -55,8 +55,7 @@ ssh -i "/Users/michael/Downloads/ecs260818.pem" \
 | `127.0.0.1:19848` | `127.0.0.1:9848` | Nacos 客户端 gRPC 通信，不是网页地址 |
 | `127.0.0.1:13306` | `127.0.0.1:3306` | MySQL 数据库工具或本机 Java 连接 |
 
-1. **查看 Nacos 配置：** Chrome 打开上表控制台地址，用已有 Nacos 管理账号登录。
-2. **连接 MySQL：** 数据库工具填写 Host `127.0.0.1`、Port `13306`，沿用已有业务账号、数据库名和 TLS（Transport Layer Security，传输层安全）配置，不使用 root。IDEA 的字段与连接验证见 [环境搭建](环境搭建.md#mysql-via-ssh)。
+1. **连接 MySQL：** 数据库工具填写 Host `127.0.0.1`、Port `13306`，沿用已有业务账号、数据库名和 TLS（Transport Layer Security，传输层安全）配置，不使用 root。IDEA 的字段与连接验证见 [环境搭建](环境搭建.md#mysql-via-ssh)。
 
 只查看 Nacos 网页时，只需要 `18848 → 8848`；本机 Java 使用 Nacos 2.x 客户端时还需要 `19848 → 9848`。客户端按主端口 **加 1000** 计算 gRPC（远程过程调用框架）端口，所以 `18848` 必须配套 `19848`，不能误配成本机 `9848`。[Nacos 2.x 端口规则](https://www.nacos.io/en/docs/v2/upgrading/version2-compatibility/)
 
@@ -95,9 +94,6 @@ cd /Users/michael/Documents/java_demo/hhjava
 ## 5. 关闭隧道与收紧公网入口
 
 - **关闭：** 在对应隧道终端按 `Control + C`。
-- **端口占用：** 出现 `Address already in use` 时，先确认是否已有相同隧道，不要重复启动。端口转发后仍连接失败时，检查 ECS 上目标服务是否运行、回环端口是否已发布。
-- **收紧前：** 先验证网页、数据库工具和本机 Java 都能通过隧道连接，再确认没有其他客户端依赖公网直连。
-- **安全组：** 保留可信来源的 SSH `22` 和业务所需 HTTPS `443`。跨 ECS 的必要连接走私网并精确授权。[阿里云安全组建议](https://www.alibabacloud.com/help/en/ecs/user-guide/start-using-security-groups)
 - **Docker：** 对仅供宿主机和 SSH 隧道访问的端口，使用 `127.0.0.1:宿主机端口:容器端口`，不绑定所有网卡。既有实例修改映射前先确认数据卷、容器网络和其他客户端；不要删除数据卷重建。MySQL 示例见 [环境搭建](环境搭建.md#mysql-via-ssh)。[Docker 端口发布说明](https://docs.docker.com/engine/network/port-publishing/)
 
 ### 本实例已完成的配置
@@ -106,5 +102,3 @@ cd /Users/michael/Documents/java_demo/hhjava
 - MySQL 沿用原镜像、账号与 `mysql_mysql_data` 数据卷；配置为 `/opt/mysql/compose.yaml`，项目名为 `mysql-private`，复用原网络 `mysql_backend`。
 - Nacos 沿用 `2.0.3` 和原账号、配置；容器 `/home/nacos/data` 已挂载到 ECS `/opt/hhjava-nacos/data`，包含内置 Derby 数据库和注册数据。不要用空目录覆盖。
 - 迁移顺序为停服、冷备份、保留旧容器，再按回环映射重建及验证。备份位于 `/opt/hhjava-loopback-backups/`；`*-before-loopback-*` 原容器保持停止且关闭自动重启。不要同时启动新旧 MySQL；Nacos 迁移后已有新写入时，也不能直接启动旧容器回退。
-
-上述是容器映射的实施结果；阿里云安全组规则本次未调整、未核验，不代表其旧公网放行规则已经删除。

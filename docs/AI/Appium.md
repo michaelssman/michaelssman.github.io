@@ -1,7 +1,5 @@
 # Appium：自动化测试
 
-第 1～11 节是从零搭建与编写计数器测试的通用教程。**本机已有环境时，直接查看第 12 节，无需重新安装；当前业务真机验收的隧道启动、暂停和恢复步骤见第 12.5 节。**
-
 ## 1. 先认识各个组件
 
 Appium 将平台的 UI 自动化能力通过 WebDriver 协议提供给测试脚本。iOS 的调用关系如下：
@@ -39,26 +37,7 @@ Appium Server、Driver、Inspector 和 Python Client 分别安装，WDA 随 XCUI
 
 本节命令都在 Mac 终端执行。先核对已有工具，只安装缺少或不兼容的部分。
 
-### 2.1 准备 Xcode 和目标设备支持
-
-1. 安装支持目标 iOS 版本的完整 Xcode，首次打开并完成其要求的协议确认和组件安装。仅安装 Command Line Tools 不够；`xcodebuild`、`simctl` 等工具需要完整 Xcode。
-2. 在 `Xcode → Settings → Locations → Command Line Tools` 中选择实际使用的 Xcode。
-3. 按目标平台安装需要的组件。运行模拟器时，在 Xcode 的 `Settings → Components` 中安装相应 iOS Simulator Runtime；真机测试不要求额外下载模拟器 Runtime，但必须完成 Xcode 的设备支持准备。
-4. 在终端核对：
-
-```bash
-xcode-select -p
-xcodebuild -version
-xcrun --sdk iphoneos --show-sdk-version
-```
-
-**成功标志：**开发工具路径指向完整 Xcode 内的 `Contents/Developer`，而非 `/Library/Developer/CommandLineTools`；版本和 iPhoneOS SDK 查询成功。设备系统、Xcode、macOS 和驱动需要相互兼容，按 [XCUITest 官方兼容矩阵](https://appium.github.io/appium-xcuitest-driver/latest/getting-started/system-requirements/) 核对，不能只比较 Appium 版本。
-
-例如，XCUITest Driver `11.1.2～12.12.4` 对应的 WDA 范围支持 Xcode `16.0～27.x`；iOS 27 要求 Driver `>=11.1.2`、WDA `>=14.1.1`。已满足兼容要求的环境可继续使用，不必为了教程重新安装或升级。真机的配对、开发者模式及签名在第 8 节配置。
-
-来源：[Apple：命令行工具选择](https://developer.apple.com/documentation/xcode/configuring-command-line-tools-settings)、[Xcode 专用命令行工具](https://developer.apple.com/documentation/xcode/xcode-command-line-tool-reference)、[安装 Xcode 组件](https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components)。
-
-### 2.2 检查或安装 Node.js
+### 2.1 检查或安装 Node.js
 
 Appium 3 的 Node.js 要求为 `^20.19.0 || ^22.12.0 || >=24.0.0`，npm 要求为 `>=10`；官方推荐 LTS（长期支持）版本。先执行：
 
@@ -68,7 +47,7 @@ node --version
 npm --version
 ```
 
-已有 Homebrew、版本管理器或其他方式安装的 Node，只要满足上述要求就直接复用，不覆盖现有安装或调整其 PATH。仅在缺少兼容 Node 时，使用下面的独立安装方案：将官方 Node.js `24.21.0` LTS 安装到用户目录，自动区分 Apple Silicon 与 Intel Mac，并校验下载文件的 SHA-256。
+将官方 Node.js `24.21.0` LTS 安装到用户目录，自动区分 Apple Silicon 与 Intel Mac，并校验下载文件的 SHA-256。
 
 ```bash
 bash <<'SH'
@@ -118,7 +97,7 @@ npm --version
 
 采用上述独立安装方案时，Node 应显示 `v24.21.0`、npm 主版本不低于 `10`。为让新终端也生效，在 `~/.zprofile` 中添加一行 `export PATH="$HOME/.local/bin:$PATH"`，并核对 `~/.zshrc` 是否再次调整 PATH。复用已有 Node 的用户保留原有 Node 路径；重新打开终端后用 `command -v node` 和版本命令确认实际生效的安装。
 
-### 2.3 安装缺少的 Server 和驱动
+### 2.2 安装缺少的 Server 和驱动
 
 如果已有 `appium` 命令，先执行 `appium --version` 和 `appium driver list --installed`。Appium 3 与 XCUITest Driver 10 及以上配套；已有兼容版本时直接运行下方检查命令，不重复安装。新环境按顺序执行：
 

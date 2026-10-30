@@ -25,8 +25,6 @@ Nacos 支持多种服务发现协议（如 HTTP、gRPC、Dubbo 等）和多种�
 
 **Nacos 的典型应用场景包括微服务架构中的服务注册与发现、配置管理，以及分布式系统中的服务治理。**
 
-Nacos通常安装在Linux服务器上。
-
 ## Nacos安装
 
 1、docker拉取镜像 
@@ -46,8 +44,6 @@ docker run --env MODE=standalone -d --name nacos-server --restart=always -p 8848
 - docker run 启动容器
 - MODE=standalone 单机版
 - --restart=always 开机启动
-
-**在阿里云安全组中一定要开放8848和9848两个端口。**
 
 3、访问nacos地址：http://服务器ip:8848/nacos 
 
