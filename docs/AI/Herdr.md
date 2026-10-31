@@ -1,9 +1,5 @@
 # Ghostty + Herdr 多项目终端配置
 
-Herdr 是终端工作区管理器：一个界面管理多个项目、分屏和 Codex CLI，关闭客户端后，后台任务仍可继续运行。
-
-本文采用 **一个默认会话 → 每个项目一个 Workspace（工作区）→ 标签 → 面板**。
-
 ## 1. 安装与启动
 
 ```bash
@@ -97,8 +93,6 @@ herdr workspace create --cwd "/Users/michael/Documents/java_demo" --label "java_
 
 ### 打开已有 Git worktree
 
-同一个仓库同时开发多个需求时，可以把每个已有 worktree 加入 Herdr，作为独立工作区归到源仓库下面。
-
 例如，源仓库为 `/Users/michael/Desktop/yuncai/kjxy/ios-kjxy`，已有需求 worktree 为 `/Users/michael/Desktop/yuncai/kjxy/refactor1.0`，在普通 Shell 中执行：
 
 ```bash
@@ -133,8 +127,6 @@ herdr worktree open \
    pwd
    codex
    ```
-
-Herdr 可检测面板中的 Codex，并在侧栏显示任务状态。面板负责运行程序，工作区负责组织项目；创建工作区本身不会启动 Codex 或测试。[快速开始](https://herdr.dev/docs/quick-start/)
 
 ## 4. 日常操作
 

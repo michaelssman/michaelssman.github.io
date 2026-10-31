@@ -266,8 +266,6 @@ kill 12345
 
 3. 新开 Ghostty 标签页，在项目目录运行 `codex`。已经运行的 Codex 需要退出后重新启动，才能读取新的环境变量。
 
-参考：[Codex CLI 外部提示词编辑器](https://learn.chatgpt.com/docs/cli-customization#prompt-editor)。
-
 ---
 
 ## 4. 斜杠命令
@@ -406,8 +404,6 @@ Codex 每次启动或每个 TUI 会话开始时构建 instruction chain：
 
 ---
 
-MCP 命令和配置统一整理在 [MCP](../MCP.md#codex-mcp) 中。
-
 ## 7. Skills、Plugins
 
 ### 7.1 Skills
@@ -474,21 +470,7 @@ Skill 存放位置：
 
 Codex App 是面向并行线程的桌面体验。一个项目类似在特定目录启动一个 Codex 会话。多个项目或多个包建议拆成独立项目，让 sandbox 边界更清晰。
 
-### 8.2 Local / Worktree / Cloud
-
-App 新线程可选择：
-
-| 模式 | 含义 |
-| --- | --- |
-| Local | 直接在当前项目目录工作 |
-| Worktree | 创建 Git worktree 隔离改动 |
-| Cloud | 在配置好的云环境远程运行 |
-
-Worktree 依赖 Git 仓库。它是 Git worktree 机制下的独立 checkout，不会干扰你的本地 checkout，适合并行探索或后台任务。
-
-Git worktree 允许多个 checkout 并行，通常会涉及不同 branch 或 detached HEAD；重点是隔离工作区。
-
-### 8.3 Review pane
+### 8.2 Review pane
 
 Review pane 展示 Git 仓库中的改动，不只展示 Codex 改的内容，还包括用户自己改的和其他未提交改动。
 
@@ -507,7 +489,7 @@ Review pane 展示 Git 仓库中的改动，不只展示 Codex 改的内容，�
 
 CLI 中 `/review` 的结果也可以在 App review pane 中以内联评论形式显示。
 
-### 8.4 Automations
+### 8.3 Automations
 
 Automations 用于定期运行后台任务。适合：
 
@@ -517,7 +499,7 @@ Automations 用于定期运行后台任务。适合：
 
 项目级 automation 要求运行本地 Codex App 的机器开机、Codex 正在运行、项目目录仍然存在。Git 仓库中 automation 可以运行在本地项目或新的 background worktree；非 Git 项目会直接在项目目录运行。
 
-### 8.5 In-app browser 与 Browser Use
+### 8.4 In-app browser 与 Browser Use
 
 In-app browser 给你和 Codex 一个共享页面视图，适合本地开发服务器、文件预览、无需登录的公开页面。
 
@@ -529,7 +511,7 @@ In-app browser 给你和 Codex 一个共享页面视图，适合本地开发服�
 
 Browser Use 让 Codex 操作 in-app browser，例如点击、输入、截图、检查渲染状态和验证修复。使用前需要安装并启用 Browser plugin。
 
-### 8.6 Computer Use
+### 8.5 Computer Use
 
 Computer Use 让 Codex 操作 macOS 或 Windows 的图形界面。适合命令行或结构化工具无法覆盖的任务，例如：
 
