@@ -242,8 +242,6 @@ kill 12345
 3. 保持 MacBook 上盖打开、网络连接正常且电量足够。
 4. 按 `Control + Command + Q` 锁屏，不要关闭运行 Codex CLI 的终端。
 
-长时间任务会持续消耗电量。纯电池运行时应设置合理的超时时间，并预留足够电量。OpenAI 的远程连接文档同样要求承载本地任务的电脑保持唤醒和在线；电脑进入睡眠后，本地 Shell、文件和工具将不可用，直到主机恢复：[Remote connections](https://learn.chatgpt.com/docs/remote-connections)。
-
 ### 3.7 Ghostty 中用 VS Code 编辑提示词
 
 按 `Ctrl+G` 用外部编辑器编写较长的提示词。Codex 优先读取 `VISUAL`，未设置时使用 `EDITOR`。
