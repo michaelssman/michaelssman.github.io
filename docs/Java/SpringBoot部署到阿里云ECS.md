@@ -8,31 +8,19 @@
 
 ## 1. 部署完成后是什么效果
 
-手机不再请求开发电脑，而是访问 ECS 的 HTTPS 地址。本教程只部署注册登录需要的 `hhjava-user` 和 `hhjava-gateway`，复用已有 MySQL、Nacos，不安装文件服务、MinIO 或 Nginx。
-
 ```text
-App / API 调试工具
-  │ HTTPS，https://47.120.56.43:443
-  ▼
-hhjava-gateway（公网入口、TLS、路由与 JWT 验签）
-  │ 服务器本机连接
-  ▼
-hhjava-user（127.0.0.1:8080，注册、登录、刷新与退出）
-  ├─ MySQL：用户、角色、OAuth2 与移动会话数据
-  └─ Nacos：读取本环境配置
-
 Certbot → 临时监听 80 完成证书验证 → 更新 HTTPS 证书 → 通知 gateway 加载
 ```
 
-443 是 HTTPS 默认端口，访问时可以不写 `:443`。`127.0.0.1` 表示当前机器自己：在 ECS 上指 ECS，在手机上指手机，不能把它填为 App 的服务器地址。
+443 是 HTTPS 默认端口，访问时可以不写 `:443`。
 
-本文选择 Alibaba Cloud Linux 4、x86_64、独立安装的 Azul Zulu JDK 17、systemd 托管 Java 进程。hhjava 使用 `/opt/hhjava/jdks/current/bin/java`，不替换系统 `/usr/bin/java`，也不影响其他应用使用的 Dragonwell。MySQL/Nacos 即使运行在 Docker 容器里，也不要求 Java 服务一起容器化；但它们的访问地址必须以实际容器网络和端口映射为准。
+本文选择 Alibaba Cloud Linux 4、x86_64、独立安装的 Eclipse Temurin JDK 17、systemd 托管 Java 进程。hhjava 使用 `/opt/hhjava/jdks/current/bin/java`，不替换系统 `/usr/bin/java`，也不影响其他应用使用的 Dragonwell。MySQL/Nacos 即使运行在 Docker 容器里，也不要求 Java 服务一起容器化；但它们的访问地址必须以实际容器网络和端口映射为准。
 
 ## 2. 先认识会用到的东西
 
 | 名称 | 用途及本文中的作用 |
 | --- | --- |
-| JDK / Azul Zulu | JDK（Java Development Kit，Java 开发工具包）包含编译及运行 Java 的工具；Zulu 是 Azul 提供的 OpenJDK 发行版，本方案固定补丁版本独立安装 |
+| JDK / Eclipse Temurin | JDK（Java Development Kit，Java 开发工具包）包含编译及运行 Java 的工具；Temurin 是 Adoptium 提供的 OpenJDK 发行版，本方案固定补丁版本独立安装 |
 | 软链接 `current` | 指向具体目录的快捷入口；JDK 和应用发布各有一个 `current`，切换其中一个不会自动切换另一个，也不会自动重启进程 |
 | systemd | Linux 的服务管理器；负责启动、停止、开机运行和按配置恢复进程 |
 | Certbot / ACME | Certbot 是证书客户端；ACME（Automatic Certificate Management Environment，自动证书管理环境）是申请和续期证书的协议 |
@@ -251,7 +239,7 @@ Gateway 5 的路由、默认过滤器和 discovery locator 均使用 `spring.clo
 
 #### 6.3.1 下载固定 JDK 并校验
 
-以下包仅适用于本方案的 Linux x86_64 / glibc，不适用于 Mac 或 ARM 服务器。固定 Zulu `17.70.111` / Java `17.0.21`；URL、架构及 SHA-256 来自 [Azul 官方包元数据](https://api.azul.com/metadata/v1/zulu/packages/3b43a148-84f9-4ed2-9131-09be9e5070c1)。SHA-256 是文件完整性摘要，下载后必须匹配才解压。以后更新补丁需重新核对官方包、摘要和项目验证结果，不只修改版本字符串。
+以下包仅适用于本方案的 Linux x86_64 / glibc，不适用于 Mac 或 ARM 服务器。本示例使用 Eclipse Temurin `17.0.21+9`：它包含证书信任库更新。Java 通过信任库判断 HTTPS 服务端证书是否可信；JDK 补丁和证书信任更新都需要定期检查。版本、架构、文件名及 SHA-256 以 [Adoptium 官方发布页](https://github.com/adoptium/temurin17-binaries/releases/tag/jdk-17.0.21%2B9)为准；SHA-256 是文件完整性摘要，下载后必须匹配才解压。以后更新补丁时重新从官方发布页核对包名、摘要和项目验证结果，不只修改版本字符串。
 
 **ECS root 终端**；需要已有 `curl`、`tar` 和 `sha256sum`。以下只新增固定版本目录，不改变系统 Java；同名目录已有时先验证，不覆盖解压：
 
@@ -260,20 +248,32 @@ Gateway 5 的路由、默认过滤器和 discovery locator 均使用 `spring.clo
 set -eu
 test "$(uname -m)" = x86_64
 umask 022
-HHJAVA_JDK_NAME=zulu17.70.111-ca-jdk17.0.21-linux_x64
-HHJAVA_JDK_ARCHIVE="/var/cache/hhjava-jdk/${HHJAVA_JDK_NAME}.tar.gz"
-test ! -e "/opt/hhjava/jdks/$HHJAVA_JDK_NAME"
-test ! -L "/opt/hhjava/jdks/$HHJAVA_JDK_NAME"
-install -d -m 755 /opt/hhjava/jdks /var/cache/hhjava-jdk
-curl --fail --location --proto '=https' --tlsv1.2 \
-  "https://cdn.azul.com/zulu/bin/${HHJAVA_JDK_NAME}.tar.gz" --output "$HHJAVA_JDK_ARCHIVE"
-printf '%s  %s\n' '730ac4f645f601d3005bcdc8736c7e0630d402382e332c11d61ac2494436587f' "$HHJAVA_JDK_ARCHIVE" | sha256sum --check -
-tar --extract --gzip --file "$HHJAVA_JDK_ARCHIVE" --directory /opt/hhjava/jdks --no-same-owner
-"/opt/hhjava/jdks/$HHJAVA_JDK_NAME/bin/java" -version
+HHJAVA_JDK_DIR=/opt/hhjava/jdks/temurin-17.0.21+9
+HHJAVA_JDK_FILE=OpenJDK17U-jdk_x64_linux_hotspot_17.0.21_9.tar.gz
+test ! -e "$HHJAVA_JDK_DIR"
+test ! -L "$HHJAVA_JDK_DIR"
+mkdir -p /opt/hhjava/jdks /var/cache/hhjava-jdk
+HHJAVA_JDK_ARCHIVE=$(mktemp /var/cache/hhjava-jdk/temurin-17.0.21.XXXXXX.tar.gz)
+printf '本次下载文件：%s\n' "$HHJAVA_JDK_ARCHIVE"
+if ! curl --fail --location --proto '=https' --proto-redir '=https' --tlsv1.2 \
+  "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.21%2B9/${HHJAVA_JDK_FILE}" --output "$HHJAVA_JDK_ARCHIVE"; then
+  curl --fail --location --proto '=https' --proto-redir '=https' --tlsv1.2 \
+    "https://mirrors.tuna.tsinghua.edu.cn/Adoptium/17/jdk/x64/linux/${HHJAVA_JDK_FILE}" --output "$HHJAVA_JDK_ARCHIVE"
+fi
+printf '%s  %s\n' '8b9b611d917e3dfd8419d3566b5949226f69b052fed7e109c1368add1dfe8711' "$HHJAVA_JDK_ARCHIVE" | sha256sum --check -
+mkdir "$HHJAVA_JDK_DIR"
+tar --extract --gzip --file "$HHJAVA_JDK_ARCHIVE" --directory "$HHJAVA_JDK_DIR" --strip-components=1 --no-same-owner --no-same-permissions
+"$HHJAVA_JDK_DIR/bin/java" -version
+HHJAVA_CA_LIST=$("$HHJAVA_JDK_DIR/bin/keytool" -list -cacerts -storepass changeit 2>/dev/null)
+if printf '%s\n' "$HHJAVA_CA_LIST" | grep -iqE 'emsigneccrootcag3|emsignrootcag2|aaa.?certificate.?services'; then
+  echo 'JDK 信任库包含不应信任的证书，请停止发布并核对官方安全公告。' >&2
+  exit 1
+fi
+echo 'JDK 信任库目标证书检查通过。'
 )
 ```
 
-预期摘要检查为 `OK`，`java -version` 显示 `17.0.21` 和 Zulu。下载、摘要或运行检查失败就停止，不安装服务。全局 `java -version` 仍可能显示 Dragonwell，这是刻意保留的系统状态，不能用它判断 hhjava 实际运行版本。
+优先从官方地址下载；连接失败时使用[清华 Adoptium 镜像](https://mirrors.tuna.tsinghua.edu.cn/help/Adoptium/)，两个来源都必须通过官方摘要检查。命令输出 `OK` 后才创建目标目录并解压；预期 `java -version` 显示 `17.0.21` 和 `Temurin-17.0.21+9`，最后显示信任库目标证书检查通过。检查来自 [Adoptium 证书安全说明](https://adoptium.net/news/2026/10/temurin-october-2026-emudhra/)；G1 不在本项移除范围。失败时停止发布：如果已创建目标目录，先确认其内容，不要直接覆盖。下载文件保留在上方输出的路径，可在确认不再需要后按该精确路径清理。全局 `java -version` 仍可能显示 Dragonwell，不能用它判断 hhjava 的实际版本。
 
 #### 6.3.2 切换 hhjava 专用 Java 入口
 
@@ -283,7 +283,7 @@ tar --extract --gzip --file "$HHJAVA_JDK_ARCHIVE" --directory /opt/hhjava/jdks -
 (
 set -eu
 test -n "$HHJAVA_RELEASE"
-HHJAVA_JDK_DIR=/opt/hhjava/jdks/zulu17.70.111-ca-jdk17.0.21-linux_x64
+HHJAVA_JDK_DIR=/opt/hhjava/jdks/temurin-17.0.21+9
 test -x "$HHJAVA_JDK_DIR/bin/java"
 if [ -e /opt/hhjava/jdks/current ] || [ -L /opt/hhjava/jdks/current ]; then
   test -L /opt/hhjava/jdks/current
@@ -622,7 +622,7 @@ for HHJAVA_SERVICE in hhjava-user hhjava-gateway hhjava-backup-file; do
 done
 ```
 
-预期进程均稳定，实际路径指向选定 Zulu 目录的 `bin/java`。只改变软链接不会改变已启动 JVM，必须重新启动相应服务。
+预期进程均稳定，实际路径指向选定 Temurin 目录的 `bin/java`。只改变软链接不会改变已启动 JVM，必须重新启动相应服务。
 
 **步骤 6（ECS）：恢复自动续期。** 仅在上述发布验证通过后执行，并检查下一次执行安排：
 
