@@ -1,7 +1,5 @@
 # Codex
 
-官方入口：[Codex docs](https://developers.openai.com/codex/)
-
 ---
 
 ## 目录
@@ -15,7 +13,6 @@
 7. [Skills、Plugins](#7-skillsplugins)
 8. [Codex App 重点能力](#8-codex-app-重点能力)
 9. [实践建议与避坑](#9-实践建议与避坑)
-10. [官方资料索引](#10-官方资料索引)
 
 ---
 
@@ -544,30 +541,5 @@ macOS 需要授予 Screen Recording 和 Accessibility 权限。由于它会影�
   ✅ 个人偏好放全局，团队/项目/目录规则放最近的仓库 `AGENTS.md`。
 - ❌ 让 Codex 联网查“最新资料”但不说明来源要求。
   ✅ 明确要求使用官方文档或指定可信来源。
-
----
-
-## 10. 官方资料索引
-
-- [Codex Quickstart](https://developers.openai.com/codex/quickstart)
-- [Codex CLI](https://developers.openai.com/codex/cli)
-- [Slash commands in Codex CLI](https://developers.openai.com/codex/cli/slash-commands)
-- [Non-interactive mode](https://developers.openai.com/codex/noninteractive)
-- [Codex Models](https://developers.openai.com/codex/models)
-- [Sandbox](https://developers.openai.com/codex/concepts/sandboxing)
-- [Customization](https://developers.openai.com/codex/concepts/customization)
-- [Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md)
-- [Configuration Reference](https://developers.openai.com/codex/config-reference)
-- [Agent Skills](https://developers.openai.com/codex/skills)
-- [Plugins](https://developers.openai.com/codex/plugins)
-- [Build plugins](https://developers.openai.com/codex/plugins/build)
-- [Subagents](https://developers.openai.com/codex/subagents)
-- [Codex app features](https://developers.openai.com/codex/app/features)
-- [Codex app review](https://developers.openai.com/codex/app/review)
-- [Codex app automations](https://developers.openai.com/codex/app/automations)
-- [Codex app worktrees](https://developers.openai.com/codex/app/worktrees)
-- [Codex app in-app browser](https://developers.openai.com/codex/app/browser)
-- [Codex app computer use](https://developers.openai.com/codex/app/computer-use)
-- [Codex app commands](https://developers.openai.com/codex/app/commands)
 
 ---

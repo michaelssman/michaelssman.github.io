@@ -2,13 +2,9 @@
 
 ## 结论
 
-移动项目文件夹不会删除 Codex CLI 会话。会话保存在：
+会话保存在：`~/.codex/sessions`。
 
-```text
-~/.codex/sessions
-```
-
-移动后看不到旧会话，是因为 `codex resume` 默认按当前工作目录过滤。使用 `codex resume --all` 即可查找旧目录下的会话，再通过 `-C/--cd` 指定新的项目目录。
+移动项目文件夹后使用 `codex resume --all` 即可查找旧目录下的会话，再通过 `-C/--cd` 指定新的项目目录。
 
 ## 目标目录
 
@@ -107,7 +103,6 @@ codex resume --all
 
 ## 注意事项
 
-- 不要删除 `/Users/michael/.codex/sessions`。
 - 不要批量替换会话 JSONL 文件中的旧目录路径，会话还包含索引和上下文元数据，直接修改可能破坏记录。
 - 不建议使用 `codex resume --last --all` 查找指定项目，因为它可能恢复其他项目的全局最新会话。
 - 如已知会话 UUID，可直接指定会话并绑定新目录：
@@ -119,5 +114,3 @@ codex resume -C '/新的项目目录' '<SESSION_ID>'
 ## 官方说明
 
 OpenAI 官方文档说明：`codex resume --all` 可以显示当前目录之外的会话；当当前目录与会话保存目录不一致时，可以选择使用当前目录或原会话目录，显式指定的 `-C/--cd` 优先级最高。
-
-- [Codex CLI `resume` 官方说明](https://learn.chatgpt.com/docs/developer-commands?surface=cli)

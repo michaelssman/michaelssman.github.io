@@ -74,7 +74,6 @@ codex -C "$WORKTREE_B_DIR"
 在各自 Worktree 中分别检查：
 
 ```bash
-pwd
 git status --short --branch
 git branch --show-current
 git log -1 --oneline --decorate
@@ -216,7 +215,3 @@ git worktree list
 codex -C "$REPO_DIR"
 codex -C "$WORKTREE_B_DIR"
 ```
-
-牢记规则：
-
-提交前始终执行 `pwd` 和 `git status --short --branch`。

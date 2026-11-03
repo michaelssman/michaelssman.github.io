@@ -91,7 +91,7 @@ herdr workspace create --cwd "/Users/michael/Documents/java_demo" --label "java_
 
 每条命令创建一个工作区及其首个标签、Shell 面板。
 
-### 打开已有 Git worktree
+### 添加已有 Git worktree
 
 例如，源仓库为 `/Users/michael/Desktop/yuncai/kjxy/ios-kjxy`，已有需求 worktree 为 `/Users/michael/Desktop/yuncai/kjxy/refactor1.0`，在普通 Shell 中执行：
 
@@ -105,28 +105,6 @@ herdr worktree open \
 - `--cwd`：源仓库的工作目录，用于确定 worktree 所属的 Git 仓库。
 - `--path`：该仓库中已经存在的 worktree 目录。
 - `--label`：该工作区在 Herdr 中显示的名称。
-
-#### 已有一个 worktree，再添加另一个
-
-**第二个 worktree 已创建，只需加入 Herdr：** 再执行一次 `open`，`--cwd` 仍指向同一个源仓库，`--path` 换成第二个 worktree 的实际目录，`--label` 换成它的显示名称。例如：
-
-```bash
-herdr worktree open \
-  --cwd "/Users/michael/Desktop/yuncai/kjxy/ios-kjxy" \
-  --path "/Users/michael/Desktop/yuncai/kjxy/task-2" \
-  --label "需求2"
-```
-
-### 分屏与运行 Codex
-
-推荐每个工作区使用一个 `main` 标签：上方运行 Codex，下方左右分别执行 Git/Shell 命令和测试/查看日志。
-
-1. 单击上方面板，确认当前目录后运行 Codex：
-
-   ```bash
-   pwd
-   codex
-   ```
 
 ## 4. 日常操作
 
