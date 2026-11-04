@@ -12,14 +12,10 @@ OMP（Oh My Pi）是运行在终端中的 AI 编程工具，支持模型登录�
 | 协作目录 | `/Users/michael/Documents/app-management` |
 | 协作项目配置与规则 | 协作目录的 `.omp/config.yml`、`.omp/RULES.md` |
 | 五角色入口 | 协作目录的 `.omp/agents/*.md` |
-| Java 仓库／模块 | `java_demo`／`java_demo/hhjava` |
-| Flutter 仓库／模块 | `flutter_demo`／`flutter_01`、`flutter_package` |
 
 ## 2. 安装官方稳定版
 
 ### 2.1 核对版本与现有安装
-
-本文首次配置使用 `v18.15.0`；以后安装时将下面版本号替换为当时的稳定版。
 
 ```sh
 uname -m
@@ -124,7 +120,7 @@ skills:
 这些是行为规范；OMP 的工具审批、额外工作目录和角色工具列表不构成操作系统沙箱。
 ```
 
-`RULES.md` 是持续提供给 Agent 的行为规则。它复用个人规范，不复制工程和文档规范全文。[配置文档](https://github.com/can1357/oh-my-pi/blob/v18.15.0/docs/settings.md)、[上下文与规则](https://github.com/can1357/oh-my-pi/blob/v18.15.0/docs/context-files.md)。
+`RULES.md` 是持续提供给 Agent 的行为规则。它复用个人规范，不复制工程和文档规范全文。
 
 ## 4. 接入 Java／Flutter 协作目录
 
@@ -242,7 +238,7 @@ PY
    omp login openai-codex
    ```
 
-   按终端提示在浏览器完成授权。使用其他服务时运行 `omp login`，选择对应服务并按提示操作。不要将 API Key、OAuth Token 写入项目文档或角色文件，也不要把凭据导出发给 AI。
+   使用其他服务时运行 `omp login`，选择对应服务并按提示操作。
 
 2. **进入协作目录启动：**
 
@@ -293,8 +289,6 @@ PY
 | 历史会话选择 | `/resume` |
 | 显式使用已有 skill | `/skill:git-commit-pull-push` 等；以实际发现的名称为准 |
 | 查看当前快捷键 | `/hotkeys` |
-
-Ghostty／Herdr 中直接运行上述终端命令即可，不要求额外终端插件。不要让 Codex 和 OMP 同时修改同一组文件或共享迭代记录；需要并行时先明确互不重叠的范围或独立 worktree。[Agent Hub](https://github.com/can1357/oh-my-pi/blob/v18.15.0/docs/agent-hub.md)、[Skills](https://github.com/can1357/oh-my-pi/blob/v18.15.0/docs/skills.md)。
 
 ## 7. 审批与能力边界
 
