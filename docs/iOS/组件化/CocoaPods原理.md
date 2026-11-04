@@ -137,9 +137,11 @@ end
 
 ### 公开头文件与私有头文件
 
-`s.public_header_files` 和 `s.private_header_files` 是 Podspec 中用于划分头文件可见范围的配置。`s` 是 `Pod::Spec.new do |s|` 中的组件规格对象；配置值是相对于组件源码根目录的文件路径或匹配规则。
+`s.public_header_files` 和 `s.private_header_files` 是 Podspec 中用于划分头文件可见范围的配置。
 
-头文件（如 `.h`）声明类、方法和类型，供其他源码引用。**公开头文件用于对外提供 API；私有头文件用于组织组件内部实现。** 官方定义见 [public_header_files](https://guides.cocoapods.org/syntax/podspec.html#public_header_files) 和 [private_header_files](https://guides.cocoapods.org/syntax/podspec.html#private_header_files)。
+`s` 是 `Pod::Spec.new do |s|` 中的组件规格对象；配置值是相对于组件源码根目录的文件路径或匹配规则。
+
+头文件（如 `.h`）声明类、方法和类型，供其他源码引用。**公开头文件用于对外提供 API；私有头文件用于组织组件内部实现。**
 
 | 配置 | 决定什么 | 典型用途 |
 | --- | --- | --- |
@@ -211,10 +213,14 @@ CocoaPods 1.16.2 的实现中，public 匹配结果为空时会回退到源码�
 
 - **private 不提供安全隔离。** 源码依赖仍会下载实现，私有头也可能存在于构建产物中；手动扩大搜索路径可能让外部找到它。它用于约束接口边界，不负责加密源码或隐藏运行时符号。
 - **公开头应能被外部独立使用。** 不要在公开头中直接引入只能由组件内部找到的私有头；可将相关引用移入 `.m`，或在适用时使用前向声明。
-- **依赖声明与头文件分类要配合。** `s.dependency` 声明依赖哪个组件，public/private 决定该组件提供哪些头文件接口；不要通过全仓递归 `HEADER_SEARCH_PATHS` 绕过边界。
 - **区分 Swift 访问控制与混编导出。** Swift 源码中定义的类型和成员，由 `public`、`open`、`internal` 等访问级别控制，不能靠 public header 配置改变。Objective-C 声明供 Swift 使用时，还需通过模块或桥接入口可见，不能仅凭位于同一个 Pod 就自动访问私有头。参见 [Swift 访问控制](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/accesscontrol/)。
 
-调整已有组件时，先核对外部调用并完成迁移，再把对应头改为 private。修改源 Podspec 后，在消费工程的 Podfile 目录执行 `pod install`，检查生成的公开头、模块入口和消费端构建；不要手工修改生成的 Pods 工程。
+### 依赖声明与搜索路径
+
+| 配置 | 作用 |
+| --- | --- |
+| `s.dependency` | 声明依赖的 Pod 或子规格，可约束版本 |
+| `HEADER_SEARCH_PATHS` | 指定编译器查找头文件的目录 |
 
 ### 资源读取
 
