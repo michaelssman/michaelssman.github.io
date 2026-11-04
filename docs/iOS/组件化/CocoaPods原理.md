@@ -135,6 +135,87 @@ end
 - `s.swift_versions` 声明支持的 Swift 语言模式。
 - 依赖版本结合兼容范围和可重复构建要求确定。
 
+### 公开头文件与私有头文件
+
+`s.public_header_files` 和 `s.private_header_files` 是 Podspec 中用于划分头文件可见范围的配置。`s` 是 `Pod::Spec.new do |s|` 中的组件规格对象；配置值是相对于组件源码根目录的文件路径或匹配规则。
+
+头文件（如 `.h`）声明类、方法和类型，供其他源码引用。**公开头文件用于对外提供 API；私有头文件用于组织组件内部实现。** 官方定义见 [public_header_files](https://guides.cocoapods.org/syntax/podspec.html#public_header_files) 和 [private_header_files](https://guides.cocoapods.org/syntax/podspec.html#private_header_files)。
+
+| 配置 | 决定什么 | 典型用途 |
+| --- | --- | --- |
+| `s.source_files` | 哪些源码和头文件参与组件构建 | 纳入 `.h`、`.m`、`.swift` 等文件 |
+| `s.public_header_files` | 哪些头文件作为组件的公开接口 | 外部需要使用的入口、协议、数据模型 |
+| `s.private_header_files` | 哪些头文件标记为私有，不作为常规公开接口导出 | 内部辅助类、实现细节 |
+
+头文件参与预处理，通常不独立编译；`.m` 等实现文件是否参与编译由源码配置决定。把某个 `.h` 改为 private，不会自动移除对应的 `.m`，也不会删除类或方法的实现。
+
+#### 配置示例
+
+以 DemoKit 组件为例，目录结构如下：
+
+```text
+DemoKit/
+├── DemoKit.podspec
+└── Sources/
+    ├── Public/
+    │   └── DKImageLoader.h
+    ├── Internal/
+    │   ├── DKImageDecoder.h
+    │   └── DKImageDecoder.m
+    └── DKImageLoader.m
+```
+
+在 Podspec 的 `Pod::Spec.new do |s|` 块中配置：
+
+```ruby
+s.source_files         = 'Sources/**/*.{h,m}'
+s.public_header_files  = 'Sources/Public/*.h'
+s.private_header_files = 'Sources/Internal/*.h'
+```
+
+`**/*` 匹配多层目录中的文件，`*.h` 匹配当前目录中的头文件。这里两个 `.m` 都参与编译，对外接口只有 `DKImageLoader.h`。
+
+接入 DemoKit 的应用可以引用公开头：
+
+```objc
+#import <DemoKit/DKImageLoader.h>
+```
+
+组件内部的 `DKImageLoader.m` 可以按相对路径使用解码器：
+
+```objc
+#import "Internal/DKImageDecoder.h"
+```
+
+外部通过 Loader 使用图片能力，Decoder 的实现由组件自行维护。以后替换解码器时，只要公开 API 和行为保持兼容，调用方就不需要跟随内部类调整。
+
+#### 不配置时的默认行为
+
+| 配置情况 | 公开范围 |
+| --- | --- |
+| 没有配置 public、private、project | `source_files` 中的头文件默认公开 |
+| 只配置 private 或 project | 从默认公开集合中排除对应头文件 |
+| 配置了有效的 public 匹配范围 | 使用匹配到的头文件，再排除 private 和 project |
+
+其中 `project_header_files` 用于标记仅在工程内部使用的头文件。显式指定 public 后，未归入 public、private、project 的其他源码头文件也不会自动成为公开接口，构建时按内部头处理。
+
+CocoaPods 1.16.2 的实现中，public 匹配结果为空时会回退到源码头文件集合。因此，不要用 `s.public_header_files = []` 表示“全部不公开”，也要检查通配符是否写错；需要全部内部使用时，应明确配置 private 或 project。分类过程见 [CocoaPods FileAccessor](https://github.com/CocoaPods/CocoaPods/blob/1.16.2/lib/cocoapods/sandbox/file_accessor.rb)。
+
+#### CocoaPods 如何处理这些配置
+
+安装依赖时，CocoaPods 解析头文件分类，并生成头文件映射和 Xcode 构建设置。使用默认模块生成逻辑时，公开头会加入 umbrella header（汇总公开头的入口文件），再由 module map（模块映射文件）组织模块导入；私有头不会自动加入该公开入口。实现见 [PodTargetInstaller](https://github.com/CocoaPods/CocoaPods/blob/1.16.2/lib/cocoapods/installer/xcode/pods_project_generator/pod_target_installer.rb)。
+
+在 Framework 集成中，public 与 private 通常分别对应产物中的 `Headers`、`PrivateHeaders`；project 头不复制到产物的头文件目录。因此，private 和 project 都不属于常规公开 API，但它们的产物处理不同。静态库与 Framework 的目录组织也不同，不能只凭某个目录是否存在判断公开范围。
+
+#### 使用时要注意什么
+
+- **private 不提供安全隔离。** 源码依赖仍会下载实现，私有头也可能存在于构建产物中；手动扩大搜索路径可能让外部找到它。它用于约束接口边界，不负责加密源码或隐藏运行时符号。
+- **公开头应能被外部独立使用。** 不要在公开头中直接引入只能由组件内部找到的私有头；可将相关引用移入 `.m`，或在适用时使用前向声明。
+- **依赖声明与头文件分类要配合。** `s.dependency` 声明依赖哪个组件，public/private 决定该组件提供哪些头文件接口；不要通过全仓递归 `HEADER_SEARCH_PATHS` 绕过边界。
+- **区分 Swift 访问控制与混编导出。** Swift 源码中定义的类型和成员，由 `public`、`open`、`internal` 等访问级别控制，不能靠 public header 配置改变。Objective-C 声明供 Swift 使用时，还需通过模块或桥接入口可见，不能仅凭位于同一个 Pod 就自动访问私有头。参见 [Swift 访问控制](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/accesscontrol/)。
+
+调整已有组件时，先核对外部调用并完成迁移，再把对应头改为 private。修改源 Podspec 后，在消费工程的 Podfile 目录执行 `pod install`，检查生成的公开头、模块入口和消费端构建；不要手工修改生成的 Pods 工程。
+
 ### 资源读取
 
 资源安装后位于 `PWUtils.bundle`，运行时从组件 Bundle 定位：
