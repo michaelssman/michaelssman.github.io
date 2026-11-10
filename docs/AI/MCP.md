@@ -16,7 +16,7 @@ MCP 服务器
 外部工具、数据源或业务系统
 ```
 
-MCP 本身不规定智能体应该怎样完成业务流程，它主要解决“如何连接并调用外部能力”的问题。
+MCP主要解决“如何连接并调用外部能力”的问题。
 
 ## 2. MCP、工具、Skills 和子智能体 { #mcp-skills-subagents }
 
@@ -84,11 +84,7 @@ Codex Plugin 是可安装的分发单元，可以把 Skills、App integrations�
 
 将 Reqable MCP Server 接入 Codex 后，Codex 可以直接筛选实时抓包记录，读取请求头、请求体、响应状态、响应头和响应体，不再需要手动复制接口数据。
 
-### 4.1 前提条件
-
-读取抓包数据时，Reqable 应保持运行。
-
-### 4.2 添加 Reqable MCP Server
+### 4.1 添加 Reqable MCP Server
 
 Reqable macOS 应用内置了 MCP Server，可以直接使用，不依赖 Node.js 或 `npx`：
 
@@ -200,13 +196,3 @@ mcp__memory__create_entities
 - 希望把 MCP 与 Skills、子智能体或 Plugin 组合成完整工作流。
 
 如果任务只需要固定说明和可重复步骤，优先考虑 Skill；如果只是拆分任务或隔离上下文，使用子智能体；只有需要连接外部系统时，才需要 MCP。
-
-## 8. 相关文档
-
-- [Agent Skills](Skills/Agent%20Skills.md)
-- [Subagents 子智能体](Agent/Subagents.md)
-- [Claude Code 与 Codex CLI Hooks](Claude-Code-and-Codex-Hooks.md)
-- [Codex](CodeX/Codex.md)
-- [Codex MCP 官方文档](https://developers.openai.com/codex/mcp)
-- [Reqable MCP Server](https://github.com/reqable/reqable-mcp-server)
-- [Reqable 代理配置](https://github.com/reqable/reqable-docs/blob/master/en-US/capture/11_proxy.md)

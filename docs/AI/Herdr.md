@@ -1,4 +1,4 @@
-# Ghostty + Herdr 多项目终端配置
+# Herdr 多项目终端配置
 
 ## 1. 安装与启动
 
@@ -123,7 +123,7 @@ herdr worktree open \
 | 显示 / 收起侧栏 | `Ctrl+b → b` |
 | 进入滚动与复制模式 | `Ctrl+b → [` |
 
-复制模式中用方向键或 `h/j/k/l` 移动，`v` 开始选择，`y` 复制，`Esc` 取消选择或退出。鼠标拖选默认自动复制。默认鼠标模式下，用 **Ctrl+单击** 打开网页链接。[键盘说明](https://herdr.dev/docs/keyboard/)、[鼠标操作](https://herdr.dev/docs/quick-start/)
+复制模式中用方向键或 `h/j/k/l` 移动，`v` 开始选择，`y` 复制，`Esc` 取消选择或退出。默认鼠标模式下，用 **Ctrl+单击** 打开网页链接。
 
 ## 5. 离开、关闭与恢复
 
@@ -135,12 +135,6 @@ herdr worktree open \
 | 关闭当前标签 | `Ctrl+b → Shift+x` | 结束标签中的面板 |
 | 关闭当前工作区 | `Ctrl+b → Shift+d` | 结束该工作区中的面板，保留项目文件 |
 | 停止整个默认会话 | `herdr server stop` | 结束默认会话中**全部工作区**的面板进程 |
-
-关闭 Ghostty 窗口也会断开客户端，Herdr 后台服务继续运行。日常离开优先使用 `Ctrl+b → q`；**Herdr 的分离键是 `q`，现有 Zellij 配置的分离键是 `d`。**
-
-关闭面板、标签或工作区前，先保存并结束其中的任务。普通面板关闭可能立即执行，不能依赖每次都有确认提示。
-
-后台服务停止或电脑重启后，再次运行 `herdr` 可恢复已保存的布局和目录，但原来的测试、服务等进程已经结束。支持的 Agent 会话能否自动恢复，还取决于官方集成是否提供有效会话引用；布局恢复不等于进程一直运行。[会话与恢复](https://herdr.dev/docs/session-state/)、[关闭行为](https://herdr.dev/docs/cli-reference/#tabs)
 
 ## 6. 升级与排查
 
@@ -157,9 +151,7 @@ herdr status
 | 现象 | 检查或处理 |
 |---|---|
 | `herdr` 找不到 | 新开 Ghostty 标签，执行 `command -v herdr`；本机安装路径为 `/opt/homebrew/bin/herdr` |
-| 快捷键无反应 | 确认没有嵌套 Zellij，先用英文输入源，再用 `Ctrl+b → ?` 查看实际绑定 |
 | 配置修改没有生效 | 执行 `herdr server reload-config`；检查配置路径及启动警告 |
-| 中文候选框位置异常 | 本机尚未验证 GUI 中文输入；官方提供实验性 IME 光标跟踪选项，可按实际问题单独启用 |
 | 更新后行为仍像旧版本 | 用 `herdr status` 比较客户端与服务端，按上文步骤在任务结束后重启服务 |
 
 默认未启用中文输入实验选项。相关设置见[官方 IME 说明](https://herdr.dev/docs/configuration/#ime-cursor-tracking)。日志位于 `~/.config/herdr/`，排查时优先查看 `herdr-client.log` 和 `herdr-server.log`。
