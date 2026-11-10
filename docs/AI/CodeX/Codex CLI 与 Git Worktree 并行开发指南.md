@@ -34,23 +34,7 @@ git worktree add -b "$NEW_BRANCH" "$NEW_WORKTREE_DIR" origin/develop
 
 ## 4. 在两个 Worktree 中分别运行 Codex CLI
 
-### 方式一：进入目录后启动
-
-终端 A，开发需求 A：
-
-```bash
-cd "$REPO_DIR"
-codex
-```
-
-终端 B，开发或维护需求 B：
-
-```bash
-cd "$WORKTREE_B_DIR"
-codex
-```
-
-### 方式二：使用 `-C` 指定工作目录
+### 使用 `-C` 指定工作目录
 
 ```bash
 codex -C "$REPO_DIR"
@@ -59,8 +43,6 @@ codex -C "$REPO_DIR"
 ```bash
 codex -C "$WORKTREE_B_DIR"
 ```
-
-每个终端对应一个独立 Codex 会话。
 
 建议每个新会话的第一条任务都写清范围，例如：
 
@@ -91,8 +73,6 @@ git fetch origin --prune
 git pull --rebase
 ```
 
-不要在未确认影响范围时，把一个需求分支合并到另一个需求分支。是否把最新 `develop` 同步进需求分支，也应先确认团队约定和最终合入 `release`、`main` 时是否会携带无关提交。
-
 ## 6. 日常提交与推送
 
 所有命令都必须在对应需求的 Worktree 中执行：
@@ -109,12 +89,9 @@ git push
 
 注意事项：
 
-- 提交前先看目录和分支，避免在错误的 Worktree 中提交。
 - 两个 Worktree 的未提交改动和暂存区彼此独立。
 - 分支、提交、标签和远端信息由所有 Worktree 共享。
 - `git stash` 也由同一仓库共享；如果必须使用，应写清名称，例如 `git stash push -m "需求 B 临时修改"`。
-- 不要让两个 Codex 会话同时修改同一个分支。
-- 不要把与需求无关的 Xcode 用户配置或本地环境文件加入提交。
 
 ## 7. 按当前团队规范流转分支
 
