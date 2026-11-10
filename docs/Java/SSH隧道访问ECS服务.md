@@ -1,6 +1,6 @@
 # SSH 隧道访问 ECS 服务
 
-在 Mac 上通过 SSH（Secure Shell，安全外壳协议）隧道访问 ECS 的 MinIO、Nacos 和 MySQL，无需将这些服务端口向公网开放。隧道把 Mac 本地端口转发到 ECS，Mac 与 ECS 之间的数据经过 SSH 加密。
+在 Mac 上通过 SSH（Secure Shell，安全外壳协议）隧道访问 ECS 的 MinIO、Nacos 和 MySQL，无需将这些服务端口向公网开放。SSH 隧道会把 Mac 的本地端口安全转发到 ECS，Mac 与 ECS 之间的数据经过 SSH 加密。
 
 ## 1. 使用前确认
 
@@ -42,22 +42,29 @@ API 使用 MinIO 应用凭据，不使用 hhjava 的 Bearer Token。部署与权
 
 ```sh
 ssh -i "/Users/michael/Downloads/ecs260818.pem" \
-  -N -o ExitOnForwardFailure=yes \
+	-o ExitOnForwardFailure=yes \
+  -N \
   -L 127.0.0.1:18848:127.0.0.1:8848 \
   -L 127.0.0.1:19848:127.0.0.1:9848 \
   -L 127.0.0.1:13306:127.0.0.1:3306 \
   root@47.120.56.43
 ```
 
+`-N`：不打开服务器交互 Shell，只保持隧道；窗口没有持续输出是正常现象。
+
 | Mac 本地入口 | ECS 目标 | 用途 |
 | --- | --- | --- |
 | `http://127.0.0.1:18848/nacos/` | `127.0.0.1:8848` | Nacos 2.x 控制台、HTTP 接口 |
-| `127.0.0.1:19848` | `127.0.0.1:9848` | Nacos 客户端 gRPC 通信，不是网页地址 |
+| `127.0.0.1:19848` | `127.0.0.1:9848` | Nacos 2.x Java 客户端使用的 gRPC 通信。gRPC 是一种远程调用通信方式；只转发 HTTP 端口，可能出现页面能打开但 Java 客户端连不上的情况。 |
 | `127.0.0.1:13306` | `127.0.0.1:3306` | MySQL 数据库工具或本机 Java 连接 |
 
 1. **连接 MySQL：** 数据库工具填写 Host `127.0.0.1`、Port `13306`，沿用已有业务账号、数据库名和 TLS（Transport Layer Security，传输层安全）配置，不使用 root。IDEA 的字段与连接验证见 [环境搭建](环境搭建.md#mysql-via-ssh)。
 
 只查看 Nacos 网页时，只需要 `18848 → 8848`；本机 Java 使用 Nacos 2.x 客户端时还需要 `19848 → 9848`。客户端按主端口 **加 1000** 计算 gRPC（远程过程调用框架）端口，所以 `18848` 必须配套 `19848`，不能误配成本机 `9848`。[Nacos 2.x 端口规则](https://www.nacos.io/en/docs/v2/upgrading/version2-compatibility/)
+
+- 结束隧道时在该窗口按 `Ctrl+C`。
+
+Nacos 3.x 的控制台部署和端口有变化；本文地址不能直接作为跨大版本升级后的默认值。端口用途可参照 [Nacos 2.x Docker 文档](https://nacos.io/docs/v2.5/quickstart/quick-start-docker/)。
 
 <a id="local-java"></a>
 
