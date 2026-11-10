@@ -458,6 +458,8 @@ nav:
     - OMP:
       - AI/OMP/OMP.md
       - AI/OMP/模型角色配置.md
+    - Orca:
+      - AI/Orca/orca-orchestration-zh-CN.md
   - Mac:
     - MAC/软件包管理系统.md
     - MAC/linux.md
