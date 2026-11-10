@@ -387,6 +387,7 @@ nav:
     - Java/SSM.md
     - Java/SpringBoot.md
     - Java/SpringBoot部署到阿里云ECS.md
+    - Java/ECS微服务启动顺序优化.md
     - Java/SpringMVC和WebFlux.md
     - Java/分布式.md
     - Java/分布式id.md
