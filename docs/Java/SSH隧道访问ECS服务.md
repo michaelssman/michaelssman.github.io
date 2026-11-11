@@ -5,11 +5,14 @@
 ## 1. 使用前确认
 
 - 安全组需允许可信来源访问 SSH `22`。
-- 下文命令均在 **Mac 新终端窗口**执行，不是在已登录 ECS 的终端中执行。每个代码块是一条完整命令，可以整段复制；行尾的 `\` 表示续行。
+- 下文命令均在 **Mac 新终端窗口**执行。每个代码块是一条完整命令，可以整段复制；行尾的 `\` 表示续行。
 
-命令中的 `-i` 指定 SSH 私钥；`-N` 表示只转发端口、不进入服务器命令行；`-L` 的格式为 `Mac监听地址:Mac端口:ECS可访问的目标地址:目标端口`。
+命令中的
 
-`ExitOnForwardFailure=yes` 在本地转发监听无法建立时退出，但不保证 ECS 上的目标服务已启动。[SSH 端口转发](https://man.openbsd.org/ssh)、[转发失败处理](https://man.openbsd.org/ssh_config#ExitOnForwardFailure)。
+- `-i` 指定 SSH 私钥；
+- `-N` 表示只转发端口、不进入服务器交互 Shell 命令行，只保持隧道；窗口没有持续输出是正常现象。
+- `-L` 的格式为 `Mac监听地址:Mac端口:ECS可访问的目标地址:目标端口`。
+- `ExitOnForwardFailure=yes` 在本地转发监听无法建立时退出。
 
 ## 2. MinIO：控制台与 API
 
@@ -50,8 +53,6 @@ ssh -i "/Users/michael/Downloads/ecs260818.pem" \
   root@47.120.56.43
 ```
 
-`-N`：不打开服务器交互 Shell，只保持隧道；窗口没有持续输出是正常现象。
-
 | Mac 本地入口 | ECS 目标 | 用途 |
 | --- | --- | --- |
 | `http://127.0.0.1:18848/nacos/` | `127.0.0.1:8848` | Nacos 2.x 控制台、HTTP 接口 |
@@ -61,8 +62,6 @@ ssh -i "/Users/michael/Downloads/ecs260818.pem" \
 1. **连接 MySQL：** 数据库工具填写 Host `127.0.0.1`、Port `13306`，沿用已有业务账号、数据库名和 TLS（Transport Layer Security，传输层安全）配置，不使用 root。IDEA 的字段与连接验证见 [环境搭建](环境搭建.md#mysql-via-ssh)。
 
 只查看 Nacos 网页时，只需要 `18848 → 8848`；本机 Java 使用 Nacos 2.x 客户端时还需要 `19848 → 9848`。客户端按主端口 **加 1000** 计算 gRPC（远程过程调用框架）端口，所以 `18848` 必须配套 `19848`，不能误配成本机 `9848`。[Nacos 2.x 端口规则](https://www.nacos.io/en/docs/v2/upgrading/version2-compatibility/)
-
-- 结束隧道时在该窗口按 `Ctrl+C`。
 
 Nacos 3.x 的控制台部署和端口有变化；本文地址不能直接作为跨大版本升级后的默认值。端口用途可参照 [Nacos 2.x Docker 文档](https://nacos.io/docs/v2.5/quickstart/quick-start-docker/)。
 
