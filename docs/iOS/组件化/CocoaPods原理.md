@@ -118,11 +118,6 @@ Pod::Spec.new do |s|
   }
 
   s.dependency 'Alamofire', '5.10.2'
-  s.dependency 'RxSwift', '6.5.0'
-  s.dependency 'RxCocoa', '6.5.0'
-  s.dependency 'SnapKit', '5.6.0'
-  s.dependency 'MBProgressHUD', '1.2.0'
-  s.dependency 'MJRefresh'
   s.dependency 'FMDB'
 end
 ```
@@ -136,6 +131,15 @@ end
 - 依赖版本结合兼容范围和可重复构建要求确定。
 
 ### 公开头文件与私有头文件
+
+```ruby
+  public_headers = [
+    'Sources/DZClasses/Util/View/LMTableViewCell.h',
+    'Sources/DZClasses/ThirdParty/HHTabBarController/HHTabBarHeader.h',
+  ]
+  s.public_header_files = public_headers
+  s.private_header_files = Dir['Sources/**/*.h'] - public_headers
+```
 
 `s.public_header_files` 和 `s.private_header_files` 是 Podspec 中用于划分头文件可见范围的配置。
 
