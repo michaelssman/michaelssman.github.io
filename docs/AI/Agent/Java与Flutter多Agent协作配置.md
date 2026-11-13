@@ -8,7 +8,7 @@ Java 后端和 Flutter App 保留独立 Git 仓库，由一个主 Agent 统一�
 
 | 角色 | 实现方式 | 职责与产物 |
 | --- | --- | --- |
-| 项目负责人 | 主会话读取 `AGENTS.md` | 拆任务、管理依赖、记录审核、集成与交付 |
+| 项目负责人 | 主会话按 `AGENTS.md` 按需读取协作流程 | 拆任务、管理依赖、记录审核、集成与交付 |
 | 产品经理 | `product` | 问题依据、用户流程、范围与验收条件 |
 | UI / 交互设计 | `designer` | 设计规范、可点击原型和页面状态 |
 | Java 开发 | `backend` | `hhjava` 的接口、业务、鉴权与测试 |
@@ -21,11 +21,12 @@ Java 后端和 Flutter App 保留独立 Git 仓库，由一个主 Agent 统一�
 
 ### 2.1 创建协作目录
 
-可下载本次配置的完整初始模板：[app-management.zip](Java与Flutter多Agent协作配置.assets/app-management.zip)。压缩包包含下列九个文件：
+可下载本次配置的完整初始模板：[app-management.zip](Java与Flutter多Agent协作配置.assets/app-management.zip)。压缩包包含下列十一个文件：
 
 ```text
 app-management/
 ├── AGENTS.md
+├── AGENTS.workflow.md
 ├── README.md
 ├── .codex/
 │   ├── config.toml
@@ -36,10 +37,11 @@ app-management/
 │       ├── flutter.toml
 │       └── reviewer.toml
 └── docs/
-    └── current-iteration.md
+    ├── current-iteration.md
+    └── acceptance-status.md
 ```
 
-全新安装时，将压缩包解压到 `/Users/michael/Documents`。
+全新安装时，将压缩包解压到自己的 `Documents` 目录，与 `java_demo`、`flutter_demo` 相邻。以下配置中的 `/Users/michael/Documents` 是本机示例，换电脑时替换为实际绝对路径；不要在 TOML 路径值中直接写 `$HOME`。
 
 ### 2.2 配置并发与项目范围
 
@@ -92,16 +94,16 @@ developer_instructions = """
 
 ### 2.4 设置总控规则和状态记录
 
-主 Agent 从协作目录 `AGENTS.md` 读取团队规则；完整内容已在模板中提供。其关键约定为：
+主 Agent 默认只读取简短的 `AGENTS.md`。开始、恢复或交接迭代，或进行迭代派工、开发、审核时，再读取 `AGENTS.workflow.md` 与 `docs/current-iteration.md`；一般问答、资料整理或配置检查不自动加载完整流程和业务仓库。完整规则已在模板中提供，关键约定为：
 
 1. 派工指定自定义 `agent_type`、目标、批准材料、工作目录、修改范围、依赖和验收条件。
-2. 操作 Java 前显式读取 `hhjava/AGENTS.md`；操作 Flutter 前显式读取根 `AGENTS.md`、`AGENTS.flutter.md` 和目标目录更近的规则。额外可写目录不意味着其规则已自动加载。
+2. 跨仓操作前显式读取目标仓库及目标目录适用的 `AGENTS.md`；工程任务再按项目入口读取技术分册，业务文档只读相关章节。额外可写目录不意味着其规则已自动加载。
 3. 主 Agent 独占 `docs/current-iteration.md`；designer 独占获分配的原型文件及 Figma 文件、页面或节点，派工指定链接和修改范围。同一范围同时只有一个修改者，不改变分享权限或发布组件库。
 4. 前后端并行前先确定接口字段、鉴权、错误与示例；接口详细说明沿用两端现有权威文档，迭代记录保存增量和链接。
 5. 子 Agent 不执行 Git 提交、推送或切换分支，由主 Agent 按用户授权统一处理。
 6. 同仓库需要 worktree 隔离时显式创建并分配路径、权限，不能假定子 Agent 自动拥有独立工作树。
 
-`docs/current-iteration.md` 保存目标、阶段、产品方案、原型版本、任务表、用户审核记录和验证结果。只有主 Agent 更新。开始新迭代前，将上一轮记录归档至 `docs/iterations/<迭代标识>.md`。采用项目已有 OpenSpec 流程时，链接其权威文件，不另抄一份需求和任务。
+`docs/current-iteration.md` 保存当前目标、阶段、批准范围、产物版本、任务表和交接信息，只有主 Agent 更新；实际验收范围及未验证项统一维护于 `docs/acceptance-status.md`。切换迭代前先合并仍有效的规则、批准范围和未完成项，再更新当前记录，不保留旧迭代或另建提案、规范生成与归档工作流。
 
 规则加载依据：[官方 AGENTS.md 文档](https://learn.chatgpt.com/docs/agent-configuration/agents-md)。
 
@@ -210,7 +212,7 @@ codex -C "/Users/michael/Documents/app-management"
 重新从协作目录启动，发送：
 
 ```text
-读取 docs/current-iteration.md，并核对两个代码仓库的实际状态。
+读取 AGENTS.workflow.md 和 docs/current-iteration.md，并核对本轮涉及代码仓库的实际状态。
 说明当前阶段、已经批准的范围和下一步，然后继续已获批准的工作。
 不要根据之前的聊天标题推断审核结果。
 ```
@@ -247,17 +249,10 @@ codex -C "/Users/michael/Documents/app-management"
 | Figma 网页已登录但智能体没有工具 | 安装官方插件并完成账号授权，开启新会话；CLI 还需检查 `/mcp` 中的连接 |
 | 能读 Figma，不能编辑画布 | 检查当前工具是否提供画布写入、套餐资格及目标文件编辑权限；受限时用 HTML 原型并说明未验证项 |
 
-## 6. 本次配置记录
+## 6. 模板与验证范围
 
-2026-10-27 使用本机 Codex CLI `0.164.0` 完成配置：
+下载模板只包含团队配置、按需协作规则和空白状态入口，不包含本机正在进行的迭代、真实设计、个人账本、凭据或验收结果。`current-iteration.md` 中的“待审核”不代表批准，`acceptance-status.md` 中的“未验证”也不代表测试通过。
 
-- 新建 `/Users/michael/Documents/app-management`，安装九个团队配置与状态文件。
-- 在 `~/.codex/config.toml` 中只新增协作目录信任项，原配置备份为 `/Users/michael/.codex/config.toml.before-app-management-20261027-114051.bak`；其余配置保持原样。
-- TOML 解析、角色集合、路径检查通过；安装后的文件与下载模板逐文件一致。
-- Codex 严格配置读取确认项目配置已加载、两个额外可写目录及子 Agent 并发上限生效；原生提示输入检查确认总控规则和五个自定义角色已注册。
-
-本次只验证配置加载，未运行完整角色派工迭代、Java/Flutter 业务测试或桌面客户端验收，也未启动业务改造或发布。
-
-后续 Figma 配置将设计工具首选项、远端设计范围和审核依据同步到协作规则、`designer.toml`、README 及下载模板。模板中的 `current-iteration.md` 仍是初始状态，不包含本机正在进行的产品迭代；工具授权和设计文件权限需要按 2.6 节独立验证。
+迁移到其他电脑后，核对项目路径、信任和权限，再按第 5 节检查团队配置；只有实际开展迭代时才加载完整流程和目标代码仓库。配置加载、角色可用、Figma 授权、业务测试和真机验收分别核实，不以文件存在或模板安装代替执行结果。
 
 相关基础概念参见 [Subagents 子智能体](Subagents.md)。
