@@ -158,7 +158,7 @@ systemctl restart hhjava-gateway
 
 返回的 URL **只是私有对象定位值，不是浏览器可直接下载的公开链接**。数据库备份通过上表带 Bearer 的下载接口获取，不能为了让 MinIO URL 可直接打开而把桶设为公开。服务不检测文件真实内容类型。浏览器 H5 跨域访问需要单独配置精确 Origin；App/Reqable 不需要放宽 CORS。
 
-验收至少覆盖：上传后分页可见、下载内容一致、同名不覆盖、本人删除成功、跨主体访问拒绝、匿名 401、非法路径 400，以及 MinIO 匿名读取 403。还需确认改密前旧 Token 无法访问文件、状态服务故障时以 503 拒绝。检查完成后删除专用测试对象；具体发布结果见[项目 ECS 发布记录](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/ECS_DEPLOYMENT_RECORD.md)，不能把本页步骤当作已经执行。
+验收至少覆盖：上传后分页可见、下载内容一致、同名不覆盖、本人删除成功、跨主体访问拒绝、匿名 401、非法路径 400，以及 MinIO 匿名读取 403。还需确认改密前旧 Token 无法访问文件、状态服务故障时以 503 拒绝。检查完成后删除专用测试对象；具体发布结果见[项目 ECS 发布记录](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/deployment.md)，不能把本页步骤当作已经执行。
 
 ## 7. 控制台、日常检查与备份
 

@@ -2,7 +2,7 @@
 
 本文配合 hhjava 的 `scripts/ecs/` 模板部署到 `47.120.56.43`。这是单机个人联调方案：沿用 `app` 数据库及账号、Nacos 的 `dev` Namespace / `hhjava` Group 和已有 OAuth 服务客户端秘密，并非生产隔离环境。正式业务还需分库、独立配置环境、分离迁移与运行账号并完善限流、监控和备份。
 
-教程对应当前 Spring Boot 4 / Spring Cloud Gateway 5 代码，配套库以项目根 POM 和[依赖与 API 维护说明](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/DEPENDENCY_AND_API_REVIEW.md)为准；升级 Java SDK 不会同时升级 MySQL、Nacos 或 MinIO 服务端。本文说明怎么部署，不代表这些步骤已在服务器执行；实际发布结果见[ECS 发布记录](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/ECS_DEPLOYMENT_RECORD.md)。网页反映已推送版本，本地尚未推送时以同名项目文档为准。
+教程对应当前 Spring Boot 4 / Spring Cloud Gateway 5 代码，配套库以项目根 POM 和[依赖与 API 维护说明](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/dependencies.md)为准；升级 Java SDK 不会同时升级 MySQL、Nacos 或 MinIO 服务端。本文说明怎么部署，不代表这些步骤已在服务器执行；实际发布结果见[ECS 发布记录](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/deployment.md)。网页反映已推送版本，本地尚未推送时以同名项目文档为准。
 
 只想连接 App，先看第 8.2、8.3 节；以后更新代码，看第 8.4 节；首次搭建服务器，再从第 3 节按顺序操作。
 
@@ -503,7 +503,7 @@ curl --noproxy '*' --silent --show-error --connect-timeout 5 --max-time 10 --out
 
 操作位置：**本机 API 调试工具或真实 App**。URL 以 `https://47.120.56.43` 为根地址；下表接口均使用 `POST` 和 `Content-Type: application/json`，不靠浏览器 Cookie 登录，也不需要 OAuth client secret。先确认已部署与当前接口一致的 user/gateway 版本，不能把本地代码更新当成服务器已更新。
 
-手机号采用一次验证码验证后注册或登录，新号码自动创建账号并返回 Token；不再提供用户名密码独立注册。阿里云开通、凭据及登录后设置密码，统一按 [hhjava 项目认证指南](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/AUTHENTICATION_GUIDE.md)第 12.5 节操作。真实短信按量计费。本机文件是 `java_demo/hhjava/docs/AUTHENTICATION_GUIDE.md`；网页对应已推送版本，本地修改需同步推送后才能在网页查看。
+手机号采用一次验证码验证后注册或登录，新号码自动创建账号并返回 Token；不再提供用户名密码独立注册。阿里云开通、凭据及登录后设置密码，统一按 [hhjava 项目认证指南](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/authentication-guide.md)第 12.5 节操作。真实短信按量计费。本机文件是 `java_demo/hhjava/docs/authentication-guide.md`；网页对应已推送版本，本地修改需同步推送后才能在网页查看。
 
 | 操作 | 请求路径 | JSON 参数 |
 | --- | --- | --- |
@@ -540,7 +540,7 @@ curl --noproxy '*' --silent --show-error --connect-timeout 5 --max-time 10 --out
 5. **验证退出**：使用最新 Refresh Token 退出，预期 HTTP 200、`data: "退出登录成功"`；重复退出仍成功。之后再次用该会话刷新应返回 401。
 6. **独立验证旧 Token 重放**：重新登录建立单独测试会话，刷新一次，再重放旧 Refresh Token；旧 Token 与此会话的新 Token 随后均不能继续刷新。不要用正式正在使用的会话做此实验。
 
-Access Token 用于受保护业务请求的 `Authorization: Bearer <accessToken>`；Refresh Token 只能用于刷新/退出，不能当作 Bearer 凭据。普通退出只撤销当前刷新会话，已发出的 Access Token 仍可能在到期前有效；**设置或重设密码**会增加账号安全版本，使该账号旧用户 JWT、刷新会话及浏览器/OAuth 授权不能再通过新的认证检查。两种操作范围不同，没有按单个 `jti` 撤销的黑名单；细节见[项目改密撤销说明](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/AUTHENTICATION_GUIDE.md#password-change-revocation)。
+Access Token 用于受保护业务请求的 `Authorization: Bearer <accessToken>`；Refresh Token 只能用于刷新/退出，不能当作 Bearer 凭据。普通退出只撤销当前刷新会话，已发出的 Access Token 仍可能在到期前有效；**设置或重设密码**会增加账号安全版本，使该账号旧用户 JWT、刷新会话及浏览器/OAuth 授权不能再通过新的认证检查。两种操作范围不同，没有按单个 `jti` 撤销的黑名单；细节见[项目改密撤销说明](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/authentication-guide.md#password-change-revocation)。
 
 ### 8.3 App 侧还要做什么
 
@@ -607,7 +607,7 @@ mv -Tf "/opt/hhjava/current-$HHJAVA_RELEASE" /opt/hhjava/current
 
 **步骤 4（ECS）：安装配置并启动 user。** 服务停止后，落实第 2 步已核对的配置及 unit 修改；需要更新 JDK 时执行第 6.3.2 节。先运行 `systemd-analyze verify` 校验实际安装的两个或三个 Java unit，再 `systemctl daemon-reload`、`systemctl start hhjava-user.service`。按第 6.5 节确认当前 Flyway V1、两张表的版本列和 JWKS 正常。任何一步失败保持维护状态排查，不先开放网关。
 
-**步骤 5（ECS）：启动其余服务并验收。** 已安装文件服务时先 `systemctl start hhjava-backup-file.service`，再 `systemctl start hhjava-gateway.service`。按第 8.1、8.2 节及[项目三服务部署核对](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/AUTHENTICATION_GUIDE.md#security-version-deployment)检查新登录、正常刷新、改密后旧凭据拒绝及状态服务故障拒绝；有文件服务时再验上传、分页、下载内容一致、跨账号拒绝和测试对象删除。每次验收重新登录取得用户 JWT，确认缺少或过时的安全版本会被拒绝。
+**步骤 5（ECS）：启动其余服务并验收。** 已安装文件服务时先 `systemctl start hhjava-backup-file.service`，再 `systemctl start hhjava-gateway.service`。按第 8.1、8.2 节及[项目三服务部署核对](https://github.com/michaelssman/java_demo/blob/main/hhjava/docs/authentication-guide.md#security-version-deployment)检查新登录、正常刷新、改密后旧凭据拒绝及状态服务故障拒绝；有文件服务时再验上传、分页、下载内容一致、跨账号拒绝和测试对象删除。每次验收重新登录取得用户 JWT，确认缺少或过时的安全版本会被拒绝。
 
 **核对真正运行的 JDK**，在 ECS 对每个已安装服务执行下面检查；不是只检查交互终端的 `java -version`：
 
@@ -664,4 +664,4 @@ systemctl list-timers hhjava-certbot-renew.timer --all
 
 本文的备份操作只覆盖同机受限备份和压缩完整性检查；没有完成隔离恢复演练、异地加密备份或外部到期告警。真实 App 工程也不在本教程的服务端验收范围，须单独连接并验证。
 
-详细项目实现以 `hhjava/docs/AUTHENTICATION_GUIDE.md` 为准；运维更新保留上一版本产物，数据库变更独立评估。JWT 私钥、数据库备份和证书续期配置需要受控备份，不能只保存在同一块 ECS 云盘上。正式公网使用前还需复核 Spring/Nacos 等依赖的维护状态与安全更新，不能把“能够启动”当作安全审查已经完成。
+详细项目实现以 `hhjava/docs/authentication-guide.md` 为准；运维更新保留上一版本产物，数据库变更独立评估。JWT 私钥、数据库备份和证书续期配置需要受控备份，不能只保存在同一块 ECS 云盘上。正式公网使用前还需复核 Spring/Nacos 等依赖的维护状态与安全更新，不能把“能够启动”当作安全审查已经完成。

@@ -264,7 +264,7 @@ spring:
 
 hhjava 的本机秘密目录为 `java_demo/.hhjava-dev-config/`，已在该仓库的 `.gitignore` 中忽略。请沿用各模块自己的 `application.yml` 与启动配置，不要把上面的学习配置覆盖到业务模块。学习账号 `demo-app` 也不能代替有 `hhjava` 资源权限的业务账号。
 
-各服务的启动配置和部署步骤分别见 hhjava 项目的 `docs/CODEBASE_BUSINESS_LOGIC.md` 与 `docs/ECS_DEPLOYMENT_RECORD.md`。它们位于另一个本地仓库，不随本知识站发布；在 Mac 打开：
+各服务的启动配置和部署步骤分别见 hhjava 项目的 `docs/architecture.md` 与 `docs/deployment.md`。它们位于另一个本地仓库，不随本知识站发布；在 Mac 打开：
 
 ```bash
 open "/Users/michael/Documents/java_demo/hhjava/docs"

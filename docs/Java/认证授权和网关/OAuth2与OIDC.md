@@ -305,4 +305,4 @@ BFF 减少令牌暴露给浏览器脚本的机会，但不消灭 XSS；恶意脚
 
 基础专题按职责继续读：[认证与标准密码链](认证和授权.md#password-authentication)、[JWT/JWKS 验证](JWT与JWKS.md#jwt-validation)、[网关与过滤链](网关-认证过滤器-拦截器.md)。
 
-若同时克隆了示例工程，可在项目仓库打开 `hhjava/docs/AUTHENTICATION_GUIDE.md`。项目接口、配置和启动步骤以该实战指南及源码为准，不属于本文的通用协议约定；知识库网页不提供依赖本机目录布局的跨仓库链接。
+若同时克隆了示例工程，可在项目仓库打开 `hhjava/docs/authentication-guide.md`。项目接口、配置和启动步骤以该实战指南及源码为准，不属于本文的通用协议约定；知识库网页不提供依赖本机目录布局的跨仓库链接。

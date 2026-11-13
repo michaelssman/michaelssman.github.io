@@ -118,7 +118,7 @@ Payload：
 
 除这七个注册声明外，协议或应用还可以定义其他声明。字段名字相同不代表所有 Token 都使用相同含义与数据类型；应依据所采用的协议或应用契约处理，不能把自定义字段当作 JWT 基础规范的强制要求。
 
-例如 `scope` 的授权含义见 [OAuth2 权限模型](OAuth2与OIDC.md#permissions)。项目实际声明、配置键和源码对应关系统一在项目仓库的 `hhjava/docs/AUTHENTICATION_GUIDE.md` 中维护。
+例如 `scope` 的授权含义见 [OAuth2 权限模型](OAuth2与OIDC.md#permissions)。项目实际声明、配置键和源码对应关系统一在项目仓库的 `hhjava/docs/authentication-guide.md` 中维护。
 
 ### 2.3 签名输入
 
