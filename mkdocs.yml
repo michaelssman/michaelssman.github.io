@@ -460,7 +460,7 @@ nav:
       - AI/OMP/模型角色配置.md
     - Orca:
       - AI/Orca/orca-orchestration-zh-CN.md
-      - AI/Orca/项目和工作区.md
+      - AI/Orca/Orca.md
       - AI/Orca/编排.md
   - Mac:
     - MAC/软件包管理系统.md
