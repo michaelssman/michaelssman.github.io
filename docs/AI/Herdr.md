@@ -24,7 +24,7 @@ herdr
 | Client（客户端） | 终端里看到的 Herdr 界面，用来查看和操作工作区 |
 | Server（后台服务） | 在后台管理终端面板、其中运行的程序和智能体会话 |
 
-可以理解为：后台服务负责维持工作现场，客户端是查看和操作这个现场的窗口。按 `Ctrl+b → q` 分离客户端后，后台服务和任务仍可运行；执行 `herdr server stop` 会停止该会话中的面板程序，具体操作见第 5 节。**Mac 关机后，本机服务和任务也会停止。**
+可以理解为：后台服务负责维持工作现场，客户端是查看和操作这个现场的窗口。按 `Ctrl+b → q` 分离客户端后，后台服务和任务仍可运行；执行 `herdr server stop` 会停止该会话中的面板程序。**Mac 关机后，本机服务和任务也会停止。**
 
 在 Mac 的普通终端执行以下命令，检查当前状态：
 
@@ -32,7 +32,7 @@ herdr
 herdr status
 ```
 
-服务运行时，输出的 `server` 部分会显示 `status: running`、服务端版本及 `socket`。本机默认会话的 socket 路径为 `~/.config/herdr/herdr.sock`；socket 是客户端与后台服务之间的本机通信入口，不是云端网址。版本和运行状态以命令的实际输出为准。
+服务运行时，输出的 `server` 部分会显示 `status: running`、服务端版本及 `socket`。本机默认会话的 socket 路径为 `~/.config/herdr/herdr.sock`；socket 是客户端与后台服务之间的本机通信入口，不是云端网址。
 
 **Herdr 在本机运行，不等于 AI 模型也在本机运行。** Herdr 管理会话；Codex、OMP 等工具将模型请求发往哪里，取决于各自的模型与服务提供方配置。如果另外连接了远程机器，需要区分本机与远程会话，不能把所有任务都当成本机任务。
 
@@ -95,15 +95,13 @@ herdr integration status
 
 ## 3. 管理本机项目
 
-### 首次添加工作区
-
 查看已有工作区：
 
 ```bash
 herdr workspace list
 ```
 
-**以下命令只用于创建缺少的工作区，不要每次启动都执行。**
+首次添加工作区：
 
 ```bash
 herdr workspace create --cwd "/Users/michael/Documents/flutter_demo" --label "flutter_demo"
