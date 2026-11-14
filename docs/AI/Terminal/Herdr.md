@@ -26,10 +26,6 @@ Session（会话，例如 default）
 └─ Workspace（项目，例如 flutter_demo）
 ```
 
-通常一个仓库对应一个工作区，一个工作区可以有多个标签，每个标签又可以分屏。左侧 Spaces 展示项目，Agents 集中展示实际运行的智能体；普通 Shell 不会因为创建了一个标签就自动变成 Agent。
-
-鼠标可以点击工作区、标签或面板切换，拖动分屏边界调整尺寸，右键使用分屏、重命名和关闭菜单。可以先用鼠标熟悉结构，再学快捷键。进入项目最基本的方法仍是复制路径并执行 `cd`。
-
 ### 1.5 连接编码智能体（08:21）
 
 视频从 Menu → Settings 查看主题、状态指示和声音，并在 Integrations 安装或更新 Agent 集成。命令行也能完成同样的安装。
@@ -48,23 +44,18 @@ Session（会话，例如 default）
 
 视频继续创建第二个项目、启动另一个 Agent，再演示退出和重新连接。多个有关联的仓库可以放在同一个 Session 中，例如一个产品的后端、移动端和管理文档；完全独立的工作也可另建命名会话。
 
-`herdr` 连接默认会话；`herdr --session demo` 连接或创建 `demo`。`herdr session list` 查看会话，`herdr --help` 查本机支持的命令。新工作区、新标签和分屏的起始目录可能不同，先运行 `pwd` 确认，不要假设总在用户主目录。
-
-### 1.7 配色、间距与 config.toml（12:32）
-
-Herdr 使用 `config.toml` 管理主题、侧栏、快捷键和行为。可以向 Agent 描述需要的效果，让它结合官方配置文档修改，但仍要校验配置。
-
-作者的颜色语义是：蓝色代表“需要看一下”（等待输入或完成），紫色代表“还在工作”；每个侧栏条目分两行，并按需要关注的优先级排序。字段名 `red`、`yellow`、`teal` 是主题颜色标识，不要求最终颜色必须是红、黄、青。
-
-作者公开配置关闭声音；视频口头提到完成时的提示音和跳转热键，是可选工作方式，不代表本机已经开启声音。
+- `herdr` 连接默认会话。
+- `herdr --session demo` 连接或创建 `demo`。
+- `herdr session list` 查看会话。
+- `herdr --help` 查本机支持的命令。
 
 ### 1.8 默认前缀与直接快捷键（13:39）
 
-默认前缀是 `Ctrl+b`：按下、松开，再按动作键。例如 `Ctrl+b → c` 创建标签，不是三个键一起按。
+例如 `Ctrl+b → c` 创建标签。
 
 作者给常用动作加上直接按键：`Cmd+T` 新标签、`Cmd+W` 关标签、`Cmd+K` 全局跳转，方向键组合切换标签或项目。全局跳转窗口可以搜索工作区、标签和 Agent，视频演示先按 `/` 再输入关键字。快捷键可以同时保留前缀版本和直接版本。
 
-本机保留 `Ctrl+b`，没有改成作者欧洲键盘上的 `§`；把作者的 `Ctrl+方向键` 改为 **`Ctrl+Option+方向键`**，保留 macOS Mission Control 原快捷键。视频提到的“全局唤起终端”和“跳到完成 Agent”没有给出具体键值，不应凭字幕猜测；后文给出官方功能与可选设置。
+本机保留 `Ctrl+b`，把作者的 `Ctrl+方向键` 改为 **`Ctrl+Option+方向键`**，保留 macOS Mission Control 原快捷键。
 
 ### 1.9 Herdr skill 与多 Agent 委派（17:48）
 
@@ -182,9 +173,9 @@ ghostty +validate-config
 
 ## 4. Herdr 配置、集成与自动命名
 
-### 4.1 本机完整 config.toml
-
 文件：`~/.config/herdr/config.toml`。
+
+Herdr 使用 `config.toml` 管理主题、侧栏、快捷键和行为。可以向 Agent 描述需要的效果，让它结合官方配置文档修改，但仍要校验配置。
 
 ```toml
 # 本机配置已完成，直接进入工作区。
@@ -350,23 +341,12 @@ herdr status
 herdr workspace list
 ```
 
-本机已有 `java_demo`、`flutter_demo` 等工作区，无需重复创建。首次配置一台新机器时，可执行：
+首次配置一台新机器时，可执行：
 
 ```bash
 herdr workspace create --cwd "/Users/michael/Documents/java_demo" --label "java_demo"
 herdr workspace create --cwd "/Users/michael/Documents/flutter_demo" --label "flutter_demo"
 ```
-
-每条命令创建工作区及其首个标签、Shell 面板。进入某个面板后：
-
-```bash
-pwd
-cd "/Users/michael/Documents/flutter_demo"
-codex
-# 或运行 omp
-```
-
-`pwd` 是 print working directory，显示当前目录；`cd` 修改当前 Shell 所在目录。Java 与 Flutter 不必移动到同一个物理文件夹中。
 
 ### 5.3 单独的命名会话
 
