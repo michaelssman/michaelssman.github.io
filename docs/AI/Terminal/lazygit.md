@@ -2,6 +2,8 @@
 
 在 Ghostty 中运行 Lazygit，可以用左侧文件树选择修改文件，在右侧查看差异，并执行暂存、提交、拉取和推送。Lazygit 提供交互界面与 Git 操作，Delta 负责差异高亮。
 
+Lazygit 是独立终端程序，也可以在 [Herdr](Herdr.md) 中以分屏或浮动窗口使用；它不是 Herdr 内置的 Git 功能。Delta 单独使用时见 [Delta 文档](delta.md)。
+
 ## 1. 安装
 
 以下操作在 macOS 的 Ghostty 终端中执行，需已安装 [Homebrew](https://brew.sh/) 和 Git。
@@ -21,6 +23,8 @@ delta --version
    ```bash
    lazygit --print-config-dir
    ```
+
+   本机 macOS 使用 `~/Library/Application Support/lazygit/config.yml`；在其他机器上以命令输出为准。
 
 2. 创建或打开该目录中的 `config.yml`：
 
@@ -85,7 +89,59 @@ delta --version
 
 仅查看差异时，选择文件即可，不需要按空格。按 `Enter` 进入逐行操作时，使用 Lazygit 原生差异显示，便于选择和暂存代码；按 `Esc` 返回文件树与 Delta 预览。提交前先检查暂存内容；`p`、`P` 分别会更新本地仓库和远程仓库。
 
-## 4. 常见问题
+## 4. 在 Herdr 中查看项目差异
+
+这一部分整理自 Dave Ebbelaar 的 [Herdr 完整指南视频（21:09）](https://www.youtube.com/watch?v=Shqtk_2Jd3c&t=1269s)和[作者 Lazygit 配套指南](https://learn.datalumina.com/docs/herdr/lazygit)。配置核对日期为 **2026-11-14，Herdr TUI 0.9.5、Lazygit 0.66.2**。
+
+纯 Agent 对话不容易直观看到当前分支、目录结构和未提交修改。视频用 Neovim 浏览代码，用 Lazygit 审核 Git 差异；当前项目中的 Lazygit 弹窗可以随时打开，查看完再返回 Agent。
+
+### 4.1 配置弹窗快捷键
+
+弹窗绑定写在 **Herdr 配置** `~/.config/herdr/config.toml` 中，不是 Lazygit 的 `config.yml`。把以下命令块合并到现有配置；如果已经有相同绑定，保留一份即可，不覆盖其他配置：
+
+```toml
+[[keys.command]]
+key = ["cmd+shift+g", "prefix+d"]
+type = "popup"
+command = "cd \"${HERDR_ACTIVE_PANE_CWD:-.}\" && exec lazygit"
+description = "Git status"
+width = "90%"
+height = "85%"
+```
+
+`HERDR_ACTIVE_PANE_CWD` 是当前面板的目录，因此从哪个项目打开，就查看哪个项目。`width`、`height` 控制浮动窗口占用的终端尺寸，不改变 Lazygit 内部左右面板的比例；内部继续使用第 2 节的 `sidePanelWidth: 0.25`。
+
+本机 Herdr 前缀为 `Ctrl+b`，所以 `prefix+d` 表示先按 `Ctrl+b`、松开，再按 `d`。若使用 `Cmd+Shift+G`，还需要在 Ghostty 的配置中让出该按键：
+
+```ini
+keybind = super+shift+g=unbind
+```
+
+本机 Ghostty 配置文件为 `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty`。保存后按 `Cmd+Shift+,` 重载 Ghostty，再检查并重载 Herdr：
+
+```bash
+herdr config check
+herdr server reload-config
+```
+
+然后在当前 Herdr 客户端按 `Ctrl+b → Shift+r`，重载客户端快捷键。完整 Ghostty 与 Herdr 配置见 [Herdr 文档](Herdr.md)，不需要为弹窗设置停止 Server。
+
+### 4.2 打开、验证与退出
+
+1. 在 Git 项目的空闲 Shell 面板中运行 `pwd`，确认当前目录属于目标仓库。
+2. 按 `Cmd+Shift+G` 或 `Ctrl+b → d`，打开 Lazygit 浮动窗口。
+3. 左侧选择修改文件，右侧查看 Delta 高亮差异。
+4. 按 `?` 查看当前面板的操作键；按 `q` 退出 Lazygit，浮动窗口随之关闭，返回原面板。
+
+打开弹窗不会自动提交。暂存、提交、拉取和推送仍是实际 Git 操作，确认内容后再执行。2026-11-14 配置时保留了第 2 节已有的中文、鼠标、文件树和 25% 侧栏设置，Herdr 配置校验与热重载通过；物理快捷键从 Ghostty 到 Herdr 的完整转发尚未实测，可按以上步骤验证。
+
+### 4.3 组成代码查看标签
+
+想组成视频中的代码查看布局，可以在 Herdr 新建一个标签，运行 `nvim .`，再右键向右分屏运行 `lazygit`，向下分屏保留 Shell 运行开发服务器。每个新面板先用 `pwd` 确认目录，再运行对应命令，拖动分屏边界调整阅读空间。其他标签可以继续运行 Agent；[Neovim 的安装、使用与退出](Neovim.md)单独记录。
+
+作者配套指南还调整了 panel 分组、分支颜色和多个 diff renderer：分支颜色按名称前缀匹配，不会识别真正作者；配置多个 renderer 后可用 `|` 切换；自动 fetch 会访问远程。这些是作者的额外个人配置，本机沿用第 2 节已有布局，没有改成等宽。
+
+## 5. 常见问题
 
 ### 命令不存在或配置键不识别
 
@@ -110,7 +166,13 @@ delta --version
 
 先确认 `delta --version` 成功，再检查配置缩进、`git.diffRenderers` 中的命令及可执行文件路径。存在多个渲染器时，按 `|` 切换到 Delta；不要把 Delta 自身分页器的快捷键当作 Lazygit 快捷键。
 
-## 5. 官方资料
+### Herdr 弹窗没有打开或不是目标项目
+
+- 按键无效：先试 `Ctrl+b → d`；若前缀按键有效而 `Cmd+Shift+G` 无效，检查 Ghostty 是否已让出快捷键并重载。
+- 两种按键都无效：执行 `herdr config check`，再用 `Ctrl+b → Shift+r` 重载当前客户端配置，按 `Ctrl+b → ?` 检查生效的绑定。
+- 弹窗显示的目录不是 Git 项目：在打开弹窗的空闲 Shell 面板运行 `pwd`，进入实际仓库后再打开；不要把 Shell 命令输入正在运行的 Agent 对话中。
+
+## 6. 官方资料
 
 - [Homebrew Lazygit](https://formulae.brew.sh/formula/lazygit)
 - [Lazygit v0.66.2 配置](https://github.com/jesseduffield/lazygit/blob/v0.66.2/docs/Config.md)

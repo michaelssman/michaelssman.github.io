@@ -446,13 +446,15 @@ nav:
       - AI/git/git.md
       - AI/git/git_config.md
       - AI/git/git_ignore.md
-      - AI/git/delta.md
-      - AI/git/lazygit.md
+    - Terminal:
+      - AI/Terminal/delta.md
+      - AI/Terminal/lazygit.md
+      - AI/Terminal/Neovim.md
+      - AI/Terminal/Herdr.md
     - Skills:
       - AI/Skills/Agent Skills.md
       - AI/Skills/Skills目录接入GitHub仓库.md
     - AI/Appium.md
-    - AI/Herdr.md
     - plugins:
       - AI/plugins/Ponytail.md
     - OMP:
