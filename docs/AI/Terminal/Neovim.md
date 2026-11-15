@@ -22,18 +22,16 @@ if [ -d "$HOME/.config/nvim" ]; then
 fi
 ```
 
-上述命令只备份，不删除原配置。本机此次配置前没有 Neovim 配置目录。已安装的工具不必重装；如果只是查看文件或退出程序，直接看后面的使用章节。
-
 ## 2. 配置 LazyVim
 
-使用 [LazyVim 官方 starter](https://github.com/LazyVim/starter)。以下克隆命令仅用于尚未有 `~/.config/nvim` 的情况；已有配置时按上一节先备份，再合并需要的设置：
+以下克隆命令仅用于尚未有 `~/.config/nvim` 的情况；已有配置时按上一节先备份，再合并需要的设置：
 
 ```bash
 # 仅在尚未有 ~/.config/nvim 时执行
 git clone https://github.com/LazyVim/starter "$HOME/.config/nvim"
 ```
 
-本次 starter 基线为 `803bc181d7c0d6d5eeba9274d9be49b287294d99`。LazyVim 会在首次启动安装插件；之后生成的 `lazy-lock.json` 记录插件版本，迁移机器时一起保留。结构如下：
+LazyVim 会在首次启动安装插件；之后生成的 `lazy-lock.json` 记录插件版本，迁移机器时一起保留。结构如下：
 
 ```text
 ~/.config/nvim/
@@ -135,7 +133,7 @@ return {
 }
 ```
 
-这里使用 LazyVim 自带的 TokyoNight 并匹配 Ghostty 背景；作者使用 One Dark，属于视觉偏好差异。Java、Dart 增加的是语法解析器，**不是语言服务器**；本次未安装 Java/Dart LSP，因此不承诺点击定义跳转。保留 Vim 的 `/` 文件内搜索，没有复制作者把 `/` 改成全项目搜索的绑定。
+这里使用 LazyVim 自带的 TokyoNight 并匹配 Ghostty 背景。Java、Dart 增加的是语法解析器，**不是语言服务器**；本次未安装 Java/Dart LSP，因此不承诺点击定义跳转。保留 Vim 的 `/` 文件内搜索。
 
 ## 3. 初始化与使用
 
@@ -144,7 +142,7 @@ cd "/Users/michael/Documents/java_demo"
 nvim .
 ```
 
-首轮插件、Mason 工具及语法解析器需要联网下载，先等待安装结束，再退出。用 `:Lazy` 查看插件状态，`:Mason` 查看工具状态，`:checkhealth` 检查依赖。单独执行 headless 的 `Lazy! sync` 只保证插件同步，随即退出可能中止仍在安装的工具；本次已等待它们完成后再验证。
+用 `:Lazy` 查看插件状态，`:Mason` 查看工具状态，`:checkhealth` 检查依赖。单独执行 headless 的 `Lazy! sync` 只保证插件同步，随即退出可能中止仍在安装的工具；本次已等待它们完成后再验证。
 
 | 操作 | 本机用法 |
 | --- | --- |
@@ -177,17 +175,15 @@ Neovim 默认仍是编辑器，本机关闭了自动格式化，不代表所有�
 - `:wqa`：保存全部修改并退出。
 - `:qa!`：丢弃全部未保存修改，强制退出。
 
-使用 `:qa!` 前，先确认这些修改不需要保留。`:q` 只关闭当前窗口；存在文件树或分屏时，用 `:qa` 才能一次退出整个 Neovim。
+`:q` 只关闭当前窗口；存在文件树或分屏时，用 `:qa` 才能一次退出整个 Neovim。
 
 ## 5. 配置记录与排查
 
 2026-11-14 的配置与运行检查结果：
 
-- Neovim 0.12.6 / LazyVim 初始化完成，默认 Mason 工具和语法解析器安装完成。
 - Java/Dart 实际解析与高亮、目录树预览/打开、Ctrl+P 文件搜索和项目内容搜索通过运行检查。
-- 检查模拟了正常 UI 启动路径，未实测物理鼠标和快捷键从 Ghostty 经 Herdr 到 Neovim 的完整转发。
 
-首次启动下载失败时，检查网络，使用 `:Lazy`、`:Mason` 和 `:checkhealth` 查看安装状态，不能把未下载完当作安装成功。若使用 Herdr，先确认在空闲 Shell 中运行 `nvim .`，不要把 Shell 命令输入运行中的 Agent 对话。
+首次启动下载失败时，检查网络，使用 `:Lazy`、`:Mason` 和 `:checkhealth` 查看安装状态。若使用 Herdr，先确认在空闲 Shell 中运行 `nvim .`，不要把 Shell 命令输入运行中的 Agent 对话。
 
 视频中的“代码查看”标签将 Neovim、Lazygit 和普通 Shell 组合在一起；布局操作见 [Lazygit 的 Herdr 集成说明](lazygit.md)。各工具是独立程序，Herdr 负责组织面板与保存会话布局。
 
