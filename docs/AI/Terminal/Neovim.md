@@ -11,7 +11,7 @@ nvim --version
 
 `fd` 用于查找文件，`ripgrep` 搜索文件内容，`tree-sitter-cli` 用于安装语法解析器。编译解析器需要 macOS Command Line Tools；缺少时运行 `xcode-select --install`，完成系统安装后再继续。[LazyVim 官方要求](https://www.lazyvim.org/)
 
-已有 `~/.config/nvim` 时，先备份整个目录，再决定合并或替换，不能直接覆盖：
+已有 `~/.config/nvim` 时，先备份整个目录：
 
 ```bash
 nvim_backup="$HOME/.local/state/nvim-setup/$(date +%Y%m%d-%H%M%S)"
@@ -24,7 +24,7 @@ fi
 
 ## 2. 配置 LazyVim
 
-以下克隆命令仅用于尚未有 `~/.config/nvim` 的情况；已有配置时按上一节先备份，再合并需要的设置：
+以下克隆命令仅用于尚未有 `~/.config/nvim` 的情况；已有配置时先备份，再合并需要的设置：
 
 ```bash
 # 仅在尚未有 ~/.config/nvim 时执行
@@ -162,7 +162,7 @@ Neovim 默认仍是编辑器，本机关闭了自动格式化，不代表所有�
 
 作者配套指南的单击复用预览标签、双击固定标签和 Cmd/Ctrl+单击定义跳转需要额外定制及 LSP；本机采用原生预览/打开行为，不宣称与 VS Code 完全一致。[neo-tree 官方说明](https://github.com/nvim-neo-tree/neo-tree.nvim)
 
-## 4. 如何退出 Neovim
+## 4. 退出 Neovim
 
 运行 `nvim .` 后，要退出整个 Neovim（包括左侧文件树），在 Neovim 内依次操作：
 
@@ -176,19 +176,3 @@ Neovim 默认仍是编辑器，本机关闭了自动格式化，不代表所有�
 - `:qa!`：丢弃全部未保存修改，强制退出。
 
 `:q` 只关闭当前窗口；存在文件树或分屏时，用 `:qa` 才能一次退出整个 Neovim。
-
-## 5. 配置记录与排查
-
-2026-11-14 的配置与运行检查结果：
-
-- Java/Dart 实际解析与高亮、目录树预览/打开、Ctrl+P 文件搜索和项目内容搜索通过运行检查。
-
-首次启动下载失败时，检查网络，使用 `:Lazy`、`:Mason` 和 `:checkhealth` 查看安装状态。若使用 Herdr，先确认在空闲 Shell 中运行 `nvim .`，不要把 Shell 命令输入运行中的 Agent 对话。
-
-视频中的“代码查看”标签将 Neovim、Lazygit 和普通 Shell 组合在一起；布局操作见 [Lazygit 的 Herdr 集成说明](lazygit.md)。各工具是独立程序，Herdr 负责组织面板与保存会话布局。
-
-查看本机配置目录：
-
-```bash
-open "$HOME/.config/nvim"
-```

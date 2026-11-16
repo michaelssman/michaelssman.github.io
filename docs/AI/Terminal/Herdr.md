@@ -57,7 +57,10 @@ for file in \
 done
 ```
 
-`for` 逐个处理文件，`if -f` 只备份已存在的文件，`cp -p` 保留文件属性；目录权限 `700`、文件权限 `600` 将备份限制为当前用户访问。
+- `$(date ...)` 生成带时间的目录名；
+- `for` 逐个处理文件。
+- `if -f` 检查文件是否存在，只备份已存在的文件。
+- `cp -p` 保留文件属性。目录权限 `700`、文件权限 `600` 将备份限制为当前用户访问。
 
 安装并查看版本：
 
@@ -136,6 +139,7 @@ rows = [["state_icon", "workspace"], ["branch", "git_status"]]
 [ui.toast]
 delivery = "herdr"
 
+# 提示音
 [ui.sound]
 enabled = false
 ```
@@ -181,7 +185,7 @@ herdr server reload-config
 
 作者原配置使用 `Ctrl+方向键`，需要到系统设置 → 键盘 → 键盘快捷键 → Mission Control 取消四个冲突项。本机用其他组合，因此没有修改系统级快捷键。
 
-提示音可在 Herdr Settings 中开启，或将 `[ui.sound] enabled` 改为 `true`；本机保持静音。`Ctrl+b → o` 跳的是通知目标，不能将它解释为无条件查找全部已完成 Agent。
+`Ctrl+b → o` 跳的是通知目标，不能将它解释为无条件查找全部已完成 Agent。
 
 `Cmd+K` 打开全局跳转窗口，可搜索工作区、标签和 Agent；视频演示先按 `/` 再输入关键字。
 
