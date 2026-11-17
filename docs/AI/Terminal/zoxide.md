@@ -2,8 +2,6 @@
 
 zoxide 会记录访问过的目录，让你用目录关键词快速跳转，可以理解为“会记住常用目录的 `cd`”。它是 Shell 工具，在普通终端或 Herdr 面板中都能使用。
 
-本文整理自 [Herdr 完整指南视频的 24:39 章节](https://www.youtube.com/watch?v=Shqtk_2Jd3c&t=1479s)及原本机配置记录。`24:39` 是视频时间点；安装与初始化依据 [zoxide 官方说明](https://github.com/ajeetdsouza/zoxide#installation)。
-
 ## 1. 安装与准备
 
 在本机终端的空闲 Shell 中执行：
@@ -47,10 +45,9 @@ cd "/Users/michael/Documents/flutter_demo"
 
 ```bash
 z java_demo
-pwd
 ```
 
-`z java_demo` 根据访问记录进入最匹配的目录；`pwd` 显示实际进入的路径。目录记录可以供同一用户后续新开的 Shell 使用。
+`z java_demo` 根据访问记录进入最匹配的目录。
 
 | 命令 | 作用 |
 | --- | --- |
@@ -60,7 +57,7 @@ pwd
 | `zoxide query java_demo` | 查看匹配路径，不切换当前目录 |
 | `pwd` | 查看当前目录 |
 
-**`zi` 的第二个字符是小写字母 i，不是 `zy`。** 进入列表后输入关键词，用方向键选择，按 Enter 进入目录，按 Esc 取消。视频还演示输入 `z 目录关键字` 后按 Tab 补全；它依赖 zsh 补全初始化，原本机配置已有 `compinit`。
+进入列表后输入关键词，用方向键选择，按 Enter 进入目录，按 Esc 取消。视频还演示输入 `z 目录关键字` 后按 Tab 补全；它依赖 zsh 补全初始化，原本机配置已有 `compinit`。
 
 也可以主动添加常用项目，不必先逐个进入：
 
@@ -69,8 +66,6 @@ zoxide add "/Users/michael/Documents/java_demo"
 zoxide add "/Users/michael/Documents/flutter_demo"
 zoxide add "/Users/michael/Documents/michaelssman.github.io"
 ```
-
-在 Herdr 中可按“新建标签 → `z flutter_demo` → `pwd` 确认目录 → `codex` 或 `omp`”使用。`z` 和 `cd` 只改变当前 Shell 的目录，不会自动切换左侧工作区；工作区管理见 [Herdr](Herdr.md)。
 
 ## 4. 验证与排查
 
@@ -92,5 +87,3 @@ pwd
 | `zi` 不能打开列表 | 检查 `fzf --version` 是否成功 |
 | 找不到目标目录 | 先用完整路径 `cd` 进入，或用 `zoxide add` 添加记录 |
 | 跳到了其他同名目录 | 使用 `zi` 选择，并用 `pwd` 确认实际路径 |
-
-**历史验证记录（2026-11-14）：** 本机 zoxide 0.10.0、fzf 0.75.0 已初始化，上述三个项目已加入记录；在新的登录式 zsh 中验证过 `z java_demo`、`z flutter_demo` 返回正确路径。这是原配置时的结果，本次文档拆分未重新运行验证。

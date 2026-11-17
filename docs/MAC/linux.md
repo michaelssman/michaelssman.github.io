@@ -297,7 +297,7 @@ chmod 用于修改文件或文件夹的权限。
 
 ### pwd
 
-pwd 是终端命令，英文是 print working directory，意思是“显示当前所在目录”。
+pwd（print working directory）是终端命令，意思是“显示当前所在目录”。
 
 ## 终端标识符
 
