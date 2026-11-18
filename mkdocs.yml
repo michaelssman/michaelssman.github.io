@@ -463,6 +463,7 @@ nav:
     - OMP:
       - AI/OMP/OMP.md
       - AI/OMP/模型角色配置.md
+      - AI/OMP/Advisor审查与测试验收.md
     - Orca:
       - AI/Orca/orca-orchestration-zh-CN.md
       - AI/Orca/Orca.md
