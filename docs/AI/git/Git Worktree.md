@@ -32,22 +32,7 @@ git worktree list
 git worktree add -b "$NEW_BRANCH" "$NEW_WORKTREE_DIR" origin/develop
 ```
 
-## 4. 在两个 Worktree 中分别运行 Codex CLI
-
-### 使用 `-C` 指定工作目录
-
-```bash
-codex -C "$WORKTREE_B_DIR"
-```
-
-建议每个新会话的第一条任务都写清范围，例如：
-
-```text
-当前目录应为需求 B 的 Worktree，当前分支应为需求分支 B。
-请先检查分支和工作区状态，只修改本需求相关文件，不要操作其他 Worktree。
-```
-
-## 5. 每天开始开发前
+## 4. 每天开始开发前
 
 在各自 Worktree 中分别检查：
 
@@ -69,7 +54,7 @@ git fetch origin --prune
 git pull --rebase
 ```
 
-## 6. 日常提交与推送
+## 5. 日常提交与推送
 
 所有命令都必须在对应需求的 Worktree 中执行：
 
@@ -89,7 +74,7 @@ git push
 - 分支、提交、标签和远端信息由所有 Worktree 共享。
 - `git stash` 也由同一仓库共享；如果必须使用，应写清名称，例如 `git stash push -m "需求 B 临时修改"`。
 
-## 7. 按当前团队规范流转分支
+## 6. 按当前团队规范流转分支
 
 两个需求分别执行同一套流程，互不合并：
 
@@ -111,7 +96,7 @@ git diff --stat origin/develop...feature/<需求>
 
 需求分支在合入 `main` 之前应继续保留。某个需求后续需要修复时，直接进入对应 Worktree 继续提交；不要在另一个需求的 Worktree 中修改。
 
-## 8. iOS 项目的额外注意事项
+## 7. iOS 项目的额外注意事项
 
 新 Worktree 只会检出 Git 跟踪的文件。被 `.gitignore` 忽略的本地配置、依赖或生成文件不会自动出现在新目录，需要按项目既有方式重新生成或谨慎复制。
 
@@ -129,7 +114,7 @@ xcodebuild <其他参数> \
 
 同一时刻只在一个 Worktree 中执行 CocoaPods、工程文件生成或其他会改写共享外部状态的命令；执行后检查实际变更范围。
 
-## 9. 查看和管理 Worktree
+## 8. 查看和管理 Worktree
 
 查看所有 Worktree：
 
@@ -150,7 +135,7 @@ git worktree repair
 git worktree unlock "$WORKTREE_B_DIR"
 ```
 
-## 10. 需求结束后的安全清理
+## 9. 需求结束后的安全清理
 
 从其他 Worktree 中安全移除：
 
@@ -167,7 +152,7 @@ git branch -d "$BRANCH_B"
 git push origin --delete "$BRANCH_B"
 ```
 
-## 11. 最短操作清单
+## 10. 最短操作清单
 
 首次为已有的需求 B 分支创建 Worktree：
 
