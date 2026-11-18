@@ -97,6 +97,7 @@ nav:
       - iOS/应用程序加载/hmap.md
       - iOS/应用程序加载/动态库静态库.md
       - iOS/应用程序加载/多环境支持.md
+      - iOS/应用程序加载/Flutter iOS正式版与测试版同时安装.md
     - Runloop:
       - iOS/Runloop/RunLoop.md
       - iOS/Runloop/CFRunLoopRef.md
