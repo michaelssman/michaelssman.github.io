@@ -2,7 +2,7 @@
 
 MinIO 是兼容 S3 接口的对象存储：**桶（bucket）**装对象，**对象键（key）**标识文件。hhjava 通过 Java SDK 上传、分页列举、下载和删除；`mc` 是管理员使用的命令行客户端。
 
-本文沿用已有 ECS `47.120.56.43`、Docker、Nacos 和 hhjava 登录服务，安装 **AIStor Free 单节点版**。许可证由本人申请并确认条款。[官方容器安装](https://docs.min.io/aistor/installation/container/install/)、[许可证](https://docs.min.io/aistor/operations/licenses/)。
+安装 **AIStor Free 单节点版**。许可证由本人申请并确认条款。[官方容器安装](https://docs.min.io/aistor/installation/container/install/)、[许可证](https://docs.min.io/aistor/operations/licenses/)。
 
 ## 1. 部署结构
 
@@ -21,7 +21,7 @@ App → HTTPS :443 gateway → 127.0.0.1:63030 backup-file
 | 文件服务配置 | `/etc/hhjava/backup-file/application.yml`、`secrets.properties` |
 | 文件请求入口 | `https://47.120.56.43/backup/files/...` |
 
-MinIO API `9000` 和控制台 `9001` 仅绑定 ECS 回环地址。Mac 管理 MinIO、Nacos 和 MySQL，或运行本机 hhjava，统一按 [SSH 隧道](SSH隧道访问ECS服务.md)连接；该文档同时记录已完成的容器映射和本机配置。
+MinIO API `9000` 和控制台 `9001` 仅绑定 ECS 回环地址。Mac 管理 MinIO、Nacos 和 MySQL，或运行本机 hhjava，统一按 [SSH 隧道](SSH隧道访问ECS服务.md)连接。
 
 ## 2. Mac：上传许可证与安装脚本
 
