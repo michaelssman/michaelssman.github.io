@@ -440,13 +440,13 @@ nav:
     - AI/Claude-Code-and-Codex-Hooks.md
     - CodeX:
       - AI/CodeX/Codex.md
-      - AI/CodeX/Codex CLI 与 Git Worktree 并行开发指南.md
       - AI/CodeX/Codex CLI项目目录迁移与会话恢复指南.md
     - AI/LongTask.md
     - git:
       - AI/git/git.md
       - AI/git/git_config.md
       - AI/git/git_ignore.md
+      - AI/git/Git Worktree.md
     - Terminal:
       - AI/Terminal/delta.md
       - AI/Terminal/lazygit.md

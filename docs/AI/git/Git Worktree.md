@@ -1,4 +1,4 @@
-# Codex CLI 与 Git Worktree 并行开发指南
+# Git Worktree
 
 ## 1. 核心结论
 
@@ -35,10 +35,6 @@ git worktree add -b "$NEW_BRANCH" "$NEW_WORKTREE_DIR" origin/develop
 ## 4. 在两个 Worktree 中分别运行 Codex CLI
 
 ### 使用 `-C` 指定工作目录
-
-```bash
-codex -C "$REPO_DIR"
-```
 
 ```bash
 codex -C "$WORKTREE_B_DIR"
@@ -184,11 +180,4 @@ cd "$REPO_DIR"
 git fetch origin --prune
 git worktree add "$WORKTREE_B_DIR" "$BRANCH_B"
 git worktree list
-```
-
-分别启动 Codex CLI：
-
-```bash
-codex -C "$REPO_DIR"
-codex -C "$WORKTREE_B_DIR"
 ```
