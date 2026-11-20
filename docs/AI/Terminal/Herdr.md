@@ -18,7 +18,7 @@
 herdr status
 ```
 
-本机默认会话 socket 为 `~/.config/herdr/herdr.sock`。Herdr 在本机运行，不等于模型也在本机运行：Codex、OMP 将请求发到哪里，由它们自己的模型提供方配置决定。
+本机默认会话 socket 为 `~/.config/herdr/herdr.sock`。
 
 ### 1.2 Workspace、Tab 与 Pane
 
@@ -190,8 +190,6 @@ herdr server reload-config
 | `Cmd+Shift+G` 或 前缀 → `d` | 在当前面板目录打开 Lazygit 浮动窗口。 |
 
 **复制与鼠标：** 进入[复制模式](https://herdr.dev/tui/docs/keyboard/#copy-mode)后，用方向键或 `h/j/k/l` 移动，按 `v` 开始选择、`y` 复制、`q` 退出。`Esc` 优先取消选择或搜索。默认鼠标模式下，可拖动分屏边界调整大小，按住 Ctrl 单击网页链接打开。Herdr 默认在鼠标选中后自动复制；本机设了 `copy_on_select = false`，因此要在选中后按 `Ctrl+C` 复制。
-
-本机使用 `Ctrl+Option+方向键`，无需像视频中的 `Ctrl+方向键` 方案那样更改 Mission Control 快捷键。
 
 ## 4. 工作区、项目与 worktree
 
