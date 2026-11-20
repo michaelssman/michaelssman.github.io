@@ -108,8 +108,6 @@ Claude Code 当前还提供更多事件，主要包括：
 | 模型切换 | `PreModelSwitch`、`PostModelSwitch` |
 | MCP 与通知 | `Elicitation`、`ElicitationResult`、`Notification` |
 
-这些事件不要直接复制到 Codex 配置中。先确认 Codex 当前版本的事件支持列表。
-
 ## 5. 通用输入与输出
 
 ### 5.1 Command Hook 输入
@@ -230,12 +228,6 @@ jq -nc '{
   decision: "block",
   reason: "结束前请说明测试、lint、构建或其他验证结果；无法验证时请明确原因。"
 }'
-```
-
-添加执行权限：
-
-```bash
-chmod +x .agent-hooks/verify-delivery.sh
 ```
 
 这个脚本只检查最终说明中是否出现验证信息，不会证明测试真的执行过。严格门禁应直接运行具体测试，或交给 Git Hook 和 CI。
