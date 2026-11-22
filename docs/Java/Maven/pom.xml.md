@@ -1,6 +1,15 @@
 # Maven 的 pom.xml
 
-POM 是 Project Object Model，用来描述项目坐标、依赖、模块与构建规则。本文以 hhjava 的多模块工程解释常用标签；片段需要放进对应 POM 位置，不是互相独立的完整工程。
+POM 是 Project Object Model（项目对象模型），用来描述项目坐标、依赖、模块与构建规则。本文使用通用的 `demo-parent` 多模块示例；片段需要放进对应 POM 位置，不是互相独立的完整工程。
+
+<a id="dependency-terms"></a>
+
+## 先分清依赖、SDK、Starter 与 JDK
+
+- **依赖**：代码使用的库；**SDK（Software Development Kit，软件开发工具包）**通常封装某个服务的调用，例如对象存储 SDK。
+- **API（Application Programming Interface，应用程序接口）**：软件提供的调用契约，可以是 Java 方法，也可以是 HTTP 接口；SDK 是调用工具，API 是被调用的能力与约定。
+- **Starter**：Spring Boot 中组合相关依赖的入口，通常配合自动配置提供默认对象；不是一个独立服务。
+- **BOM**：集中管理一组依赖版本的清单；它与实际引入依赖的区别见第 5 节。
 
 ## 入门：为什么不手工下载所有 Jar
 
@@ -43,8 +52,8 @@ project                         唯一根元素
 
 ```xml
 <modelVersion>4.0.0</modelVersion>
-<groupId>com.hhjava.www</groupId>
-<artifactId>hhjava</artifactId>
+<groupId>com.example</groupId>
+<artifactId>demo-parent</artifactId>
 <version>1.0-SNAPSHOT</version>
 <packaging>pom</packaging>
 ```
@@ -53,22 +62,20 @@ project                         唯一根元素
 - `groupId` 是项目所属组织标识，`artifactId` 是模块标识，两者与 `version` 一起定位构件。
 - `SNAPSHOT` 表示开发中的快照版本，不等于固定的发布版本。
 - `packaging=pom` 常用于聚合/父模块；普通代码组件通常为 `jar`。
-- `war` 是另一种 Web 部署打包形式，不是 hhjava 当前微服务的打包方式。
+- `war` 是面向 Servlet Web 部署的另一种打包形式；是否采用它取决于部署方式。
 
 ## 2. parent：继承父配置
 
-hhjava 根 POM 继承 Spring Boot 父 POM，当前源码使用 Java 17、Spring Boot 3.3.7。这里描述项目基线，不表示它们是官方最新版本；升级应统一验证版本兼容性。
-
-user 的直接父级是 `hhjava-service`，继承链为：
+以采用 Spring Boot 父 POM 的工程为例，`user-service` 的直接父级可以是 `demo-services`，继承链为：
 
 ```text
-Spring Boot parent → hhjava → hhjava-service → hhjava-user
+Spring Boot parent → demo-parent → demo-services → user-service
 ```
 
 ```xml
 <parent>
-    <groupId>com.hhjava.www</groupId>
-    <artifactId>hhjava-service</artifactId>
+    <groupId>com.example</groupId>
+    <artifactId>demo-services</artifactId>
     <version>1.0-SNAPSHOT</version>
 </parent>
 ```
@@ -77,13 +84,13 @@ Spring Boot parent → hhjava → hhjava-service → hhjava-user
 
 ## 3. modules：聚合构建
 
-例如 `hhjava-service/pom.xml`：
+例如 `demo-services/pom.xml`：
 
 ```xml
 <packaging>pom</packaging>
 <modules>
-    <module>hhjava-user</module>
-    <module>hhjava-backup-file</module>
+    <module>user-service</module>
+    <module>file-service</module>
 </modules>
 ```
 
@@ -91,14 +98,14 @@ Spring Boot parent → hhjava → hhjava-service → hhjava-user
 
 ## 4. properties：集中可复用属性
 
-根 POM 中的实际属性节选：
+根 POM 中的属性示意（`REPLACE_WITH_VERIFIED_VERSION` 必须替换成经核对的 SDK 版本，不能原样构建）：
 
 ```xml
 <properties>
     <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <minio.version>8.5.17</minio.version>
+    <minio.version>REPLACE_WITH_VERIFIED_VERSION</minio.version>
 </properties>
 ```
 
@@ -140,7 +147,7 @@ Spring Boot parent → hhjava → hhjava-service → hhjava-user
 
 Spring Cloud 等 BOM 使用 `type=pom`、`scope=import` 放在 `dependencyManagement` 中导入版本管理。这与 `parent` 继承、`modules` 聚合是不同机制。[Maven 依赖机制说明](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html)
 
-当前 `hhjava-service` 已声明公共 Web、common 等依赖，user/backup-file 继承后不需要机械重复。只有单个模块需要的业务依赖，应留在那个模块。
+若服务父 POM 已声明所有子模块都会使用的依赖，子模块继承后不需要机械重复。只有单个模块需要的业务依赖，应留在那个模块。
 
 ## 6. scope 与 exclusions
 
@@ -183,19 +190,19 @@ Maven 区分依赖仓库与插件仓库。公共仓库元数据集中放在根 P
 
 不在 POM 保存仓库密码，也不为下载某个库随意加入未经核实的仓库。下载失败先检查坐标、有效仓库/镜像、网络和认证配置。
 
-## 9. 当前项目的 JSON 依赖原则
+## 9. JSON 依赖的选择边界
 
-业务 JSON 使用框架集成的 Jackson。common/unify 不需要为响应 DTO 的演示代码直接引入 Fastjson；gateway 使用注入的 `ObjectMapper` 创建可复用 writer。
+优先复用框架已配置的 JSON 组件，不为响应 DTO 的演示代码引入第二套 JSON 库。使用 Spring 管理的 `ObjectMapper` 时，先核对已注册的模块与配置，避免自行新建实例而绕开统一规则。
 
 删除直接依赖不保证第三方 SDK 的传递依赖完全不含该库，依赖树才是事实来源。也不要因为采用 Jackson 就把 OAuth2 协议错误强行包装成业务响应。详见 [序列化](../序列化.md)。
 
 ## 10. 常用验证命令
 
-从 hhjava 根目录执行，项目没有 Maven Wrapper：
+从包含聚合 POM 的项目根目录执行；本例使用已安装的 Maven，若工程提供 Maven Wrapper，按该工程说明使用 `./mvnw`：
 
 ```sh
 # 选择 user，并同时构建所需的 Reactor 依赖模块。
-mvn -pl hhjava-service/hhjava-user -am test
+mvn -pl demo-services/user-service -am test
 
 # 父 POM、公共模块或跨模块变更后完整回归。
 mvn clean test
@@ -211,7 +218,7 @@ mvn dependency:tree
 
 ## 11. 动手理解编译、测试、打包、安装
 
-前置：先完成 [Spring Boot 独立练习](../SpringBoot.md)，准备 JDK 17 和 Maven 3。以下都在 Mac 的 `hhjava-learning-basics` 根目录，不是在服务器，也不是在其 src 子目录。
+前置：先完成 [Spring Boot 独立练习](../SpringBoot.md)，准备该练习要求的 JDK 和 Maven。以下都在本机学习工程根目录，不是在服务器，也不是在其 src 子目录。`hhjava-learning-basics` 是该教程的独立示例名称，不是业务服务。
 
 ### 11.1 先观察生命周期
 
@@ -225,7 +232,7 @@ validate → compile → test → package → verify → install → deploy
 ### 11.2 按顺序执行并检查
 
 ```sh
-cd /Users/michael/Documents/java_demo/hhjava-learning-basics
+# 先在终端进入自己创建的学习工程目录，再执行以下命令。
 mvn validate
 mvn compile
 mvn test
@@ -260,11 +267,11 @@ mvn dependency:tree
 
 effective POM 是继承、属性等合并后的生效模型，可查插件及依赖管理版本；依赖树可查库从哪条路径引入。只有自己确认无秘密的练习配置才适合直接展示；实际项目的 effective settings、环境变量、带认证的仓库 URL 不能原样贴到公开聊天或文章。
 
-### 11.4 回到 hhjava 的多模块命令
+### 11.4 多模块工程如何选择构建范围
 
 ```sh
-cd /Users/michael/Documents/java_demo/hhjava
-mvn -pl hhjava-service/hhjava-user -am test
+# 在 demo-parent 根目录执行；按自己的 modules 配置替换模块路径。
+mvn -pl demo-services/user-service -am test
 ```
 
 `-pl` 选择模块，`-am` 同时构建该模块需要的 Reactor 模块。不是把路径切到 user 子目录就一定能解析尚未安装的兄弟组件。根 `<modules>` 聚合关系与子 `<parent>` 继承关系各自配置，目录嵌套本身不自动建立两种关系。
@@ -275,10 +282,33 @@ mvn -pl hhjava-service/hhjava-user -am test
 | --- | --- |
 | 红色依赖 / 无法下载 | 先检查坐标和版本是否存在，再检查 Maven 选用的 settings、镜像、网络与认证；不要引入来源不明镜像 |
 | `Non-resolvable parent POM` | 检查父坐标、relativePath 是否指向正确父 POM、远端是否可达，以及是否从正确聚合根构建 |
-| 找不到兄弟模块 SNAPSHOT | 从 hhjava 根用 `-pl ... -am` 构建；若确需给另一个独立工程使用，再按需 install |
+| 找不到兄弟模块 SNAPSHOT | 从聚合根用 `-pl ... -am` 构建；若确需给另一个独立工程使用，再按需 install |
 | IDEA 能编译，终端失败 | 对比 JDK、Maven、profile 和配置文件；不要只依赖 IDEA 手动添加的库 |
 | XML 未进入产物 | 优先放 `src/main/resources`；检查资源配置，详情见 [Mapper](../Java分层/Mapper数据库连接层.md) |
 | 找不到主类 / repackage 失败 | 确认可启动服务有 main；普通 Starter 不需要 repackage，但仍需要正常编译和资源处理 |
 | 想“清缓存”解决一切 | 先用依赖树定位具体构件，不删除整个 `.m2`；`mvn clean` 清理本工程构建目录，不负责删除全局依赖缓存 |
 
 `-DskipTests` 通常跳过测试执行但仍可能编译测试；`-Dmaven.test.skip=true` 还会影响测试编译。两者都不能作为“测试通过”的证据。
+
+<a id="dependency-maintenance"></a>
+
+## 13. 依赖与 JDK 的通用升级步骤
+
+前置：准备可正常构建的代码、可运行的测试及目标环境清单。以下命令在本机项目根目录执行，不会发布服务器。不同项目的业务验收用例另由项目文档维护。
+
+1. **确定升级范围。** 查框架官方兼容矩阵、发行说明、安全公告，分清源码语言级别、JDK 安装、Java SDK 和服务端软件；不要只按版本数字大小混搭组件。
+2. **集中修改版本。** 优先使用框架配套的父 POM/BOM；确需提前引入安全补丁时，按上游方式在根依赖管理中统一相关组件，检查传递依赖。框架版本变化时同时核对 Starter、包名、配置键及自动配置入口。BOM 管理版本不等于所有组合都经过你的业务验证。[Spring Boot 构建与版本管理](https://docs.spring.io/spring-boot/reference/using/build-systems.html)
+3. **对齐工具链。** 执行 `java -version`、`mvn -version`，核对版本、供应商及 Java 路径。IDEA 中检查 Project SDK、Maven Runner 与 Importer；服务器检查服务实际使用的 Java 路径，不能只看登录 Shell 的版本。JDK 下载校验供应商摘要，不关闭 HTTPS 校验。
+4. **检查最终依赖并构建。** 在项目根目录执行：
+
+   ```sh
+   mvn help:effective-pom
+   mvn dependency:tree
+   mvn clean verify
+   ```
+
+   前两项用于核对继承和传递依赖的实际结果；最后一项执行截至 verify 阶段绑定的构建和测试。检查报告里的实际用例数与跳过项，零用例不算测试通过；没有绑定的集成测试不会自动运行。真实项目配置可能含秘密，检查结果不要原样公开。
+5. **验证使用链路。** 检查启动装配、数据库事务、认证、网络调用、错误响应和资源释放。通过编译只能证明部分静态兼容，模拟服务测试不能代替真实数据库、存储或外部 API 验收。
+6. **再发布并记录。** 先确认目标配置、数据备份及恢复方案，再按授权更新运行环境。数据库迁移不能简单靠换回旧 Jar 撤销；SDK 更新也不自动更新数据库、配置中心或存储服务端。实际提交、产物摘要、环境和未验范围写在项目部署文档，不写成知识库的固定环境事实。
+
+POM 聚合与继承依据：[Maven POM 指南](https://maven.apache.org/guides/introduction/introduction-to-the-pom.html)；依赖管理与 BOM 依据：[Maven 依赖机制](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html)。
