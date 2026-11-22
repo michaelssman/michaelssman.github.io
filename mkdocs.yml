@@ -401,6 +401,7 @@ nav:
       - Java/认证授权和网关/JWT与JWKS.md
       - Java/认证授权和网关/网关-认证过滤器-拦截器.md     
       - Java/认证授权和网关/认证和授权.md
+      - Java/认证授权和网关/短信认证接入.md
       - Java/认证授权和网关/微信登录.md  
     - Java/静态化freemarker.md
     - Java/分布式文件系统MinIO.md
