@@ -99,6 +99,33 @@ code_challenge = BASE64URL(SHA256(ASCII(code_verifier)))
 
 使用授权码流程的公开客户端必须使用 PKCE，机密客户端也推荐使用；选择 `S256`。服务端必须真正校验 verifier，并防止攻击者通过删除 challenge 降级绕过 PKCE。[RFC 9700 §2.1.1](https://www.rfc-editor.org/rfc/rfc9700.html#section-2.1.1)
 
+<a id="pkce-debug"></a>
+
+#### 动手：为一次调试生成 PKCE 参数
+
+准备：在自己的 Mac 或 Linux 终端确认 `openssl version` 可以运行；已经知道待调试服务的授权端点、令牌端点、Client ID 和精确回调地址。下面只生成本机临时变量，不访问服务器；正式客户端仍应由 OAuth2/OIDC SDK 管理事务。
+
+1. 在同一个终端中执行，生成本次授权所需的四个值：
+
+   ```sh
+   pkce_verifier=$(openssl rand -hex 32)
+   pkce_challenge=$(printf '%s' "$pkce_verifier" | openssl dgst -sha256 -binary | openssl base64 -A | tr '+/' '-_' | tr -d '=')
+   oauth_state=$(openssl rand -hex 16)
+   oidc_nonce=$(openssl rand -hex 16)
+   ```
+
+   `rand -hex 32` 把 32 字节随机数编码成 64 个十六进制字符，满足 verifier 的长度和字符要求。challenge 按 S256 计算，不能直接把 verifier 当 challenge。只检查长度，不打印原文：
+
+   ```sh
+   test "${#pkce_verifier}" -eq 64 && test "${#pkce_challenge}" -eq 43 && printf 'PKCE 参数长度检查通过\n'
+   ```
+
+2. 授权请求填写 `code_challenge`、`code_challenge_method=S256`、`state`，OIDC 请求另填写 `nonce`。Mac 可用 `printf '%s' "$pkce_challenge" | pbcopy` 复制 challenge；state、nonce 同理替换变量名。**此时不要发送 verifier**，也不要把秘密贴到共享请求或在线解码网站。
+3. 浏览器完成登录后，先检查回调的 state 与本次 `oauth_state` 完全一致。再向令牌端点提交收到的 code、同一个 redirect URI 及原始 `pkce_verifier`。在 Mac 用 `printf '%s' "$pkce_verifier" | pbcopy` 复制到 Reqable 的 `code_verifier` 表单字段，不放入授权 URL。取得 ID Token 后，仍需完成[完整校验](JWT与JWKS.md#jwt-validation)及本次 nonce 匹配；能换到令牌不等于校验已完成。
+4. 调试结束，从请求工具删除 code、verifier、Token 等实际值，不导出包含凭据的请求集合；Mac 执行 `printf '' | pbcopy` 清空当前剪贴板，使用剪贴板历史工具时还需清理历史。最后执行 `unset pkce_verifier pkce_challenge oauth_state oidc_nonce`，下一次授权重新生成。
+
+本练习的成功标准是：参数生成无错误、长度检查通过，且服务端接受正确 verifier、拒绝不匹配的 verifier。长度检查不是完整协议验收；真实客户端还要维护事务有效期、防止重复回调，并执行 [state/nonce 的绑定规则](#state-nonce)。
+
 <a id="state-nonce"></a>
 
 ### 3.4 state、nonce 和 PKCE 的区别
