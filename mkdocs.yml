@@ -439,6 +439,7 @@ nav:
     - AI/技巧.md
     - Agent:
       - AI/Agent/Subagents.md
+      - AI/Agent/DeepSeek Super-agent 架构.md
       - AI/Agent/Java与Flutter多Agent协作配置.md
       - AI/Agent/智能体开发新需求.md
       - AI/Agent/AI代码审查与交付流程.md
