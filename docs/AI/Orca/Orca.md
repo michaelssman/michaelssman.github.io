@@ -12,8 +12,6 @@ Orca 把 Git worktree、Agent 会话、代码差异和浏览器放在同一工�
 brew install --cask stablyai/orca/orca
 ```
 
-使用完整包名，单独的 `orca` 是另一个项目。先确认 Git 可用，并完成所选 Agent 的安装和登录；Orca 使用各 Agent 自己的订阅或 API 配置。[安装说明](https://github.com/stablyai/orca#install)
-
 ## 项目和工作区
 
 **“添加项目”是把代码仓库或文件夹接入 Orca；“新工作区”是在某个项目下，开一个用来完成具体任务的工作环境。一个项目可以有多个工作区。**
@@ -24,8 +22,6 @@ brew install --cask stablyai/orca/orca
 | **操作对象**         | 整个项目，例如 `my-app`                           | 项目下的工作区，例如“修复登录”“开发搜索”               |
 | **通常什么时候用**   | 第一次把某个项目加入 Orca，或者开始处理另一个项目 | 为已有项目开一个新任务，或并行尝试另一种方案           |
 | **创建时主要选什么** | 要加入的目录或仓库                                | 所属项目、工作区名称、Agent，以及 Git 项目的起始分支等 |
-
-官方入门流程也是：先添加仓库，再创建工作区，然后选择在其中运行的 Agent。普通的非 Git 文件夹也可以通过界面加入。[Orca Docs](https://www.onorca.dev/docs/first-session?utm_source=chatgpt.com)
 
 ### 举个例子
 
@@ -99,18 +95,23 @@ Diff 面板常用键如下；快捷键作用于当前聚焦的差异视图。[�
 
 | 功能 | 使用方法 |
 | --- | --- |
-| 快速找文件 | `Cmd+P` 搜当前工作区的文件；`Cmd+J` 跨工作区查找标签和会话。 |
+| 快速找文件或评审 | `Cmd+P` 搜当前工作区的文件。`Cmd+J` 跨工作区查找标签和会话。已有评审缓存时，还能输入 GitHub PR 编号（如 `#123`）或 GitLab MR 编号（如 `!123`）找到对应工作区。[跳转面板](https://orca.dev/docs/model/quick-open) |
 | 通知与用量 | 开启需要的完成或待处理通知，点击通知回到工作区；状态栏查看受支持账号的用量和重置时间。 |
 | Codex 账号切换 | 在 **Settings → Agents → Codex Accounts** 管理账号，从状态栏选择。选择作用于之后启动的会话，已有进程重启前仍使用原账号。[说明](https://orca.dev/docs/agents/codex-hot-swap) |
 | Task 子代理 | 主 Agent 派出的子任务可在支持的会话界面展开查看；子代理不等于独立 worktree，需要文件隔离和任务交接时使用[Orca 编排](编排.md)。 |
 | 新会话继续 | 先让原 Agent 总结目标、改动、验证和待办，再把摘要交给新会话。需要近期终端记录时，右键终端选择 **Copy Context**；新会话先核对分支和改动。[说明](https://orca.dev/docs/terminal#copy-terminal-context) |
 | 会话恢复 | 后台守护进程仍存活时，重新打开 Orca 可以接回原终端；电脑重启或守护进程退出后，需要重新启动 Agent。[说明](https://orca.dev/docs/model/session-restore) |
+| 空闲会话休眠 | 后台工作区多、想释放内存时，可在 **Settings → Experimental → Agent hibernation** 开启。此功能默认关闭。开启后，支持恢复的 Agent 完成本轮任务并在后台空闲满设定时长（默认 30 分钟），满足条件时会休眠。重新打开工作区会恢复会话。[休眠条件](https://orca.dev/docs/agents/hibernation) |
 | SSH 开发 | **Settings → SSH → Add Target** 添加并测试主机，创建工作区时在 **Run on** 选择它；代码和 Agent 在远端运行。[说明](https://orca.dev/docs/ssh) |
 | 手机查看 | 在桌面端生成配对码，用移动端 **Pair** 连接；手机查看进度或回复，执行仍依赖主机及连接可用。[说明](https://orca.dev/docs/mobile) |
 
 ### CLI 与定时任务
 
 需要让 Agent 创建工作树、分派任务和收集结果时，先按[编排](编排.md)安装 Orca CLI、`orca-cli` 和 `orchestration` 技能，命令以本机版本的指南为准。
+
+视频中还用命令行查看工作区状态。已安装 Orca CLI、且桌面端已选中目标工作区时，在终端运行 `orca snapshot --worktree active --json`，可以读取当前工作区的快照，供脚本判断下一步。[CLI 命令参考](https://orca.dev/docs/cli/reference)
+
+要让 Agent 操作桌面应用，可以按需使用 Orca 的 `computer-use` 技能。要让支持 MCP 的 Agent 调用外部工具，在 **Settings → Integrations → MCP** 登记对应的服务端点。[技能与 MCP](https://orca.dev/docs/cli/skills)
 
 定期巡检可在 **Automations** 中配置：
 
@@ -119,7 +120,9 @@ Diff 面板常用键如下；快捷键作用于当前聚焦的差异视图。[�
 3. 设置每天、工作日、每周等周期或 cron，并核对时区；先保存为禁用状态。
 4. 手动运行一次，检查运行记录、目标目录和输出，确认符合预期后启用计划。
 
-可用前置检查命令跳过不满足条件的轮次。定时任务按计划投递提示词；需求完成后立即测试，需要在开发任务或编排流程中明确安排，参见[终端工作流](../Agent/智能体开发新需求.md)。[定时任务说明](https://orca.dev/docs/cli/automations)
+可用前置检查命令跳过不满足条件的轮次。连接多台主机后，**Automations** 会汇总各主机的计划，排查漏跑时先核对任务所属主机和最近一次运行记录。[定时任务说明](https://orca.dev/docs/cli/automations)
+
+定时任务按计划投递提示词。如果要求开发完成后立即测试，把测试写进开发任务的验收条件，或安排为依赖开发任务的下一步。[终端工作流](../Agent/智能体开发新需求.md)
 
 ## 工作区重命名
 
