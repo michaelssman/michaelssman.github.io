@@ -4,14 +4,6 @@ Orca 把 Git worktree、Agent 会话、代码差异和浏览器放在同一工�
 
 本文的并行开发用法整理自大书大的[《【实测】Orca：多个 Coding Agent 并行开发》](https://www.douyin.com/video/7688607402861612315)，操作入口按 2026-11-19 的官方文档核对。
 
-## 安装与准备
-
-从[官网](https://orca.dev)下载对应系统版本。macOS 已安装 Homebrew 时，也可以执行：
-
-```bash
-brew install --cask stablyai/orca/orca
-```
-
 ## 项目和工作区
 
 **“添加项目”是把代码仓库或文件夹接入 Orca；“新工作区”是在某个项目下，开一个用来完成具体任务的工作环境。一个项目可以有多个工作区。**
