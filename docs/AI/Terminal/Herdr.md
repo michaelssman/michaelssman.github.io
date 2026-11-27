@@ -244,6 +244,29 @@ herdr worktree open \
 
 需要新建 worktree 时可用 `Ctrl+b → Shift+g` 打开 Herdr 新建界面。
 
+### 4.4 通过命令关闭工作区
+
+先在 Shell 中查询工作区，核对 ID 和项目名称：
+
+```bash
+herdr workspace list
+herdr workspace get WORKSPACE_ID
+```
+
+将下面的 `WORKSPACE_ID` 替换为查询到的工作区 ID，`PRIMARY_WORKSPACE_ID` 替换为主项目的工作区 ID。按需选择一种关闭方式：
+
+```bash
+# 关闭单个工作区，包括某个子 worktree 的 Herdr 入口
+herdr workspace close WORKSPACE_ID
+
+# 关闭整个项目组：主工作区及其关联的 worktree 工作区
+herdr workspace close PRIMARY_WORKSPACE_ID --group
+```
+
+主项目仍有打开的子 worktree 时，不加 `--group` 会返回 `workspace_group_close_required`；只有确实要关闭整个项目组时才加。
+
+`herdr worktree remove` 和界面的 `Delete worktree checkout` 会删除 worktree 目录，不用于单纯关闭入口。参见 [Herdr CLI 工作区与 worktree 说明](https://herdr.dev/tui/docs/cli-reference/#worktrees)。
+
 ## 5. Agent 集成与状态
 
 ### 5.1 安装 Codex / OMP 集成
